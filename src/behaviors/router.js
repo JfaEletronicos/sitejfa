@@ -21,20 +21,85 @@ function initRouter(ctx) {
     const APP_LABELS = { automotivo: 'Automotivo', solar: 'Solar', nautico: 'N\xE1utico' };
     const APP_CONTEXT = {
       automotivo: {
-        title: 'Energia para projetos automotivos que exigem mais.',
-        text: 'Uma solu\xE7\xE3o de l\xEDtio para sistemas automotivos que precisam de alta capacidade, estabilidade e autonomia.',
+        title: 'Mais energia para projetos que exigem desempenho.',
+        text: 'Alta capacidade de armazenamento para projetos automotivos compat\xEDveis que precisam de estabilidade e autonomia.',
       },
       solar: {
         title: 'Armazene energia para usar quando precisar.',
-        text: 'Solu\xE7\xF5es LiFePO4 desenvolvidas para integrar sistemas de armazenamento de energia com estabilidade, gerenciamento e longa vida \xFAtil.',
+        text: 'Uma solu\xE7\xE3o desenvolvida para integrar sistemas de armazenamento de energia, ajudando a manter energia dispon\xEDvel com gerenciamento inteligente e alta capacidade.',
       },
       nautico: {
         title: 'Energia preparada para ir a bordo.',
-        text: 'Solu\xE7\xF5es desenvolvidas para oferecer autonomia e confiabilidade em aplica\xE7\xF5es n\xE1uticas.',
+        text: 'Uma solu\xE7\xE3o desenvolvida para aplica\xE7\xF5es n\xE1uticas compat\xEDveis que precisam de autonomia, estabilidade e confiabilidade.',
       },
     };
     const BATTERY_PLACEHOLDER_SVG =
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="7" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"></rect><rect x="19" y="10.5" width="2.4" height="5" rx="1" fill="currentColor"></rect><path d="M8 12h2l1.2-2 1.6 4 1.2-2h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    const TECH_BENEFITS = {
+      lifepo4: {
+        title: 'Tecnologia LiFePO\u2084',
+        text: 'Uma tecnologia desenvolvida para sistemas que precisam combinar armazenamento de energia, estabilidade e longa vida \xFAtil.',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"></rect><rect x="19" y="10.5" width="2.4" height="5" rx="1" fill="currentColor"></rect><path d="M8 12h2l1.2-2 1.6 4 1.2-2h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
+      },
+      bms: {
+        title: 'BMS integrado',
+        text: 'O gerenciamento eletr\xF4nico acompanha o funcionamento da bateria e atua na prote\xE7\xE3o dos principais par\xE2metros de opera\xE7\xE3o.',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7v5c0 4.6 3.2 7.9 8 9 4.8-1.1 8-4.4 8-9V7l-8-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
+      },
+      bluetooth: {
+        title: 'Conectividade Bluetooth',
+        text: 'Mais praticidade para acompanhar informa\xE7\xF5es da bateria em dispositivos compat\xEDveis.',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10-5 5V2l5 5L7 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
+      },
+      rack: {
+        title: 'Formato em rack',
+        text: 'Um formato pensado para integra\xE7\xE3o organizada em sistemas que j\xE1 utilizam estrutura em rack.',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"></rect><rect x="4" y="10" width="16" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"></rect><rect x="4" y="17" width="16" height="4" rx="1.2" stroke="currentColor" stroke-width="1.6"></rect></svg>',
+      },
+    };
+    // Só recursos que o produto realmente tem, no máximo 3.
+    const buildTechBenefits = (b) => {
+      const list = [];
+      if ((b.technology || '').toLowerCase() === 'lifepo4') list.push(TECH_BENEFITS.lifepo4);
+      if (b.features.includes('BMS')) list.push(TECH_BENEFITS.bms);
+      if (b.features.includes('Bluetooth')) list.push(TECH_BENEFITS.bluetooth);
+      if (b.features.includes('Rack')) list.push(TECH_BENEFITS.rack);
+      return list.slice(0, 3);
+    };
+    const buildQuickSpecs = (b) => {
+      const items = [];
+      if (b.voltage) items.push(['Tens\xE3o', b.voltage]);
+      if (b.capacity) items.push(['Capacidade', b.capacity]);
+      if (b.technology) items.push(['Tecnologia', b.technology]);
+      if (b.features.includes('BMS')) items.push(['Gerenciamento', 'BMS']);
+      if (b.features.includes('Bluetooth')) items.push(['Conectividade', 'Bluetooth']);
+      return items.slice(0, 5);
+    };
+    // Linhas sem valor somem; grupo sem nenhuma linha some inteiro.
+    const buildSpecGroups = (b) => {
+      const groups = [
+        {
+          title: 'Energia',
+          rows: [
+            ['Tens\xE3o nominal', b.voltage],
+            ['Capacidade', b.capacity],
+            ['Tecnologia', b.technology],
+          ],
+        },
+        { title: 'Opera\xE7\xE3o', rows: [] },
+        {
+          title: 'Sistema',
+          rows: [
+            ['BMS', b.features.includes('BMS') ? 'Integrado' : null],
+            ['Bluetooth', b.features.includes('Bluetooth') ? 'Integrado' : null],
+          ],
+        },
+        { title: 'F\xEDsico', rows: [['Formato', b.features.includes('Rack') ? 'Rack' : null]] },
+      ];
+      return groups
+        .map((g) => ({ title: g.title, rows: g.rows.filter(([, v]) => v) }))
+        .filter((g) => g.rows.length);
+    };
     const BATTERY_CATALOG = [
       // Removidos nesta rodada (pedido explícito, "estão repetidos e sem
       // foto"): 'elitio-12v-100ah' (E-Lítio 12V 100Ah -- sobreposto pelo
@@ -57,6 +122,9 @@ function initRouter(ctx) {
         // Foto real confirmada (mesma pasta do Drive JFA, etiqueta impressa
         // "e-LÍTIO PRO -- BATERIA DE LÍTIO 12,8V 100A") -- bate exatamente
         // com este item (único "Pro" 12V/100Ah do catálogo).
+        marketingHeadline: 'Energia armazenada. Controle na sua m\xE3o.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 12V e 100Ah com gerenciamento BMS e conectividade Bluetooth, desenvolvida para sistemas de armazenamento de energia que exigem estabilidade, controle e autonomia.',
         image: '/images/bateria_elitio_pro_12v8_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -78,6 +146,9 @@ function initRouter(ctx) {
         // foto bate com o "Rack" do nome -- por isso é o único item
         // com `image` até agora; os outros 5 seguem no ícone-placeholder
         // (nenhuma foto real confirmada pra eles ainda).
+        marketingHeadline: 'Mais capacidade para o seu sistema solar.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 48V e 100Ah em formato rack, desenvolvida para sistemas solares que exigem maior capacidade de armazenamento e integra\xE7\xE3o organizada.',
         image: '/images/bateria_elitio_pro_48v100a.webp',
         manualUrl: '',
         commerce: {},
@@ -95,6 +166,9 @@ function initRouter(ctx) {
         shortDescription: 'Energia e autonomia para aplica\xE7\xF5es em embarca\xE7\xF5es.',
         // Foto real confirmada (etiqueta impressa "e-LÍTIO NÁUTICA --
         // BATERIA DE LÍTIO 12,8V 100A") -- bate exatamente com este item.
+        marketingHeadline: 'Energia preparada para ir a bordo.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 12,8V e 100Ah, desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem autonomia, estabilidade e confiabilidade em qualquer trajeto.',
         image: '/images/bateria_elitio_nautica_12v8_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -119,6 +193,9 @@ function initRouter(ctx) {
         features: ['BMS'],
         shortDescription:
           'Uma solu\xE7\xE3o compacta de 12,8V para sistemas que precisam de energia est\xE1vel e monitorada.',
+        marketingHeadline: 'Energia compacta, controle sempre presente.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 12,8V e 50Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que precisam de estabilidade em um formato mais compacto.',
         image: '/images/bateria_elitio_pro_12v8_50a.webp',
         manualUrl: '',
         commerce: {},
@@ -135,6 +212,9 @@ function initRouter(ctx) {
         features: ['BMS'],
         shortDescription:
           'Uma solu\xE7\xE3o de 25,6V para sistemas que precisam de energia est\xE1vel e monitorada.',
+        marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 25,6V e 50Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que exigem estabilidade e controle.',
         image: '/images/bateria_elitio_pro_25v6_50a.webp',
         manualUrl: '',
         commerce: {},
@@ -150,6 +230,9 @@ function initRouter(ctx) {
         sectors: ['solar'],
         features: ['BMS'],
         shortDescription: 'Mais capacidade para projetos solares que exigem maior autonomia.',
+        marketingHeadline: 'Mais capacidade para projetos solares maiores.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 25,6V e 100Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que exigem maior autonomia e capacidade.',
         image: '/images/bateria_elitio_pro_25v6_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -165,6 +248,9 @@ function initRouter(ctx) {
         sectors: ['nautico'],
         features: [],
         shortDescription: 'Mais energia e autonomia para embarca\xE7\xF5es que exigem maior capacidade.',
+        marketingHeadline: 'Mais autonomia para ir mais longe na \xE1gua.',
+        longDescription:
+          'Uma bateria LiFePO\u2084 de 25,6V e 100Ah, desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem maior autonomia, estabilidade e confiabilidade.',
         image: '/images/bateria_elitio_nautica_25v6_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -390,32 +476,57 @@ function initRouter(ctx) {
       BATTERY_CATALOG.forEach((b) => bateriasGrid.appendChild(buildBateriaCard(b)));
     };
     const bateriaHeroMedia = root.getElementById('bateriaHeroMedia');
+    const bateriaGalleryThumbs = root.getElementById('bateriaGalleryThumbs');
     const bateriaEyebrow = root.getElementById('bateriaEyebrow');
+    const bateriaAppBadge = root.getElementById('bateriaAppBadge');
     const bateriaTitle = root.getElementById('bateriaTitle');
+    const bateriaHeadline = root.getElementById('bateriaHeadline');
     const bateriaSub = root.getElementById('bateriaSub');
     const bateriaHeroSpecs = root.getElementById('bateriaHeroSpecs');
-    const bateriaAppNav = root.getElementById('bateriaAppNav');
-    const bateriaContextTitle = root.getElementById('bateriaContextTitle');
-    const bateriaContextText = root.getElementById('bateriaContextText');
-    const bateriaBenefitsSection = root.getElementById('bateriaBenefitsSection');
-    const bateriaFeatures = root.getElementById('bateriaFeatures');
-    const bateriaSpecsList = root.getElementById('bateriaSpecsList');
+    const bateriaCommerceHero = root.getElementById('bateriaCommerceHero');
+    const bateriaQuickSpecs = root.getElementById('bateriaQuickSpecs');
+    const bateriaTechGrid = root.getElementById('bateriaTechGrid');
+    const bateriaAppSection = root.getElementById('bateriaAppSection');
+    const bateriaAppTabs = root.getElementById('bateriaAppTabs');
+    const bateriaAppTabsUnderline = root.getElementById('bateriaAppTabsUnderline');
+    const bateriaAppCopy = bateriaAppSection ? bateriaAppSection.querySelector('.bateria-app-copy') : null;
+    const bateriaAppHeadline = root.getElementById('bateriaAppHeadline');
+    const bateriaAppText = root.getElementById('bateriaAppText');
+    const bateriaAppImage = root.getElementById('bateriaAppImage');
+    const bateriaSpecGroups = root.getElementById('bateriaSpecGroups');
     const bateriaRelatedSection = root.getElementById('bateriaRelatedSection');
     const bateriaRelatedGrid = root.getElementById('bateriaRelatedGrid');
-    const bateriaManualsSection = root.getElementById('bateriaManualsSection');
-    const bateriaDocLinks = root.getElementById('bateriaDocLinks');
-    const bateriaHeroActions = root.getElementById('bateriaHeroActions');
+    const bateriaDocsHub = root.getElementById('bateriaDocsHub');
     const bateriaSupportCta = root.getElementById('bateriaSupportCta');
     const bateriaOthersGrid = root.getElementById('bateriaOthersGrid');
     const bateriaBreadcrumbCurrent = root.getElementById('bateriaBreadcrumbCurrent');
-    const setBateriaContext = (sector) => {
-      const ctx2 = APP_CONTEXT[sector];
-      if (!ctx2) return;
-      bateriaContextTitle.textContent = ctx2.title;
-      bateriaContextText.textContent = ctx2.text;
+    // Miniaturas só aparecem com mais de 1 foto; onSelect move o carrossel principal.
+    const buildGalleryThumbs = (photos, altBase, onSelect) => {
+      bateriaGalleryThumbs.innerHTML = '';
+      if (photos.length <= 1) {
+        bateriaGalleryThumbs.hidden = true;
+        return [];
+      }
+      bateriaGalleryThumbs.hidden = false;
+      return photos.map((src, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bateria-gallery-thumb' + (i === 0 ? ' is-active' : '');
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-label', 'Ver foto ' + (i + 1) + ' de ' + altBase);
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        btn.appendChild(img);
+        on(btn, 'click', () => onSelect(i));
+        bateriaGalleryThumbs.appendChild(btn);
+        return btn;
+      });
     };
     let bateriaCarouselCleanup = null;
-    const buildBateriaHeroCarousel = (photos, altBase) => {
+    const buildBateriaHeroCarousel = (photos, altBase, onIndexChange) => {
       bateriaHeroMedia.innerHTML = '';
       bateriaHeroMedia.classList.toggle('has-carousel', photos.length > 1);
       if (photos.length <= 1) {
@@ -424,7 +535,7 @@ function initRouter(ctx) {
         img.alt = altBase;
         img.decoding = 'async';
         bateriaHeroMedia.appendChild(img);
-        return null;
+        return { cleanup: null, goTo: null };
       }
       const wrap = document.createElement('div');
       wrap.className = 'bateria-photo-carousel';
@@ -484,6 +595,7 @@ function initRouter(ctx) {
           d.classList.toggle('is-active', i === idx);
           d.setAttribute('aria-selected', i === idx ? 'true' : 'false');
         });
+        if (onIndexChange) onIndexChange(idx);
       };
       const goTo = (i) => {
         idx = (i + N) % N;
@@ -544,41 +656,340 @@ function initRouter(ctx) {
           else prev();
         }
       });
-      return () => {
-        stop();
-        if (io) io.disconnect();
-        localCleanups.forEach((fn) => fn());
+      return {
+        cleanup: () => {
+          stop();
+          if (io) io.disconnect();
+          localCleanups.forEach((fn) => fn());
+        },
+        goTo,
       };
     };
-    on(bateriaAppNav, 'click', (e) => {
-      const pill = e.target.closest('.products-category-pill');
-      if (!pill) return;
-      Array.from(bateriaAppNav.children).forEach((p) => {
-        p.classList.toggle('is-active', p === pill);
-        p.setAttribute('aria-pressed', p === pill ? 'true' : 'false');
+    // Parallax sutil do produto (via --bh-nx/--bh-ny), só com mouse.
+    const bateriaStage = root.querySelector('.bateria-gallery-stage');
+    if (bateriaStage) {
+      const bateriaHoverMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
+      let bhRafId = null;
+      let bhPendingMove = null;
+      const flushBhMove = () => {
+        bhRafId = null;
+        if (!bhPendingMove) return;
+        const { nx, ny } = bhPendingMove;
+        bhPendingMove = null;
+        bateriaHeroMedia.style.setProperty('--bh-nx', nx.toFixed(3));
+        bateriaHeroMedia.style.setProperty('--bh-ny', ny.toFixed(3));
+      };
+      on(bateriaStage, 'pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || !bateriaHoverMQ.matches || ctx.reduceMotion) return;
+        const rect = bateriaStage.getBoundingClientRect();
+        bhPendingMove = {
+          nx: ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          ny: ((e.clientY - rect.top) / rect.height) * 2 - 1,
+        };
+        if (!bhRafId) bhRafId = requestAnimationFrame(flushBhMove);
       });
-      setBateriaContext(pill.dataset.sector);
+      on(bateriaStage, 'pointerleave', () => {
+        bateriaHeroMedia.style.removeProperty('--bh-nx');
+        bateriaHeroMedia.style.removeProperty('--bh-ny');
+      });
+      ctx.cleanups.push(() => {
+        if (bhRafId) cancelAnimationFrame(bhRafId);
+      });
+    }
+    // Compra na Hero: sem venda online confirmada, cai em "Consulte disponibilidade".
+    const buildCommerceBlock = (container, b, opts) => {
+      const compact = !!(opts && opts.compact);
+      const fallbackLabel = (opts && opts.fallbackLabel) || 'Encontrar representante';
+      container.innerHTML = '';
+      const commerce = b.commerce || {};
+      if (commerce.availableOnline) {
+        const priceRow = document.createElement('div');
+        priceRow.className = 'bateria-price-row';
+        if (commerce.oldPrice) {
+          const old = document.createElement('span');
+          old.className = 'bateria-price-old';
+          old.textContent = 'De ' + commerce.oldPrice;
+          priceRow.appendChild(old);
+        }
+        if (commerce.price) {
+          const price = document.createElement('span');
+          price.className = 'bateria-price-current';
+          price.textContent = commerce.price;
+          priceRow.appendChild(price);
+        }
+        if (priceRow.children.length) container.appendChild(priceRow);
+        const condBits = [];
+        if (commerce.pixPrice) condBits.push(commerce.pixPrice + ' no Pix');
+        if (commerce.installments) condBits.push(commerce.installments);
+        if (condBits.length) {
+          const cond = document.createElement('p');
+          cond.className = 'bateria-price-conditions';
+          cond.textContent = condBits.join(' ou ');
+          container.appendChild(cond);
+        }
+        const actions = document.createElement('div');
+        actions.className = 'bateria-cta-row';
+        if (commerce.storeUrl) {
+          const a = document.createElement('a');
+          a.className = 'hero-cta hero-cta-primary';
+          a.href = commerce.storeUrl;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'Comprar na Loja Oficial';
+          on(a, 'click', () =>
+            trackEvent('battery_buy_click', { battery_id: b.id, channel: 'loja_oficial' }),
+          );
+          actions.appendChild(a);
+        }
+        if (commerce.mercadoLivreUrl) {
+          const a = document.createElement('a');
+          a.className = 'hero-cta hero-cta-tertiary';
+          a.href = commerce.mercadoLivreUrl;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'Comprar no Mercado Livre';
+          on(a, 'click', () =>
+            trackEvent('battery_buy_click', { battery_id: b.id, channel: 'mercado_livre' }),
+          );
+          actions.appendChild(a);
+        }
+        const rep = document.createElement('a');
+        rep.className = 'bateria-cta-link';
+        rep.href = '#representantes';
+        rep.setAttribute('data-header-scroll', 'representantes');
+        rep.textContent = 'Encontrar representante';
+        actions.appendChild(rep);
+        container.appendChild(actions);
+      } else {
+        const p = document.createElement('p');
+        p.className = 'bateria-commerce-fallback-text';
+        p.textContent = compact
+          ? 'Consulte disponibilidade.'
+          : 'Consulte disponibilidade nos canais oficiais e com representantes JFA.';
+        container.appendChild(p);
+        const actions = document.createElement('div');
+        actions.className = 'bateria-cta-row';
+        const rep = document.createElement('a');
+        rep.className = 'hero-cta';
+        rep.href = '#representantes';
+        rep.setAttribute('data-header-scroll', 'representantes');
+        rep.textContent = fallbackLabel;
+        on(rep, 'click', () => trackEvent('battery_find_rep_click', { battery_id: b.id }));
+        actions.appendChild(rep);
+        container.appendChild(actions);
+      }
+      const micro = document.createElement('p');
+      micro.className = 'bateria-commerce-microcopy';
+      micro.textContent = 'Compra pelos canais oficiais JFA.';
+      container.appendChild(micro);
+    };
+    // Aplicações: abas só com setores reais; troca o conteúdo sem navegar.
+    let currentAppActive = null;
+    let currentAppImage = '';
+    let currentAppImageAlt = '';
+    const renderAppTab = (sector, opts) => {
+      const appCtx = APP_CONTEXT[sector];
+      if (!appCtx || !bateriaAppHeadline) return;
+      const apply = () => {
+        bateriaAppHeadline.textContent = appCtx.title;
+        bateriaAppText.textContent = appCtx.text;
+        if (currentAppImage) {
+          bateriaAppImage.src = currentAppImage;
+          bateriaAppImage.alt = currentAppImageAlt;
+          bateriaAppImage.hidden = false;
+        } else {
+          bateriaAppImage.hidden = true;
+        }
+      };
+      if ((opts && opts.skipAnim) || ctx.reduceMotion) {
+        apply();
+        return;
+      }
+      if (bateriaAppCopy) bateriaAppCopy.classList.add('is-switching');
+      bateriaAppImage.classList.add('is-switching');
+      setTimeout(() => {
+        apply();
+        if (bateriaAppCopy) bateriaAppCopy.classList.remove('is-switching');
+        bateriaAppImage.classList.remove('is-switching');
+      }, 240);
+    };
+    const positionAppUnderline = (btn) => {
+      if (!bateriaAppTabsUnderline) return;
+      if (!btn) {
+        bateriaAppTabsUnderline.style.width = '0px';
+        return;
+      }
+      bateriaAppTabsUnderline.style.width = btn.offsetWidth + 'px';
+      bateriaAppTabsUnderline.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
+    };
+    const switchAppTab = (sector, btn) => {
+      if (sector === currentAppActive) return;
+      currentAppActive = sector;
+      Array.from(bateriaAppTabs.querySelectorAll('.bateria-app-tab')).forEach((p) => {
+        p.classList.toggle('is-active', p.dataset.sector === sector);
+        p.setAttribute('aria-selected', p.dataset.sector === sector ? 'true' : 'false');
+      });
+      positionAppUnderline(btn || bateriaAppTabs.querySelector('.bateria-app-tab.is-active'));
+      renderAppTab(sector);
+    };
+    on(bateriaAppTabs, 'click', (e) => {
+      const btn = e.target.closest('.bateria-app-tab');
+      if (!btn) return;
+      switchAppTab(btn.dataset.sector, btn);
     });
+    // Card editorial dos produtos relacionados (sem tensão/capacidade, CTA "Conhecer produto").
+    const buildEditorialCard = (b) => {
+      const a = document.createElement('a');
+      a.className = 'catalog-card';
+      a.href = '#/baterias/' + b.slug;
+      const media = document.createElement('span');
+      media.className = 'catalog-card-media';
+      if (b.image) {
+        const img = document.createElement('img');
+        img.src = b.image;
+        img.alt = b.name;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        media.appendChild(img);
+      } else {
+        media.innerHTML = BATTERY_PLACEHOLDER_SVG;
+      }
+      a.appendChild(media);
+      const name = document.createElement('h3');
+      name.className = 'catalog-card-name';
+      name.textContent = b.name;
+      a.appendChild(name);
+      const func = document.createElement('p');
+      func.className = 'catalog-card-lines';
+      func.textContent = b.sectors.map((s) => APP_LABELS[s] || s).join(' \xB7 ');
+      a.appendChild(func);
+      const desc = document.createElement('p');
+      desc.className = 'catalog-card-desc';
+      desc.textContent = b.shortDescription;
+      a.appendChild(desc);
+      const cta = document.createElement('span');
+      cta.className = 'catalog-card-cta';
+      cta.innerHTML =
+        'Conhecer produto <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+      a.appendChild(cta);
+      on(a, 'click', () => trackEvent('battery_related_click', { battery_id: b.id }));
+      return a;
+    };
+    // Documentos: manual só com manualUrl real; link para a Central de Manuais sempre presente.
+    const buildDocsHub = (b) => {
+      bateriaDocsHub.innerHTML = '';
+      const rows = [];
+      if (b.manualUrl) {
+        rows.push({
+          href: b.manualUrl,
+          external: true,
+          title: 'Manual t\xE9cnico',
+          text: 'Informa\xE7\xF5es de instala\xE7\xE3o, opera\xE7\xE3o e cuidados.',
+          cta: 'Baixar manual',
+          event: 'battery_manual_click',
+        });
+      }
+      rows.push({
+        anchor: 'manuais',
+        title: 'Central de manuais',
+        text: 'Manuais organizados por categoria na se\xE7\xE3o de Manuais do site.',
+        cta: 'Ver manuais',
+      });
+      rows.forEach((r) => {
+        const row = document.createElement('a');
+        row.className = 'bateria-doc-row';
+        if (r.external) {
+          row.href = r.href;
+          row.target = '_blank';
+          row.rel = 'noopener noreferrer';
+        } else {
+          row.href = '#' + r.anchor;
+          row.setAttribute('data-header-scroll', r.anchor);
+        }
+        const icon = document.createElement('span');
+        icon.className = 'bateria-doc-row-icon';
+        icon.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+        row.appendChild(icon);
+        const body = document.createElement('span');
+        body.className = 'bateria-doc-row-body';
+        const title = document.createElement('p');
+        title.className = 'bateria-doc-row-title';
+        title.textContent = r.title;
+        body.appendChild(title);
+        const text = document.createElement('p');
+        text.className = 'bateria-doc-row-text';
+        text.textContent = r.text;
+        body.appendChild(text);
+        row.appendChild(body);
+        const arrow = document.createElement('span');
+        arrow.className = 'bateria-doc-row-arrow';
+        arrow.textContent = r.cta + ' →';
+        row.appendChild(arrow);
+        if (r.event) on(row, 'click', () => trackEvent(r.event, { battery_id: b.id }));
+        bateriaDocsHub.appendChild(row);
+      });
+    };
+    // Revelação das seções ao rolar (uma vez só).
+    const bateriaRevealEls = Array.from(root.querySelectorAll('#bateriaView [data-reveal]'));
+    const checkBateriaReveals = () => {
+      bateriaRevealEls.forEach((el) => {
+        if (el.classList.contains('is-visible')) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) el.classList.add('is-visible');
+      });
+    };
+    if (bateriaRevealEls.length) {
+      const bateriaRevealObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              bateriaRevealObs.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      );
+      bateriaRevealEls.forEach((el) => bateriaRevealObs.observe(el));
+      ctx.cleanups.push(() => bateriaRevealObs.disconnect());
+    }
     const renderBateriaView = (slug) => {
       const b = bySlug(slug);
       if (!b) {
         location.hash = '#/baterias';
         return;
       }
+      // 01 · Hero
       if (bateriaCarouselCleanup) {
         bateriaCarouselCleanup();
         bateriaCarouselCleanup = null;
       }
       const bateriaPhotos = b.images && b.images.length ? b.images : b.image ? [b.image] : [];
+      let thumbBtns = [];
+      const syncThumbs = (idx) => {
+        thumbBtns.forEach((t, i) => t.classList.toggle('is-active', i === idx));
+      };
       if (bateriaPhotos.length) {
-        bateriaCarouselCleanup = buildBateriaHeroCarousel(bateriaPhotos, b.name);
+        const carousel = buildBateriaHeroCarousel(bateriaPhotos, b.name, syncThumbs);
+        bateriaCarouselCleanup = carousel.cleanup;
+        bateriaHeroMedia.classList.toggle('has-thumbs', bateriaPhotos.length > 1);
+        thumbBtns = buildGalleryThumbs(bateriaPhotos, b.name, (i) => {
+          if (carousel.goTo) carousel.goTo(i);
+          syncThumbs(i);
+        });
       } else {
-        bateriaHeroMedia.classList.remove('has-carousel');
+        bateriaHeroMedia.classList.remove('has-carousel', 'has-thumbs');
         bateriaHeroMedia.innerHTML = BATTERY_PLACEHOLDER_SVG;
+        bateriaGalleryThumbs.hidden = true;
+        bateriaGalleryThumbs.innerHTML = '';
       }
       bateriaEyebrow.textContent = 'Baterias JFA';
+      bateriaAppBadge.textContent = APP_LABELS[b.sectors[0]] || '';
       bateriaTitle.innerHTML = fixStretchProAccent(b.name);
-      bateriaSub.textContent = b.shortDescription;
+      bateriaHeadline.textContent = b.marketingHeadline || '';
+      bateriaHeadline.hidden = !b.marketingHeadline;
+      bateriaSub.textContent = b.longDescription || b.shortDescription;
       bateriaBreadcrumbCurrent.textContent = b.name;
       bateriaHeroSpecs.innerHTML = '';
       [b.voltage, b.capacity, b.technology].filter(Boolean).forEach((v) => {
@@ -587,86 +998,105 @@ function initRouter(ctx) {
         chip.textContent = v;
         bateriaHeroSpecs.appendChild(chip);
       });
-      bateriaAppNav.innerHTML = '';
-      // Com uma única aplicação a navegação por abas não tem o que alternar.
-      bateriaAppNav.hidden = b.sectors.length < 2;
-      b.sectors.forEach((s, i) => {
-        const pill = document.createElement('button');
-        pill.type = 'button';
-        pill.className = 'products-category-pill' + (i === 0 ? ' is-active' : '');
-        pill.dataset.sector = s;
-        pill.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
-        pill.textContent = APP_LABELS[s] || s;
-        bateriaAppNav.appendChild(pill);
+      buildCommerceBlock(bateriaCommerceHero, b, { compact: true, fallbackLabel: 'Encontrar onde comprar' });
+      // 02 · Especificações rápidas
+      bateriaQuickSpecs.innerHTML = '';
+      buildQuickSpecs(b).forEach(([label, value]) => {
+        const item = document.createElement('div');
+        item.className = 'bateria-quickspec-item';
+        const val = document.createElement('span');
+        val.className = 'bateria-quickspec-value';
+        val.textContent = value;
+        item.appendChild(val);
+        const lab = document.createElement('span');
+        lab.className = 'bateria-quickspec-label';
+        lab.textContent = label;
+        item.appendChild(lab);
+        bateriaQuickSpecs.appendChild(item);
       });
-      setBateriaContext(b.sectors[0]);
-      bateriaFeatures.innerHTML = '';
-      bateriaBenefitsSection.hidden = !b.features.length;
-      b.features.forEach((f) => {
-        const chip = document.createElement('span');
-        chip.className = 'bateria-chip';
-        chip.textContent = f;
-        bateriaFeatures.appendChild(chip);
+      // 03 · Tecnologia/benefícios
+      bateriaTechGrid.innerHTML = '';
+      const benefits = buildTechBenefits(b);
+      const techSection = bateriaTechGrid.closest('.bateria-tech-section');
+      if (techSection) techSection.hidden = !benefits.length;
+      benefits.forEach((benefit) => {
+        const card = document.createElement('div');
+        card.className = 'bateria-tech-card';
+        const icon = document.createElement('span');
+        icon.className = 'bateria-tech-icon';
+        icon.innerHTML = benefit.icon;
+        card.appendChild(icon);
+        const title = document.createElement('h3');
+        title.className = 'bateria-tech-title';
+        title.textContent = benefit.title;
+        card.appendChild(title);
+        const text = document.createElement('p');
+        text.className = 'bateria-tech-text';
+        text.textContent = benefit.text;
+        card.appendChild(text);
+        bateriaTechGrid.appendChild(card);
       });
-      bateriaSpecsList.innerHTML = '';
-      [
-        ['Tens\xE3o', b.voltage],
-        ['Capacidade', b.capacity],
-        ['Tecnologia', b.technology],
-      ]
-        .filter(([, v]) => v)
-        .forEach(([label, value]) => {
-          const wrap = document.createElement('div');
-          wrap.innerHTML = '<dt>' + label + '</dt><dd>' + value + '</dd>';
-          bateriaSpecsList.appendChild(wrap);
+      // 04 · Aplicações: a seção inteira some com 1 único setor.
+      const hasMultipleApps = b.sectors.length >= 2;
+      if (bateriaAppSection) bateriaAppSection.hidden = !hasMultipleApps;
+      currentAppImage = bateriaPhotos[0] || '';
+      currentAppImageAlt = b.name;
+      currentAppActive = null;
+      Array.from(bateriaAppTabs.querySelectorAll('.bateria-app-tab')).forEach((el) => el.remove());
+      if (hasMultipleApps) {
+        bateriaAppTabs.hidden = false;
+        let firstTabBtn = null;
+        b.sectors.forEach((s, i) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'bateria-app-tab' + (i === 0 ? ' is-active' : '');
+          btn.dataset.sector = s;
+          btn.setAttribute('role', 'tab');
+          btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+          btn.textContent = APP_LABELS[s] || s;
+          bateriaAppTabs.appendChild(btn);
+          if (i === 0) firstTabBtn = btn;
         });
+        currentAppActive = b.sectors[0];
+        renderAppTab(b.sectors[0], { skipAnim: true });
+        requestAnimationFrame(() => positionAppUnderline(firstTabBtn));
+      }
+      // 05 · Especificações técnicas
+      bateriaSpecGroups.innerHTML = '';
+      const groups = buildSpecGroups(b);
+      const specsSection = bateriaSpecGroups.closest('.bateria-specs-section');
+      if (specsSection) specsSection.hidden = !groups.length;
+      groups.forEach((group) => {
+        const wrap = document.createElement('div');
+        const title = document.createElement('h3');
+        title.className = 'bateria-spec-group-title';
+        title.textContent = group.title;
+        wrap.appendChild(title);
+        const rowsWrap = document.createElement('div');
+        rowsWrap.className = 'bateria-spec-group-rows';
+        group.rows.forEach(([label, value]) => {
+          const row = document.createElement('div');
+          row.className = 'bateria-spec-row';
+          const lab = document.createElement('span');
+          lab.className = 'bateria-spec-row-label';
+          lab.textContent = label;
+          row.appendChild(lab);
+          const val = document.createElement('span');
+          val.className = 'bateria-spec-row-value';
+          val.textContent = value;
+          row.appendChild(val);
+          rowsWrap.appendChild(row);
+        });
+        wrap.appendChild(rowsWrap);
+        bateriaSpecGroups.appendChild(wrap);
+      });
+      // 07 · Produtos relacionados (só relatedProducts configurado)
       bateriaRelatedGrid.innerHTML = '';
       const related = (b.relatedProducts || []).map(bySlug).filter(Boolean).slice(0, 3);
       bateriaRelatedSection.hidden = !related.length;
-      related.forEach((r) => bateriaRelatedGrid.appendChild(buildBateriaCard(r)));
-      bateriaDocLinks.innerHTML = '';
-      bateriaManualsSection.hidden = !b.manualUrl;
-      if (b.manualUrl) {
-        const link = document.createElement('a');
-        link.className = 'bateria-doc-link';
-        link.href = b.manualUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.innerHTML =
-          '<span>Baixar manual t\xE9cnico</span><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
-        on(link, 'click', () => trackEvent('battery_manual_click', { battery_id: b.id }));
-        bateriaDocLinks.appendChild(link);
-      }
-      // CTA de compra fica só na Hero (o bloco "Onde comprar" foi removido).
-      const commerce = b.commerce || {};
-      bateriaHeroActions.innerHTML = '';
-      if (commerce.availableOnline && (commerce.storeUrl || commerce.mercadoLivreUrl)) {
-        if (commerce.storeUrl) {
-          const a1 = document.createElement('a');
-          a1.className = 'hero-cta';
-          a1.href = commerce.storeUrl;
-          a1.target = '_blank';
-          a1.rel = 'noopener noreferrer';
-          a1.textContent = 'Comprar agora';
-          bateriaHeroActions.appendChild(a1);
-        }
-        if (commerce.mercadoLivreUrl) {
-          const a2 = document.createElement('a');
-          a2.className = 'hero-cta hero-cta-tertiary';
-          a2.href = commerce.mercadoLivreUrl;
-          a2.target = '_blank';
-          a2.rel = 'noopener noreferrer';
-          a2.textContent = 'Comprar no Mercado Livre';
-          bateriaHeroActions.appendChild(a2);
-        }
-      } else {
-        const rep = document.createElement('a');
-        rep.className = 'hero-cta';
-        rep.href = '#representantes';
-        rep.setAttribute('data-header-scroll', 'representantes');
-        rep.textContent = 'Ver disponibilidade';
-        bateriaHeroActions.appendChild(rep);
-      }
+      related.forEach((r) => bateriaRelatedGrid.appendChild(buildEditorialCard(r)));
+      // 08 · Documentos e suporte
+      buildDocsHub(b);
       bateriaSupportCta.href =
         'https://api.whatsapp.com/send?phone=' +
         WHATSAPP_PHONE +
@@ -674,11 +1104,22 @@ function initRouter(ctx) {
         encodeURIComponent('Ol\xE1, quero saber mais sobre a ' + b.name + '!');
       bateriaSupportCta.onclick = () =>
         trackEvent('whatsapp_click', { source: 'bateria_page', battery_id: b.id });
+      // 10 · Outras baterias: até 3, nunca a atual.
       bateriaOthersGrid.innerHTML = '';
       BATTERY_CATALOG.filter((x) => x.id !== b.id)
         .slice(0, 3)
         .forEach((x) => bateriaOthersGrid.appendChild(buildBateriaCard(x)));
+      document.title = b.name + ' | Bateria LiFePO₄ JFA';
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc)
+        metaDesc.setAttribute(
+          'content',
+          'Conhe\xE7a a ' +
+            b.name +
+            ' JFA: caracter\xEDsticas, aplica\xE7\xF5es, especifica\xE7\xF5es t\xE9cnicas, manual e canais oficiais de compra.',
+        );
       trackEvent('battery_page_view', { battery_id: b.id, sectors: b.sectors });
+      requestAnimationFrame(checkBateriaReveals);
     };
     const setoresGrid = root.getElementById('setoresGrid');
     let setoresBuilt = false;
