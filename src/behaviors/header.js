@@ -75,6 +75,15 @@ function initHeader(ctx) {
       });
     });
   });
+  Array.from(root.querySelectorAll('a[data-header-external]')).forEach((a) => {
+    on(a, 'click', () => {
+      const which = a.getAttribute('data-header-external');
+      trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
+        destination: which,
+        source: 'header',
+      });
+    });
+  });
   Array.from(root.querySelectorAll('a[data-goto-products-category]')).forEach((a) => {
     on(a, 'click', (e) => {
       e.preventDefault();

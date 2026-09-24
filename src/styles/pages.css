@@ -123,7 +123,10 @@ a.catalog-card:focus-visible {
   aspect-ratio: 4/3;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 42%, rgba(246, 249, 255, 0.95), rgba(246, 249, 255, 0) 72%),
+    linear-gradient(165deg, #e4ebf5 0%, #cfdaea 100%);
+  box-shadow: inset 0 0 0 1px rgba(120, 170, 255, 0.18);
   color: #001440;
   display: flex;
   align-items: center;
@@ -261,56 +264,6 @@ a.catalog-card:hover .catalog-card-cta svg {
   }
 }
 
-.baterias-banner-section {
-  padding-top: 0;
-}
-
-.baterias-banner-section .campaign-viewport {
-  border-radius: 0;
-}
-
-.baterias-banner-section .campaign-viewport::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  height: clamp(120px, 14vw, 190px);
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(1, 7, 20, 0.86) 0%,
-    rgba(1, 7, 20, 0.86) 38%,
-    rgba(1, 7, 20, 0) 100%
-  );
-}
-
-@media (min-width: 900px) and (min-height: 360px) {
-  .baterias-banner-section {
-    padding: 0;
-    min-height: calc(86svh + clamp(26px, 4vw, 64px));
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-  }
-  .baterias-banner-section .campaign-viewport {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-  .baterias-banner-section .campaign-track {
-    position: absolute;
-    inset: 0;
-    height: auto;
-  }
-  .baterias-banner-section .campaign-slide {
-    width: 100%;
-    aspect-ratio: auto;
-    flex: 0 0 100%;
-    align-self: stretch;
-  }
-}
-
 .page-hero-cta-row {
   display: flex;
   align-items: center;
@@ -318,16 +271,6 @@ a.catalog-card:hover .catalog-card-cta svg {
   flex-wrap: wrap;
   gap: clamp(12px, 1.4vw, 18px);
   margin: clamp(22px, 2.6vw, 30px) 0 0;
-}
-
-#bateriasSectorNav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: clamp(7px, 1vw, 10px);
-  margin: clamp(14px, 1.6vw, 20px) 0 0;
-  opacity: 1;
-  transform: none;
 }
 
 #bateriasGrid {
@@ -397,4 +340,174 @@ a.catalog-card:hover .catalog-card-cta svg {
   font-size: var(--sub-size);
   line-height: var(--sub-lh);
   color: rgba(230, 238, 255, 0.65);
+}
+
+/* /baterias: abertura curta, filtro como segunda navegação e cards interativos */
+
+.baterias-catalog {
+  padding-top: clamp(96px, 11vw, 136px);
+}
+
+.baterias-intro-title {
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 1.15;
+  font-size: clamp(22px, 2.2vw, 36px);
+  color: #fff;
+  text-wrap: balance;
+}
+
+.catalog-filter-nav {
+  display: flex;
+  justify-content: center;
+  margin: clamp(18px, 2.2vw, 26px) auto 0;
+  max-width: 1120px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.catalog-filter-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-filter-track {
+  position: relative;
+  display: flex;
+  gap: clamp(18px, 2.4vw, 34px);
+  padding: 0 4px;
+  border-bottom: 1px solid rgba(120, 170, 255, 0.14);
+}
+
+.catalog-filter-tab {
+  flex: none;
+  padding: 0.7em 0.1em 0.8em;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(11px, 0.82vw, 12.5px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(230, 238, 255, 0.5);
+  transition: color 0.3s ease;
+}
+
+.catalog-filter-tab:hover,
+.catalog-filter-tab:focus-visible {
+  color: rgba(230, 238, 255, 0.85);
+}
+
+.catalog-filter-tab.is-active {
+  color: #fff;
+}
+
+.catalog-filter-indicator {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #2f7dff, #78aaff);
+  box-shadow: 0 0 10px rgba(47, 125, 255, 0.55);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 600px) {
+  .catalog-filter-nav {
+    justify-content: flex-start;
+  }
+}
+
+#bateriasView.is-entering .baterias-intro-title {
+  animation: bateriasIntroIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#bateriasView.is-entering .catalog-filter-nav {
+  animation: bateriasIntroIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+@keyframes bateriasIntroIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+#bateriasGrid .catalog-card {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+#bateriasGrid .catalog-card.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+.catalog-card-media img {
+  transform: translate(calc(var(--card-nx, 0) * 4px), calc(var(--card-ny, 0) * 3px));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.catalog-card-cta {
+  transition: color 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #bateriasGrid .catalog-card.is-revealed:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px -18px rgba(47, 125, 255, 0.55);
+  }
+
+  a.catalog-card:hover .catalog-card-media img {
+    transform: translate(calc(var(--card-nx, 0) * 4px), calc(var(--card-ny, 0) * 3px - 4px));
+  }
+
+  a.catalog-card:hover .catalog-card-cta {
+    color: #8fb8ff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bateriasView.is-entering .baterias-intro-title,
+  #bateriasView.is-entering .catalog-filter-nav {
+    animation: none;
+  }
+
+  #bateriasGrid .catalog-card {
+    opacity: 1;
+    transform: none;
+  }
+
+  .catalog-card-media img {
+    transform: none;
+  }
+}
+
+::view-transition-group(bateria-product) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
 }

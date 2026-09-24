@@ -65,7 +65,7 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 
 | URL | Página |
 | --- | --- |
-| `#/baterias` | Banners e catálogo de baterias e-Lítio, com filtro por setor |
+| `#/baterias` | Abertura curta e catálogo de baterias e-Lítio, com filtro animado por aplicação |
 | `#/baterias/:slug` | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp |
 | `#/setores` | Setores atendidos (Automotivo, Motorhome, Náutica, Telecom, Moov, Parts) |
 | `#/setores/:slug` | Página de um setor, com CTA de WhatsApp |

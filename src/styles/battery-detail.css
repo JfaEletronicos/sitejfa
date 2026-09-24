@@ -141,6 +141,7 @@
   align-items: center;
   justify-content: center;
   background:
+    radial-gradient(ellipse 44% 36% at 50% 54%, rgba(214, 228, 255, 0.13), transparent 72%),
     radial-gradient(ellipse 62% 54% at 50% 34%, rgba(0, 104, 255, 0.22), transparent 68%),
     radial-gradient(ellipse 90% 60% at 84% 96%, rgba(20, 70, 180, 0.16), transparent 70%),
     linear-gradient(180deg, #061230 0%, #030c22 100%);
@@ -463,7 +464,7 @@
   overflow: hidden;
   padding: 0;
   cursor: pointer;
-  background: #fff;
+  background: linear-gradient(165deg, #e4ebf5 0%, #cfdaea 100%);
   border: 2px solid transparent;
   box-shadow: 0 6px 16px -6px rgba(0, 10, 40, 0.5);
   transition:
@@ -1264,6 +1265,126 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Entrada sequencial da Hero, galeria em crossfade e seções em stagger */
+
+#bateriaView.is-entering .bateria-hero-content-in > * {
+  animation: bateriaContentIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(1),
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(4),
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(6) {
+  animation-delay: 0.4s;
+}
+
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(7) {
+  animation-delay: 0.5s;
+}
+
+@keyframes bateriaContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.bateria-photo-slide img {
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bateria-photo-slide:not(.is-active) img {
+  opacity: 0.25;
+  transform: scale(0.94);
+}
+
+.bateria-quickspec-item,
+.bateria-tech-card,
+.bateria-spec-groups > div,
+.bateria-editorial-grid .catalog-card {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.is-visible .bateria-quickspec-item,
+.is-visible .bateria-tech-card,
+.is-visible .bateria-spec-groups > div,
+.is-visible .bateria-editorial-grid .catalog-card {
+  opacity: 1;
+  transform: none;
+}
+
+.is-visible .bateria-quickspec-item:nth-child(2),
+.is-visible .bateria-tech-card:nth-child(2),
+.is-visible .bateria-spec-groups > div:nth-child(2),
+.is-visible .bateria-editorial-grid .catalog-card:nth-child(2) {
+  transition-delay: 0.08s;
+}
+
+.is-visible .bateria-quickspec-item:nth-child(3),
+.is-visible .bateria-tech-card:nth-child(3),
+.is-visible .bateria-spec-groups > div:nth-child(3),
+.is-visible .bateria-editorial-grid .catalog-card:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+.is-visible .bateria-quickspec-item:nth-child(4),
+.is-visible .bateria-spec-groups > div:nth-child(4) {
+  transition-delay: 0.24s;
+}
+
+.is-visible .bateria-quickspec-item:nth-child(5) {
+  transition-delay: 0.32s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .is-visible .bateria-tech-card:hover,
+  .is-visible .bateria-editorial-grid .catalog-card:hover {
+    transform: translateY(-4px);
+    transition-delay: 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bateriaView.is-entering .bateria-hero-content-in > * {
+    animation: none;
+  }
+
+  .bateria-quickspec-item,
+  .bateria-tech-card,
+  .bateria-spec-groups > div,
+  .bateria-editorial-grid .catalog-card,
+  .bateria-photo-slide:not(.is-active) img {
     opacity: 1;
     transform: none;
     transition: none;

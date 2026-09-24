@@ -1,38 +1,60 @@
+const STORE_URL = 'https://loja.jfaeletronicos.com';
+const MERCADO_LIVRE_URL =
+  'https://www.mercadolivre.com.br/loja/jfa-eletronicos?item_id=MLB3492722035&category_id=MLB5672&official_store_id=223044&client=recoview-selleritems&recos_listing=true';
+
+const ExternalIcon = () => (
+  <svg className="jfa-nav-external-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M9 7h8v8M17 7 7 17"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 /** Header fixo com navegação e o painel de busca global. */
 export default function Header() {
   return (
     <>
       <header className="jfa-header" id="jfaHeader">
-        <div className="jfa-nav-left">
-          <a href="#solucoes" data-header-scroll="solucoes">
-            PRODUTOS
-          </a>{' '}
+        <nav className="jfa-nav-left" aria-label="Navegação principal">
           <a href="#/baterias" id="navBaterias">
-            BATERIAS
+            Bateria
           </a>{' '}
           <a href="#/setores" id="navSetores">
-            SETORES
-          </a>{' '}
-          <a href="#frentes" data-header-goto="2">
-            JFA PARTS
-          </a>{' '}
-          <a href="#manuais" data-header-scroll="manuais">
-            MANUAIS
+            Setores
           </a>
-        </div>
+        </nav>
         <a className="jfa-logo jfa-logo-link" id="navHome" href="#home" aria-label="JFA -- voltar ao início">
           <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
           <span className="jfa-logo-word">JFA</span>
         </a>
-        <nav className="jfa-nav-right">
+        <nav className="jfa-nav-right" aria-label="Suporte e compra">
+          <a href="#manuais" data-header-scroll="manuais">
+            Manuais
+          </a>{' '}
           <a href="#representantes" data-header-scroll="representantes">
-            REPRESENTANTES
+            Representantes
           </a>{' '}
-          <a href="#home" data-header-scroll="home">
-            SOBRE NÓS
+          <a
+            href={STORE_URL}
+            className="jfa-nav-external"
+            data-header-external="loja-oficial"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Loja Oficial <ExternalIcon />
           </a>{' '}
-          <a href="#loja" data-header-goto-buy="loja-oficial">
-            LOJA OFICIAL
+          <a
+            href={MERCADO_LIVRE_URL}
+            className="jfa-nav-external"
+            data-header-external="mercado-livre"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Mercado Livre <ExternalIcon />
           </a>{' '}
           <button
             className="jfa-search-trigger"

@@ -2,7 +2,10 @@
 
 @media (max-width: 640px) {
   .jfa-nav-left {
-    display: none;
+    gap: 14px;
+  }
+  .jfa-nav-left a {
+    font-size: 10px;
   }
   .jfa-nav-right > *:not(:last-child) {
     display: none;

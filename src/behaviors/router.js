@@ -1,5 +1,4 @@
 import { trackEvent } from '../lib/analytics';
-import { CAMPAIGN_BANNERS } from '../data/campaigns';
 import { SECTOR_PAGES } from '../data/sectors';
 
 /**
@@ -100,7 +99,7 @@ function initRouter(ctx) {
         .map((g) => ({ title: g.title, rows: g.rows.filter(([, v]) => v) }))
         .filter((g) => g.rows.length);
     };
-    const BATTERY_CATALOG = [
+    const RAW_BATTERY_CATALOG = [
       // Removidos nesta rodada (pedido explícito, "estão repetidos e sem
       // foto"): 'elitio-12v-100ah' (E-Lítio 12V 100Ah -- sobreposto pelo
       // "Pro 12V 100Ah" logo abaixo, que tem foto real confirmada),
@@ -257,9 +256,17 @@ function initRouter(ctx) {
         relatedProducts: [],
       },
     ];
+    // Cada bateria existe uma única vez por id e por slug (a primeira ocorrência vence).
+    const BATTERY_CATALOG = RAW_BATTERY_CATALOG.filter((b, i, all) => {
+      const dupe = all.findIndex((x) => x.id === b.id || x.slug === b.slug) !== i;
+      if (dupe && import.meta.env.DEV) console.warn('[baterias] item duplicado ignorado:', b.id);
+      return !dupe;
+    });
     const BATTERY_SECTORS = Array.from(new Set(BATTERY_CATALOG.flatMap((b) => b.sectors)));
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
     const bateriasNav = root.getElementById('bateriasSectorNav');
+    const navBaterias = root.getElementById('navBaterias');
+    const navSetores = root.getElementById('navSetores');
     const bateriasGrid = root.getElementById('bateriasGrid');
     let bateriasBuilt = false;
     const buildBateriaCard = (b) => {
@@ -301,179 +308,186 @@ function initRouter(ctx) {
       cta.innerHTML =
         'Conhecer bateria <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
       a.appendChild(cta);
-      on(a, 'click', () => trackEvent('battery_card_click', { battery_id: b.id, sectors: b.sectors }));
+      on(a, 'click', (e) => {
+        trackEvent('battery_card_click', { battery_id: b.id, sectors: b.sectors });
+        const img = media.querySelector('img');
+        if (!document.startViewTransition || ctx.reduceMotion || !img || e.metaKey || e.ctrlKey || e.shiftKey)
+          return;
+        e.preventDefault();
+        img.style.viewTransitionName = 'bateria-product';
+        const transition = document.startViewTransition(() => {
+          img.style.viewTransitionName = '';
+          history.pushState(null, '', a.getAttribute('href'));
+          applyRoute();
+          bateriaHeroMedia.style.viewTransitionName = 'bateria-product';
+        });
+        transition.finished.finally(() => {
+          bateriaHeroMedia.style.viewTransitionName = '';
+        });
+      });
       return a;
     };
+    // Filtro por aplicação: saída com fade + leve redução, reorganização do grid
+    // animada (FLIP) e entrada com fade + translateY curto. Nunca recarrega.
+    const bateriasFilterIndicator = root.getElementById('bateriasFilterIndicator');
+    const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
+    let filterToken = 0;
+    const positionFilterIndicator = (btn) => {
+      if (!bateriasFilterIndicator || !btn) return;
+      bateriasFilterIndicator.style.width = btn.offsetWidth + 'px';
+      bateriasFilterIndicator.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
+    };
     const filterBaterias = (sector) => {
-      Array.from(bateriasGrid.children).forEach((card) => {
-        const show = sector === 'all' || (card.dataset.sectors || '').split(',').includes(sector);
-        if (show) {
-          card.hidden = false;
-          requestAnimationFrame(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-          });
-        } else {
-          card.style.opacity = '0';
-          card.style.transform = 'translateY(10px)';
-          setTimeout(() => {
-            if (card.style.opacity === '0') card.hidden = true;
-          }, 350);
-        }
-      });
-    };
-    const initBateriasBanner = () => {
-      const viewport = root.getElementById('bateriasBannerViewport');
-      const track = root.getElementById('bateriasBannerTrack');
-      const prevBtn = root.getElementById('bateriasBannerPrev');
-      const nextBtn = root.getElementById('bateriasBannerNext');
-      if (!viewport || !track || !CAMPAIGN_BANNERS.length) return;
-      const N = CAMPAIGN_BANNERS.length;
-      let idx = 0;
-      CAMPAIGN_BANNERS.forEach((banner, i) => {
-        const a = document.createElement('a');
-        a.className = 'campaign-slide';
-        a.href = banner.href;
-        a.draggable = false;
-        a.setAttribute('aria-label', banner.ariaLabel || banner.name || banner.alt);
-        if (/^https?:\/\//i.test(banner.href)) {
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-        }
-        const media = document.createElement('span');
-        media.className = 'campaign-slide-media';
-        const picture = document.createElement('picture');
-        let sourceEl = null;
-        if (banner.mobileImage) {
-          sourceEl = document.createElement('source');
-          sourceEl.media = '(max-width: 640px)';
-          picture.appendChild(sourceEl);
-        }
-        const img = document.createElement('img');
-        img.alt = banner.alt || '';
-        img.src = banner.desktopImage;
-        if (sourceEl) sourceEl.srcset = banner.mobileImage;
-        img.loading = i === 0 ? 'eager' : 'lazy';
-        img.fetchPriority = i === 0 ? 'high' : 'auto';
-        img.decoding = 'async';
-        img.draggable = false;
-        if (banner.focalPoint) img.style.objectPosition = banner.focalPoint;
-        picture.appendChild(img);
-        media.appendChild(picture);
-        a.appendChild(media);
-        on(a, 'click', (e) => {
-          if (i !== idx) e.preventDefault();
-          trackEvent('campaign_banner_click', {
-            campaign_id: banner.id,
-            campaign_name: banner.name || banner.id,
-            campaign_position: i + 1,
-            destination: banner.href,
-            source: 'baterias_banner',
-          });
+      const token = ++filterToken;
+      const cards = Array.from(bateriasGrid.querySelectorAll('.catalog-card'));
+      cards.forEach((c) => c.getAnimations().forEach((anim) => anim.cancel()));
+      const matches = (card) => sector === 'all' || (card.dataset.sectors || '').split(',').includes(sector);
+      if (ctx.reduceMotion || typeof bateriasGrid.animate !== 'function') {
+        cards.forEach((c) => {
+          c.hidden = !matches(c);
+          if (!c.hidden) c.classList.add('is-revealed');
         });
-        track.appendChild(a);
-      });
-      const slideEls = Array.from(track.children);
-      if (N < 2) {
-        if (prevBtn) prevBtn.hidden = true;
-        if (nextBtn) nextBtn.hidden = true;
+        return;
       }
-      const render = () => {
-        track.style.transform = 'translate3d(' + -idx * 100 + '%,0,0)';
-        slideEls.forEach((el, i) => {
-          el.classList.toggle('is-active', i === idx);
-          el.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
-          el.tabIndex = i === idx ? 0 : -1;
+      const leaving = cards.filter((c) => !c.hidden && !matches(c));
+      const entering = cards.filter((c) => c.hidden && matches(c));
+      const staying = cards.filter((c) => !c.hidden && matches(c));
+      const exits = leaving.map((c) =>
+        c.animate(
+          [
+            { opacity: 1, transform: 'scale(1)' },
+            { opacity: 0, transform: 'scale(0.96)' },
+          ],
+          { duration: 220, easing: 'ease', fill: 'forwards' },
+        ),
+      );
+      Promise.all(exits.map((anim) => anim.finished.catch(() => {}))).then(() => {
+        if (token !== filterToken) return;
+        const first = new Map(staying.map((c) => [c, c.getBoundingClientRect()]));
+        leaving.forEach((c) => {
+          c.hidden = true;
+          c.getAnimations().forEach((anim) => anim.cancel());
         });
-      };
-      const goTo = (i) => {
-        idx = (i + N) % N;
-        render();
-      };
-      const next = () => goTo(idx + 1);
-      const prev = () => goTo(idx - 1);
-      if (prevBtn) on(prevBtn, 'click', prev);
-      if (nextBtn) on(nextBtn, 'click', next);
-      render();
-      if (N > 1 && !ctx.reduceMotion) {
-        let timerId = null;
-        let hovering = false;
-        const AUTOPLAY_MS = 6e3;
-        const start = () => {
-          if (!timerId)
-            timerId = setInterval(() => {
-              if (!hovering) next();
-            }, AUTOPLAY_MS);
-        };
-        const stop = () => {
-          if (timerId) {
-            clearInterval(timerId);
-            timerId = null;
-          }
-        };
-        on(viewport, 'pointerenter', () => {
-          hovering = true;
+        entering.forEach((c) => {
+          c.hidden = false;
+          c.classList.add('is-revealed');
         });
-        on(viewport, 'pointerleave', () => {
-          hovering = false;
-        });
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) start();
-              else stop();
+        staying.forEach((c) => {
+          const from = first.get(c);
+          const to = c.getBoundingClientRect();
+          const dx = from.left - to.left;
+          const dy = from.top - to.top;
+          if (dx || dy)
+            c.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], {
+              duration: 460,
+              easing: EASE_OUT,
             });
-          },
-          { threshold: 0.2 },
+        });
+        entering.forEach((c, i) =>
+          c.animate(
+            [
+              { opacity: 0, transform: 'translateY(14px)' },
+              { opacity: 1, transform: 'none' },
+            ],
+            { duration: 460, delay: 80 + i * 60, easing: EASE_OUT, fill: 'backwards' },
+          ),
         );
-        io.observe(viewport);
-      }
-      let startX = 0,
-        dragging = false;
-      on(track, 'pointerdown', (e) => {
-        dragging = true;
-        startX = e.clientX;
-      });
-      on(track, 'pointerup', (e) => {
-        if (!dragging) return;
-        dragging = false;
-        const dx = e.clientX - startX;
-        if (Math.abs(dx) > 40) {
-          if (dx < 0) next();
-          else prev();
-        }
       });
     };
+    // Cards do catálogo entram uma única vez ao aparecer na tela, em stagger curto.
+    let catalogRevealObs = null;
+    if ('IntersectionObserver' in window) {
+      catalogRevealObs = new IntersectionObserver(
+        (entries) => {
+          const visible = entries.filter((en) => en.isIntersecting);
+          visible.forEach((en, i) => {
+            const card = en.target;
+            card.style.transitionDelay = 120 + i * 70 + 'ms';
+            card.classList.add('is-revealed');
+            setTimeout(() => {
+              card.style.transitionDelay = '';
+            }, 1200);
+            catalogRevealObs.unobserve(card);
+          });
+        },
+        { threshold: 0.12 },
+      );
+      ctx.cleanups.push(() => catalogRevealObs.disconnect());
+    }
+    // Parallax sutil da foto no card (só mouse): escreve variáveis CSS, 1x por frame.
+    let cardParallaxRaf = null;
+    let cardParallaxPending = null;
+    const flushCardParallax = () => {
+      cardParallaxRaf = null;
+      if (!cardParallaxPending) return;
+      const { card, nx, ny } = cardParallaxPending;
+      cardParallaxPending = null;
+      card.style.setProperty('--card-nx', nx.toFixed(3));
+      card.style.setProperty('--card-ny', ny.toFixed(3));
+    };
+    on(bateriasGrid, 'pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || ctx.reduceMotion) return;
+      const card = e.target.closest('.catalog-card');
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      cardParallaxPending = {
+        card,
+        nx: ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        ny: ((e.clientY - rect.top) / rect.height) * 2 - 1,
+      };
+      if (!cardParallaxRaf) cardParallaxRaf = requestAnimationFrame(flushCardParallax);
+    });
+    on(bateriasGrid, 'pointerout', (e) => {
+      const card = e.target.closest('.catalog-card');
+      if (!card || card.contains(e.relatedTarget)) return;
+      card.style.removeProperty('--card-nx');
+      card.style.removeProperty('--card-ny');
+    });
+    ctx.cleanups.push(() => {
+      if (cardParallaxRaf) cancelAnimationFrame(cardParallaxRaf);
+    });
     const buildBateriasView = () => {
       if (bateriasBuilt) return;
       bateriasBuilt = true;
-      initBateriasBanner();
-      const allPill = document.createElement('button');
-      allPill.type = 'button';
-      allPill.className = 'products-category-pill is-active';
-      allPill.dataset.sector = 'all';
-      allPill.setAttribute('aria-pressed', 'true');
-      allPill.textContent = 'Todas';
-      bateriasNav.appendChild(allPill);
-      BATTERY_SECTORS.forEach((s) => {
-        const pill = document.createElement('button');
-        pill.type = 'button';
-        pill.className = 'products-category-pill';
-        pill.dataset.sector = s;
-        pill.setAttribute('aria-pressed', 'false');
-        pill.textContent = APP_LABELS[s] || s;
-        bateriasNav.appendChild(pill);
-      });
+      const addFilterTab = (sector, label, active) => {
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = 'catalog-filter-tab' + (active ? ' is-active' : '');
+        tab.dataset.sector = sector;
+        tab.setAttribute('aria-pressed', active ? 'true' : 'false');
+        tab.textContent = label;
+        bateriasNav.appendChild(tab);
+      };
+      addFilterTab('all', 'Todas', true);
+      BATTERY_SECTORS.forEach((s) => addFilterTab(s, APP_LABELS[s] || s, false));
       on(bateriasNav, 'click', (e) => {
-        const pill = e.target.closest('.products-category-pill');
-        if (!pill) return;
-        Array.from(bateriasNav.children).forEach((p) => {
-          p.classList.toggle('is-active', p === pill);
-          p.setAttribute('aria-pressed', p === pill ? 'true' : 'false');
+        const tab = e.target.closest('.catalog-filter-tab');
+        if (!tab || tab.classList.contains('is-active')) return;
+        Array.from(bateriasNav.querySelectorAll('.catalog-filter-tab')).forEach((t) => {
+          t.classList.toggle('is-active', t === tab);
+          t.setAttribute('aria-pressed', t === tab ? 'true' : 'false');
         });
-        filterBaterias(pill.dataset.sector);
+        positionFilterIndicator(tab);
+        filterBaterias(tab.dataset.sector);
       });
-      BATTERY_CATALOG.forEach((b) => bateriasGrid.appendChild(buildBateriaCard(b)));
+      on(window, 'resize', () =>
+        positionFilterIndicator(bateriasNav.querySelector('.catalog-filter-tab.is-active')),
+      );
+      BATTERY_CATALOG.forEach((b) => {
+        const card = buildBateriaCard(b);
+        bateriasGrid.appendChild(card);
+        if (catalogRevealObs) catalogRevealObs.observe(card);
+        else card.classList.add('is-revealed');
+      });
+    };
+    // Entrada da página /baterias: título, filtro e grid em sequência (a cada abertura).
+    const playBateriasEntrance = () => {
+      bateriasView.classList.remove('is-entering');
+      void bateriasView.offsetWidth;
+      bateriasView.classList.add('is-entering');
+      requestAnimationFrame(() =>
+        positionFilterIndicator(bateriasNav.querySelector('.catalog-filter-tab.is-active')),
+      );
     };
     const bateriaHeroMedia = root.getElementById('bateriaHeroMedia');
     const bateriaGalleryThumbs = root.getElementById('bateriaGalleryThumbs');
@@ -591,6 +605,7 @@ function initRouter(ctx) {
       };
       const render = () => {
         track.style.transform = 'translate3d(' + -idx * 100 + '%,0,0)';
+        Array.from(track.children).forEach((slide, i) => slide.classList.toggle('is-active', i === idx));
         dots.forEach((d, i) => {
           d.classList.toggle('is-active', i === idx);
           d.setAttribute('aria-selected', i === idx ? 'true' : 'false');
@@ -960,7 +975,10 @@ function initRouter(ctx) {
         location.hash = '#/baterias';
         return;
       }
-      // 01 · Hero
+      // 01 · Hero (entrada sequencial a cada abertura)
+      bateriaView.classList.remove('is-entering');
+      void bateriaView.offsetWidth;
+      bateriaView.classList.add('is-entering');
       if (bateriaCarouselCleanup) {
         bateriaCarouselCleanup();
         bateriaCarouselCleanup = null;
@@ -1173,6 +1191,9 @@ function initRouter(ctx) {
       setoresView.hidden = name !== 'setores';
       setorView.hidden = name !== 'setor';
       pageBody.classList.toggle('is-page-view', name !== 'home');
+      if (navBaterias) navBaterias.classList.toggle('is-active', name === 'baterias' || name === 'bateria');
+      if (navSetores) navSetores.classList.toggle('is-active', name === 'setores' || name === 'setor');
+      if (name === 'baterias') playBateriasEntrance();
       if (name !== 'home') window.scrollTo(0, 0);
     };
     const applyRoute = () => {
