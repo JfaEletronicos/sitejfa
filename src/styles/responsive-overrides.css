@@ -1,0 +1,152 @@
+/* Ajustes responsivos do header e de movimento reduzido da Hero */
+
+@media (max-width: 640px) {
+  .jfa-nav-left {
+    display: none;
+  }
+  .jfa-nav-right > *:not(:last-child) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .jfa-header,
+  .jfa-header.is-scrolled {
+    backdrop-filter: blur(6px) saturate(120%);
+    -webkit-backdrop-filter: blur(6px) saturate(120%);
+  }
+  .hero-cta {
+    backdrop-filter: blur(8px) saturate(130%);
+    -webkit-backdrop-filter: blur(8px) saturate(130%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-pin-space {
+    height: auto !important;
+  }
+  .hero-shell {
+    position: relative !important;
+  }
+  .jfa-page * {
+    transition: opacity 0.35s ease !important;
+    animation: none !important;
+  }
+  .hero-inner,
+  .hero-title .word,
+  .hero-sub,
+  .hero-cta-row,
+  .products-title span,
+  .products-sub,
+  .p-card {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  .fronts-eyebrow,
+  .fronts-title,
+  .fronts-sub,
+  .reps-title,
+  .reps-sub {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  .bg-shape,
+  .scene-side {
+    opacity: 1 !important;
+  }
+  .scene-side {
+    opacity: 0.5 !important;
+  }
+  .hero-vignette {
+    opacity: 0 !important;
+  }
+  .fronts-stage {
+    height: auto !important;
+    padding: 0 clamp(20px, 4vw, 64px);
+    overflow: visible !important;
+  }
+  .fronts-track {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(48px, 7vw, 84px);
+    touch-action: auto !important;
+    cursor: default !important;
+    overflow: visible !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+  .front-panel {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition: none !important;
+  }
+  .front-info,
+  .front-desc,
+  .front-cta {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .front-desc,
+  .front-cta {
+    display: block !important;
+  }
+  .fronts-arrow {
+    display: none !important;
+  }
+  .reps-state {
+    animation: none !important;
+  }
+  .dark-experience-texture {
+    opacity: 0.12 !important;
+  }
+  .fronts-top,
+  .reps-top,
+  .reps-search-wrap,
+  .reps-stage {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  .p-card::before {
+    animation: none !important;
+  }
+  .manuals-eyebrow,
+  .manuals-title,
+  .manuals-sub,
+  .manuals-search-wrap,
+  .manuals-tabs,
+  .manuals-tab-panel,
+  .manuals-result {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  .manuals-result-row:hover,
+  .manuals-result.is-active .manuals-result-row {
+    transform: none !important;
+  }
+  .jfa-footer-brand,
+  .jfa-footer-col,
+  .jfa-footer-rule,
+  .jfa-footer-bottom {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .tech-marquee,
+  .tech-marquee-track {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,215 @@
+/* Hero: vídeo de fundo, headline animada e CTAs */
+
+.hero {
+  position: relative;
+  z-index: 2;
+  padding: clamp(14px, 2.2vw, 32px) clamp(18px, 3.6vw, 56px) clamp(24px, 3.6vw, 52px);
+}
+
+@media (min-width: 900px) and (min-height: 360px) {
+  .hero-shell {
+    min-height: calc(86svh + clamp(26px, 4vw, 64px));
+    display: flex;
+    flex-direction: column;
+  }
+  .hero {
+    flex: 1 1 auto;
+    min-height: calc(86svh - clamp(38px, 6vw, 52px));
+    display: flex;
+    align-items: flex-end;
+  }
+  .hero-inner {
+    width: 100%;
+  }
+  .hero-tail {
+    flex: 0 0 auto;
+  }
+}
+
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+  will-change: transform, opacity;
+}
+
+.hero-copy {
+  max-width: 640px;
+  text-align: left;
+}
+
+.hero-title {
+  margin: -0.25em 0 clamp(12px, 1.6vw, 20px);
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(28px, 5vw, 40px);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+@media (min-width: 1200px) {
+  .hero-title {
+    font-size: clamp(28px, 5vw, 33px);
+  }
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--jfa-blue, #0068ff);
+}
+
+.hero-title .line {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.25em;
+}
+
+.hero-title .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 25px, 0);
+}
+
+.hero-sub {
+  margin: 0;
+  max-width: 620px;
+  font-weight: 500;
+  font-size: var(--sub-size);
+  line-height: var(--sub-lh);
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  text-wrap: pretty;
+}
+
+.hero-sub strong {
+  font-weight: 800;
+}
+
+.hero-sub em {
+  font-style: italic;
+}
+
+.hero-sub-break {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .hero-sub-break {
+    display: inline;
+  }
+}
+
+.hero-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: clamp(12px, 1.4vw, 18px);
+  margin: clamp(16px, 2.2vw, 26px) 0 0;
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+}
+
+.hero-cta {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85em 1.9em;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: clamp(11px, 0.85vw, 13px);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(120, 170, 255, 0.32);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow:
+    0 8px 24px rgba(0, 10, 50, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.4s ease,
+    transform 0.3s ease;
+}
+
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  inset: -40% -20%;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 65%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.75s cubic-bezier(0.2, 0.7, 0.3, 1);
+  pointer-events: none;
+}
+
+.hero-cta:hover,
+.hero-cta:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 10px 30px rgba(0, 120, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0 28px rgba(130, 195, 255, 0.5);
+  transform: translate3d(0, -2px, 0);
+}
+
+.hero-cta:hover::before,
+.hero-cta:focus-visible::before {
+  transform: translateX(130%);
+}
+
+.hero-cta-tertiary {
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: rgba(230, 238, 255, 0.78);
+  gap: 0.4em;
+}
+
+.hero-cta-tertiary::before {
+  content: none;
+}
+
+.hero-cta-tertiary svg {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.25s ease;
+}
+
+.hero-cta-tertiary:hover,
+.hero-cta-tertiary:focus-visible {
+  background: none;
+  border: none;
+  box-shadow: none;
+  transform: none;
+  color: #fff;
+}
+
+.hero-cta-tertiary:hover svg,
+.hero-cta-tertiary:focus-visible svg {
+  transform: translateX(4px);
+}
+
+.bg-shape {
+  opacity: 0;
+}

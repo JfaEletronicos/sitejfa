@@ -1,0 +1,13 @@
+/* Manuais: painel de aba e prompt de categoria */
+
+.manuals-tab-panel[hidden] {
+  display: none;
+}
+
+.manuals-tab-prompt {
+  margin: clamp(18px, 2.4vw, 26px) 0 0;
+  text-align: center;
+  font-weight: 500;
+  font-size: clamp(13px, 0.95vw, 15px);
+  color: rgba(230, 238, 255, 0.45);
+}

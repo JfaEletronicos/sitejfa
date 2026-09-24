@@ -1,0 +1,121 @@
+/* Acesso rápido ("O que você procura?") */
+
+.quick-access {
+  position: relative;
+  z-index: 2;
+  background: #030c22;
+  padding: clamp(24px, 3vw, 36px) clamp(18px, 3.6vw, 56px);
+}
+
+.quick-access-inner {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+}
+
+.quick-access-title {
+  margin: 0 0 clamp(14px, 1.8vw, 18px);
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(11px, 0.85vw, 13px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(230, 238, 255, 0.5);
+}
+
+.quick-access-grid {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(120, 170, 255, 0.14);
+  border: 1px solid rgba(120, 170, 255, 0.18);
+}
+
+.quick-access-item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.2vw, 14px);
+  padding: clamp(14px, 1.6vw, 20px) clamp(14px, 1.6vw, 18px);
+  background: rgba(10, 22, 48, 0.92);
+  transition: background 0.2s ease;
+}
+
+.quick-access-item:hover,
+.quick-access-item:focus-visible {
+  background: rgba(0, 104, 255, 0.16);
+}
+
+.quick-access-icon {
+  flex: none;
+  width: clamp(32px, 2.6vw, 38px);
+  height: clamp(32px, 2.6vw, 38px);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 104, 255, 0.14);
+  border: 1px solid rgba(0, 104, 255, 0.3);
+  color: #4aa0ff;
+}
+
+.quick-access-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.quick-access-whatsapp .quick-access-icon {
+  background: rgba(37, 211, 102, 0.14);
+  border-color: rgba(37, 211, 102, 0.35);
+  color: #3ddc7a;
+}
+
+.quick-access-text {
+  min-width: 0;
+}
+
+.quick-access-item-title {
+  display: block;
+  font-weight: 700;
+  font-size: clamp(13px, 1vw, 15px);
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quick-access-item-sub {
+  display: block;
+  margin-top: 0.2em;
+  font-weight: 500;
+  font-size: clamp(11px, 0.82vw, 12.5px);
+  color: rgba(230, 238, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .quick-access-grid {
+    flex-wrap: wrap;
+    border-radius: 14px;
+  }
+  .quick-access-item {
+    flex: 1 1 calc(50% - 1px);
+  }
+  .quick-access-item-sub {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-access-item {
+    padding: 12px 12px;
+    gap: 10px;
+  }
+  .quick-access-item-sub {
+    display: none;
+  }
+}

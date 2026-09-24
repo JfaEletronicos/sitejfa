@@ -1,0 +1,130 @@
+/* Fundos/texturas de seção, âncoras e fechamento de Produtos */
+
+.jfa-anchor {
+  display: block;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.products-section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(47, 125, 255, 0.16), rgba(47, 125, 255, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(100, 175, 255, 0.12), rgba(100, 175, 255, 0) 62%),
+    radial-gradient(50% 40% at 50% 72%, rgba(22, 95, 120, 0.13), rgba(22, 95, 120, 0) 62%),
+    linear-gradient(180deg, #030c22 0%, #04102a 22%, #051230 46%, #04102a 70%, #030c22 100%);
+}
+
+.products-section-texture,
+.buy-section-texture,
+.offer-section-texture,
+.parts-promo-texture {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.1;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.045) 0px,
+      rgba(255, 255, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0) 1px,
+      rgba(255, 255, 255, 0) 46px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.045) 0px,
+      rgba(255, 255, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0) 1px,
+      rgba(255, 255, 255, 0) 46px
+    );
+  background-size: 46px 46px;
+}
+
+.buy-section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(47, 125, 255, 0.16), rgba(47, 125, 255, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(100, 175, 255, 0.12), rgba(100, 175, 255, 0) 62%),
+    radial-gradient(50% 40% at 50% 72%, rgba(22, 95, 120, 0.13), rgba(22, 95, 120, 0) 62%),
+    linear-gradient(180deg, #030c22 0%, #04102a 22%, #051230 46%, #04102a 70%, #030c22 100%);
+}
+
+.offer-section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(47, 125, 255, 0.16), rgba(47, 125, 255, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(100, 175, 255, 0.12), rgba(100, 175, 255, 0) 62%),
+    radial-gradient(50% 40% at 50% 72%, rgba(22, 95, 120, 0.13), rgba(22, 95, 120, 0) 62%),
+    linear-gradient(180deg, #030c22 0%, #04102a 22%, #051230 46%, #04102a 70%, #030c22 100%);
+}
+
+.parts-promo-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(47, 125, 255, 0.16), rgba(47, 125, 255, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(100, 175, 255, 0.12), rgba(100, 175, 255, 0) 62%),
+    radial-gradient(50% 40% at 50% 72%, rgba(22, 95, 120, 0.13), rgba(22, 95, 120, 0) 62%),
+    linear-gradient(180deg, #030c22 0%, #04102a 22%, #051230 46%, #04102a 70%, #030c22 100%);
+}
+
+.products-endcap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  margin: clamp(18px, 2.4vw, 28px) auto 0;
+  padding: 0 clamp(18px, 3.6vw, 56px);
+  text-align: center;
+}
+
+.products-endcap-text {
+  font-weight: 500;
+  font-size: clamp(13px, 0.95vw, 15px);
+  color: rgba(230, 238, 255, 0.62);
+}
+
+.products-endcap-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-weight: 700;
+  font-size: clamp(13px, 0.95vw, 15px);
+  color: var(--jfa-blue, #0068ff);
+}
+
+.products-endcap-link svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s ease;
+}
+
+.products-endcap-link:hover svg,
+.products-endcap-link:focus-visible svg {
+  transform: translateX(4px);
+}
+
+.buy-sub {
+  margin: 0.6em 0 0;
+  font-weight: 500;
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.55;
+  color: rgba(230, 238, 255, 0.6);
+}
