@@ -404,7 +404,7 @@ function initRouter(ctx) {
     const bateriaRelatedGrid = root.getElementById('bateriaRelatedGrid');
     const bateriaManualsSection = root.getElementById('bateriaManualsSection');
     const bateriaDocLinks = root.getElementById('bateriaDocLinks');
-    const bateriaBuyBox = root.getElementById('bateriaBuyBox');
+    const bateriaHeroActions = root.getElementById('bateriaHeroActions');
     const bateriaSupportCta = root.getElementById('bateriaSupportCta');
     const bateriaOthersGrid = root.getElementById('bateriaOthersGrid');
     const bateriaBreadcrumbCurrent = root.getElementById('bateriaBreadcrumbCurrent');
@@ -588,6 +588,8 @@ function initRouter(ctx) {
         bateriaHeroSpecs.appendChild(chip);
       });
       bateriaAppNav.innerHTML = '';
+      // Com uma única aplicação a navegação por abas não tem o que alternar.
+      bateriaAppNav.hidden = b.sectors.length < 2;
       b.sectors.forEach((s, i) => {
         const pill = document.createElement('button');
         pill.type = 'button';
@@ -635,35 +637,10 @@ function initRouter(ctx) {
         on(link, 'click', () => trackEvent('battery_manual_click', { battery_id: b.id }));
         bateriaDocLinks.appendChild(link);
       }
+      // CTA de compra fica só na Hero (o bloco "Onde comprar" foi removido).
       const commerce = b.commerce || {};
-      bateriaBuyBox.innerHTML = '';
-      if (commerce.availableOnline) {
-        const p = document.createElement('p');
-        p.textContent = 'Dispon\xEDvel na Loja Oficial JFA.';
-        bateriaBuyBox.appendChild(p);
-        const priceRow = document.createElement('div');
-        priceRow.className = 'bateria-buy-price-row';
-        if (commerce.oldPrice) {
-          const old = document.createElement('span');
-          old.className = 'bateria-buy-price-old';
-          old.textContent = commerce.oldPrice;
-          priceRow.appendChild(old);
-        }
-        if (commerce.price) {
-          const price = document.createElement('span');
-          price.className = 'bateria-buy-price';
-          price.textContent = commerce.price;
-          priceRow.appendChild(price);
-        }
-        if (commerce.pixPrice) {
-          const pix = document.createElement('span');
-          pix.className = 'bateria-buy-price-pix';
-          pix.textContent = commerce.pixPrice + ' no Pix';
-          priceRow.appendChild(pix);
-        }
-        if (priceRow.children.length) bateriaBuyBox.appendChild(priceRow);
-        const actions = document.createElement('div');
-        actions.className = 'bateria-buy-actions';
+      bateriaHeroActions.innerHTML = '';
+      if (commerce.availableOnline && (commerce.storeUrl || commerce.mercadoLivreUrl)) {
         if (commerce.storeUrl) {
           const a1 = document.createElement('a');
           a1.className = 'hero-cta';
@@ -671,7 +648,7 @@ function initRouter(ctx) {
           a1.target = '_blank';
           a1.rel = 'noopener noreferrer';
           a1.textContent = 'Comprar agora';
-          actions.appendChild(a1);
+          bateriaHeroActions.appendChild(a1);
         }
         if (commerce.mercadoLivreUrl) {
           const a2 = document.createElement('a');
@@ -680,19 +657,15 @@ function initRouter(ctx) {
           a2.target = '_blank';
           a2.rel = 'noopener noreferrer';
           a2.textContent = 'Comprar no Mercado Livre';
-          actions.appendChild(a2);
+          bateriaHeroActions.appendChild(a2);
         }
-        bateriaBuyBox.appendChild(actions);
       } else {
-        const p = document.createElement('p');
-        p.textContent = 'Consulte disponibilidade com um representante JFA.';
-        bateriaBuyBox.appendChild(p);
         const rep = document.createElement('a');
         rep.className = 'hero-cta';
         rep.href = '#representantes';
         rep.setAttribute('data-header-scroll', 'representantes');
-        rep.textContent = 'Encontrar representante';
-        bateriaBuyBox.appendChild(rep);
+        rep.textContent = 'Ver disponibilidade';
+        bateriaHeroActions.appendChild(rep);
       }
       bateriaSupportCta.href =
         'https://api.whatsapp.com/send?phone=' +

@@ -26,11 +26,7 @@ export default function BatteryDetailPage() {
             <p className="bateria-context-text" id="bateriaContextText" />
             <p className="bateria-desc" id="bateriaSub" />
             <div className="bateria-hero-specs" id="bateriaHeroSpecs" />
-            <div className="bateria-hero-actions">
-              <a href="#bateria-onde-comprar" className="hero-cta" data-page-anchor="bateria-onde-comprar">
-                Ver disponibilidade
-              </a>
-            </div>
+            <div className="bateria-hero-actions" id="bateriaHeroActions" />
           </div>
         </div>
       </section>
@@ -48,10 +44,6 @@ export default function BatteryDetailPage() {
           <div className="bateria-summary-row" id="bateriaManualsSection" hidden>
             <span className="bateria-summary-label">Manuais</span>
             <div className="bateria-doc-links" id="bateriaDocLinks" />
-          </div>
-          <div className="bateria-summary-row" id="bateria-onde-comprar">
-            <span className="bateria-summary-label">Onde comprar</span>
-            <div className="bateria-buy-box" id="bateriaBuyBox" />
           </div>
           <p className="bateria-summary-support">
             {' '}
@@ -71,7 +63,7 @@ export default function BatteryDetailPage() {
           </p>
         </div>
       </section>
-      <section className="bateria-section" id="bateriaRelatedSection" hidden>
+      <section className="bateria-section bateria-options-section" id="bateriaRelatedSection" hidden>
         <div className="bateria-section-inner">
           <div className="bateria-section-head">
             <h2 className="bateria-section-title">Produtos relacionados</h2>
@@ -79,7 +71,7 @@ export default function BatteryDetailPage() {
           <div className="catalog-grid" id="bateriaRelatedGrid" />
         </div>
       </section>
-      <section className="bateria-section bateria-others-section">
+      <section className="bateria-section bateria-others-section bateria-options-section">
         <div className="bateria-section-inner">
           <div className="bateria-section-head">
             <h2 className="bateria-section-title">Outras baterias JFA</h2>
