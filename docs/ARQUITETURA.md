@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-O site é uma página única. A **marcação** é declarada em componentes React (`src/components`) e a **interatividade** fica em módulos de comportamento (`src/behaviors`), ligados uma única vez depois da montagem:
+A Home e as páginas internas ficam num único documento; o roteador por hash (`behaviors/router.js`) mostra/esconde as views `#homeView`, `#bateriasView`, `#bateriaView`, `#setoresView` e `#setorView`. A **marcação** é declarada em componentes React (`src/components`) e a **interatividade** fica em módulos de comportamento (`src/behaviors`), ligados uma única vez depois da montagem:
 
 ```jsx
 // src/App.jsx
@@ -42,7 +42,8 @@ O `<StrictMode>` fica desligado de propósito, porque os comportamentos devem se
 | `BuySection` | `buySection.js` | `buy.css` |
 | `PartsPromo` | `partsPromo.js` | `parts-promo.css` |
 | `DarkExperience` (Manuais + Representantes) | `manuals.js`, `representatives.js`, `darkExperience.js` | `manuals.css`, `manuals-panel.css`, `representatives.css`, `ambient.css` |
-| `Offer` | `offer.js` | `offer.css` |
+| `CampaignCarousel` | `campaignCarousel.js` | `campaign.css` |
+| `pages/*` | `router.js` | `pages.css`, `battery-detail.css` |
 | `Footer` | `footer.js` | `footer.css` |
 | (canvases de várias seções) | `energyField.js` | `ambient.css` |
 
@@ -52,4 +53,6 @@ O CSS original foi dividido em arquivos por seção **sem reordenar regras**. `s
 
 ## Fidelidade visual
 
-A migração foi validada com screenshots de página inteira (Playwright/Chromium) do original e da versão React, nas larguras 390, 768, 900, 1200, 1440 e 1600px. As alturas das páginas são iguais e as únicas diferenças de pixel são o relógio da contagem regressiva e variações sub-pixel na decodificação de imagens.
+A migração foi validada com screenshots de página inteira (Playwright/Chromium) do original e da versão React, nas larguras 390, 768, 900, 1200, 1440 e 1600px. As alturas das páginas são iguais e as únicas diferenças restantes são variações sub-pixel no desenho das imagens.
+
+O carregamento das imagens dos banners pelo `fetch` + base64 (`resolveCampaignImageSrc`) servia só para o sandbox do editor de design antigo e foi removido; em produção as imagens são carregadas direto de `public/images/`.

@@ -1,6 +1,6 @@
 # JFA Eletrônicos — Site institucional
 
-Site institucional da **JFA Eletrônicos**, migrado de uma página HTML única (≈9.400 linhas de HTML + CSS + JS inline) para **React 18 + Vite**, mantendo o visual e o comportamento **idênticos** ao original.
+Site institucional da **JFA Eletrônicos**, migrado de uma página HTML única (≈9.400 linhas de HTML, CSS e JS inline) para **React 18 + Vite**, mantendo o visual e o comportamento **idênticos** ao original.
 
 ## Stack
 
@@ -36,9 +36,12 @@ public/
 src/
   main.jsx                 # ponto de entrada
   App.jsx                  # monta as seções e liga os comportamentos
-  components/              # uma seção da página por componente (JSX)
+  components/
+    layout/                # Header e Footer (comuns a todas as páginas)
+    home/                  # seções da Home
+    pages/                 # páginas internas (Baterias, detalhe, Setores, detalhe)
   behaviors/               # interatividade de cada seção (um módulo por seção)
-  data/products.js         # catálogo de produtos/manuais
+  data/                    # catálogo de produtos/manuais, campanhas e setores
   lib/                     # busca (search.js) e analytics (analytics.js)
   styles/                  # CSS por seção + index.css (ordem de import)
 docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
@@ -56,7 +59,18 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 - **JFA Parts**: carrossel automático de fotos.
 - **Manuais**: busca por nome/modelo/código, abas por linha e categoria, e download dos PDFs.
 - **Representantes**: mapa interativo do Brasil, busca por estado, painel de contato e vendas internacionais.
-- **Oferta em destaque**: preço, contagem regressiva e parallax da imagem.
+- **Carrossel de campanhas**: banners com loop infinito, arraste, setas, paginação e autoplay (desktop e mobile).
+
+### Páginas internas (roteamento por hash)
+
+| URL | Página |
+| --- | --- |
+| `#/baterias` | Banners e catálogo de baterias e-Lítio, com filtro por setor |
+| `#/baterias/:slug` | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp |
+| `#/setores` | Setores atendidos (Automotivo, Motorhome, Náutica, Telecom, Moov, Parts) |
+| `#/setores/:slug` | Página de um setor, com CTA de WhatsApp |
+
+Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
 - **Rodapé**: links internos e "voltar ao topo".
 
 Acessibilidade: todas as animações respeitam `prefers-reduced-motion`, inclusive se a preferência mudar com a página aberta.
@@ -65,7 +79,9 @@ Analytics: os eventos de conversão passam por `src/lib/analytics.js`, que envia
 ## Tarefas comuns
 
 - **Adicionar/editar um produto ou manual**: `src/data/products.js`.
-- **Alterar o prazo da oferta**: `OFFER_END_AT` em `src/behaviors/offer.js`.
+- **Campanhas (banners)**: `src/data/campaigns.js`, com imagens em `public/images/`.
+- **Setores**: `src/data/sectors.js`.
+- **Baterias (páginas internas)**: dados no topo de `src/behaviors/router.js`.
 - **Trocar imagens**: substitua o arquivo em `public/images/`, mantendo o mesmo nome.
 - **Representantes**: dados em `src/behaviors/representatives.js`.
 
@@ -73,4 +89,9 @@ Analytics: os eventos de conversão passam por `src/lib/analytics.js`, que envia
 
 1. Importe o repositório em [vercel.com/new](https://vercel.com/new).
 2. A Vercel detecta Vite automaticamente (`vercel.json` já define `npm run build` e `dist/`).
-3. Clique em **Deploy**. Cada push na branch principal gera um novo deploy.
+3. Clique em **Deploy**. A branch `master` vira produção e a `dev` ganha uma URL de preview própria para testes.
+
+## Branches
+
+- `dev`: integração e testes (preview na Vercel).
+- `master`: produção.

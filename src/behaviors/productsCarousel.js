@@ -2,7 +2,7 @@
  * Soluções JFA: filtro por linha, entrada dos cards e carrossel infinito com arraste, inércia e autoplay.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initProductsCarousel(ctx) {
+function initProductsCarousel(ctx) {
   const { root, on, cleanups } = ctx;
   const productsHead = root.getElementById('productsHead');
   const productsSection = root.getElementById('productsSection');
@@ -289,3 +289,4 @@ export function initProductsCarousel(ctx) {
     autoplayId = requestAnimationFrame(autoplayTick);
   }
 }
+export { initProductsCarousel };

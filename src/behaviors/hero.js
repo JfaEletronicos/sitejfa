@@ -159,7 +159,6 @@ export function initHero(ctx) {
     on(window, 'scroll', onHeroScroll, { passive: true });
     onHeroScroll();
   }
-
   ctx.reduceMotionListeners.push((reduce) => {
     if (reduce) {
       pauseHeroBgVideo();

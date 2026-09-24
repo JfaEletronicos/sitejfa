@@ -1,5 +1,4 @@
 import { searchCatalog } from '../lib/search';
-
 import { trackEvent } from '../lib/analytics';
 import { PRODUCTS } from '../data/products';
 
@@ -7,7 +6,7 @@ import { PRODUCTS } from '../data/products';
  * Manuais: busca, abas por linha/categoria e lista de downloads.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initManuals(ctx) {
+function initManuals(ctx) {
   const { root, on, cleanups } = ctx;
   (() => {
     const manualsSection = root.getElementById('manualsSection');
@@ -434,3 +433,4 @@ export function initManuals(ctx) {
     }
   })();
 }
+export { initManuals };

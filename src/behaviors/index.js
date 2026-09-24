@@ -13,10 +13,11 @@ import { initManuals } from './manuals';
 import { initDarkExperience } from './darkExperience';
 import { initEnergyField } from './energyField';
 import { initFooter } from './footer';
-import { initOffer } from './offer';
+import { initCampaignCarousel } from './campaignCarousel';
+import { initRouter } from './router';
 
 /**
- * Liga todos os comportamentos interativos da página (animações, carrosséis,
+ * Liga todos os comportamentos interativos do site (animações, carrosséis, roteador,
  * buscas, mapa etc.) sobre o DOM já renderizado pelo React.
  *
  * A ordem importa: alguns módulos expõem funções no contexto usadas por outros
@@ -42,7 +43,8 @@ export function initPageBehaviors() {
   initDarkExperience(ctx);
   initEnergyField(ctx);
   initFooter(ctx);
-  initOffer(ctx);
+  initCampaignCarousel(ctx);
+  initRouter(ctx);
 
   return () => {
     ctx.cleanups.forEach((fn) => {

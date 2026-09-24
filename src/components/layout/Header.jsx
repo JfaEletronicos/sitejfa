@@ -7,6 +7,12 @@ export default function Header() {
           <a href="#solucoes" data-header-scroll="solucoes">
             PRODUTOS
           </a>{' '}
+          <a href="#/baterias" id="navBaterias">
+            BATERIAS
+          </a>{' '}
+          <a href="#/setores" id="navSetores">
+            SETORES
+          </a>{' '}
           <a href="#frentes" data-header-goto="2">
             JFA PARTS
           </a>{' '}

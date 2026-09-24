@@ -2,7 +2,7 @@
  * Ambiente escuro compartilhado entre Manuais e Representantes.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initDarkExperience(ctx) {
+function initDarkExperience(ctx) {
   const { root, cleanups } = ctx;
   (() => {
     const wrap = root.getElementById('darkExperience');
@@ -59,3 +59,4 @@ export function initDarkExperience(ctx) {
     }
   })();
 }
+export { initDarkExperience };

@@ -2,7 +2,7 @@
  * Frentes JFA: carrossel de 4 painéis com arraste, setas, navegação e demonstração inicial.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initFronts(ctx) {
+function initFronts(ctx) {
   const { root, on, cleanups } = ctx;
   const frontsTop = root.querySelector('.fronts-top');
   if (frontsTop) {
@@ -209,3 +209,4 @@ export function initFronts(ctx) {
     }
   }
 }
+export { initFronts };

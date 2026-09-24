@@ -2,7 +2,7 @@
  * Representantes: mapa interativo do Brasil, busca por estado e painel de contato.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initRepresentatives(ctx) {
+function initRepresentatives(ctx) {
   const { root, on, cleanups } = ctx;
   (() => {
     const repsSection = root.getElementById('repsSection');
@@ -547,3 +547,4 @@ export function initRepresentatives(ctx) {
     }
   })();
 }
+export { initRepresentatives };

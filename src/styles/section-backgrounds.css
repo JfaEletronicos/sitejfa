@@ -21,7 +21,7 @@
 
 .products-section-texture,
 .buy-section-texture,
-.offer-section-texture,
+.campaign-section-texture,
 .parts-promo-texture {
   position: absolute;
   inset: 0;
@@ -58,7 +58,7 @@
     linear-gradient(180deg, #030c22 0%, #04102a 22%, #051230 46%, #04102a 70%, #030c22 100%);
 }
 
-.offer-section-bg {
+.campaign-section-bg {
   position: absolute;
   inset: 0;
   z-index: -3;
@@ -124,7 +124,7 @@
 .buy-sub {
   margin: 0.6em 0 0;
   font-weight: 500;
-  font-size: clamp(13px, 1vw, 15px);
+  font-size: clamp(14px, 1.1vw, 16px);
   line-height: 1.55;
   color: rgba(230, 238, 255, 0.6);
 }

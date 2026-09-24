@@ -2,7 +2,7 @@
  * JFA Parts: carrossel automático de fotos (pausa fora da tela).
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initPartsPromo(ctx) {
+function initPartsPromo(ctx) {
   const { root, cleanups } = ctx;
   const partsMedia = root.querySelector('.parts-promo-media');
   if (partsMedia) {
@@ -56,3 +56,4 @@ export function initPartsPromo(ctx) {
     }
   }
 }
+export { initPartsPromo };

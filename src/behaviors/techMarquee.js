@@ -2,7 +2,7 @@
  * Faixa tipográfica cujo deslocamento horizontal é função do scroll vertical.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initTechMarquee(ctx) {
+function initTechMarquee(ctx) {
   const { root, on, cleanups } = ctx;
   const techMarquee = root.getElementById('techMarquee');
   const techMarqueeTrack = root.getElementById('techMarqueeTrack');
@@ -80,3 +80,4 @@ export function initTechMarquee(ctx) {
     }
   }
 }
+export { initTechMarquee };

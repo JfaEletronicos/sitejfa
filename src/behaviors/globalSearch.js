@@ -6,7 +6,7 @@ import { PRODUCTS } from '../data/products';
  * Busca global do header (produtos, manuais, categorias, Parts, Energia e suporte).
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initGlobalSearch(ctx) {
+function initGlobalSearch(ctx) {
   const { root, on } = ctx;
   (() => {
     const searchTrigger = root.getElementById('searchTrigger');
@@ -293,3 +293,4 @@ export function initGlobalSearch(ctx) {
     });
   })();
 }
+export { initGlobalSearch };

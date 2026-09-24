@@ -2,7 +2,7 @@
  * Rodapé: ano corrente, links internos e entrada animada.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initFooter(ctx) {
+function initFooter(ctx) {
   const { root, on, cleanups } = ctx;
   (() => {
     const footer = root.getElementById('jfaFooter');
@@ -53,3 +53,4 @@ export function initFooter(ctx) {
     }
   })();
 }
+export { initFooter };

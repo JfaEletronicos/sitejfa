@@ -2,7 +2,7 @@
  * Onde comprar: parallax/luz dos cards no hover e scroll suave para representantes.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initBuySection(ctx) {
+function initBuySection(ctx) {
   const { root, on, cleanups } = ctx;
   const buyGrid = root.getElementById('buyGrid');
   const buyCards = buyGrid ? Array.from(buyGrid.querySelectorAll('.buy-card')) : [];
@@ -71,3 +71,4 @@ export function initBuySection(ctx) {
     });
   }
 }
+export { initBuySection };

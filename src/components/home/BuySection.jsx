@@ -7,11 +7,7 @@ export default function BuySection() {
       <div className="buy-section-texture" aria-hidden="true" />
       <div className="buy-head">
         <span className="buy-eyebrow">DÚVIDAS SOBRE ONDE COMPRAR?</span>
-        <h2 className="buy-title">
-          Saiba onde achar
-          <br />
-          cada produto!
-        </h2>
+        <h2 className="buy-title">Saiba onde achar cada produto!</h2>
         <p className="buy-sub">
           Nem todo produto JFA é vendido no mesmo lugar. <br />
           Escolha o canal certo e encontre o que procura mais rápido.

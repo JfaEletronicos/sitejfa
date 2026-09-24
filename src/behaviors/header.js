@@ -4,7 +4,7 @@ import { trackEvent } from '../lib/analytics';
  * Header fixo: vidro no scroll, navegação suave entre seções e estado ativo do logo.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initHeader(ctx) {
+function initHeader(ctx) {
   const { root, on, cleanups } = ctx;
   const heroSection = root.getElementById('heroSection');
   const jfaHeader = root.getElementById('jfaHeader');
@@ -109,3 +109,4 @@ export function initHeader(ctx) {
     navHome.classList.add('is-active');
   }
 }
+export { initHeader };

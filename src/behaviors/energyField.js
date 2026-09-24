@@ -2,7 +2,7 @@
  * Campo de pontos de energia animado em canvas nas seções de Produtos, Frentes, Manuais, Representantes e Oferta.
  * @param {import('./context').BehaviorContext} ctx
  */
-export function initEnergyField(ctx) {
+function initEnergyField(ctx) {
   const { root, on, cleanups } = ctx;
   const productsSection = root.getElementById('productsSection');
   (() => {
@@ -12,9 +12,9 @@ export function initEnergyField(ctx) {
     const canvasFronts = root.getElementById('frontsEnergyCanvas');
     const repsSectionEl = root.getElementById('repsSection');
     const manualsSectionEl = root.getElementById('manualsSection');
-    const canvasOffer = root.getElementById('offerEnergyCanvas');
-    const offerSectionEl = root.getElementById('offerSection');
-    if (!canvasProducts && !canvasReps && !canvasManuals && !canvasFronts && !canvasOffer) return;
+    const canvasCampaign = root.getElementById('campaignEnergyCanvas');
+    const campaignSectionEl = root.getElementById('campaignSection');
+    if (!canvasProducts && !canvasReps && !canvasManuals && !canvasFronts && !canvasCampaign) return;
     const clamp01f = (v) => Math.max(0, Math.min(1, v));
     const mulberry32f = (seed) => () => {
       seed |= 0;
@@ -442,24 +442,19 @@ export function initEnergyField(ctx) {
             },
           }
         : null,
-      // Oferta em destaque (E-Lítio Pro 48V/100Ah Rack): mesma família/
-      // densidade unificada das outras 4. Evita só .offer-content (texto+
-      // preço+contagem+CTA, onde precisa ficar legível) -- .offer-inner
-      // inteiro chegou a ser testado como avoid-zone, mas nesse breakpoint
-      // ele cobre quase 100% da largura da seção (max-width:1320px numa
-      // seção quase tão larga quanto isso), zerando os pontos por
-      // completo. A metade da foto do produto fica de fora do
-      // avoidSelectors de propósito -- mesmo espírito de .reps-stage
-      // acima (mais visibilidade "atrás" do produto/mapa, nunca tapa
-      // nada porque a malha já é z-index:0 + pointer-events:none).
-      canvasOffer && offerSectionEl
+      // Carrossel de campanhas: mesma família/densidade unificada das
+      // outras. Sem avoidSelectors -- o carrossel (.campaign-carousel,
+      // z-index:2) é opaco e cobre o próprio retângulo por cima da malha
+      // (canvas z-index:0), então os pontos só aparecem naturalmente nas
+      // margens acima/abaixo dele; nenhuma avoid-zone extra necessária.
+      canvasCampaign && campaignSectionEl
         ? {
-            canvas: canvasOffer,
-            container: offerSectionEl,
+            canvas: canvasCampaign,
+            container: campaignSectionEl,
             cfg: {
               seed: 4145761635,
               ...UNIFIED_FIELD_CFG,
-              avoidSelectors: ['.offer-content'],
+              avoidSelectors: [],
             },
           }
         : null,
@@ -533,3 +528,4 @@ export function initEnergyField(ctx) {
     });
   })();
 }
+export { initEnergyField };

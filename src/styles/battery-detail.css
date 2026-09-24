@@ -1,0 +1,582 @@
+/* Página de detalhe de bateria */
+
+.bateria-breadcrumb {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(88px, 10vw, 124px) clamp(18px, 3.6vw, 56px) 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  font-weight: 600;
+  font-size: clamp(12px, 0.85vw, 13px);
+  color: rgba(230, 238, 255, 0.5);
+}
+
+.bateria-breadcrumb a {
+  color: rgba(230, 238, 255, 0.5);
+  text-decoration: none;
+}
+
+.bateria-breadcrumb a:hover,
+.bateria-breadcrumb a:focus-visible {
+  color: #fff;
+}
+
+.bateria-breadcrumb-sep {
+  color: rgba(230, 238, 255, 0.3);
+}
+
+.bateria-breadcrumb-current {
+  color: rgba(230, 238, 255, 0.82);
+}
+
+.bateria-hero {
+  position: relative;
+  z-index: 2;
+  padding: clamp(20px, 2.6vw, 28px) clamp(18px, 3.6vw, 56px) clamp(40px, 5vw, 56px);
+  overflow: hidden;
+}
+
+.bateria-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 420px) 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 860px) {
+  .bateria-hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.bateria-hero-media {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  color: #001440;
+  border: 1px solid rgba(120, 170, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bateria-hero-media img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  display: block;
+}
+
+.bateria-hero-media svg {
+  width: 34%;
+  height: 34%;
+  opacity: 0.35;
+}
+
+.bateria-hero-media.has-carousel {
+  padding: 0;
+}
+
+.bateria-photo-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.bateria-photo-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bateria-photo-track.is-dragging {
+  transition: none;
+}
+
+.bateria-photo-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bateria-photo-slide img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  display: block;
+}
+
+.bateria-photo-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(30px, 2.6vw, 38px);
+  height: clamp(30px, 2.6vw, 38px);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(10, 30, 70, 0.14);
+  color: #001440;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(10, 30, 70, 0.16);
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
+}
+
+.bateria-photo-carousel:hover .bateria-photo-arrow,
+.bateria-photo-carousel:focus-within .bateria-photo-arrow {
+  opacity: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .bateria-photo-arrow {
+    opacity: 1;
+  }
+}
+
+.bateria-photo-arrow svg {
+  width: 44%;
+  height: 44%;
+}
+
+.bateria-photo-arrow:hover,
+.bateria-photo-arrow:focus-visible {
+  background: #fff;
+}
+
+.bateria-photo-arrow-prev {
+  left: clamp(8px, 1.2vw, 14px);
+}
+
+.bateria-photo-arrow-next {
+  right: clamp(8px, 1.2vw, 14px);
+}
+
+.bateria-photo-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(10px, 1.4vw, 16px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.bateria-photo-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  padding: 0;
+  border: 0;
+  background: rgba(10, 30, 70, 0.22);
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    width 0.3s ease;
+}
+
+.bateria-photo-dot:hover {
+  background: rgba(10, 30, 70, 0.4);
+}
+
+.bateria-photo-dot.is-active {
+  width: 20px;
+  background: linear-gradient(90deg, #0a2540, #2f7bff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bateria-photo-track {
+    transition: none !important;
+  }
+}
+
+.bateria-hero-content {
+  text-align: left;
+  padding-top: clamp(8px, 1vw, 14px);
+}
+
+@media (max-width: 860px) {
+  .bateria-hero-content {
+    text-align: center;
+  }
+}
+
+.bateria-label {
+  display: block;
+  font-weight: 700;
+  font-size: clamp(11.5px, 0.85vw, 12.5px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
+  margin: 0 0 0.6em;
+}
+
+.bateria-title {
+  margin: 0;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1.2;
+  font-size: clamp(24px, 2vw, 34px);
+  color: #fff;
+}
+
+.bateria-desc {
+  margin: 0.55em 0 0;
+  max-width: 52ch;
+  font-weight: 500;
+  font-size: clamp(14px, 1vw, 15.5px);
+  line-height: 1.55;
+  color: rgba(230, 238, 255, 0.65);
+}
+
+@media (max-width: 860px) {
+  .bateria-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.bateria-hero-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 12px);
+  margin: clamp(16px, 2vw, 20px) 0 0;
+  justify-content: flex-start;
+}
+
+@media (max-width: 860px) {
+  .bateria-hero-specs {
+    justify-content: center;
+  }
+}
+
+.bateria-spec-chip {
+  padding: 0.55em 1.1em;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(120, 170, 255, 0.28);
+  font-weight: 700;
+  font-size: clamp(12px, 0.9vw, 13px);
+  color: rgba(230, 238, 255, 0.9);
+  letter-spacing: 0.02em;
+}
+
+.bateria-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(12px, 1.4vw, 18px);
+  margin: clamp(22px, 2.6vw, 26px) 0 0;
+  justify-content: flex-start;
+}
+
+@media (max-width: 860px) {
+  .bateria-hero-actions {
+    justify-content: center;
+  }
+}
+
+.bateria-section {
+  position: relative;
+  z-index: 2;
+  padding: clamp(26px, 3.2vw, 40px) clamp(18px, 3.6vw, 56px);
+  background: #030c22;
+}
+
+.bateria-section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.bateria-section-head {
+  max-width: 1100px;
+  margin: 0 auto clamp(18px, 2.2vw, 24px);
+  text-align: left;
+  border-bottom: 1px solid rgba(120, 170, 255, 0.16);
+  padding-bottom: clamp(12px, 1.4vw, 16px);
+}
+
+.bateria-section-title {
+  margin: 0;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(17px, 1.3vw, 20px);
+  color: #fff;
+}
+
+.bateria-app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: clamp(6px, 0.9vw, 9px);
+  margin: clamp(10px, 1.2vw, 14px) 0 0;
+}
+
+@media (max-width: 860px) {
+  .bateria-app-nav {
+    justify-content: center;
+  }
+}
+
+.bateria-context-text {
+  margin: 0.5em 0 0;
+  font-weight: 500;
+  font-size: clamp(13px, 0.95vw, 14.5px);
+  line-height: 1.5;
+  color: rgba(230, 238, 255, 0.68);
+  max-width: 52ch;
+}
+
+@media (max-width: 860px) {
+  .bateria-context-text {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.bateria-summary {
+  padding-top: clamp(8px, 1vw, 14px);
+}
+
+.bateria-summary-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(120, 170, 255, 0.16);
+  padding: clamp(20px, 2.6vw, 30px) clamp(20px, 2.8vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.8vw, 18px);
+}
+
+.bateria-summary-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: clamp(10px, 1.4vw, 20px);
+  align-items: baseline;
+  padding-bottom: clamp(14px, 1.8vw, 18px);
+  border-bottom: 1px solid rgba(120, 170, 255, 0.1);
+}
+
+.bateria-summary-row:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .bateria-summary-row {
+    grid-template-columns: 1fr;
+    gap: 0.5em;
+  }
+}
+
+.bateria-summary-label {
+  font-weight: 700;
+  font-size: clamp(11.5px, 0.85vw, 12.5px);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(120, 170, 255, 0.9);
+}
+
+.bateria-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: clamp(7px, 0.9vw, 9px);
+}
+
+.bateria-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45em 1em;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(120, 170, 255, 0.25);
+  font-weight: 600;
+  font-size: clamp(12px, 0.9vw, 13.5px);
+  color: rgba(230, 238, 255, 0.88);
+}
+
+.bateria-specs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em 0;
+  margin: 0;
+  font-size: clamp(13px, 0.95vw, 14.5px);
+}
+
+.bateria-specs-list div {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.bateria-specs-list div:not(:last-child)::after {
+  content: '·';
+  margin: 0 0.6em 0 0.25em;
+  color: rgba(120, 170, 255, 0.5);
+}
+
+.bateria-specs-list dt {
+  margin: 0;
+  font-weight: 600;
+  color: rgba(120, 170, 255, 0.85);
+}
+
+.bateria-specs-list dt::after {
+  content: ':';
+}
+
+.bateria-specs-list dd {
+  margin: 0;
+  font-weight: 700;
+  color: #fff;
+}
+
+.bateria-doc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 10px);
+}
+
+.bateria-doc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.55em 1em;
+  border-radius: 10px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(120, 170, 255, 0.22);
+  font-weight: 700;
+  font-size: clamp(12.5px, 0.95vw, 13.5px);
+  color: #fff;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.bateria-doc-link:hover,
+.bateria-doc-link:focus-visible {
+  background: rgba(0, 104, 255, 0.16);
+  border-color: rgba(64, 150, 255, 0.7);
+}
+
+.bateria-doc-link svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.bateria-buy-box p {
+  margin: 0 0 0.6em;
+  font-weight: 500;
+  font-size: clamp(13px, 0.95vw, 14.5px);
+  color: rgba(230, 238, 255, 0.72);
+}
+
+.bateria-buy-box .hero-cta {
+  padding: 0.6em 1.3em;
+  font-size: clamp(12.5px, 0.9vw, 13.5px);
+}
+
+.bateria-buy-price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6em;
+  margin: 0 0 0.7em;
+}
+
+.bateria-buy-price {
+  font-weight: 800;
+  font-size: clamp(19px, 1.6vw, 24px);
+  color: #fff;
+}
+
+.bateria-buy-price-old {
+  font-weight: 600;
+  font-size: clamp(13px, 0.95vw, 14px);
+  color: rgba(230, 238, 255, 0.45);
+  text-decoration: line-through;
+}
+
+.bateria-buy-price-pix {
+  font-weight: 600;
+  font-size: clamp(12px, 0.85vw, 13px);
+  color: rgba(120, 220, 150, 0.9);
+}
+
+.bateria-buy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 10px);
+}
+
+.bateria-summary-support {
+  margin: 0;
+  padding-top: clamp(14px, 1.8vw, 18px);
+  border-top: 1px solid rgba(120, 170, 255, 0.1);
+  font-weight: 500;
+  font-size: clamp(13px, 0.95vw, 14.5px);
+  color: rgba(230, 238, 255, 0.65);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.bateria-summary-support a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  text-decoration: none;
+  font-weight: 700;
+  color: #4dd884;
+}
+
+.bateria-summary-support a:hover,
+.bateria-summary-support a:focus-visible {
+  color: #6bf29e;
+}
+
+.bateria-summary-support a svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bateria-others-section {
+  padding-top: clamp(18px, 2.2vw, 26px);
+}
+
+.bateria-others-cta {
+  text-align: center;
+  margin: clamp(24px, 3vw, 32px) 0 0;
+}

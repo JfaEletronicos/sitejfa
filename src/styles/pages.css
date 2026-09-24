@@ -1,0 +1,400 @@
+/* Páginas internas: views, catálogo, setores e listagem de baterias */
+
+.page-view {
+  position: relative;
+}
+
+.page-hero {
+  position: relative;
+  z-index: 2;
+  padding: clamp(64px, 9vw, 120px) clamp(18px, 3.6vw, 56px) clamp(32px, 4vw, 48px);
+  overflow: hidden;
+}
+
+.page-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(47, 125, 255, 0.16), rgba(47, 125, 255, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(100, 175, 255, 0.12), rgba(100, 175, 255, 0) 62%),
+    radial-gradient(50% 40% at 50% 72%, rgba(22, 95, 120, 0.13), rgba(22, 95, 120, 0) 62%),
+    linear-gradient(180deg, #030c22 0%, #04102a 22%, #051230 46%, #04102a 70%, #030c22 100%);
+}
+
+.page-hero-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.page-eyebrow {
+  display: block;
+  font-weight: 700;
+  font-size: clamp(12px, 0.9vw, 14px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
+  margin: 0 0 1.1em;
+}
+
+.page-hero-title {
+  margin: 0;
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 1.15;
+  font-size: var(--h2-size);
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .page-hero-title {
+    font-size: clamp(28px, 9.5vw, 42px);
+  }
+}
+
+.page-hero-sub {
+  margin: 0.6em auto 0;
+  max-width: 56ch;
+  font-weight: 500;
+  font-size: var(--sub-size);
+  line-height: var(--sub-lh);
+  color: rgba(230, 238, 255, 0.65);
+}
+
+.accent-fix {
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+}
+
+.catalog-section {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(18px, 3.6vw, 56px) clamp(64px, 8vw, 100px);
+  background: #030c22;
+}
+
+.catalog-grid {
+  max-width: 1120px;
+  margin: clamp(24px, 3vw, 32px) auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  text-align: left;
+  text-decoration: none;
+  padding: clamp(18px, 2.2vw, 24px);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(120, 170, 255, 0.2);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.18s ease;
+}
+
+.catalog-card[hidden] {
+  display: none;
+}
+
+a.catalog-card:hover,
+a.catalog-card:focus-visible {
+  background: rgba(0, 104, 255, 0.14);
+  border-color: rgba(64, 150, 255, 0.75);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .catalog-card:active {
+    transform: scale(0.99);
+  }
+}
+
+.catalog-card-media {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  color: #001440;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-card-media img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
+}
+
+.catalog-card-media svg {
+  width: 38%;
+  height: 38%;
+  opacity: 0.35;
+}
+
+.catalog-card-name {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(15px, 1.2vw, 17px);
+  color: #fff;
+}
+
+.catalog-card-meta {
+  margin: 0;
+  font-weight: 600;
+  font-size: clamp(12px, 0.9vw, 13px);
+  color: rgba(120, 170, 255, 0.9);
+  letter-spacing: 0.02em;
+}
+
+.catalog-card-lines {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(12px, 0.85vw, 13px);
+  color: rgba(230, 238, 255, 0.55);
+}
+
+.catalog-card-cta {
+  margin-top: auto;
+  padding-top: 0.4em;
+  font-weight: 700;
+  font-size: clamp(12px, 0.9vw, 13px);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.catalog-card-cta svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s ease;
+}
+
+a.catalog-card:hover .catalog-card-cta svg {
+  transform: translateX(4px);
+}
+
+.setor-intro {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(18px, 3.6vw, 56px) clamp(24px, 3vw, 32px);
+  text-align: center;
+  background: #030c22;
+}
+
+.setor-intro-text {
+  max-width: 700px;
+  margin: 0 auto;
+  font-weight: 500;
+  font-size: var(--sub-size);
+  line-height: var(--sub-lh);
+  color: rgba(230, 238, 255, 0.72);
+}
+
+.setor-solutions {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(18px, 3.6vw, 56px) clamp(48px, 6vw, 72px);
+  background: #030c22;
+}
+
+.setor-solutions-empty {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  padding: clamp(32px, 4vw, 48px);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(120, 170, 255, 0.28);
+  font-weight: 500;
+  font-size: clamp(14px, 1vw, 16px);
+  color: rgba(230, 238, 255, 0.55);
+}
+
+.setor-cta-section {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(18px, 3.6vw, 56px) clamp(64px, 8vw, 100px);
+  text-align: center;
+  background: #030c22;
+}
+
+.setor-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  text-decoration: none;
+  padding: 0.9em 1.6em;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: clamp(13px, 1vw, 15px);
+  color: #fff;
+  background: rgba(37, 211, 102, 0.16);
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.18s ease;
+}
+
+.setor-cta:hover,
+.setor-cta:focus-visible {
+  background: rgba(37, 211, 102, 0.28);
+  border-color: rgba(37, 211, 102, 0.65);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .setor-cta:active {
+    transform: scale(0.98);
+  }
+}
+
+.baterias-banner-section {
+  padding-top: 0;
+}
+
+.baterias-banner-section .campaign-viewport {
+  border-radius: 0;
+}
+
+.baterias-banner-section .campaign-viewport::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: clamp(120px, 14vw, 190px);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(1, 7, 20, 0.86) 0%,
+    rgba(1, 7, 20, 0.86) 38%,
+    rgba(1, 7, 20, 0) 100%
+  );
+}
+
+@media (min-width: 900px) and (min-height: 360px) {
+  .baterias-banner-section {
+    padding: 0;
+    min-height: calc(86svh + clamp(26px, 4vw, 64px));
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  .baterias-banner-section .campaign-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .baterias-banner-section .campaign-track {
+    position: absolute;
+    inset: 0;
+    height: auto;
+  }
+  .baterias-banner-section .campaign-slide {
+    width: 100%;
+    aspect-ratio: auto;
+    flex: 0 0 100%;
+    align-self: stretch;
+  }
+}
+
+.page-hero-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(12px, 1.4vw, 18px);
+  margin: clamp(22px, 2.6vw, 30px) 0 0;
+}
+
+#bateriasSectorNav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(7px, 1vw, 10px);
+  margin: clamp(14px, 1.6vw, 20px) 0 0;
+  opacity: 1;
+  transform: none;
+}
+
+#bateriasGrid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (min-width: 1700px) {
+  #bateriasGrid {
+    max-width: 1320px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  #bateriasGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  #bateriasGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.catalog-card-desc {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(12.5px, 0.9vw, 13.5px);
+  line-height: 1.45;
+  color: rgba(230, 238, 255, 0.68);
+}
+
+.catalog-grid .catalog-card {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.18s ease,
+    opacity 0.35s ease,
+    visibility 0.35s;
+}
+
+.catalog-intro {
+  max-width: 700px;
+  margin: 0 auto clamp(28px, 3.4vw, 40px);
+  text-align: center;
+}
+
+.catalog-intro .page-eyebrow {
+  margin-bottom: 0.6em;
+}
+
+.section-title {
+  margin: 0;
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 1.15;
+  font-size: clamp(28px, 2.2vw, 40px);
+  color: #fff;
+}
+
+.section-sub {
+  margin: 0.6em auto 0;
+  max-width: 56ch;
+  font-weight: 500;
+  font-size: var(--sub-size);
+  line-height: var(--sub-lh);
+  color: rgba(230, 238, 255, 0.65);
+}
