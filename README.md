@@ -95,3 +95,10 @@ Analytics: os eventos de conversão passam por `src/lib/analytics.js`, que envia
 
 - `dev`: integração e testes (preview na Vercel).
 - `master`: produção.
+
+### Regra de deploy
+
+**Nunca publique direto na Vercel** (sem `vercel deploy`, sem CLI, sem upload manual). Todo deploy acontece só por push no GitHub:
+
+- push na `dev` → a Vercel publica automaticamente em https://sitejfa-git-dev-jfa2.vercel.app
+- push na `master` (após aprovação) → a Vercel publica automaticamente em produção
