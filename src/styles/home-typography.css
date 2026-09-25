@@ -96,3 +96,11 @@
 #homeView .parts-promo-card-title {
   font-size: clamp(14px, 1vw, 15.5px);
 }
+
+/* Headlines da Hero, da JFA Parts e de Representantes: metade do padrão
+   (mínimo de 18px para continuar legível no celular). */
+#homeView .hero-title,
+#homeView .parts-promo-title,
+#homeView .reps-title {
+  font-size: max(18px, calc(var(--home-headline) * 0.5));
+}
