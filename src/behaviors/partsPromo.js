@@ -21,8 +21,8 @@ function initPartsPromo(ctx) {
         const nextEl = partsMediaSlides[nextIdx];
         prevEl.classList.remove('is-active');
         prevEl.classList.add('is-leaving');
-        nextEl.classList.add('is-active');
-        window.setTimeout(() => prevEl.classList.remove('is-leaving'), 900);
+        nextEl.classList.add('is-active', 'was-cycled');
+        window.setTimeout(() => prevEl.classList.remove('is-leaving'), 700);
         partsMediaIdx = nextIdx;
       };
       const stopPartsMedia = () => {

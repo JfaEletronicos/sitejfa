@@ -336,3 +336,103 @@
     align-self: end;
   }
 }
+
+/* Texto institucional da JFA Parts */
+.parts-promo-story {
+  margin-top: clamp(10px, 1.2vw, 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+}
+
+.parts-promo-story p {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(13.5px, 0.98vw, 15px);
+  line-height: 1.6;
+  color: #4a5266;
+}
+
+.parts-promo-story .parts-promo-story-accent {
+  font-weight: 700;
+  color: #0b1528;
+}
+
+@media (min-width: 861px) {
+  .parts-promo-inner {
+    grid-template-areas:
+      'head media'
+      'cta media';
+    grid-template-rows: 1fr auto;
+    align-items: center;
+  }
+
+  .parts-promo-media {
+    align-self: center;
+  }
+}
+
+/* Carrossel de fotos: sem fade; passagem lateral rápida, como um movimento
+   de câmera, com distorção de movimento durante o deslocamento. */
+.parts-promo-media-slide {
+  opacity: 1;
+  visibility: hidden;
+  transform: translate3d(100%, 0, 0);
+  transition: none;
+}
+
+.parts-promo-media-slide.is-active {
+  visibility: visible;
+  transform: none;
+  animation: partsCamIn 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+.parts-promo-media-slide.is-leaving {
+  visibility: visible;
+  opacity: 1;
+  animation: partsCamOut 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+@keyframes partsCamIn {
+  0% {
+    transform: translate3d(100%, 0, 0) skewX(-14deg) scaleX(1.25);
+    filter: blur(10px);
+  }
+
+  60% {
+    filter: blur(6px);
+  }
+
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes partsCamOut {
+  0% {
+    transform: none;
+    filter: none;
+  }
+
+  40% {
+    filter: blur(6px);
+  }
+
+  100% {
+    transform: translate3d(-100%, 0, 0) skewX(14deg) scaleX(1.25);
+    filter: blur(10px);
+  }
+}
+
+/* A primeira foto já começa no lugar, sem passagem. */
+.parts-promo-media-slide.is-active:first-child:not(.was-cycled) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parts-promo-media-slide.is-active,
+  .parts-promo-media-slide.is-leaving {
+    animation: none;
+  }
+}

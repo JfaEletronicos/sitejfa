@@ -8,10 +8,25 @@ export default function PartsPromo() {
       <div className="parts-promo-inner" data-theme-keep>
         <div className="parts-promo-head">
           <span className="parts-promo-eyebrow">JFA Parts</span>
-          <h2 className="parts-promo-title">Placas feitas aqui. Para quem faz tudo voltar a funcionar.</h2>
-          <p className="parts-promo-sub">
-            Placas eletrônicas para a linha branca, desenvolvidas no Brasil para técnicos e assistências.
-          </p>
+          <h2 className="parts-promo-title">Uma nova frente. A mesma forma JFA de fazer tecnologia.</h2>
+          <div className="parts-promo-story">
+            <p>
+              A história da JFA sempre foi movida por um princípio simples: entender uma necessidade e
+              desenvolver a própria solução para ela. Foi assim que conhecimento, tecnologia e experiência
+              foram se acumulando ao longo dos anos e abrindo espaço para novos caminhos.
+            </p>
+            <p className="parts-promo-story-accent">
+              Agora, parte dessa experiência chega a um novo mercado.
+            </p>
+            <p>
+              A JFA Parts nasce para levar o jeito JFA de desenvolver tecnologia às placas eletrônicas para
+              linha branca, unindo fabricação própria, conhecimento técnico e uma estrutura construída para
+              estar próxima de quem trabalha todos os dias fazendo equipamentos voltarem a funcionar.
+            </p>
+            <p className="parts-promo-story-accent">
+              Uma nova história começa aqui. Com toda a experiência da JFA por trás.
+            </p>
+          </div>
         </div>
         <div className="parts-promo-body">
           <div className="parts-promo-media" aria-hidden="true">
@@ -22,21 +37,10 @@ export default function PartsPromo() {
               <img src="/images/board_lb1009.webp" alt="" loading="lazy" decoding="async" />
             </div>
           </div>
-          <div className="parts-promo-grid">
-            <div className="parts-promo-card">
-              <span className="parts-promo-card-title">Fabricação própria</span>
-            </div>
-            <div className="parts-promo-card">
-              <span className="parts-promo-card-title">Mais facilidade para encontrar a peça certa</span>
-            </div>
-            <div className="parts-promo-card">
-              <span className="parts-promo-card-title">Suporte de verdade</span>
-            </div>
-          </div>
         </div>
         <div className="parts-promo-cta-wrap">
           <a className="parts-promo-cta-big" href="#manuais" data-goto-manuals-tab="parts">
-            Conheça nossas placas{' '}
+            Conheça a JFA Parts{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
