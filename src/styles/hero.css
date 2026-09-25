@@ -199,7 +199,3 @@
 .hero-cta-tertiary:focus-visible svg {
   transform: translateX(4px);
 }
-
-.bg-shape {
-  opacity: 0;
-}

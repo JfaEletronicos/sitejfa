@@ -61,7 +61,6 @@
 }
 
 .bateria-app-section .bateria-block-head,
-.bateria-specs-section .bateria-block-head,
 .bateria-tech-section .bateria-block-head,
 .bateria-related-section .bateria-block-head,
 .bateria-docs-section .bateria-block-head,
@@ -557,31 +556,6 @@
   }
 }
 
-.bateria-hero-specs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(8px, 1vw, 12px);
-  margin: clamp(18px, 2.2vw, 24px) 0 0;
-  justify-content: flex-start;
-}
-
-@media (max-width: 980px) {
-  .bateria-hero-specs {
-    justify-content: center;
-  }
-}
-
-.bateria-spec-chip {
-  padding: 0.55em 1.1em;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(120, 170, 255, 0.28);
-  font-weight: 700;
-  font-size: clamp(12px, 0.9vw, 13px);
-  color: rgba(230, 238, 255, 0.9);
-  letter-spacing: 0.02em;
-}
-
 .bateria-commerce {
   margin: clamp(20px, 2.4vw, 28px) 0 0;
 }
@@ -906,54 +880,6 @@
   .bateria-app-tabs-underline {
     transition: none !important;
   }
-}
-
-.bateria-spec-groups {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: clamp(20px, 2.6vw, 28px);
-}
-
-.bateria-spec-group-title {
-  margin: 0 0 clamp(10px, 1.2vw, 14px);
-  font-weight: 700;
-  font-size: clamp(11px, 0.82vw, 12px);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(156, 196, 255, 0.85);
-}
-
-.bateria-spec-group-rows {
-  display: flex;
-  flex-direction: column;
-}
-
-.bateria-spec-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1em;
-  padding: 0.6em 0;
-  border-bottom: 1px solid rgba(120, 170, 255, 0.1);
-}
-
-.bateria-spec-row:last-child {
-  border-bottom: none;
-}
-
-.bateria-spec-row-label {
-  font-weight: 500;
-  font-size: clamp(12.5px, 0.92vw, 13.5px);
-  color: rgba(230, 238, 255, 0.55);
-}
-
-.bateria-spec-row-value {
-  font-weight: 700;
-  font-size: clamp(14px, 1.02vw, 15.5px);
-  color: #fff;
-  text-align: right;
 }
 
 .bateria-system-section {
@@ -1365,7 +1291,6 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 
 .bateria-quickspec-item,
 .bateria-tech-card,
-.bateria-spec-groups > div,
 .bateria-editorial-grid .catalog-card {
   opacity: 0;
   transform: translateY(14px);
@@ -1379,7 +1304,6 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 
 .is-visible .bateria-quickspec-item,
 .is-visible .bateria-tech-card,
-.is-visible .bateria-spec-groups > div,
 .is-visible .bateria-editorial-grid .catalog-card {
   opacity: 1;
   transform: none;
@@ -1387,20 +1311,17 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 
 .is-visible .bateria-quickspec-item:nth-child(2),
 .is-visible .bateria-tech-card:nth-child(2),
-.is-visible .bateria-spec-groups > div:nth-child(2),
 .is-visible .bateria-editorial-grid .catalog-card:nth-child(2) {
   transition-delay: 0.08s;
 }
 
 .is-visible .bateria-quickspec-item:nth-child(3),
 .is-visible .bateria-tech-card:nth-child(3),
-.is-visible .bateria-spec-groups > div:nth-child(3),
 .is-visible .bateria-editorial-grid .catalog-card:nth-child(3) {
   transition-delay: 0.16s;
 }
 
-.is-visible .bateria-quickspec-item:nth-child(4),
-.is-visible .bateria-spec-groups > div:nth-child(4) {
+.is-visible .bateria-quickspec-item:nth-child(4) {
   transition-delay: 0.24s;
 }
 
@@ -1423,7 +1344,6 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 
   .bateria-quickspec-item,
   .bateria-tech-card,
-  .bateria-spec-groups > div,
   .bateria-editorial-grid .catalog-card,
   .bateria-photo-slide:not(.is-active) img {
     opacity: 1;
@@ -1633,14 +1553,6 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
   .bateria-seals {
     justify-content: center;
   }
-}
-
-.bateria-variants-label {
-  font-weight: 700;
-  font-size: clamp(11px, 0.8vw, 12px);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(230, 238, 255, 0.55);
 }
 
 .bateria-variants-options {

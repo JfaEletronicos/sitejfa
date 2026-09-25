@@ -110,38 +110,6 @@
   right: clamp(8px, 1.4vw, 20px);
 }
 
-.campaign-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: clamp(16px, 2vw, 22px) auto 0;
-  padding: 0 clamp(18px, 3.6vw, 56px);
-}
-
-.campaign-dot {
-  flex: none;
-  width: 22px;
-  height: 3px;
-  border-radius: 999px;
-  padding: 0;
-  border: 0;
-  background: rgba(200, 220, 255, 0.26);
-  cursor: pointer;
-  transition:
-    background 0.3s ease,
-    width 0.3s ease;
-}
-
-.campaign-dot:hover {
-  background: rgba(200, 220, 255, 0.45);
-}
-
-.campaign-dot.is-active {
-  width: 40px;
-  background: linear-gradient(90deg, #2f8bff, #6fb4ff);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .campaign-track {
     transition: none !important;
@@ -169,8 +137,5 @@
   }
   .campaign-viewport {
     border-radius: 0;
-  }
-  .campaign-pagination {
-    padding: 0 18px;
   }
 }

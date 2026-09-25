@@ -31,7 +31,6 @@
 #homeView .fronts-sub,
 #homeView .products-sub,
 #homeView .buy-sub,
-#homeView .parts-promo-sub,
 #homeView .manuals-sub,
 #homeView .reps-sub {
   font-size: var(--home-sub);
@@ -55,7 +54,6 @@
 /* Títulos de cards e destaques internos */
 #homeView .front-headline,
 #homeView .buy-card-title,
-#homeView .parts-promo-card-title,
 #homeView .buy-rep-strip-title {
   font-size: var(--home-card-title);
   line-height: 1.3;
@@ -64,7 +62,6 @@
 /* Informações de apoio: descrições de cards, notas e chamadas */
 #homeView .front-desc,
 #homeView .buy-card-body,
-#homeView .parts-promo-card-body,
 #homeView .products-certs-note,
 #homeView .manuals-tab-prompt,
 #homeView .products-endcap-text,
@@ -94,9 +91,6 @@
 }
 
 /* JFA Parts compacta: destaques em uma linha de título menor. */
-#homeView .parts-promo-card-title {
-  font-size: clamp(14px, 1vw, 15.5px);
-}
 
 /* Headlines da Hero, da JFA Parts e de Representantes: metade do padrão
    (mínimo de 18px para continuar legível no celular). */
