@@ -52,36 +52,53 @@ export default function Products() {
             </p>
           </div>
         </div>
-        <div
-          className="products-category-nav"
-          id="productsCategoryNav"
-          role="group"
-          aria-label="Filtrar produtos por linha"
-        >
-          <button
-            className="products-category-pill is-active"
-            type="button"
-            data-category="all"
-            aria-pressed="true"
+        <div className="products-toolbar">
+          <div
+            className="products-category-nav"
+            id="productsCategoryNav"
+            role="group"
+            aria-label="Filtrar produtos por linha"
           >
-            Todos
-          </button>{' '}
-          <button
-            className="products-category-pill"
-            type="button"
-            data-category="automotivo"
-            aria-pressed="false"
-          >
-            Automotivo
-          </button>{' '}
-          <button
-            className="products-category-pill"
-            type="button"
-            data-category="energia"
-            aria-pressed="false"
-          >
-            Energia
-          </button>
+            <button
+              className="products-category-pill is-active"
+              type="button"
+              data-category="all"
+              aria-pressed="true"
+            >
+              Todos
+            </button>{' '}
+            <button
+              className="products-category-pill"
+              type="button"
+              data-category="automotivo"
+              aria-pressed="false"
+            >
+              Automotivo
+            </button>{' '}
+            <button
+              className="products-category-pill"
+              type="button"
+              data-category="energia"
+              aria-pressed="false"
+            >
+              Energia
+            </button>
+          </div>
+          <div className="products-endcap">
+            <span className="products-endcap-text">Encontrou o que procura?</span>{' '}
+            <a className="products-endcap-link" href="#loja">
+              Veja onde comprar{' '}
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M5 12h13M13 6l6 6-6 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
       <div className="carousel-runway" id="carouselRunway">
@@ -225,21 +242,6 @@ export default function Products() {
             </div>
           </div>
         </div>
-      </div>
-      <div className="products-endcap">
-        <span className="products-endcap-text">Encontrou o que procura?</span>{' '}
-        <a className="products-endcap-link" href="#loja">
-          Veja onde comprar{' '}
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M5 12h13M13 6l6 6-6 6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </a>
       </div>
     </section>
   );

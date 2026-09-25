@@ -37,7 +37,7 @@
   position: relative;
   flex: none;
   align-self: stretch;
-  aspect-ratio: 2300 / 400;
+  aspect-ratio: 2000 / 345;
   border-radius: inherit;
   overflow: hidden;
   text-decoration: none;
@@ -164,7 +164,7 @@
 
 @media (max-width: 640px) {
   .campaign-slide {
-    aspect-ratio: 600 / 800;
+    aspect-ratio: 12 / 5;
   }
   .campaign-arrow {
     display: none;

@@ -242,12 +242,12 @@
 @media (min-width: 861px) {
   .parts-promo-inner {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     grid-template-areas:
-      'head head'
+      'head media'
       'grid media'
       'cta media';
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto auto 1fr;
     column-gap: clamp(24px, 3vw, 40px);
     row-gap: clamp(12px, 1.4vw, 16px);
     align-items: start;
@@ -290,4 +290,49 @@
 
 .parts-promo-card-title {
   margin-bottom: 0.15em;
+}
+
+/* Menos contraste: superfície clara fria no lugar do branco puro. */
+.parts-promo-inner {
+  background: linear-gradient(160deg, #eef2f8 0%, #e3e9f3 100%);
+  box-shadow: 0 16px 40px rgba(2, 8, 24, 0.28);
+}
+
+.parts-promo-media {
+  background: #f4f7fb;
+  border-color: #d9e1ec;
+}
+
+/* Destaques só com o título, em linhas compactas. */
+.parts-promo-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border-color: #d3deee;
+}
+
+.parts-promo-card::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jfa-blue, #0068ff);
+}
+
+.parts-promo-card-title {
+  margin: 0;
+}
+
+@media (min-width: 861px) {
+  .parts-promo-media {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+
+  .parts-promo-cta-wrap {
+    align-self: end;
+  }
 }

@@ -43,12 +43,6 @@ export default function CampaignCarousel() {
           </svg>
         </button>
       </div>
-      <div
-        className="campaign-pagination"
-        id="campaignPagination"
-        role="tablist"
-        aria-label="Selecionar campanha"
-      />
     </section>
   );
 }

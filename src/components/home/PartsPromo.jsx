@@ -10,8 +10,7 @@ export default function PartsPromo() {
           <span className="parts-promo-eyebrow">JFA Parts</span>
           <h2 className="parts-promo-title">Placas feitas aqui. Para quem faz tudo voltar a funcionar.</h2>
           <p className="parts-promo-sub">
-            A JFA Parts leva a experiência da JFA para um novo mercado: placas eletrônicas para
-            eletrodomésticos da linha branca, desenvolvidas no Brasil para técnicos e assistências técnicas.
+            Placas eletrônicas para a linha branca, desenvolvidas no Brasil para técnicos e assistências.
           </p>
         </div>
         <div className="parts-promo-body">
@@ -29,21 +28,12 @@ export default function PartsPromo() {
           <div className="parts-promo-grid">
             <div className="parts-promo-card">
               <span className="parts-promo-card-title">Fabricação própria</span>
-              <p className="parts-promo-card-body">
-                Placas produzidas no Brasil, com foco em qualidade, compatibilidade e confiabilidade.
-              </p>
             </div>
             <div className="parts-promo-card">
               <span className="parts-promo-card-title">Mais facilidade para encontrar a peça certa</span>
-              <p className="parts-promo-card-body">
-                Com apoio de IA, ficou mais simples identificar a placa compatível com cada eletrodoméstico.
-              </p>
             </div>
             <div className="parts-promo-card">
               <span className="parts-promo-card-title">Suporte de verdade</span>
-              <p className="parts-promo-card-body">
-                Do diagnóstico ao pós-venda, técnicos e assistências contam com suporte especializado.
-              </p>
             </div>
           </div>
         </div>

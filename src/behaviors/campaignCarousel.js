@@ -73,7 +73,8 @@ function initCampaignCarousel(ctx) {
         markCampaignInteracted();
         goTo(loops ? i + 1 : i);
       });
-      campaignPagination.appendChild(b);
+      // Paginação é opcional: sem o container, os pontos não aparecem.
+      if (campaignPagination) campaignPagination.appendChild(b);
       return b;
     });
     let peek = 0,

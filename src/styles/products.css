@@ -515,3 +515,31 @@
   opacity: 1;
   letter-spacing: 0.38em;
 }
+
+/* Filtros alinhados ao texto da seção, com "Encontrou o que procura?" na mesma linha. */
+.products-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  max-width: 1100px;
+  margin: clamp(14px, 1.8vw, 20px) auto 0;
+}
+
+.products-toolbar .products-category-nav {
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.products-toolbar .products-endcap {
+  margin: 0;
+  padding: 0;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .products-toolbar .products-endcap {
+    justify-content: flex-start;
+  }
+}

@@ -5,7 +5,8 @@
   z-index: 2;
   overflow: hidden;
   width: 100%;
-  background: transparent;
+  /* Mesma cor em que terminam a JFA Parts e começa Representantes. */
+  background: #030c22;
   padding: clamp(10px, 1.4vw, 18px) 0;
   opacity: 0;
   transform: translate3d(0, 24px, 0);
@@ -25,7 +26,7 @@
   margin-left: -4%;
   overflow: hidden;
   padding: clamp(7px, 0.8vw, 11px) 0;
-  background: rgba(8, 24, 60, 0.55);
+  background: rgba(47, 125, 255, 0.05);
   border-top: 1px solid rgba(120, 170, 255, 0.14);
   border-bottom: 1px solid rgba(120, 170, 255, 0.14);
   transform: rotate(-1.6deg);
