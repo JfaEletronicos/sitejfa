@@ -160,6 +160,32 @@ function initRouter(ctx) {
         relatedProducts: [],
       },
       {
+        id: 'elitio-pro-48v-50ah',
+        slug: 'e-litio-pro-48v-50ah',
+        name: 'E-L\xEDtio Pro 48V 50Ah',
+        voltage: '48V',
+        capacity: '50Ah',
+        technology: 'LiFePO4',
+        sectors: ['solar'],
+        features: ['BMS'],
+        shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
+        marketingHeadline: 'Alta tens\xE3o, energia sob controle.',
+        longDescription:
+          'Gerenciamento BMS e painel de controle integrado para acompanhar a opera\xE7\xE3o de sistemas de armazenamento de energia que exigem estabilidade.',
+        image: '/images/bateria_elitio_pro_48v50a.webp',
+        images: [
+          '/images/bateria_elitio_pro_48v50a.webp',
+          '/images/bateria_elitio_pro_48v50a_a1.webp',
+          '/images/bateria_elitio_pro_48v50a_a2.webp',
+          '/images/bateria_elitio_pro_48v50a_a3.webp',
+        ],
+        // Mesmo produto de PRODUCTS['bateria-litio-48v-50a'] (alias "E-Lítio Pro 48V 50A").
+        manualUrl:
+          'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-48V50A-PACK-INM-Guia-Rapido-sem-SNMP.pdf',
+        commerce: {},
+        relatedProducts: [],
+      },
+      {
         id: 'elitio-nautica-12-8v-100ah',
         slug: 'e-litio-nautica-12-8v-100ah',
         name: 'E-L\xEDtio N\xE1utica 12,8V 100Ah',
