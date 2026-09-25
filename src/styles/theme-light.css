@@ -39,3 +39,8 @@ html[data-theme='light'] .bateria-doc-row.is-primary .bateria-doc-row-arrow,
 html[data-theme='light'] .bateria-doc-row.is-primary .bateria-doc-row-icon {
   color: #fff !important;
 }
+
+/* WhatsApp flutuante: verde com ícone branco nos dois modos. */
+html[data-theme='light'] .whatsapp-float {
+  color: #fff;
+}

@@ -105,6 +105,9 @@ function initHeader(ctx) {
       if (tab) setTimeout(() => tab.click(), ctx.reduceMotion ? 0 : 260);
     });
   });
+  const whatsappFloat = root.getElementById('whatsappFloat');
+  if (whatsappFloat)
+    on(whatsappFloat, 'click', () => trackEvent('whatsapp_click', { source: 'floating_button' }));
   // Modo claro/escuro: o escuro é o padrão; a escolha fica salva neste navegador.
   const themeToggle = root.getElementById('themeToggle');
   if (themeToggle) {

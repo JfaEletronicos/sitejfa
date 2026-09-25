@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import WhatsAppFloat from './components/layout/WhatsAppFloat';
 import Hero from './components/home/Hero';
 import QuickAccess from './components/home/QuickAccess';
 import Fronts from './components/home/Fronts';
@@ -42,6 +43,7 @@ export default function App() {
       <SectorsPage />
       <SectorDetailPage />
       <Footer />
+      <WhatsAppFloat />
     </div>
   );
 }
