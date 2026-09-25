@@ -394,35 +394,40 @@
 }
 
 @keyframes partsCamIn {
-  0% {
-    transform: translate3d(100%, 0, 0) skewX(-14deg) scaleX(1.25);
-    filter: blur(10px);
+  from {
+    transform: translate3d(100%, 0, 0) scaleX(1.12);
   }
 
-  60% {
-    filter: blur(6px);
-  }
-
-  100% {
+  to {
     transform: none;
-    filter: none;
   }
 }
 
 @keyframes partsCamOut {
-  0% {
+  from {
     transform: none;
-    filter: none;
   }
 
-  40% {
-    filter: blur(6px);
+  to {
+    transform: translate3d(-100%, 0, 0) scaleX(1.12);
   }
+}
 
-  100% {
-    transform: translate3d(-100%, 0, 0) skewX(14deg) scaleX(1.25);
-    filter: blur(10px);
-  }
+.parts-promo-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Fotos com tamanho visual equivalente: placas largas limitadas pela largura,
+   placas mais quadradas pela altura. */
+.parts-promo-media-slide img {
+  width: auto;
+  height: auto;
+  max-width: 86%;
+  max-height: 64%;
+  filter: drop-shadow(0 14px 18px rgba(2, 8, 24, 0.22));
 }
 
 /* A primeira foto já começa no lugar, sem passagem. */

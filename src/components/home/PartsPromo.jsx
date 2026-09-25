@@ -30,8 +30,14 @@ export default function PartsPromo() {
         </div>
         <div className="parts-promo-body">
           <div className="parts-promo-media" aria-hidden="true">
+            {/* Borrão de movimento horizontal usado na passagem das fotos (ver behaviors/partsPromo.js). */}
+            <svg className="parts-promo-filters" width="0" height="0" aria-hidden="true" focusable="false">
+              <filter id="partsMotionBlur" x="-30%" y="0" width="160%" height="100%">
+                <feGaussianBlur id="partsMotionBlurAmount" stdDeviation="0 0" />
+              </filter>
+            </svg>
             <div className="parts-promo-media-slide is-active">
-              <img src="/images/board_lb1004.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/images/board_lb1004_cut.webp" alt="" loading="lazy" decoding="async" />
             </div>
             <div className="parts-promo-media-slide">
               <img src="/images/board_lb1009.webp" alt="" loading="lazy" decoding="async" />
