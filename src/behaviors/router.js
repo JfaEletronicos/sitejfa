@@ -138,7 +138,7 @@ function initRouter(ctx) {
         technology: 'LiFePO4',
         sectors: ['solar'],
         features: ['Rack'],
-        shortDescription: 'Mais capacidade para projetos solares que exigem maior autonomia.',
+        shortDescription: 'Integra\xE7\xE3o em rack para sistemas solares de maior porte.',
         // Foto real (pasta "Bateria de Lítio/48V 100A" do Drive JFA) --
         // único produto do catálogo com essa combinação exata de
         // tensão+capacidade (48V/100Ah), e a peça no rack visível na
@@ -190,8 +190,7 @@ function initRouter(ctx) {
         technology: 'LiFePO4',
         sectors: ['solar'],
         features: ['BMS'],
-        shortDescription:
-          'Uma solu\xE7\xE3o compacta de 12,8V para sistemas que precisam de energia est\xE1vel e monitorada.',
+        shortDescription: 'Energia est\xE1vel e monitorada em um tamanho reduzido.',
         marketingHeadline: 'Energia compacta, controle sempre presente.',
         longDescription:
           'Gerenciamento BMS em um tamanho reduzido, para sistemas de armazenamento de energia que precisam de estabilidade.',
@@ -217,8 +216,7 @@ function initRouter(ctx) {
         technology: 'LiFePO4',
         sectors: ['solar'],
         features: ['BMS'],
-        shortDescription:
-          'Uma solu\xE7\xE3o de 25,6V para sistemas que precisam de energia est\xE1vel e monitorada.',
+        shortDescription: 'Energia est\xE1vel e monitorada para sistemas de armazenamento.',
         marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
         longDescription:
           'Gerenciamento BMS para sistemas de armazenamento de energia que exigem estabilidade e controle.',
