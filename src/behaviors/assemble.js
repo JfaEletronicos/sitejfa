@@ -172,7 +172,18 @@ function initAssemble(ctx) {
       c.classList.add('is-visible'),
     );
   };
-  const animate = (el, anim, delay) => {
+  // No celular nada entra de lado: animações laterais viram subida/estouro.
+  const mobileMQ = window.matchMedia('(max-width: 640px)');
+  const MOBILE_SWAP = {
+    asmFromLeft: 'asmRise',
+    asmFromRight: 'asmRise',
+    asmSlideLeft: 'asmRise',
+    asmSideIn: 'asmRise',
+    asmWipe: 'asmRise',
+    asmExpand: 'asmPop',
+  };
+  const animate = (el, animName, delay) => {
+    const anim = mobileMQ.matches ? MOBILE_SWAP[animName] || animName : animName;
     settleLegacy(el);
     // Cards do catálogo têm uma entrada própria (sobe 18px ao ganhar is-revealed);
     // marca já como revelado para ela não rodar depois e causar um "pulinho".

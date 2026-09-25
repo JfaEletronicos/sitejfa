@@ -1,0 +1,241 @@
+/*
+ * Celular (até 640px): metade dos textos, botões 30% maiores e tudo empilhado
+ * na vertical e centralizado, sem blocos lado a lado.
+ */
+@media (max-width: 640px) {
+  /* ---------- Menos texto: some o texto de apoio, ficam títulos e ações ---------- */
+  #homeView .quick-access-item-sub,
+  #homeView .fronts-sub,
+  #homeView .front-desc,
+  #homeView .products-sub,
+  #homeView .products-certs-note,
+  #homeView .products-cert-label,
+  #homeView .p-card-sub,
+  #homeView .buy-sub,
+  #homeView .buy-card-body,
+  #homeView .buy-rep-strip-body,
+  #homeView .parts-promo-story p:not(.parts-promo-story-accent),
+  #homeView .reps-sub,
+  #homeView .reps-search-hint,
+  #homeView .manuals-sub,
+  #homeView .manuals-search-hint,
+  #homeView .manuals-tab-prompt,
+  #bateriasView .catalog-card-desc,
+  #bateriasView .catalog-card-lines,
+  #bateriaView .bateria-desc,
+  #bateriaView .bateria-block-sub,
+  #bateriaView .bateria-block-sub-lg,
+  #bateriaView .bateria-tech-text,
+  #bateriaView .bateria-why-text,
+  #bateriaView .bateria-why-reason-text,
+  #bateriaView .bateria-system-node-caption,
+  #bateriaView .bateria-doc-row-text,
+  #bateriaView .bateria-commerce-microcopy,
+  #bateriaView .catalog-card-meta {
+    display: none !important;
+  }
+
+  /* Texto da aplicação: fica só a frase de destaque. */
+  #bateriaView .bateria-app-context {
+    font-size: 0;
+    max-width: none;
+  }
+
+  #bateriaView .bateria-app-context strong {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  /* ---------- Botões 30% maiores ---------- */
+  .jfa-page .hero-cta,
+  .jfa-page .front-cta,
+  .jfa-page .buy-card-arrow,
+  .jfa-page .buy-rep-strip-cta,
+  .jfa-page .products-endcap-link,
+  .jfa-page .parts-promo-cta-big,
+  .jfa-page .manuals-showmore,
+  .jfa-page .catalog-card-cta,
+  .jfa-page .bateria-doc-row-arrow,
+  .jfa-page .bateria-others-all {
+    zoom: 1.3;
+  }
+
+  .jfa-page .products-category-pill,
+  .jfa-page .manuals-tab {
+    font-size: 13px;
+  }
+
+  .jfa-page .catalog-filter-tab {
+    font-size: 14.5px;
+  }
+
+  .jfa-page .bateria-variant {
+    font-size: 16.5px;
+  }
+
+  /* ---------- Tudo na vertical e centralizado ---------- */
+  #homeView .hero-copy,
+  #homeView .products-head-copy,
+  #homeView .products-head-certs,
+  #homeView .fronts-top,
+  #homeView .front-info,
+  #homeView .buy-head,
+  #homeView .parts-promo-head,
+  #homeView .reps-top,
+  #homeView .reps-text-col,
+  #homeView .manuals-head {
+    text-align: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #homeView .front-cta {
+    justify-self: center;
+  }
+
+  #homeView .hero-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #homeView .hero-cta-row,
+  #homeView .products-head-row,
+  #homeView .products-toolbar,
+  #bateriaView .bateria-pickers,
+  #bateriaView .bateria-seals,
+  #bateriaView .bateria-cta-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #homeView .products-category-nav,
+  #homeView .products-endcap,
+  #homeView .products-certs-row,
+  #homeView .manuals-tabs {
+    justify-content: center;
+  }
+
+  /* Acesso rápido: um item por linha, ícone acima do texto. */
+  #homeView .quick-access-grid {
+    flex-direction: column;
+  }
+
+  #homeView .quick-access-item {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Cards de compra: foto acima do texto, tudo centralizado. */
+  #homeView .buy-grid .buy-card {
+    padding: 22px 20px;
+    align-items: center;
+    text-align: center;
+  }
+
+  #homeView .buy-card-media {
+    position: static;
+    order: -1;
+    width: 120px;
+    margin: 0 auto 12px;
+    transform: none;
+  }
+
+  #homeView .buy-rep-strip {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  #homeView .buy-rep-strip-copy {
+    align-items: center;
+  }
+
+  #homeView .parts-promo-cta-wrap,
+  #homeView .reps-search-wrap {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Rodapé: colunas uma abaixo da outra, centralizadas. */
+  .jfa-footer-top,
+  .jfa-footer-cols,
+  .jfa-footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .jfa-footer-brand,
+  .jfa-footer-col {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Filtro de baterias: abas quebram em linhas centralizadas; a aba ativa
+     ganha a linha embaixo dela mesma. */
+  .catalog-filter-nav {
+    overflow: visible;
+    justify-content: center;
+  }
+
+  .catalog-filter-track {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 20px;
+    border-bottom: 0;
+  }
+
+  .catalog-filter-indicator {
+    display: none;
+  }
+
+  .catalog-filter-tab.is-active {
+    box-shadow: inset 0 -2px 0 #2f7dff;
+  }
+
+  /* Página da bateria: listas e cards em uma coluna, centralizados. */
+  #bateriaView .bateria-doc-row {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  #bateriaView .bateria-doc-row.is-primary .bateria-doc-row-arrow {
+    margin-left: 0;
+  }
+
+  #bateriaView .bateria-why-reason,
+  #bateriaView .bateria-tech-card,
+  #bateriaView .bateria-system-copy {
+    text-align: center;
+    align-items: center;
+  }
+
+  #bateriaView .bateria-tech-icon {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #bateriaView .bateria-others-head {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #bateriaView #bateriaOthersGrid .catalog-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  #bateriaView #bateriaOthersGrid .catalog-card-media {
+    grid-row: auto;
+  }
+
+  #bateriaView .bateria-breadcrumb {
+    justify-content: center;
+  }
+}
