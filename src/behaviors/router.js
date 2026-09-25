@@ -115,7 +115,7 @@ function initRouter(ctx) {
         voltage: '12V',
         capacity: '100Ah',
         technology: 'LiFePO4',
-        sectors: ['solar'],
+        sectors: ['solar', 'automotivo'],
         features: ['BMS', 'Bluetooth'],
         shortDescription: 'Armazenamento inteligente de energia para sistemas solares.',
         // Foto real confirmada (mesma pasta do Drive JFA, etiqueta impressa
