@@ -1136,7 +1136,8 @@ function initRouter(ctx) {
       });
       rows.forEach((r) => {
         const row = document.createElement('a');
-        row.className = 'bateria-doc-row';
+        // O manual do próprio produto tem destaque; a Central de manuais fica discreta.
+        row.className = 'bateria-doc-row' + (r.external ? ' is-primary' : '');
         if (r.external) {
           row.href = r.href;
           row.target = '_blank';

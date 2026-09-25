@@ -33,3 +33,9 @@ html[data-theme='light'] .catalog-card-media {
 html[data-theme='light'] .bateria-cta-buy {
   color: #fff !important;
 }
+
+/* Botão e ícone do manual do produto: azuis nos dois modos, texto branco. */
+html[data-theme='light'] .bateria-doc-row.is-primary .bateria-doc-row-arrow,
+html[data-theme='light'] .bateria-doc-row.is-primary .bateria-doc-row-icon {
+  color: #fff !important;
+}

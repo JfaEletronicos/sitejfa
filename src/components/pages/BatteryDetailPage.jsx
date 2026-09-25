@@ -159,7 +159,7 @@ export default function BatteryDetailPage() {
             <p className="bateria-block-sub-lg" id="bateriaSystemText" />
           </div>
           <div className="bateria-system-visual" aria-hidden="true">
-            <div className="bateria-system-node is-active">
+            <div className="bateria-system-node">
               <span className="bateria-system-node-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <rect x="3" y="7" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -256,17 +256,13 @@ export default function BatteryDetailPage() {
       {/* 10 · Outras baterias */}
       <section className="bateria-section bateria-others-section" data-reveal>
         <div className="bateria-section-inner">
-          <div className="bateria-block-head">
-            <span className="bateria-label">Outras opções</span>
-            <h2 className="bateria-block-title">Encontre a bateria certa para o seu projeto.</h2>
-            <p className="bateria-block-sub">Compare outras configurações disponíveis no portfólio JFA.</p>
+          <div className="bateria-others-head">
+            <span className="bateria-label">Outras baterias JFA</span>
+            <a href="#/baterias" className="bateria-others-all">
+              Ver todas <ArrowIcon />
+            </a>
           </div>
           <div className="catalog-grid" id="bateriaOthersGrid" />
-          <p className="bateria-others-cta">
-            <a href="#/baterias" className="hero-cta hero-cta-tertiary">
-              Ver todas as baterias <ArrowIcon />
-            </a>
-          </p>
         </div>
       </section>
     </div>
