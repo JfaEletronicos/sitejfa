@@ -32,8 +32,8 @@ export default function App() {
         <QuickAccess />
         <Fronts />
         <Products />
-        <CampaignCarousel />
         <BuySection />
+        <CampaignCarousel />
         <PartsPromo />
         <TechMarquee />
         <DarkExperience />
