@@ -66,7 +66,7 @@ const SECTIONS = [
     ],
   },
   // Representantes: texto pela esquerda, busca abre e o mapa se monta como
-  // quebra-cabeça, estado por estado, de cima para baixo.
+  // quebra-cabeça, estado por estado, de baixo para cima.
   {
     section: '#repsSection',
     puzzle: '.reps-state',
@@ -230,8 +230,8 @@ function initAssemble(ctx) {
     if (view && !view.hidden) ctx.replayAssemble(name);
   });
   if (!groups.length) return;
-  // Quebra-cabeça: cada peça cai de cima girando levemente e encaixa, na ordem
-  // da posição vertical (norte primeiro, sul por último).
+  // Quebra-cabeça: cada peça sobe de baixo girando levemente e encaixa, na ordem
+  // da posição vertical (sul primeiro, norte por último).
   const playPuzzle = (pieces) => {
     const withY = pieces.map((el) => {
       let y = 0;
@@ -243,7 +243,7 @@ function initAssemble(ctx) {
       }
       return { el, y };
     });
-    withY.sort((a, b) => a.y - b.y);
+    withY.sort((a, b) => b.y - a.y);
     // A silhueta de fundo do mapa só aparece quando o quebra-cabeça termina.
     const backdrop =
       pieces[0] && pieces[0].closest('svg')?.parentElement?.querySelector('.reps-map-backdrop');
@@ -262,7 +262,7 @@ function initAssemble(ctx) {
       const tilt = (i % 2 ? 1 : -1) * (6 + (i % 3) * 4);
       el.animate(
         [
-          { opacity: 0, transform: `translateY(-90px) rotate(${tilt}deg) scale(0.9)` },
+          { opacity: 0, transform: `translateY(90px) rotate(${tilt}deg) scale(0.9)` },
           { opacity: 1, transform: 'none' },
         ],
         { duration: 650, delay: 250 + i * 55, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'backwards' },
