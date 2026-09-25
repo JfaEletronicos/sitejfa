@@ -659,7 +659,9 @@
   position: relative;
   z-index: 2;
   padding: clamp(22px, 2.8vw, 32px) clamp(18px, 3.6vw, 56px);
-  background: #030c22;
+  background: rgba(3, 12, 34, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-top: 1px solid rgba(120, 170, 255, 0.1);
   border-bottom: 1px solid rgba(120, 170, 255, 0.1);
 }

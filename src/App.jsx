@@ -24,6 +24,7 @@ export default function App() {
 
   return (
     <div className="jfa-page" id="jfaPage">
+      <canvas className="page-energy-canvas" id="pageEnergyCanvas" aria-hidden="true" />
       <Header />
       <div id="homeView">
         <Hero />
