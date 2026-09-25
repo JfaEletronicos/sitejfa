@@ -1196,6 +1196,43 @@ function initRouter(ctx) {
     const bateriaVariants = root.getElementById('bateriaVariants');
     const bateriaSeals = root.getElementById('bateriaSeals');
     // Seletor de capacidade: troca fotos, textos, recursos, manual e selos sem recarregar.
+    // Troca de texto animada após uma seleção: o conteúdo atual sai (sobe, some
+    // e desfoca), o novo entra de baixo em sequência. `getTargets` é chamado
+    // antes e depois da troca, porque parte dos elementos é recriada.
+    const SWAP_OUT = [
+      { opacity: 1, transform: 'none', filter: 'blur(0)' },
+      { opacity: 0, transform: 'translateY(-8px)', filter: 'blur(4px)' },
+    ];
+    const SWAP_IN = [
+      { opacity: 0, transform: 'translateY(12px)', filter: 'blur(4px)' },
+      { opacity: 1, transform: 'none', filter: 'blur(0)' },
+    ];
+    let swapToken = 0;
+    const swapContent = (getTargets, update) => {
+      const visible = (list) => list.filter((el) => el && !el.hidden && el.getClientRects().length);
+      const before = visible(getTargets());
+      if (ctx.reduceMotion || !before.length || typeof before[0].animate !== 'function') {
+        update();
+        return;
+      }
+      const token = ++swapToken;
+      const outs = before.map((el) =>
+        el.animate(SWAP_OUT, { duration: 200, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}),
+      );
+      Promise.all(outs).then(() => {
+        if (token !== swapToken) return;
+        before.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+        update();
+        visible(getTargets()).forEach((el, i) =>
+          el.animate(SWAP_IN, { duration: 520, delay: i * 70, easing: EASE_OUT, fill: 'backwards' }),
+        );
+      });
+    };
+    const whyTargets = () => [
+      bateriaWhyTitle,
+      bateriaWhyText,
+      ...bateriaWhyReasons.querySelectorAll('.bateria-why-reason'),
+    ];
     const renderVariantPicker = (base, variant) => {
       bateriaVariants.innerHTML = '';
       bateriaVariants.hidden = !base.variants;
@@ -1212,7 +1249,17 @@ function initRouter(ctx) {
         on(btn, 'click', () => {
           if (v === variant) return;
           history.replaceState(null, '', '#/baterias/' + base.slug + '/' + v.key);
-          renderBateriaView(base.slug, v.key, { soft: true });
+          swapContent(
+            () => [
+              bateriaHeroMedia,
+              bateriaHeadline,
+              ...bateriaQuickSpecs.children,
+              ...bateriaTechGrid.children,
+              ...whyTargets(),
+              ...bateriaSysCaps,
+            ],
+            () => renderBateriaView(base.slug, v.key, { soft: true }),
+          );
           trackEvent('battery_variant_select', { battery_id: base.id, variant: v.key });
         });
         group.appendChild(btn);
@@ -1265,8 +1312,13 @@ function initRouter(ctx) {
             c.classList.toggle('is-active', active);
             c.setAttribute('aria-checked', active ? 'true' : 'false');
           });
-          setHeroAppText(sector, true);
-          if (currentBateria) renderWhy(currentBateria, sector, true);
+          swapContent(
+            () => [bateriaAppBadge, bateriaAppContext, ...whyTargets()],
+            () => {
+              setHeroAppText(sector, false);
+              if (currentBateria) renderWhy(currentBateria, sector, false);
+            },
+          );
           trackEvent('battery_application_select', { battery_id: b.id, sector });
         });
         group.appendChild(btn);
@@ -1422,7 +1474,7 @@ function initRouter(ctx) {
       }
       // 05 · Por que escolher e 06 · Seu sistema
       currentBateria = b;
-      renderWhy(b, heroApp || b.sectors[0], !!(opts && opts.soft));
+      renderWhy(b, heroApp || b.sectors[0], false);
       renderSystem(b);
       // 07 · Produtos relacionados (só relatedProducts configurado)
       bateriaRelatedGrid.innerHTML = '';
