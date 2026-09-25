@@ -558,7 +558,7 @@ function initRouter(ctx) {
         img.loading = 'lazy';
         img.decoding = 'async';
         btn.appendChild(img);
-        on(btn, 'click', () => onSelect(i));
+        on(btn, 'click', () => onSelect(i, btn.classList.contains('is-prev') ? -1 : 1));
         bateriaGalleryThumbs.appendChild(btn);
         return btn;
       });
@@ -1078,17 +1078,27 @@ function initRouter(ctx) {
       }
       const bateriaPhotos = b.images && b.images.length ? b.images : b.image ? [b.image] : [];
       let thumbBtns = [];
+      // Miniaturas: só a foto atual nítida, com a anterior e a próxima desfocadas ao redor.
       const syncThumbs = (idx) => {
-        thumbBtns.forEach((t, i) => t.classList.toggle('is-active', i === idx));
+        const n = thumbBtns.length;
+        thumbBtns.forEach((t, i) => {
+          const isNext = n > 1 && i === (idx + 1) % n;
+          const isPrev = n > 2 && i === (idx - 1 + n) % n;
+          t.classList.toggle('is-active', i === idx);
+          t.classList.toggle('is-next', isNext);
+          t.classList.toggle('is-prev', isPrev);
+          t.tabIndex = i === idx || isNext || isPrev ? 0 : -1;
+        });
       };
       if (bateriaPhotos.length) {
         const carousel = buildBateriaHeroCarousel(bateriaPhotos, b.name, syncThumbs);
         bateriaCarouselCleanup = carousel.cleanup;
         bateriaHeroMedia.classList.toggle('has-thumbs', bateriaPhotos.length > 1);
-        thumbBtns = buildGalleryThumbs(bateriaPhotos, b.name, (i) => {
-          if (carousel.goTo) carousel.goTo(i);
+        thumbBtns = buildGalleryThumbs(bateriaPhotos, b.name, (i, dir) => {
+          if (carousel.goTo) carousel.goTo(i, dir);
           syncThumbs(i);
         });
+        syncThumbs(0);
       } else {
         bateriaHeroMedia.classList.remove('has-carousel', 'has-thumbs');
         bateriaHeroMedia.innerHTML = BATTERY_PLACEHOLDER_SVG;
