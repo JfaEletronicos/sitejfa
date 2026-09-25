@@ -104,7 +104,8 @@ const PAGE_VIEWS = {
     parts: [
       ['.baterias-intro-title', 'asmSkew'],
       ['.catalog-filter-tab', 'asmPop'],
-      ['#bateriasGrid .catalog-card', 'asmDrop'],
+      // Efeito dominó: um card depois do outro, da primeira à última.
+      ['#bateriasGrid .catalog-card', 'asmDomino'],
     ],
   },
   bateria: {
@@ -181,9 +182,14 @@ function initAssemble(ctx) {
       (entries) => {
         entries
           .filter((en) => en.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+          // Ordem do documento: da primeira peça para a última (efeito dominó).
+          .sort((a, b) =>
+            a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+          )
           .forEach((en, i) => {
-            animate(en.target, animOf.get(en.target), Math.min(i * 90, MAX_DELAY_MS));
+            const anim = animOf.get(en.target);
+            const step = anim === 'asmDomino' ? 140 : 90;
+            animate(en.target, anim, Math.min(i * step, MAX_DELAY_MS));
             obs.unobserve(en.target);
           });
       },
