@@ -51,6 +51,8 @@ const SECTIONS = [
       ['.buy-rep-strip', 'asmRise'],
     ],
   },
+  // Banner: entra deslizando pela lateral direita.
+  { section: '#campaignSection', parts: [['.campaign-carousel', 'asmSideIn']] },
   // JFA Parts: card vira em 3D, textos sobem, destaques deslizam, foto aproxima.
   {
     section: '#partsPromoSection',

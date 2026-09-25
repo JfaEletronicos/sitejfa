@@ -256,6 +256,18 @@
   }
 }
 
+@keyframes asmSideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Com a montagem ativa, as entradas antigas por animação de classe não rodam
    (senão repetiriam depois que a nova termina). */
 html.asm-on #bateriaView.is-entering .bateria-hero-content-in > *,
