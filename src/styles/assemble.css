@@ -42,17 +42,12 @@
 }
 
 @keyframes asmDrop {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(-110px) rotate(-10deg) scale(0.85);
   }
 
-  70% {
-    opacity: 1;
-    transform: translateY(8px) rotate(1deg) scale(1.02);
-  }
-
-  100% {
+  to {
     opacity: 1;
     transform: none;
   }
@@ -175,17 +170,12 @@
 }
 
 @keyframes asmPop {
-  0% {
+  from {
     opacity: 0;
     transform: scale(0.4);
   }
 
-  65% {
-    opacity: 1;
-    transform: scale(1.12);
-  }
-
-  100% {
+  to {
     opacity: 1;
     transform: none;
   }
@@ -264,6 +254,14 @@
     transform: none;
     transform-origin: 50% 0;
   }
+}
+
+/* Com a montagem ativa, as entradas antigas por animação de classe não rodam
+   (senão repetiriam depois que a nova termina). */
+html.asm-on #bateriaView.is-entering .bateria-hero-content-in > *,
+html.asm-on #bateriasView.is-entering .baterias-intro-title,
+html.asm-on #bateriasView.is-entering .catalog-filter-nav {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -59,7 +59,7 @@ const SECTIONS = [
       ['.parts-promo-eyebrow', 'asmPop'],
       ['.parts-promo-title', 'asmSkew'],
       ['.parts-promo-sub', 'asmRiseBig'],
-      ['.parts-promo-card', 'asmFromLeft'],
+      ['.parts-promo-grid', 'asmFromLeft'],
       ['.parts-promo-media', 'asmZoomOut'],
       ['.parts-promo-cta-wrap', 'asmPop'],
     ],
@@ -138,6 +138,8 @@ const MAX_DELAY_MS = 1300;
 function initAssemble(ctx) {
   const { root, cleanups } = ctx;
   if (ctx.reduceMotion || !('IntersectionObserver' in window)) return;
+  document.documentElement.classList.add('asm-on');
+  cleanups.push(() => document.documentElement.classList.remove('asm-on'));
   const groups = [];
   SECTIONS.forEach((cfg) => {
     const section = root.querySelector(cfg.section);
@@ -151,7 +153,21 @@ function initAssemble(ctx) {
     section.classList.add('asm-section');
     groups.push({ section, items });
   });
+  // As seções já tinham entradas próprias (classes is-visible/is-revealed).
+  // Elas são concluídas junto com a nova animação para não rodarem depois dela.
+  const LEGACY_CONTAINERS = '.products-head, .fronts-top, .manuals-head, .reps-top, .reps-stage, .jfa-footer';
+  const settleLegacy = (el) => {
+    const reveal = el.closest('[data-reveal]');
+    if (reveal) reveal.classList.add('is-visible');
+    const box = el.closest(LEGACY_CONTAINERS);
+    if (box) box.classList.add('is-visible');
+    if (el.matches(LEGACY_CONTAINERS)) el.classList.add('is-visible');
+    el.querySelectorAll(LEGACY_CONTAINERS + ', .p-card, [data-reveal]').forEach((c) =>
+      c.classList.add('is-visible'),
+    );
+  };
   const animate = (el, anim, delay) => {
+    settleLegacy(el);
     // Cards do catálogo têm uma entrada própria (sobe 18px ao ganhar is-revealed);
     // marca já como revelado para ela não rodar depois e causar um "pulinho".
     if (el.classList.contains('catalog-card')) el.classList.add('is-revealed');
