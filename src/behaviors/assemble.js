@@ -65,13 +65,14 @@ const SECTIONS = [
       ['.parts-promo-cta-wrap', 'asmPop'],
     ],
   },
-  // Representantes: texto pela esquerda, busca abre, mapa se aproxima.
+  // Representantes: texto pela esquerda, busca abre e o mapa se monta como
+  // quebra-cabeça, estado por estado, de cima para baixo.
   {
     section: '#repsSection',
+    puzzle: '.reps-state',
     parts: [
       ['.reps-top > *', 'asmFromLeft'],
       ['.reps-search-wrap', 'asmExpand'],
-      ['.reps-map-wrap', 'asmZoomOut'],
       ['.reps-col2-lower > *', 'asmRise'],
       ['.reps-intl-wrap', 'asmFromLeft'],
     ],
@@ -149,10 +150,14 @@ function initAssemble(ctx) {
     cfg.parts.forEach(([sel, anim]) => {
       section.querySelectorAll(sel).forEach((el) => items.push({ el, anim }));
     });
-    if (!items.length) return;
+    const pieces = cfg.puzzle ? Array.from(section.querySelectorAll(cfg.puzzle)) : [];
+    if (!items.length && !pieces.length) return;
     items.forEach(({ el }) => el.classList.add('asm-pending'));
+    pieces.forEach((el) => el.classList.add('asm-pending'));
+    const backdrop = cfg.puzzle && section.querySelector('.reps-map-backdrop');
+    if (backdrop) backdrop.classList.add('asm-pending');
     section.classList.add('asm-section');
-    groups.push({ section, items });
+    groups.push({ section, items, pieces });
   });
   // As seções já tinham entradas próprias (classes is-visible/is-revealed).
   // Elas são concluídas junto com a nova animação para não rodarem depois dela.
@@ -225,7 +230,47 @@ function initAssemble(ctx) {
     if (view && !view.hidden) ctx.replayAssemble(name);
   });
   if (!groups.length) return;
+  // Quebra-cabeça: cada peça cai de cima girando levemente e encaixa, na ordem
+  // da posição vertical (norte primeiro, sul por último).
+  const playPuzzle = (pieces) => {
+    const withY = pieces.map((el) => {
+      let y = 0;
+      try {
+        const b = el.getBBox();
+        y = b.y + b.height / 2;
+      } catch {
+        y = el.getBoundingClientRect().top;
+      }
+      return { el, y };
+    });
+    withY.sort((a, b) => a.y - b.y);
+    // A silhueta de fundo do mapa só aparece quando o quebra-cabeça termina.
+    const backdrop =
+      pieces[0] && pieces[0].closest('svg')?.parentElement?.querySelector('.reps-map-backdrop');
+    const target = backdrop || (pieces[0] && pieces[0].ownerSVGElement?.querySelector('.reps-map-backdrop'));
+    if (target) {
+      target.classList.remove('asm-pending');
+      target.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 700,
+        delay: 250 + pieces.length * 55,
+        easing: 'ease-out',
+        fill: 'backwards',
+      });
+    }
+    withY.forEach(({ el }, i) => {
+      el.classList.remove('asm-pending');
+      const tilt = (i % 2 ? 1 : -1) * (6 + (i % 3) * 4);
+      el.animate(
+        [
+          { opacity: 0, transform: `translateY(-90px) rotate(${tilt}deg) scale(0.9)` },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 650, delay: 250 + i * 55, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'backwards' },
+      );
+    });
+  };
   const play = (group) => {
+    if (group.pieces && group.pieces.length) playPuzzle(group.pieces);
     group.section.classList.add('asm-live');
     group.items.forEach(({ el, anim }, i) => {
       animate(el, anim, Math.min(i * STEP_MS, MAX_DELAY_MS));
