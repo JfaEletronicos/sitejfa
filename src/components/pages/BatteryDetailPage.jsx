@@ -49,7 +49,6 @@ export default function BatteryDetailPage() {
               <h1 className="bateria-title" id="bateriaTitle" />
               <p className="bateria-headline" id="bateriaHeadline" />
               <p className="bateria-desc" id="bateriaSub" />
-              <div className="bateria-hero-specs" id="bateriaHeroSpecs" />
               <div className="bateria-commerce" id="bateriaCommerceHero" />
             </div>
           </div>

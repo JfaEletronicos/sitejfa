@@ -123,7 +123,7 @@ function initRouter(ctx) {
         // com este item (único "Pro" 12V/100Ah do catálogo).
         marketingHeadline: 'Energia armazenada. Controle na sua m\xE3o.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 12V e 100Ah com gerenciamento BMS e conectividade Bluetooth, desenvolvida para sistemas de armazenamento de energia que exigem estabilidade, controle e autonomia.',
+          'Gerenciamento BMS e conectividade Bluetooth para acompanhar a bateria de perto, com a estabilidade e a autonomia que sistemas de armazenamento de energia exigem.',
         image: '/images/bateria_elitio_pro_12v8_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -147,7 +147,7 @@ function initRouter(ctx) {
         // (nenhuma foto real confirmada pra eles ainda).
         marketingHeadline: 'Mais capacidade para o seu sistema solar.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 48V e 100Ah em formato rack, desenvolvida para sistemas solares que exigem maior capacidade de armazenamento e integra\xE7\xE3o organizada.',
+          'Formato rack para uma integra\xE7\xE3o organizada em sistemas solares de maior porte.',
         image: '/images/bateria_elitio_pro_48v100a.webp',
         manualUrl: '',
         commerce: {},
@@ -167,7 +167,7 @@ function initRouter(ctx) {
         // BATERIA DE LÍTIO 12,8V 100A") -- bate exatamente com este item.
         marketingHeadline: 'Energia preparada para ir a bordo.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 12,8V e 100Ah, desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem autonomia, estabilidade e confiabilidade em qualquer trajeto.',
+          'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem autonomia, estabilidade e confiabilidade em qualquer trajeto.',
         image: '/images/bateria_elitio_nautica_12v8_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -194,7 +194,7 @@ function initRouter(ctx) {
           'Uma solu\xE7\xE3o compacta de 12,8V para sistemas que precisam de energia est\xE1vel e monitorada.',
         marketingHeadline: 'Energia compacta, controle sempre presente.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 12,8V e 50Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que precisam de estabilidade em um formato mais compacto.',
+          'Gerenciamento BMS em um tamanho reduzido, para sistemas de armazenamento de energia que precisam de estabilidade.',
         image: '/images/bateria_elitio_pro_12v8_50a.webp',
         // Galeria da página de detalhe; `image` continua sendo a foto dos cards.
         images: [
@@ -221,7 +221,7 @@ function initRouter(ctx) {
           'Uma solu\xE7\xE3o de 25,6V para sistemas que precisam de energia est\xE1vel e monitorada.',
         marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 25,6V e 50Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que exigem estabilidade e controle.',
+          'Gerenciamento BMS para sistemas de armazenamento de energia que exigem estabilidade e controle.',
         image: '/images/bateria_elitio_pro_25v6_50a.webp',
         manualUrl: '',
         commerce: {},
@@ -239,7 +239,7 @@ function initRouter(ctx) {
         shortDescription: 'Mais capacidade para projetos solares que exigem maior autonomia.',
         marketingHeadline: 'Mais capacidade para projetos solares maiores.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 25,6V e 100Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que exigem maior autonomia e capacidade.',
+          'Gerenciamento BMS para sistemas de armazenamento de energia que precisam de maior autonomia.',
         image: '/images/bateria_elitio_pro_25v6_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -257,7 +257,7 @@ function initRouter(ctx) {
         shortDescription: 'Mais energia e autonomia para embarca\xE7\xF5es que exigem maior capacidade.',
         marketingHeadline: 'Mais autonomia para ir mais longe na \xE1gua.',
         longDescription:
-          'Uma bateria LiFePO\u2084 de 25,6V e 100Ah, desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem maior autonomia, estabilidade e confiabilidade.',
+          'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem estabilidade e confiabilidade em trajetos mais longos.',
         image: '/images/bateria_elitio_nautica_25v6_100a.webp',
         manualUrl: '',
         commerce: {},
@@ -520,7 +520,6 @@ function initRouter(ctx) {
     const bateriaTitle = root.getElementById('bateriaTitle');
     const bateriaHeadline = root.getElementById('bateriaHeadline');
     const bateriaSub = root.getElementById('bateriaSub');
-    const bateriaHeroSpecs = root.getElementById('bateriaHeroSpecs');
     const bateriaCommerceHero = root.getElementById('bateriaCommerceHero');
     const bateriaQuickSpecs = root.getElementById('bateriaQuickSpecs');
     const bateriaTechGrid = root.getElementById('bateriaTechGrid');
@@ -1112,13 +1111,6 @@ function initRouter(ctx) {
       bateriaHeadline.hidden = !b.marketingHeadline;
       bateriaSub.textContent = b.longDescription || b.shortDescription;
       bateriaBreadcrumbCurrent.textContent = b.name;
-      bateriaHeroSpecs.innerHTML = '';
-      [b.voltage, b.capacity, b.technology].filter(Boolean).forEach((v) => {
-        const chip = document.createElement('span');
-        chip.className = 'bateria-spec-chip';
-        chip.textContent = v;
-        bateriaHeroSpecs.appendChild(chip);
-      });
       buildCommerceBlock(bateriaCommerceHero, b, { compact: true, fallbackLabel: 'Encontrar onde comprar' });
       // 02 · Especificações rápidas
       bateriaQuickSpecs.innerHTML = '';
