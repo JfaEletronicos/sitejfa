@@ -1,6 +1,6 @@
 import { WHATSAPP_FLOAT_URL } from '../../data/links';
 
-/** Botão flutuante do WhatsApp, fixo no canto inferior esquerdo em todas as páginas. */
+/** Botão flutuante do WhatsApp, fixo no canto inferior direito em todas as páginas. */
 export default function WhatsAppFloat() {
   return (
     <a
