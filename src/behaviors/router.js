@@ -262,7 +262,10 @@ function initRouter(ctx) {
       if (dupe && import.meta.env.DEV) console.warn('[baterias] item duplicado ignorado:', b.id);
       return !dupe;
     });
-    const BATTERY_SECTORS = Array.from(new Set(BATTERY_CATALOG.flatMap((b) => b.sectors)));
+    // Abas fixas do filtro (Automotivo aparece mesmo sem produto ainda) + qualquer setor extra dos dados.
+    const BATTERY_SECTORS = Array.from(
+      new Set(['automotivo', 'solar', 'nautico', ...BATTERY_CATALOG.flatMap((b) => b.sectors)]),
+    );
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
     const bateriasNav = root.getElementById('bateriasSectorNav');
     const navBaterias = root.getElementById('navBaterias');
@@ -330,6 +333,7 @@ function initRouter(ctx) {
     // Filtro por aplicação: saída com fade + leve redução, reorganização do grid
     // animada (FLIP) e entrada com fade + translateY curto. Nunca recarrega.
     const bateriasFilterIndicator = root.getElementById('bateriasFilterIndicator');
+    const bateriasEmpty = root.getElementById('bateriasEmpty');
     const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
     let filterToken = 0;
     const positionFilterIndicator = (btn) => {
@@ -342,6 +346,18 @@ function initRouter(ctx) {
       const cards = Array.from(bateriasGrid.querySelectorAll('.catalog-card'));
       cards.forEach((c) => c.getAnimations().forEach((anim) => anim.cancel()));
       const matches = (card) => sector === 'all' || (card.dataset.sectors || '').split(',').includes(sector);
+      const isEmpty = !cards.some(matches);
+      if (bateriasEmpty) {
+        bateriasEmpty.hidden = !isEmpty;
+        if (isEmpty && !ctx.reduceMotion && typeof bateriasEmpty.animate === 'function')
+          bateriasEmpty.animate(
+            [
+              { opacity: 0, transform: 'translateY(10px)' },
+              { opacity: 1, transform: 'none' },
+            ],
+            { duration: 420, delay: 180, easing: EASE_OUT, fill: 'backwards' },
+          );
+      }
       if (ctx.reduceMotion || typeof bateriasGrid.animate !== 'function') {
         cards.forEach((c) => {
           c.hidden = !matches(c);

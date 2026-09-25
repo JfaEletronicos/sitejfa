@@ -10,6 +10,13 @@ export default function BatteriesPage() {
           </div>
         </div>
         <div className="catalog-grid" id="bateriasGrid" />
+        <p className="catalog-empty" id="bateriasEmpty" hidden>
+          Em breve, baterias JFA para esta aplicação.{' '}
+          <a href="#representantes" data-header-scroll="representantes">
+            Fale com um representante
+          </a>{' '}
+          para encontrar a melhor solução para o seu projeto.
+        </p>
       </section>
     </div>
   );

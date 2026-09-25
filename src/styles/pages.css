@@ -511,3 +511,28 @@ a.catalog-card:hover .catalog-card-cta svg {
 ::view-transition-new(root) {
   animation-duration: 0.35s;
 }
+
+.catalog-empty {
+  max-width: 520px;
+  margin: clamp(28px, 4vw, 48px) auto 0;
+  padding: clamp(20px, 2.4vw, 28px);
+  text-align: center;
+  font-weight: 500;
+  font-size: clamp(13.5px, 1vw, 15px);
+  line-height: 1.6;
+  color: rgba(230, 238, 255, 0.68);
+  border: 1px solid rgba(120, 170, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.catalog-empty a {
+  color: #8fb8ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.catalog-empty a:hover,
+.catalog-empty a:focus-visible {
+  color: #fff;
+}
