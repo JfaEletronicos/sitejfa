@@ -1563,6 +1563,8 @@ function initRouter(ctx) {
       if (navSetores) navSetores.classList.toggle('is-active', name === 'setores' || name === 'setor');
       if (name === 'baterias') playBateriasEntrance();
       if (name !== 'home') window.scrollTo(0, 0);
+      // Entrada "montando a página" nas páginas de baterias (ver behaviors/assemble.js).
+      if (ctx.replayAssemble && (name === 'baterias' || name === 'bateria')) ctx.replayAssemble(name);
     };
     const applyRoute = () => {
       const hash = location.hash || '';

@@ -1,6 +1,7 @@
 /**
  * Entrada "montando o site": cada seção da Home se monta de um jeito próprio
- * quando aparece na tela (uma vez só). As peças começam escondidas e entram
+ * quando aparece na tela (uma vez só); nas páginas de baterias, cada peça
+ * entra ao chegar na tela, a cada abertura da página. As peças começam escondidas e entram
  * com a animação da seção, em sequência.
  * @param {import('./context').BehaviorContext} ctx
  */
@@ -95,6 +96,41 @@ const SECTIONS = [
     ],
   },
 ];
+// Páginas de baterias: o conteúdo é recriado a cada abertura, então cada peça
+// é observada sozinha e entra quando chega na tela (o site vai se montando no scroll).
+const PAGE_VIEWS = {
+  baterias: {
+    view: '#bateriasView',
+    parts: [
+      ['.baterias-intro-title', 'asmSkew'],
+      ['.catalog-filter-tab', 'asmPop'],
+      ['#bateriasGrid .catalog-card', 'asmDrop'],
+    ],
+  },
+  bateria: {
+    view: '#bateriaView',
+    parts: [
+      ['.bateria-breadcrumb', 'asmFromLeft'],
+      ['.bateria-gallery-stage', 'asmFlipUp'],
+      ['.bateria-gallery-thumbs', 'asmFromLeft'],
+      ['.bateria-hero-content-in > *', 'asmFromRight'],
+      ['.bateria-quickspec-item', 'asmDrop'],
+      ['.bateria-block-head > *', 'asmSkew'],
+      ['.bateria-tech-card', 'asmFlipDown'],
+      ['.bateria-app-tabs', 'asmExpand'],
+      ['.bateria-app-body', 'asmZoomIn'],
+      ['.bateria-why-copy > *', 'asmFromLeft'],
+      ['.bateria-why-reason', 'asmPop'],
+      ['.bateria-system-copy > *', 'asmFromLeft'],
+      ['.bateria-system-node', 'asmSpin'],
+      ['.bateria-system-link', 'asmExpand'],
+      ['.bateria-doc-row', 'asmFromRight'],
+      ['.bateria-support-line', 'asmRise'],
+      ['.bateria-others-head', 'asmRise'],
+      ['#bateriaOthersGrid .catalog-card', 'asmFromLeft'],
+    ],
+  },
+};
 const STEP_MS = 110;
 const MAX_DELAY_MS = 1300;
 
@@ -114,20 +150,59 @@ function initAssemble(ctx) {
     section.classList.add('asm-section');
     groups.push({ section, items });
   });
+  const animate = (el, anim, delay) => {
+    el.style.animation = `${anim} 1.1s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms backwards`;
+    el.classList.remove('asm-pending');
+    el.addEventListener(
+      'animationend',
+      (e) => {
+        if (e.target === el) el.style.animation = '';
+      },
+      { once: true },
+    );
+  };
+  // Páginas: prepara as peças visíveis e anima cada uma ao entrar na tela.
+  const pageObservers = {};
+  ctx.replayAssemble = (name) => {
+    const cfg = PAGE_VIEWS[name];
+    const view = cfg && root.querySelector(cfg.view);
+    if (!view) return;
+    if (pageObservers[name]) pageObservers[name].disconnect();
+    view.querySelectorAll('.asm-pending').forEach((el) => el.classList.remove('asm-pending'));
+    const animOf = new Map();
+    cfg.parts.forEach(([sel, anim]) => {
+      view.querySelectorAll(sel).forEach((el) => {
+        if (!el.getClientRects().length || animOf.has(el)) return;
+        animOf.set(el, anim);
+        el.classList.add('asm-pending');
+      });
+    });
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries
+          .filter((en) => en.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+          .forEach((en, i) => {
+            animate(en.target, animOf.get(en.target), Math.min(i * 90, MAX_DELAY_MS));
+            obs.unobserve(en.target);
+          });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -4% 0px' },
+    );
+    animOf.forEach((_, el) => obs.observe(el));
+    pageObservers[name] = obs;
+  };
+  cleanups.push(() => Object.values(pageObservers).forEach((o) => o.disconnect()));
+  // Se o site já abriu direto numa página de baterias, monta agora.
+  Object.keys(PAGE_VIEWS).forEach((name) => {
+    const view = root.querySelector(PAGE_VIEWS[name].view);
+    if (view && !view.hidden) ctx.replayAssemble(name);
+  });
   if (!groups.length) return;
   const play = (group) => {
     group.section.classList.add('asm-live');
     group.items.forEach(({ el, anim }, i) => {
-      const delay = Math.min(i * STEP_MS, MAX_DELAY_MS);
-      el.style.animation = `${anim} 1.1s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms backwards`;
-      el.classList.remove('asm-pending');
-      el.addEventListener(
-        'animationend',
-        (e) => {
-          if (e.target === el) el.style.animation = '';
-        },
-        { once: true },
-      );
+      animate(el, anim, Math.min(i * STEP_MS, MAX_DELAY_MS));
     });
   };
   const obs = new IntersectionObserver(
