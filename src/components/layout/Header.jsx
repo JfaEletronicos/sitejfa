@@ -1,6 +1,4 @@
-const STORE_URL = 'https://loja.jfaeletronicos.com';
-const MERCADO_LIVRE_URL =
-  'https://www.mercadolivre.com.br/loja/jfa-eletronicos?item_id=MLB3492722035&category_id=MLB5672&official_store_id=223044&client=recoview-selleritems&recos_listing=true';
+import { STORE_URL, MERCADO_LIVRE_URL } from '../../data/links';
 
 const ExternalIcon = () => (
   <svg className="jfa-nav-external-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">

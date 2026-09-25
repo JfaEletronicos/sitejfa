@@ -1,5 +1,6 @@
 import { trackEvent } from '../lib/analytics';
 import { SECTOR_PAGES } from '../data/sectors';
+import { MERCADO_LIVRE_URL } from '../data/links';
 
 /**
  * Roteador por hash (#/baterias, #/baterias/:slug, #/setores, #/setores/:slug): alterna as views e preenche o conteúdo das páginas internas.
@@ -140,7 +141,7 @@ function initRouter(ctx) {
             // Mesmo produto de PRODUCTS['bateria-litio-12v-50a'] (alias "E-Lítio Pro 12V 50A").
             manualUrl:
               'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-12V50A-MANUAL-RV02-25-11-25.pdf',
-            certifications: [],
+            certifications: ['inmetro', 'anatel'],
           },
           {
             key: '100ah',
@@ -158,11 +159,10 @@ function initRouter(ctx) {
             // Mesmo produto de PRODUCTS['bateria-litio-12v-100a'] (alias "E-Lítio Pro 12V 100A").
             manualUrl:
               'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/L12V100A.pdf',
-            // Registro de conformidade confirmado para o modelo 12,8V 100A (ver nota da seção Produtos).
             certifications: ['inmetro', 'anatel'],
           },
         ],
-        commerce: {},
+        commerce: { mercadoLivreUrl: MERCADO_LIVRE_URL },
         relatedProducts: [],
       },
       {
@@ -928,6 +928,32 @@ function initRouter(ctx) {
         rep.textContent = 'Encontrar representante';
         actions.appendChild(rep);
         container.appendChild(actions);
+      } else if (commerce.mercadoLivreUrl) {
+        const actions = document.createElement('div');
+        actions.className = 'bateria-cta-row';
+        const ml = document.createElement('a');
+        ml.className = 'hero-cta bateria-cta-buy';
+        ml.href = commerce.mercadoLivreUrl;
+        ml.target = '_blank';
+        ml.rel = 'noopener noreferrer';
+        ml.innerHTML =
+          'Comprar no Mercado Livre <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+        on(ml, 'click', () =>
+          trackEvent('mercado_livre_click', {
+            source: 'bateria_page',
+            battery_id: b.id,
+            variant: b.variantKey,
+          }),
+        );
+        actions.appendChild(ml);
+        const rep = document.createElement('a');
+        rep.className = 'bateria-cta-link';
+        rep.href = '#representantes';
+        rep.setAttribute('data-header-scroll', 'representantes');
+        rep.textContent = 'Encontrar representante';
+        on(rep, 'click', () => trackEvent('battery_find_rep_click', { battery_id: b.id }));
+        actions.appendChild(rep);
+        container.appendChild(actions);
       } else {
         const p = document.createElement('p');
         p.className = 'bateria-commerce-fallback-text';
@@ -1152,6 +1178,65 @@ function initRouter(ctx) {
       });
       bateriaVariants.appendChild(group);
     };
+    const bateriaApps = root.getElementById('bateriaApps');
+    const bateriaAppContext = root.getElementById('bateriaAppContext');
+    // Aplicação escolhida na Hero; mantida ao trocar de capacidade.
+    let heroApp = null;
+    const setHeroAppText = (sector, animate) => {
+      const appCtx = APP_CONTEXT[sector];
+      if (!appCtx) return;
+      const apply = () => {
+        bateriaAppContext.innerHTML = '';
+        const strong = document.createElement('strong');
+        strong.textContent = appCtx.title;
+        bateriaAppContext.appendChild(strong);
+        bateriaAppContext.appendChild(document.createTextNode(' ' + appCtx.text));
+        bateriaAppBadge.textContent = APP_LABELS[sector] || sector;
+      };
+      if (!animate || ctx.reduceMotion) return apply();
+      bateriaAppContext.classList.add('is-switching');
+      setTimeout(() => {
+        apply();
+        bateriaAppContext.classList.remove('is-switching');
+      }, 200);
+    };
+    const renderAppPicker = (b) => {
+      bateriaApps.innerHTML = '';
+      const multi = b.sectors.length >= 2;
+      bateriaApps.hidden = !multi;
+      bateriaAppContext.hidden = !multi;
+      if (!multi) return false;
+      if (!b.sectors.includes(heroApp)) heroApp = b.sectors[0];
+      const label = document.createElement('span');
+      label.className = 'bateria-variants-label';
+      label.textContent = 'Aplica\xE7\xE3o';
+      bateriaApps.appendChild(label);
+      const group = document.createElement('div');
+      group.className = 'bateria-variants-options';
+      b.sectors.forEach((sector) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bateria-variant' + (sector === heroApp ? ' is-active' : '');
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', sector === heroApp ? 'true' : 'false');
+        btn.textContent = APP_LABELS[sector] || sector;
+        on(btn, 'click', () => {
+          if (sector === heroApp) return;
+          heroApp = sector;
+          Array.from(group.children).forEach((c) => {
+            const active = c === btn;
+            c.classList.toggle('is-active', active);
+            c.setAttribute('aria-checked', active ? 'true' : 'false');
+          });
+          setHeroAppText(sector, true);
+          trackEvent('battery_application_select', { battery_id: b.id, sector });
+        });
+        group.appendChild(btn);
+      });
+      bateriaApps.appendChild(group);
+      setHeroAppText(heroApp, false);
+      return true;
+    };
     const renderSeals = (certs) => {
       bateriaSeals.innerHTML = '';
       const list = certs.map((c) => CERT_SEALS[c]).filter(Boolean);
@@ -1182,6 +1267,7 @@ function initRouter(ctx) {
           base.variants[0]
         : null;
       const b = variant ? { ...base, ...variant, name: base.name, variantKey: variant.key } : base;
+      if (!(opts && opts.soft)) heroApp = null;
       // 01 · Hero (entrada sequencial ao abrir; troca de capacidade não repete a entrada)
       if (!(opts && opts.soft)) {
         bateriaView.classList.remove('is-entering');
@@ -1225,6 +1311,9 @@ function initRouter(ctx) {
       }
       bateriaEyebrow.textContent = 'Baterias JFA';
       bateriaAppBadge.textContent = b.sectors.map((s) => APP_LABELS[s] || s).join(' \xB7 ');
+      const heroHasApps = renderAppPicker(b);
+      // Com a escolha de aplicação na Hero, o texto dela substitui a descrição longa.
+      bateriaSub.hidden = heroHasApps;
       bateriaTitle.innerHTML = fixStretchProAccent(b.name);
       bateriaHeadline.textContent = b.marketingHeadline || '';
       bateriaHeadline.hidden = !b.marketingHeadline;
@@ -1270,7 +1359,7 @@ function initRouter(ctx) {
       });
       // 04 · Aplicações: a seção inteira some com 1 único setor.
       const hasMultipleApps = b.sectors.length >= 2;
-      if (bateriaAppSection) bateriaAppSection.hidden = !hasMultipleApps;
+      if (bateriaAppSection) bateriaAppSection.hidden = !hasMultipleApps || heroHasApps;
       currentAppImage = bateriaPhotos[0] || '';
       currentAppImageAlt = b.name;
       currentAppActive = null;

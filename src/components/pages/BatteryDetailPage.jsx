@@ -47,6 +47,7 @@ export default function BatteryDetailPage() {
               </span>
               <span className="bateria-app-badge" id="bateriaAppBadge" />
               <h1 className="bateria-title" id="bateriaTitle" />
+              <p className="bateria-headline" id="bateriaHeadline" />
               <div
                 className="bateria-variants"
                 id="bateriaVariants"
@@ -54,7 +55,14 @@ export default function BatteryDetailPage() {
                 aria-label="Capacidade"
                 hidden
               />
-              <p className="bateria-headline" id="bateriaHeadline" />
+              <div
+                className="bateria-variants"
+                id="bateriaApps"
+                role="radiogroup"
+                aria-label="Aplicação"
+                hidden
+              />
+              <p className="bateria-app-context" id="bateriaAppContext" hidden />
               <p className="bateria-desc" id="bateriaSub" />
               <div className="bateria-seals" id="bateriaSeals" hidden />
               <div className="bateria-commerce" id="bateriaCommerceHero" />
