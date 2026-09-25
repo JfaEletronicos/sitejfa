@@ -285,10 +285,12 @@
   stroke-width: 0.95;
 }
 
+/* Outros estados do mesmo representante: destaque bem sutil, só um tom
+   acima dos demais, sem brilho. */
 .reps-state.is-secondary {
-  fill: rgba(47, 130, 255, 0.38);
-  stroke: rgba(205, 225, 255, 0.6);
-  filter: drop-shadow(0 0 3.34px rgba(47, 125, 255, 0.24));
+  fill: rgba(110, 165, 255, 0.24);
+  stroke: rgba(170, 205, 255, 0.22);
+  filter: none;
 }
 
 .reps-state.is-selected {
