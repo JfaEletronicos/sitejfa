@@ -152,6 +152,9 @@ function initAssemble(ctx) {
     groups.push({ section, items });
   });
   const animate = (el, anim, delay) => {
+    // Cards do catálogo têm uma entrada própria (sobe 18px ao ganhar is-revealed);
+    // marca já como revelado para ela não rodar depois e causar um "pulinho".
+    if (el.classList.contains('catalog-card')) el.classList.add('is-revealed');
     el.style.animation = `${anim} 1.1s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms backwards`;
     el.classList.remove('asm-pending');
     el.addEventListener(

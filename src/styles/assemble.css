@@ -251,27 +251,15 @@
   }
 }
 
-/* Dominó: sobe de baixo, tombando levemente para trás e assentando com um
-   pequeno balanço, sem desfoque. */
+/* Dominó: sobe de baixo, tombando levemente para trás, e assenta direto (sem balanço). */
 @keyframes asmDomino {
-  0% {
+  from {
     opacity: 0;
     transform: perspective(900px) translateY(120px) rotateX(28deg);
     transform-origin: 50% 0;
   }
 
-  55% {
-    opacity: 1;
-    transform: perspective(900px) translateY(-10px) rotateX(-4deg);
-    transform-origin: 50% 0;
-  }
-
-  78% {
-    transform: perspective(900px) translateY(3px) rotateX(1deg);
-    transform-origin: 50% 0;
-  }
-
-  100% {
+  to {
     opacity: 1;
     transform: none;
     transform-origin: 50% 0;
