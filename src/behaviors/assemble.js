@@ -4,53 +4,99 @@
  * com a animação da seção, em sequência.
  * @param {import('./context').BehaviorContext} ctx
  */
+// Cada seção: lista de [seletor, animação]. As peças entram em sequência.
 const SECTIONS = [
-  // Acesso rápido: blocos caem de cima e se encaixam.
-  { section: '.quick-access', parts: ['.quick-access-item'], anim: 'asmDrop', step: 90 },
-  // Frentes: palco revelado por uma cortina da esquerda para a direita; navegação desliza depois.
-  { section: '#frontsSection', parts: ['.fronts-stage', '.fronts-nav'], anim: 'asmWipe', step: 260 },
-  // Produtos: filtros surgem e a esteira de cards entra pela direita.
+  // Acesso rápido: título desce e os blocos caem girando até encaixar.
+  {
+    section: '.quick-access',
+    parts: [
+      ['.quick-access-title', 'asmRiseBig'],
+      ['.quick-access-item', 'asmDrop'],
+    ],
+  },
+  // Frentes: título sobe, palco revelado por cortina lateral, navegação sobe.
+  {
+    section: '#frontsSection',
+    parts: [
+      ['.fronts-eyebrow', 'asmPop'],
+      ['.fronts-title', 'asmSkew'],
+      ['.fronts-sub', 'asmRiseBig'],
+      ['.fronts-stage', 'asmWipe'],
+      ['.fronts-nav', 'asmRise'],
+    ],
+  },
+  // Produtos: título inclinado, selos saltam, filtros estouram, esteira entra pela direita.
   {
     section: '#productsSection',
-    parts: ['.products-toolbar', '.carousel-runway'],
-    anim: 'asmSlideLeft',
-    step: 220,
+    parts: [
+      ['.products-title', 'asmSkew'],
+      ['.products-sub', 'asmRiseBig'],
+      ['.products-cert-item', 'asmSpin'],
+      ['.products-certs-note', 'asmFromRight'],
+      ['.products-category-pill', 'asmPop'],
+      ['.products-endcap', 'asmFromRight'],
+      ['.carousel-runway', 'asmSlideLeft'],
+    ],
   },
-  // Onde comprar: os dois cards vêm de lados opostos e a faixa de representantes sobe.
+  // Onde comprar: título, cards chegando de lados opostos, faixa sobe.
   {
     section: '#buySection',
-    parts: ['.buy-grid > .buy-card:nth-child(1)', '.buy-grid > .buy-card:nth-child(2)', '.buy-rep-strip'],
-    anims: ['asmFromLeft', 'asmFromRight', 'asmRise'],
-    step: 140,
+    parts: [
+      ['.buy-eyebrow', 'asmPop'],
+      ['.buy-title', 'asmFlipDown'],
+      ['.buy-sub', 'asmRiseBig'],
+      ['.buy-grid > .buy-card:nth-child(1)', 'asmFromLeft'],
+      ['.buy-grid > .buy-card:nth-child(2)', 'asmFromRight'],
+      ['.buy-rep-strip', 'asmRise'],
+    ],
   },
-  // Banner: abre como uma cortina a partir do centro.
-  { section: '#campaignSection', parts: ['.campaign-carousel'], anim: 'asmCurtain', step: 0 },
-  // JFA Parts: o card vira em 3D e os destaques aparecem um a um.
+  // JFA Parts: card vira em 3D, textos sobem, destaques deslizam, foto aproxima.
   {
     section: '#partsPromoSection',
-    parts: ['.parts-promo-inner', '.parts-promo-card', '.parts-promo-media', '.parts-promo-cta-wrap'],
-    anims: ['asmFlipUp', 'asmPop', 'asmZoomIn', 'asmPop'],
-    step: 110,
+    parts: [
+      ['.parts-promo-inner', 'asmFlipUp'],
+      ['.parts-promo-eyebrow', 'asmPop'],
+      ['.parts-promo-title', 'asmSkew'],
+      ['.parts-promo-sub', 'asmRiseBig'],
+      ['.parts-promo-card', 'asmFromLeft'],
+      ['.parts-promo-media', 'asmZoomOut'],
+      ['.parts-promo-cta-wrap', 'asmPop'],
+    ],
   },
-  // Faixa de palavras: estica da esquerda para a direita.
-  { section: '#techMarquee', parts: ['.tech-marquee-band'], anim: 'asmStretch', step: 0 },
-  // Representantes: texto entra pela esquerda e o mapa se aproxima.
+  // Representantes: texto pela esquerda, busca abre, mapa se aproxima.
   {
     section: '#repsSection',
-    parts: ['.reps-text-col', '.reps-map-wrap'],
-    anims: ['asmFromLeft', 'asmZoomOut'],
-    step: 200,
+    parts: [
+      ['.reps-top > *', 'asmFromLeft'],
+      ['.reps-search-wrap', 'asmExpand'],
+      ['.reps-map-wrap', 'asmZoomOut'],
+      ['.reps-col2-lower > *', 'asmRise'],
+      ['.reps-intl-wrap', 'asmFromLeft'],
+    ],
   },
-  // Manuais: a busca se abre do centro e as abas aparecem em sequência.
+  // Manuais: cabeçalho sobe, busca abre do centro, abas estouram em sequência.
   {
     section: '#manualsSection',
-    parts: ['.manuals-search-wrap', '.manuals-tabs > *'],
-    anims: ['asmExpand', 'asmPop'],
-    step: 70,
+    parts: [
+      ['.manuals-eyebrow', 'asmPop'],
+      ['.manuals-title', 'asmFlipDown'],
+      ['.manuals-sub', 'asmRiseBig'],
+      ['.manuals-search-wrap', 'asmExpand'],
+      ['.manuals-tabs > *', 'asmPop'],
+    ],
   },
-  // Rodapé: sobe em bloco com uma linha de luz no topo.
-  { section: '#jfaFooter', parts: ['.jfa-footer-inner'], anim: 'asmLift', step: 0 },
+  // Rodapé: marca, colunas e base sobem em sequência.
+  {
+    section: '#jfaFooter',
+    parts: [
+      ['.jfa-footer-brand', 'asmFromLeft'],
+      ['.jfa-footer-col', 'asmLift'],
+      ['.jfa-footer-bottom', 'asmRise'],
+    ],
+  },
 ];
+const STEP_MS = 110;
+const MAX_DELAY_MS = 1300;
 
 function initAssemble(ctx) {
   const { root, cleanups } = ctx;
@@ -60,21 +106,20 @@ function initAssemble(ctx) {
     const section = root.querySelector(cfg.section);
     if (!section) return;
     const items = [];
-    cfg.parts.forEach((sel, pi) => {
-      section.querySelectorAll(sel).forEach((el) => {
-        items.push({ el, anim: cfg.anims ? cfg.anims[pi] : cfg.anim });
-      });
+    cfg.parts.forEach(([sel, anim]) => {
+      section.querySelectorAll(sel).forEach((el) => items.push({ el, anim }));
     });
     if (!items.length) return;
     items.forEach(({ el }) => el.classList.add('asm-pending'));
     section.classList.add('asm-section');
-    groups.push({ section, items, step: cfg.step });
+    groups.push({ section, items });
   });
   if (!groups.length) return;
   const play = (group) => {
     group.section.classList.add('asm-live');
     group.items.forEach(({ el, anim }, i) => {
-      el.style.animation = `${anim} 0.9s cubic-bezier(0.22, 1, 0.36, 1) ${i * group.step}ms backwards`;
+      const delay = Math.min(i * STEP_MS, MAX_DELAY_MS);
+      el.style.animation = `${anim} 1.1s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms backwards`;
       el.classList.remove('asm-pending');
       el.addEventListener(
         'animationend',

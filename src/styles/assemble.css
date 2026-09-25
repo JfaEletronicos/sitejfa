@@ -16,9 +16,10 @@
   left: 0;
   z-index: 5;
   width: 100%;
-  height: 1px;
+  height: 2px;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(77, 149, 255, 0), #4d95ff 50%, rgba(77, 149, 255, 0));
+  background: linear-gradient(90deg, rgba(77, 149, 255, 0), #7fb3ff 50%, rgba(77, 149, 255, 0));
+  box-shadow: 0 0 14px rgba(77, 149, 255, 0.8);
   transform-origin: left;
   animation: asmScanLine 1.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -41,12 +42,17 @@
 }
 
 @keyframes asmDrop {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(-36px) rotate(-3deg);
+    transform: translateY(-110px) rotate(-10deg) scale(0.85);
   }
 
-  to {
+  70% {
+    opacity: 1;
+    transform: translateY(8px) rotate(1deg) scale(1.02);
+  }
+
+  100% {
     opacity: 1;
     transform: none;
   }
@@ -56,18 +62,20 @@
   from {
     opacity: 1;
     clip-path: inset(0 100% 0 0);
+    transform: scale(0.94);
   }
 
   to {
     opacity: 1;
     clip-path: inset(0 0 0 0);
+    transform: none;
   }
 }
 
 @keyframes asmSlideLeft {
   from {
     opacity: 0;
-    transform: translateX(90px);
+    transform: translateX(320px) skewX(-6deg);
   }
 
   to {
@@ -79,7 +87,7 @@
 @keyframes asmFromLeft {
   from {
     opacity: 0;
-    transform: translateX(-70px);
+    transform: translateX(-200px) rotate(-5deg);
   }
 
   to {
@@ -91,7 +99,7 @@
 @keyframes asmFromRight {
   from {
     opacity: 0;
-    transform: translateX(70px);
+    transform: translateX(200px) rotate(5deg);
   }
 
   to {
@@ -103,7 +111,7 @@
 @keyframes asmRise {
   from {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(90px);
   }
 
   to {
@@ -112,28 +120,56 @@
   }
 }
 
-@keyframes asmCurtain {
+@keyframes asmRiseBig {
   from {
-    opacity: 1;
-    clip-path: inset(0 50% 0 50%);
+    opacity: 0;
+    transform: translateY(120px) scale(0.9);
   }
 
   to {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+}
+
+@keyframes asmSkew {
+  from {
+    opacity: 0;
+    transform: translateY(90px) skewY(10deg);
+    transform-origin: left bottom;
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    transform-origin: left bottom;
+  }
+}
+
+@keyframes asmFlipDown {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-80deg) translateY(-40px);
+    transform-origin: 50% 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) translateY(0);
+    transform-origin: 50% 0;
   }
 }
 
 @keyframes asmFlipUp {
   from {
     opacity: 0;
-    transform: perspective(1200px) rotateX(22deg) translateY(40px);
+    transform: perspective(1200px) rotateX(50deg) translateY(160px) scale(0.9);
     transform-origin: 50% 100%;
   }
 
   to {
     opacity: 1;
-    transform: perspective(1200px) rotateX(0) translateY(0);
+    transform: perspective(1200px) rotateX(0) translateY(0) scale(1);
     transform-origin: 50% 100%;
   }
 }
@@ -141,12 +177,12 @@
 @keyframes asmPop {
   0% {
     opacity: 0;
-    transform: scale(0.85);
+    transform: scale(0.4);
   }
 
-  70% {
+  65% {
     opacity: 1;
-    transform: scale(1.03);
+    transform: scale(1.12);
   }
 
   100% {
@@ -155,10 +191,22 @@
   }
 }
 
+@keyframes asmSpin {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.3);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes asmZoomIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.5) rotate(-6deg);
   }
 
   to {
@@ -170,7 +218,7 @@
 @keyframes asmZoomOut {
   from {
     opacity: 0;
-    transform: scale(1.12);
+    transform: scale(1.5);
   }
 
   to {
@@ -179,24 +227,10 @@
   }
 }
 
-@keyframes asmStretch {
-  from {
-    opacity: 1;
-    transform: rotate(-1.6deg) scaleX(0);
-    transform-origin: left center;
-  }
-
-  to {
-    opacity: 1;
-    transform: rotate(-1.6deg) scaleX(1);
-    transform-origin: left center;
-  }
-}
-
 @keyframes asmExpand {
   from {
     opacity: 0;
-    transform: scaleX(0.3);
+    transform: scaleX(0);
   }
 
   to {
@@ -208,7 +242,7 @@
 @keyframes asmLift {
   from {
     opacity: 0;
-    transform: translateY(60px);
+    transform: translateY(140px);
   }
 
   to {
