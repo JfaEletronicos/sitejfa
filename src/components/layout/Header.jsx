@@ -57,6 +57,31 @@ export default function Header() {
             Mercado Livre <ExternalIcon />
           </a>{' '}
           <button
+            className="jfa-theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Alternar modo claro e escuro"
+            aria-pressed="false"
+          >
+            <svg className="jfa-theme-icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="2" />
+              <path
+                d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+            <svg className="jfa-theme-icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>{' '}
+          <button
             className="jfa-search-trigger"
             id="searchTrigger"
             type="button"

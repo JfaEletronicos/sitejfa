@@ -1,7 +1,7 @@
 /** Frentes JFA (Moov, Energia, Parts, Automotivo). */
 export default function Fronts() {
   return (
-    <section className="fronts" id="frontsSection">
+    <section className="fronts" id="frontsSection" data-theme-keep>
       <span className="jfa-anchor" id="frentes" aria-hidden="true" />{' '}
       <canvas
         className="section-energy-canvas section-fronts-mesh"

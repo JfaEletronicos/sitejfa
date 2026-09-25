@@ -1,0 +1,30 @@
+/*
+ * Ajustes finos do modo claro. O grosso das cores é gerado no build por
+ * tools/postcss-light-theme.js; aqui ficam só os casos que precisam de mão.
+ */
+
+/* Áreas que mantêm as cores originais: o texto herdado volta a ser branco. */
+html[data-theme='light'] [data-theme-keep] {
+  color: #fff;
+}
+
+/* Header claro legível sobre qualquer fundo, inclusive o vídeo da Hero. */
+/* !important: vence as regras geradas, que são mais específicas. */
+html[data-theme='light'] .jfa-header,
+html[data-theme='light'] .jfa-header.is-scrolled {
+  background: rgba(246, 249, 255, 0.86) !important;
+  border-color: rgba(20, 60, 140, 0.12) !important;
+  box-shadow: 0 1px 18px rgba(10, 40, 100, 0.08) !important;
+}
+
+html[data-theme='light'] body {
+  background: #eef3fa;
+}
+
+/* Fundo das fotos nos cards já é claro no modo escuro: mantém. */
+html[data-theme='light'] .catalog-card-media {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 42%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 72%),
+    linear-gradient(165deg, #eef3fa 0%, #dbe4f1 100%) !important;
+  color: #001440 !important;
+}

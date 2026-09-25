@@ -7,7 +7,7 @@
   .jfa-nav-left a {
     font-size: 10px;
   }
-  .jfa-nav-right > *:not(:last-child) {
+  .jfa-nav-right > a {
     display: none;
   }
 }

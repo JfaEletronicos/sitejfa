@@ -73,6 +73,7 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
 - **Rodapé**: links internos e "voltar ao topo".
 
+Modo claro/escuro: botão de sol/lua no header. O escuro é o padrão e a escolha fica salva no navegador do visitante. As cores do modo claro são geradas no build por `tools/postcss-light-theme.js` a partir do CSS escuro; ajustes manuais ficam em `src/styles/theme-light.css`, e áreas com `data-theme-keep` mantêm as cores originais.
 Acessibilidade: todas as animações respeitam `prefers-reduced-motion`, inclusive se a preferência mudar com a página aberta.
 Analytics: os eventos de conversão passam por `src/lib/analytics.js`, que envia para `gtag` (GA4) ou `dataLayer` (GTM) quando existirem.
 

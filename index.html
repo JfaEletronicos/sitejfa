@@ -16,6 +16,13 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&display=swap"
     />
     <link rel="preload" href="/fonts/StretchPro.woff" as="font" type="font/woff" crossorigin />
+    <meta name="color-scheme" content="dark light" />
+    <script>
+      // Aplica o tema salvo antes da primeira pintura (evita piscar escuro -> claro).
+      try {
+        if (localStorage.getItem('jfa-theme') === 'light') document.documentElement.dataset.theme = 'light';
+      } catch (e) {}
+    </script>
     <style>
       html,
       body {

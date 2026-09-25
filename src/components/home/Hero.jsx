@@ -5,7 +5,7 @@ export default function Hero() {
       <div className="scene-side scene-left" id="sceneLeft" aria-hidden="true" />
       <div className="scene-side scene-right" id="sceneRight" aria-hidden="true" />
       <div className="hero-pin-space" id="heroPinSpace">
-        <div className="hero-shell" id="heroShell">
+        <div className="hero-shell" id="heroShell" data-theme-keep>
           <video
             className="hero-bg-video"
             id="heroBgVideo"

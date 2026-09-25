@@ -5,7 +5,7 @@ export default function PartsPromo() {
       <span className="jfa-anchor" id="parts-jfa" aria-hidden="true" />
       <div className="parts-promo-bg" aria-hidden="true" />
       <div className="parts-promo-texture" aria-hidden="true" />
-      <div className="parts-promo-inner">
+      <div className="parts-promo-inner" data-theme-keep>
         <div className="parts-promo-head">
           <span className="parts-promo-eyebrow">JFA Parts</span>
           <h2 className="parts-promo-title">Placas feitas aqui. Para quem faz tudo voltar a funcionar.</h2>
