@@ -28,3 +28,8 @@ html[data-theme='light'] .catalog-card-media {
     linear-gradient(165deg, #eef3fa 0%, #dbe4f1 100%) !important;
   color: #001440 !important;
 }
+
+/* Botão de compra é azul nos dois modos: texto sempre branco. */
+html[data-theme='light'] .bateria-cta-buy {
+  color: #fff !important;
+}
