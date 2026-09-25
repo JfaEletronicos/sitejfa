@@ -104,3 +104,11 @@
 #homeView .reps-title {
   font-size: max(18px, calc(var(--home-headline) * 0.5));
 }
+
+/* Subheadlines de blocos centralizados ficam centralizadas também. */
+#homeView .fronts-sub,
+#homeView .buy-sub,
+#homeView .manuals-sub {
+  margin-left: auto;
+  margin-right: auto;
+}

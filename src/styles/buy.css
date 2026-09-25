@@ -3,7 +3,7 @@
 .buy-section {
   position: relative;
   z-index: 2;
-  padding: clamp(48px, 6vw, 88px) clamp(18px, 3.6vw, 56px);
+  padding: clamp(24px, 2.8vw, 40px) clamp(18px, 3.6vw, 56px) clamp(14px, 1.6vw, 22px);
 }
 
 .buy-head {

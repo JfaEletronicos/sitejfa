@@ -161,7 +161,8 @@
 
 .carousel-viewport {
   position: relative;
-  height: calc(clamp(120px, 14.4vw, 228px) + clamp(56px, 5vw, 88px));
+  /* Folga só para o card selecionado subir e crescer sem ser cortado. */
+  height: calc(clamp(120px, 14.4vw, 228px) + clamp(34px, 3vw, 44px));
   display: flex;
   align-items: center;
   overflow: hidden;
