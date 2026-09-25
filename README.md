@@ -30,7 +30,7 @@ Requer Node.js 18 ou superior.
 index.html                 # HTML base (fontes, meta tags, #root)
 public/
   images/                  # fotos de produtos, frentes, selos e logo (.webp)
-  media/hero.mp4           # vídeo de fundo da Hero
+  media/hero-bateria.mp4   # vídeo de fundo da Hero (loop, sem áudio)
   fonts/StretchPro.woff    # fonte display dos títulos
   favicon.ico
 src/

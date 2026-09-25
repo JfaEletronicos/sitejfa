@@ -14,7 +14,7 @@ export default function Hero() {
             playsInline
             preload="auto"
             aria-hidden="true"
-            src="/media/hero.mp4"
+            src="/media/hero-bateria.mp4"
           />
           <div className="hero-vignette" id="heroVignette" aria-hidden="true" />
           <div className="jfa-header-spacer" id="headerSpacer" aria-hidden="true" />
