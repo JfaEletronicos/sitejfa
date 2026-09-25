@@ -108,30 +108,60 @@ function initRouter(ctx) {
       // Rack) -- nenhum dos dois tinha foto confirmada nem estava ligado
       // a nenhuma combinação de voltagem/capacidade exclusiva no
       // catálogo. Todo o catálogo agora tem foto real em 100% dos itens.
+      // E-Lítio Pro 12,8V: uma página só, com as capacidades 50Ah e 100Ah como
+      // variantes (fotos, recursos, manual e selos próprios de cada uma).
       {
-        id: 'elitio-pro-12v-100ah',
-        slug: 'e-litio-pro-12v-100ah',
-        name: 'E-L\xEDtio Pro 12V 100Ah',
-        voltage: '12V',
-        capacity: '100Ah',
+        id: 'elitio-pro-12-8v',
+        slug: 'e-litio-pro-12-8v',
+        name: 'E-L\xEDtio Pro 12,8V',
+        voltage: '12,8V',
+        capacity: '50Ah | 100Ah',
         technology: 'LiFePO4',
         sectors: ['solar', 'automotivo'],
-        features: ['BMS', 'Bluetooth'],
-        shortDescription: 'Armazenamento inteligente de energia para sistemas solares.',
-        // Foto real confirmada (mesma pasta do Drive JFA, etiqueta impressa
-        // "e-LÍTIO PRO -- BATERIA DE LÍTIO 12,8V 100A") -- bate exatamente
-        // com este item (único "Pro" 12V/100Ah do catálogo).
-        marketingHeadline: 'Energia armazenada. Controle na sua m\xE3o.',
-        longDescription:
-          'Gerenciamento BMS e conectividade Bluetooth para acompanhar a bateria de perto, com a estabilidade e a autonomia que sistemas de armazenamento de energia exigem.',
+        features: ['BMS'],
+        shortDescription: 'Armazenamento inteligente de energia em duas capacidades.',
         image: '/images/bateria_elitio_pro_12v8_100a.webp',
-        images: [
-          '/images/bateria_elitio_pro_12v8_100a.webp',
-          '/images/bateria_elitio_pro_12v8_100a_a1.webp',
-          '/images/bateria_elitio_pro_12v8_100a_a2.webp',
-          '/images/bateria_elitio_pro_12v8_100a_a3.webp',
+        defaultVariant: '100ah',
+        variants: [
+          {
+            key: '50ah',
+            capacity: '50Ah',
+            features: ['BMS'],
+            marketingHeadline: 'Energia compacta, controle sempre presente.',
+            longDescription:
+              'Gerenciamento BMS em um tamanho reduzido, para sistemas de armazenamento de energia que precisam de estabilidade.',
+            images: [
+              '/images/bateria_elitio_pro_12v8_50a.webp',
+              '/images/bateria_elitio_pro_12v8_50a_a1.webp',
+              '/images/bateria_elitio_pro_12v8_50a_a2.webp',
+              '/images/bateria_elitio_pro_12v8_50a_a3.webp',
+              '/images/bateria_elitio_pro_12v8_50a_a4.webp',
+            ],
+            // Mesmo produto de PRODUCTS['bateria-litio-12v-50a'] (alias "E-Lítio Pro 12V 50A").
+            manualUrl:
+              'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-12V50A-MANUAL-RV02-25-11-25.pdf',
+            certifications: [],
+          },
+          {
+            key: '100ah',
+            capacity: '100Ah',
+            features: ['BMS', 'Bluetooth'],
+            marketingHeadline: 'Energia armazenada. Controle na sua m\xE3o.',
+            longDescription:
+              'Gerenciamento BMS e conectividade Bluetooth para acompanhar a bateria de perto, com a estabilidade e a autonomia que sistemas de armazenamento de energia exigem.',
+            images: [
+              '/images/bateria_elitio_pro_12v8_100a.webp',
+              '/images/bateria_elitio_pro_12v8_100a_a1.webp',
+              '/images/bateria_elitio_pro_12v8_100a_a2.webp',
+              '/images/bateria_elitio_pro_12v8_100a_a3.webp',
+            ],
+            // Mesmo produto de PRODUCTS['bateria-litio-12v-100a'] (alias "E-Lítio Pro 12V 100A").
+            manualUrl:
+              'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/L12V100A.pdf',
+            // Registro de conformidade confirmado para o modelo 12,8V 100A (ver nota da seção Produtos).
+            certifications: ['inmetro', 'anatel'],
+          },
         ],
-        manualUrl: '',
         commerce: {},
         relatedProducts: [],
       },
@@ -226,32 +256,6 @@ function initRouter(ctx) {
       // ao usuário pra revisão, já que setor/features exigem algum
       // julgamento (não vêm literalmente escritos na etiqueta).
       {
-        id: 'elitio-pro-12-8v-50ah',
-        slug: 'e-litio-pro-12-8v-50ah',
-        name: 'E-L\xEDtio Pro 12,8V 50Ah',
-        voltage: '12,8V',
-        capacity: '50Ah',
-        technology: 'LiFePO4',
-        sectors: ['solar'],
-        features: ['BMS'],
-        shortDescription: 'Energia est\xE1vel e monitorada em um tamanho reduzido.',
-        marketingHeadline: 'Energia compacta, controle sempre presente.',
-        longDescription:
-          'Gerenciamento BMS em um tamanho reduzido, para sistemas de armazenamento de energia que precisam de estabilidade.',
-        image: '/images/bateria_elitio_pro_12v8_50a.webp',
-        // Galeria da página de detalhe; `image` continua sendo a foto dos cards.
-        images: [
-          '/images/bateria_elitio_pro_12v8_50a.webp',
-          '/images/bateria_elitio_pro_12v8_50a_a1.webp',
-          '/images/bateria_elitio_pro_12v8_50a_a2.webp',
-          '/images/bateria_elitio_pro_12v8_50a_a3.webp',
-          '/images/bateria_elitio_pro_12v8_50a_a4.webp',
-        ],
-        manualUrl: '',
-        commerce: {},
-        relatedProducts: [],
-      },
-      {
         id: 'elitio-pro-25-6v-50ah',
         slug: 'e-litio-pro-25-6v-50ah',
         name: 'E-L\xEDtio Pro 25,6V 50Ah',
@@ -323,6 +327,15 @@ function initRouter(ctx) {
       new Set(['automotivo', 'solar', 'nautico', ...BATTERY_CATALOG.flatMap((b) => b.sectors)]),
     );
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
+    // Links antigos das baterias que viraram variantes de uma página só.
+    const SLUG_ALIASES = {
+      'e-litio-pro-12v-100ah': ['e-litio-pro-12-8v', '100ah'],
+      'e-litio-pro-12-8v-50ah': ['e-litio-pro-12-8v', '50ah'],
+    };
+    const CERT_SEALS = {
+      inmetro: { src: '/images/seal_inmetro.webp', label: 'Inmetro' },
+      anatel: { src: '/images/seal_anatel.webp', label: 'Anatel' },
+    };
     const bateriasNav = root.getElementById('bateriasSectorNav');
     const navBaterias = root.getElementById('navBaterias');
     const navSetores = root.getElementById('navSetores');
@@ -1109,16 +1122,74 @@ function initRouter(ctx) {
       bateriaRevealEls.forEach((el) => bateriaRevealObs.observe(el));
       ctx.cleanups.push(() => bateriaRevealObs.disconnect());
     }
-    const renderBateriaView = (slug) => {
-      const b = bySlug(slug);
-      if (!b) {
+    const bateriaVariants = root.getElementById('bateriaVariants');
+    const bateriaSeals = root.getElementById('bateriaSeals');
+    // Seletor de capacidade: troca fotos, textos, recursos, manual e selos sem recarregar.
+    const renderVariantPicker = (base, variant) => {
+      bateriaVariants.innerHTML = '';
+      bateriaVariants.hidden = !base.variants;
+      if (!base.variants) return;
+      const label = document.createElement('span');
+      label.className = 'bateria-variants-label';
+      label.textContent = 'Capacidade';
+      bateriaVariants.appendChild(label);
+      const group = document.createElement('div');
+      group.className = 'bateria-variants-options';
+      base.variants.forEach((v) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bateria-variant' + (v === variant ? ' is-active' : '');
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', v === variant ? 'true' : 'false');
+        btn.textContent = v.capacity;
+        on(btn, 'click', () => {
+          if (v === variant) return;
+          history.replaceState(null, '', '#/baterias/' + base.slug + '/' + v.key);
+          renderBateriaView(base.slug, v.key, { soft: true });
+          trackEvent('battery_variant_select', { battery_id: base.id, variant: v.key });
+        });
+        group.appendChild(btn);
+      });
+      bateriaVariants.appendChild(group);
+    };
+    const renderSeals = (certs) => {
+      bateriaSeals.innerHTML = '';
+      const list = certs.map((c) => CERT_SEALS[c]).filter(Boolean);
+      bateriaSeals.hidden = !list.length;
+      list.forEach((seal) => {
+        const item = document.createElement('span');
+        item.className = 'bateria-seal';
+        const img = document.createElement('img');
+        img.src = seal.src;
+        img.alt = 'Selo ' + seal.label;
+        img.decoding = 'async';
+        item.appendChild(img);
+        const txt = document.createElement('span');
+        txt.textContent = seal.label;
+        item.appendChild(txt);
+        bateriaSeals.appendChild(item);
+      });
+    };
+    const renderBateriaView = (slug, variantKey, opts) => {
+      const base = bySlug(slug);
+      if (!base) {
         location.hash = '#/baterias';
         return;
       }
-      // 01 · Hero (entrada sequencial a cada abertura)
-      bateriaView.classList.remove('is-entering');
-      void bateriaView.offsetWidth;
-      bateriaView.classList.add('is-entering');
+      const variant = base.variants
+        ? base.variants.find((v) => v.key === variantKey) ||
+          base.variants.find((v) => v.key === base.defaultVariant) ||
+          base.variants[0]
+        : null;
+      const b = variant ? { ...base, ...variant, name: base.name, variantKey: variant.key } : base;
+      // 01 · Hero (entrada sequencial ao abrir; troca de capacidade não repete a entrada)
+      if (!(opts && opts.soft)) {
+        bateriaView.classList.remove('is-entering');
+        void bateriaView.offsetWidth;
+        bateriaView.classList.add('is-entering');
+      }
+      renderVariantPicker(base, variant);
+      renderSeals(b.certifications || []);
       if (bateriaCarouselCleanup) {
         bateriaCarouselCleanup();
         bateriaCarouselCleanup = null;
@@ -1153,7 +1224,7 @@ function initRouter(ctx) {
         bateriaGalleryThumbs.innerHTML = '';
       }
       bateriaEyebrow.textContent = 'Baterias JFA';
-      bateriaAppBadge.textContent = APP_LABELS[b.sectors[0]] || '';
+      bateriaAppBadge.textContent = b.sectors.map((s) => APP_LABELS[s] || s).join(' \xB7 ');
       bateriaTitle.innerHTML = fixStretchProAccent(b.name);
       bateriaHeadline.textContent = b.marketingHeadline || '';
       bateriaHeadline.hidden = !b.marketingHeadline;
@@ -1270,7 +1341,7 @@ function initRouter(ctx) {
       BATTERY_CATALOG.filter((x) => x.id !== b.id)
         .slice(0, 3)
         .forEach((x) => bateriaOthersGrid.appendChild(buildBateriaCard(x)));
-      document.title = b.name + ' | Bateria LiFePO₄ JFA';
+      document.title = b.name + (variant ? ' ' + variant.capacity : '') + ' | Bateria LiFePO₄ JFA';
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc)
         metaDesc.setAttribute(
@@ -1279,7 +1350,7 @@ function initRouter(ctx) {
             b.name +
             ' JFA: caracter\xEDsticas, aplica\xE7\xF5es, especifica\xE7\xF5es t\xE9cnicas, manual e canais oficiais de compra.',
         );
-      trackEvent('battery_page_view', { battery_id: b.id, sectors: b.sectors });
+      trackEvent('battery_page_view', { battery_id: b.id, variant: b.variantKey, sectors: b.sectors });
       requestAnimationFrame(checkBateriaReveals);
     };
     const setoresGrid = root.getElementById('setoresGrid');
@@ -1350,7 +1421,13 @@ function initRouter(ctx) {
       }
       const parts = hash.slice(2).split('/').filter(Boolean);
       if (parts[0] === 'baterias' && parts[1]) {
-        renderBateriaView(parts[1]);
+        const alias = SLUG_ALIASES[parts[1]];
+        if (alias) {
+          history.replaceState(null, '', '#/baterias/' + alias[0] + '/' + alias[1]);
+          renderBateriaView(alias[0], alias[1]);
+        } else {
+          renderBateriaView(parts[1], parts[2]);
+        }
         showView('bateria');
       } else if (parts[0] === 'baterias') {
         buildBateriasView();
