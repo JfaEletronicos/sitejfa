@@ -52,12 +52,12 @@
 .bateria-section {
   position: relative;
   z-index: 2;
-  padding: clamp(36px, 4.4vw, 56px) clamp(18px, 3.6vw, 56px);
+  padding: clamp(24px, 2.6vw, 36px) clamp(18px, 3.6vw, 56px);
 }
 
 .bateria-block-head {
   max-width: 640px;
-  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  margin: 0 0 clamp(16px, 2vw, 22px);
 }
 
 .bateria-app-section .bateria-block-head,
@@ -94,7 +94,7 @@
 .bateria-hero {
   position: relative;
   z-index: 2;
-  padding: clamp(20px, 2.6vw, 28px) clamp(18px, 3.6vw, 56px) clamp(48px, 5.6vw, 64px);
+  padding: clamp(20px, 2.6vw, 28px) clamp(18px, 3.6vw, 56px) clamp(32px, 3.6vw, 44px);
   overflow: hidden;
 }
 
