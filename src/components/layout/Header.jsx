@@ -1,4 +1,4 @@
-import { STORE_URL, MERCADO_LIVRE_URL } from '../../data/links';
+import { STORE_URL, MERCADO_LIVRE_URL, SUPPORT_WHATSAPP_URL } from '../../data/links';
 
 const ExternalIcon = () => (
   <svg className="jfa-nav-external-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -18,6 +18,15 @@ export default function Header() {
     <>
       <header className="jfa-header" id="jfaHeader">
         <nav className="jfa-nav-left" aria-label="Navegação principal">
+          <a
+            className="jfa-logo jfa-logo-link"
+            id="navHome"
+            href="#home"
+            aria-label="JFA -- voltar ao início"
+          >
+            <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
+            <span className="jfa-logo-word">JFA</span>
+          </a>
           <a href="#/baterias" id="navBaterias">
             Bateria
           </a>{' '}
@@ -25,11 +34,15 @@ export default function Header() {
             Setores
           </a>
         </nav>
-        <a className="jfa-logo jfa-logo-link" id="navHome" href="#home" aria-label="JFA -- voltar ao início">
-          <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
-          <span className="jfa-logo-word">JFA</span>
-        </a>
         <nav className="jfa-nav-right" aria-label="Suporte e compra">
+          <a
+            href={SUPPORT_WHATSAPP_URL}
+            data-header-external="suporte"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Suporte
+          </a>{' '}
           <a href="#manuais" data-header-scroll="manuais">
             Manuais
           </a>{' '}

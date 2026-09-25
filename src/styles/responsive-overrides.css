@@ -4,7 +4,7 @@
   .jfa-nav-left {
     gap: 14px;
   }
-  .jfa-nav-left a {
+  .jfa-nav-left a:not(.jfa-logo) {
     font-size: 10px;
   }
   .jfa-nav-right > a {

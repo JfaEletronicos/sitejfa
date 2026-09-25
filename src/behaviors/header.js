@@ -69,6 +69,10 @@ function initHeader(ctx) {
           ctx.reduceMotion ? 0 : 420,
         );
       }
+      if (which === 'suporte') {
+        trackEvent('whatsapp_click', { source: 'header_support' });
+        return;
+      }
       trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
         destination: which,
         source: 'header',
@@ -78,6 +82,10 @@ function initHeader(ctx) {
   Array.from(root.querySelectorAll('a[data-header-external]')).forEach((a) => {
     on(a, 'click', () => {
       const which = a.getAttribute('data-header-external');
+      if (which === 'suporte') {
+        trackEvent('whatsapp_click', { source: 'header_support' });
+        return;
+      }
       trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
         destination: which,
         source: 'header',

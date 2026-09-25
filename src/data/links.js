@@ -10,3 +10,8 @@ export const WHATSAPP_FLOAT_URL =
   WHATSAPP_FLOAT_PHONE +
   '&text=' +
   encodeURIComponent('Olá! Vim pelo site da JFA e gostaria de mais informações.');
+
+// Suporte técnico da JFA (mesmo número usado nos botões "Falar com a JFA" das páginas).
+export const SUPPORT_WHATSAPP_URL =
+  'https://api.whatsapp.com/send?phone=553125336100&text=' +
+  encodeURIComponent('Olá! Preciso de suporte com um produto JFA.');

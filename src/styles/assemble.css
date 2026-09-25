@@ -1,0 +1,228 @@
+/* Entrada "montando o site": peças escondidas até a seção aparecer (ver behaviors/assemble.js). */
+
+.asm-pending {
+  opacity: 0 !important;
+}
+
+/* Linha de luz que corre no topo de cada seção quando ela se monta. */
+.asm-section {
+  position: relative;
+}
+
+.asm-section.asm-live::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(77, 149, 255, 0), #4d95ff 50%, rgba(77, 149, 255, 0));
+  transform-origin: left;
+  animation: asmScanLine 1.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes asmScanLine {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+
+  70% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes asmDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-36px) rotate(-3deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmWipe {
+  from {
+    opacity: 1;
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes asmSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(90px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-70px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(70px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmRise {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmCurtain {
+  from {
+    opacity: 1;
+    clip-path: inset(0 50% 0 50%);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes asmFlipUp {
+  from {
+    opacity: 0;
+    transform: perspective(1200px) rotateX(22deg) translateY(40px);
+    transform-origin: 50% 100%;
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(1200px) rotateX(0) translateY(0);
+    transform-origin: 50% 100%;
+  }
+}
+
+@keyframes asmPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmZoomOut {
+  from {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmStretch {
+  from {
+    opacity: 1;
+    transform: rotate(-1.6deg) scaleX(0);
+    transform-origin: left center;
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(-1.6deg) scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+@keyframes asmExpand {
+  from {
+    opacity: 0;
+    transform: scaleX(0.3);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmLift {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asm-pending {
+    opacity: 1 !important;
+  }
+
+  .asm-section.asm-live::before {
+    display: none;
+  }
+}

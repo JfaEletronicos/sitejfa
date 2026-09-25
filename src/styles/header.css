@@ -7,7 +7,7 @@
   right: 0;
   z-index: 500;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
   align-items: center;
   column-gap: clamp(12px, 2vw, 32px);
   padding: clamp(8px, 1vw, 13px) clamp(18px, 3.6vw, 56px);
@@ -452,4 +452,16 @@ html[data-theme='light'] .jfa-theme-icon-sun {
 
 html[data-theme='light'] .jfa-theme-icon-moon {
   display: block;
+}
+
+/* Logo à esquerda, antes de Bateria e Setores. */
+.jfa-nav-left .jfa-logo {
+  justify-self: auto;
+  margin-right: clamp(6px, 1vw, 14px);
+  opacity: 1;
+  padding: 0;
+}
+
+.jfa-nav-left .jfa-logo::after {
+  display: none;
 }
