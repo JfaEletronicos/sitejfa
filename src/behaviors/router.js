@@ -196,6 +196,14 @@ function initRouter(ctx) {
         longDescription:
           'Uma bateria LiFePO\u2084 de 12,8V e 50Ah com gerenciamento BMS, desenvolvida para sistemas de armazenamento de energia que precisam de estabilidade em um formato mais compacto.',
         image: '/images/bateria_elitio_pro_12v8_50a.webp',
+        // Galeria da página de detalhe; `image` continua sendo a foto dos cards.
+        images: [
+          '/images/bateria_elitio_pro_12v8_50a.webp',
+          '/images/bateria_elitio_pro_12v8_50a_a1.webp',
+          '/images/bateria_elitio_pro_12v8_50a_a2.webp',
+          '/images/bateria_elitio_pro_12v8_50a_a3.webp',
+          '/images/bateria_elitio_pro_12v8_50a_a4.webp',
+        ],
         manualUrl: '',
         commerce: {},
         relatedProducts: [],
@@ -619,21 +627,41 @@ function initRouter(ctx) {
         el.addEventListener(ev, fn, opts);
         localCleanups.push(() => el.removeEventListener(ev, fn, opts));
       };
+      const slides = Array.from(track.children);
+      slides.forEach((slide, i) => {
+        if (i !== 0) slide.style.transform = 'translateX(100%)';
+      });
+      // Troca com a foto atual saindo para a esquerda (ou direita, ao voltar) e a nova entrando do lado oposto.
+      const slideTo = (newIdx, dir) => {
+        const oldSlide = slides[idx];
+        const newSlide = slides[newIdx];
+        newSlide.style.transition = 'none';
+        newSlide.style.transform = 'translateX(' + (dir > 0 ? 100 : -100) + '%)';
+        void newSlide.offsetWidth;
+        newSlide.style.transition = '';
+        newSlide.style.transform = '';
+        oldSlide.style.transform = 'translateX(' + (dir > 0 ? -100 : 100) + '%)';
+      };
       const render = () => {
-        track.style.transform = 'translate3d(' + -idx * 100 + '%,0,0)';
-        Array.from(track.children).forEach((slide, i) => slide.classList.toggle('is-active', i === idx));
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('is-active', i === idx);
+          slide.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
+        });
         dots.forEach((d, i) => {
           d.classList.toggle('is-active', i === idx);
           d.setAttribute('aria-selected', i === idx ? 'true' : 'false');
         });
         if (onIndexChange) onIndexChange(idx);
       };
-      const goTo = (i) => {
-        idx = (i + N) % N;
+      const goTo = (i, dir) => {
+        const newIdx = (i + N) % N;
+        if (newIdx === idx) return;
+        slideTo(newIdx, dir || (newIdx > idx ? 1 : -1));
+        idx = newIdx;
         render();
       };
-      const next = () => goTo(idx + 1);
-      const prev = () => goTo(idx - 1);
+      const next = () => goTo(idx + 1, 1);
+      const prev = () => goTo(idx - 1, -1);
       lon(prevBtn, 'click', prev);
       lon(nextBtn, 'click', next);
       dots.forEach((d, i) => lon(d, 'click', () => goTo(i)));
@@ -725,6 +753,55 @@ function initRouter(ctx) {
       });
       ctx.cleanups.push(() => {
         if (bhRafId) cancelAnimationFrame(bhRafId);
+      });
+    }
+    // Zoom tipo lupa sobre a foto ativa (só mouse): lente circular que acompanha o cursor.
+    if (bateriaStage) {
+      const ZOOM = 2.4;
+      const lens = document.createElement('div');
+      lens.className = 'bateria-zoom-lens';
+      lens.setAttribute('aria-hidden', 'true');
+      bateriaStage.appendChild(lens);
+      const zoomMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
+      let lensRaf = null;
+      let lensPending = null;
+      const hideLens = () => {
+        lensPending = null;
+        lens.classList.remove('is-visible');
+      };
+      const flushLens = () => {
+        lensRaf = null;
+        if (!lensPending) return;
+        const { x, y } = lensPending;
+        lensPending = null;
+        const img =
+          bateriaHeroMedia.querySelector('.bateria-photo-slide.is-active img') ||
+          bateriaHeroMedia.querySelector('img');
+        if (!img || !img.naturalWidth) return hideLens();
+        const r = img.getBoundingClientRect();
+        const scale = Math.min(r.width / img.naturalWidth, r.height / img.naturalHeight);
+        const cw = img.naturalWidth * scale;
+        const ch = img.naturalHeight * scale;
+        const px = x - (r.left + (r.width - cw) / 2);
+        const py = y - (r.top + (r.height - ch) / 2);
+        if (px < 0 || py < 0 || px > cw || py > ch) return hideLens();
+        const stageRect = bateriaStage.getBoundingClientRect();
+        const size = lens.offsetWidth;
+        lens.style.backgroundImage = 'url("' + img.currentSrc + '")';
+        lens.style.backgroundSize = cw * ZOOM + 'px ' + ch * ZOOM + 'px';
+        lens.style.backgroundPosition = -(px * ZOOM - size / 2) + 'px ' + -(py * ZOOM - size / 2) + 'px';
+        lens.style.transform =
+          'translate(' + (x - stageRect.left - size / 2) + 'px,' + (y - stageRect.top - size / 2) + 'px)';
+        lens.classList.add('is-visible');
+      };
+      on(bateriaStage, 'pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || !zoomMQ.matches || e.target.closest('button')) return hideLens();
+        lensPending = { x: e.clientX, y: e.clientY };
+        if (!lensRaf) lensRaf = requestAnimationFrame(flushLens);
+      });
+      on(bateriaStage, 'pointerleave', hideLens);
+      ctx.cleanups.push(() => {
+        if (lensRaf) cancelAnimationFrame(lensRaf);
       });
     }
     // Compra na Hero: sem venda online confirmada, cai em "Consulte disponibilidade".

@@ -1390,3 +1390,74 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
     transition: none;
   }
 }
+
+/* Carrossel da Hero: fotos empilhadas, a atual sai para a esquerda e a próxima entra pela direita */
+
+.bateria-photo-track {
+  position: relative;
+  display: block;
+  transition: none;
+  will-change: auto;
+}
+
+.bateria-photo-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition:
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bateria-photo-slide.is-active {
+  opacity: 1;
+}
+
+.bateria-photo-arrow {
+  opacity: 0.85;
+}
+
+.bateria-photo-carousel:hover .bateria-photo-arrow,
+.bateria-photo-carousel:focus-within .bateria-photo-arrow {
+  opacity: 1;
+}
+
+.bateria-zoom-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: clamp(140px, 13vw, 190px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background-color: #061230;
+  background-repeat: no-repeat;
+  border: 2px solid rgba(160, 200, 255, 0.55);
+  box-shadow:
+    0 14px 34px rgba(0, 4, 16, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.bateria-zoom-lens.is-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bateria-gallery-stage {
+    cursor: zoom-in;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bateria-photo-slide {
+    transition: opacity 0.3s ease;
+  }
+}
+
+.bateria-photo-slide img {
+  width: 100%;
+  height: 100%;
+}
