@@ -125,6 +125,12 @@ function initRouter(ctx) {
         longDescription:
           'Gerenciamento BMS e conectividade Bluetooth para acompanhar a bateria de perto, com a estabilidade e a autonomia que sistemas de armazenamento de energia exigem.',
         image: '/images/bateria_elitio_pro_12v8_100a.webp',
+        images: [
+          '/images/bateria_elitio_pro_12v8_100a.webp',
+          '/images/bateria_elitio_pro_12v8_100a_a1.webp',
+          '/images/bateria_elitio_pro_12v8_100a_a2.webp',
+          '/images/bateria_elitio_pro_12v8_100a_a3.webp',
+        ],
         manualUrl: '',
         commerce: {},
         relatedProducts: [],
