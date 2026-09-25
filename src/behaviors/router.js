@@ -155,6 +155,12 @@ function initRouter(ctx) {
         longDescription:
           'Formato rack para uma integra\xE7\xE3o organizada em sistemas solares de maior porte.',
         image: '/images/bateria_elitio_pro_48v100a.webp',
+        images: [
+          '/images/bateria_elitio_pro_48v100a_a1.webp',
+          '/images/bateria_elitio_pro_48v100a_a2.webp',
+          '/images/bateria_elitio_pro_48v100a_a3.webp',
+          '/images/bateria_elitio_pro_48v100a.webp',
+        ],
         manualUrl: '',
         commerce: {},
         relatedProducts: [],
