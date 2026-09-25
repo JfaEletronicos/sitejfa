@@ -207,6 +207,12 @@ function initRouter(ctx) {
         longDescription:
           'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem autonomia, estabilidade e confiabilidade em qualquer trajeto.',
         image: '/images/bateria_elitio_nautica_12v8_100a.webp',
+        images: [
+          '/images/bateria_elitio_nautica_12v8_100a.webp',
+          '/images/bateria_elitio_nautica_12v8_100a_a1.webp',
+          '/images/bateria_elitio_nautica_12v8_100a_a2.webp',
+          '/images/bateria_elitio_nautica_12v8_100a_a3.webp',
+        ],
         manualUrl: '',
         commerce: {},
         relatedProducts: [],
