@@ -93,16 +93,6 @@
   font-style: italic;
 }
 
-.hero-sub-break {
-  display: none;
-}
-
-@media (min-width: 1200px) {
-  .hero-sub-break {
-    display: inline;
-  }
-}
-
 .hero-cta-row {
   display: flex;
   align-items: center;

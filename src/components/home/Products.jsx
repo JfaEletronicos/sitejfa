@@ -48,8 +48,7 @@ export default function Products() {
               </span>
             </div>
             <p className="products-certs-note">
-              Registro de conformidade confirmado para 2 modelos específicos (Bateria 48V 50A Rack e 12,8V
-              100A) -- não se estende ao restante do catálogo.
+              Produtos com certificação Inmetro e homologação Anatel. Consulte as informações de cada modelo.
             </p>
           </div>
         </div>

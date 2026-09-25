@@ -9,8 +9,8 @@ export default function BuySection() {
         <span className="buy-eyebrow">DÚVIDAS SOBRE ONDE COMPRAR?</span>
         <h2 className="buy-title">Saiba onde achar cada produto!</h2>
         <p className="buy-sub">
-          Nem todo produto JFA é vendido no mesmo lugar. <br />
-          Escolha o canal certo e encontre o que procura mais rápido.
+          Nem todo produto JFA é vendido no mesmo lugar. Escolha o canal certo e encontre o que procura mais
+          rápido.
         </p>
       </div>
       <div className="buy-grid" id="buyGrid">

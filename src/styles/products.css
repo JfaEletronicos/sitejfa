@@ -4,7 +4,7 @@
   position: relative;
   z-index: 2;
   overflow: hidden;
-  padding: clamp(32px, 4vw, 56px) 0 clamp(10px, 1.4vw, 20px);
+  padding: clamp(32px, 4vw, 56px) 0 0;
 }
 
 .products-head {
@@ -110,9 +110,16 @@
 }
 
 .products-cert-seal {
-  width: clamp(44px, 3.6vw, 56px);
-  height: auto;
+  width: auto;
+  height: clamp(40px, 3.2vw, 50px);
   object-fit: contain;
+}
+
+/* O selo da Anatel é horizontal: altura menor e largura maior para ficar com
+   o mesmo peso visual do selo quadrado do Inmetro. */
+.products-cert-item:nth-child(2) .products-cert-seal {
+  height: clamp(22px, 1.8vw, 28px);
+  margin: calc((clamp(40px, 3.2vw, 50px) - clamp(22px, 1.8vw, 28px)) / 2) 0;
 }
 
 .products-cert-label {

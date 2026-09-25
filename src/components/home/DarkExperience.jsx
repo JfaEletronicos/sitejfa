@@ -137,11 +137,7 @@ export default function DarkExperience() {
             </div>
             <div className="reps-text-col">
               <div className="reps-top">
-                <h2 className="reps-title">
-                  Encontre um
-                  <br />
-                  representante JFA.
-                </h2>
+                <h2 className="reps-title">Encontre um representante JFA.</h2>
                 <p className="reps-sub">
                   Nossa rede conecta você a quem conhece nossos produtos, nosso mercado e a sua região.
                 </p>

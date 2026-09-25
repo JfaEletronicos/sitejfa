@@ -4,7 +4,8 @@
   position: relative;
   z-index: 2;
   overflow: hidden;
-  background: #030c22;
+  background: #020308;
+  border-top: 1px solid rgba(120, 170, 255, 0.08);
   padding: clamp(11px, 1.4vw, 19px) 0 0;
 }
 

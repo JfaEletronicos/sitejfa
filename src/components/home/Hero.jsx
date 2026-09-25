@@ -39,10 +39,8 @@ export default function Hero() {
                   </span>
                 </h1>
                 <p className="hero-sub" id="heroSub">
-                  Há <strong>mais de duas décadas</strong>
-                  , desenvolvemos soluções para energia, movimento e eletrônica,
-                  <br className="hero-sub-break" /> com tecnologia, suporte e certificações aplicáveis a
-                  diferentes categorias.
+                  Há <strong>mais de duas décadas</strong>, desenvolvemos soluções para energia, movimento e
+                  eletrônica, com tecnologia, suporte e certificações aplicáveis a diferentes categorias.
                 </p>
                 <div className="hero-cta-row" id="heroCtaRow">
                   <a href="#solucoes" className="hero-cta hero-cta-primary">
