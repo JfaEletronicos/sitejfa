@@ -227,6 +227,12 @@ function initRouter(ctx) {
         longDescription:
           'Gerenciamento BMS para sistemas de armazenamento de energia que exigem estabilidade e controle.',
         image: '/images/bateria_elitio_pro_25v6_50a.webp',
+        images: [
+          '/images/bateria_elitio_pro_25v6_50a.webp',
+          '/images/bateria_elitio_pro_25v6_50a_a1.webp',
+          '/images/bateria_elitio_pro_25v6_50a_a2.webp',
+          '/images/bateria_elitio_pro_25v6_50a_a3.webp',
+        ],
         manualUrl: '',
         commerce: {},
         relatedProducts: [],
