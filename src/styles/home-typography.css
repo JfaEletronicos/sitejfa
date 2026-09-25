@@ -20,7 +20,8 @@
 #homeView .parts-promo-title,
 #homeView .manuals-title,
 #homeView .reps-title {
-  font-size: var(--home-headline);
+  /* Padrão das headlines: 80% da base. */
+  font-size: calc(var(--home-headline) * 0.8);
   line-height: 1.08;
   text-wrap: balance;
 }
@@ -99,16 +100,27 @@
 
 /* Headlines da Hero, da JFA Parts e de Representantes: metade do padrão
    (mínimo de 18px para continuar legível no celular). */
-#homeView .hero-title,
 #homeView .parts-promo-title,
 #homeView .reps-title {
   font-size: max(18px, calc(var(--home-headline) * 0.5));
+}
+
+/* Hero: metade da base + 25%. */
+#homeView .hero-title {
+  font-size: max(22.5px, calc(var(--home-headline) * 0.625));
 }
 
 /* Subheadlines de blocos centralizados ficam centralizadas também. */
 #homeView .fronts-sub,
 #homeView .buy-sub,
 #homeView .manuals-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Mantém a mesma quebra de antes da redução ("Conheça as / áreas da JFA."). */
+#homeView .fronts-title {
+  max-width: 20em;
   margin-left: auto;
   margin-right: auto;
 }
