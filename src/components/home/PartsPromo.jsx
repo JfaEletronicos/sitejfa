@@ -19,10 +19,7 @@ export default function PartsPromo() {
               <img src="/images/board_lb1004.webp" alt="" loading="lazy" decoding="async" />
             </div>
             <div className="parts-promo-media-slide">
-              <img src="/images/board_lb1004.webp" alt="" loading="lazy" decoding="async" />
-            </div>
-            <div className="parts-promo-media-slide">
-              <img src="/images/board_lb1004.webp" alt="" loading="lazy" decoding="async" />
+              <img src="/images/board_lb1009.webp" alt="" loading="lazy" decoding="async" />
             </div>
           </div>
           <div className="parts-promo-grid">
