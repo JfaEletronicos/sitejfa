@@ -1,0 +1,293 @@
+/* Entrada "montando o site": peças escondidas até a seção aparecer (ver behaviors/assemble.js). */
+
+.asm-pending {
+  opacity: 0 !important;
+}
+
+/* Linha de luz que corre no topo de cada seção quando ela se monta. */
+.asm-section {
+  position: relative;
+}
+
+.asm-section.asm-live::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(77, 149, 255, 0), #7fb3ff 50%, rgba(77, 149, 255, 0));
+  box-shadow: 0 0 14px rgba(77, 149, 255, 0.8);
+  transform-origin: left;
+  animation: asmScanLine 1.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes asmScanLine {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+
+  70% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes asmDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-110px) rotate(-10deg) scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmWipe {
+  from {
+    opacity: 1;
+    clip-path: inset(0 100% 0 0);
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+}
+
+@keyframes asmSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(320px) skewX(-6deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-200px) rotate(-5deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(200px) rotate(5deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmRise {
+  from {
+    opacity: 0;
+    transform: translateY(90px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmRiseBig {
+  from {
+    opacity: 0;
+    transform: translateY(120px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmSkew {
+  from {
+    opacity: 0;
+    transform: translateY(90px) skewY(10deg);
+    transform-origin: left bottom;
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    transform-origin: left bottom;
+  }
+}
+
+@keyframes asmFlipDown {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-80deg) translateY(-40px);
+    transform-origin: 50% 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) translateY(0);
+    transform-origin: 50% 0;
+  }
+}
+
+@keyframes asmFlipUp {
+  from {
+    opacity: 0;
+    transform: perspective(1200px) rotateX(50deg) translateY(160px) scale(0.9);
+    transform-origin: 50% 100%;
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(1200px) rotateX(0) translateY(0) scale(1);
+    transform-origin: 50% 100%;
+  }
+}
+
+@keyframes asmPop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmSpin {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.3);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-6deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmZoomOut {
+  from {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmExpand {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes asmLift {
+  from {
+    opacity: 0;
+    transform: translateY(140px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Dominó: sobe de baixo, tombando levemente para trás, e assenta direto (sem balanço). */
+@keyframes asmDomino {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateY(120px) rotateX(28deg);
+    transform-origin: 50% 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    transform-origin: 50% 0;
+  }
+}
+
+@keyframes asmSideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Peças do mapa giram em torno do próprio centro. */
+html.asm-on .reps-state {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Com a montagem ativa, as entradas antigas por animação de classe não rodam
+   (senão repetiriam depois que a nova termina). */
+html.asm-on #bateriaView.is-entering .bateria-hero-content-in > *,
+html.asm-on #bateriasView.is-entering .baterias-intro-title,
+html.asm-on #bateriasView.is-entering .catalog-filter-nav {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asm-pending {
+    opacity: 1 !important;
+  }
+
+  .asm-section.asm-live::before {
+    display: none;
+  }
+}

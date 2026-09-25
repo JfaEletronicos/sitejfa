@@ -5,7 +5,7 @@ export default function Hero() {
       <div className="scene-side scene-left" id="sceneLeft" aria-hidden="true" />
       <div className="scene-side scene-right" id="sceneRight" aria-hidden="true" />
       <div className="hero-pin-space" id="heroPinSpace">
-        <div className="hero-shell" id="heroShell">
+        <div className="hero-shell" id="heroShell" data-theme-keep>
           <video
             className="hero-bg-video"
             id="heroBgVideo"
@@ -14,7 +14,7 @@ export default function Hero() {
             playsInline
             preload="auto"
             aria-hidden="true"
-            src="/media/hero.mp4"
+            src="/media/hero-bateria.mp4"
           />
           <div className="hero-vignette" id="heroVignette" aria-hidden="true" />
           <div className="jfa-header-spacer" id="headerSpacer" aria-hidden="true" />
@@ -39,10 +39,8 @@ export default function Hero() {
                   </span>
                 </h1>
                 <p className="hero-sub" id="heroSub">
-                  Há <strong>mais de duas décadas</strong>
-                  , desenvolvemos soluções para energia, movimento e eletrônica,
-                  <br className="hero-sub-break" /> com tecnologia, suporte e certificações aplicáveis a
-                  diferentes categorias.
+                  Há <strong>mais de duas décadas</strong>, desenvolvemos soluções para energia, movimento e
+                  eletrônica, com tecnologia, suporte e certificações aplicáveis a diferentes categorias.
                 </p>
                 <div className="hero-cta-row" id="heroCtaRow">
                   <a href="#solucoes" className="hero-cta hero-cta-primary">

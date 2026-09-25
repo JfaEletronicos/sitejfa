@@ -1,32 +1,29 @@
 /**
- * Banners do carrossel de campanhas (Home e página de Baterias).
- * Cada item é uma arte pronta: imagem desktop (~2300x400) e mobile (~600x800),
- * destino do clique e texto alternativo. Para adicionar/remover uma campanha,
- * edite apenas este array.
+ * Banners do carrossel de campanhas da Home.
+ * Cada item é uma arte pronta: imagem desktop (~2000x271), imagem mobile
+ * opcional (~600x800), destino do clique e texto alternativo. Para
+ * adicionar/remover uma campanha, edite apenas este array.
  */
 export const CAMPAIGN_BANNERS = [
   {
+    id: 'elitio-pro-som',
+    name: 'JFA e-Lítio Pro Som Automotivo',
+    desktopImage: '/images/banner_som_automotivo_desktop.webp',
+    href: '#/baterias/e-litio-pro-12-8v/50ah',
+    alt: 'Campanha JFA e-Lítio Pro: seu som pede mais, a bateria entrega. Energia de alta performance para projetos de som automotivo.',
+  },
+  {
     id: 'energia-solar',
     name: 'JFA Energia Solar',
-    desktopImage: '/images/banner_solar_desktop.webp',
-    mobileImage: '/images/banner_solar_mobile.webp',
-    href: 'https://loja.jfaeletronicos.com',
-    alt: 'Campanha JFA Energia Solar: e-Lítio Pro para armazenar a energia solar produzida durante o dia e usar quando precisar.',
+    desktopImage: '/images/banner_solar_2000.webp',
+    href: '#/baterias/e-litio-pro-solar-48v-100ah-rack',
+    alt: 'Campanha JFA Energia Solar que não depende do horário: armazene a energia produzida durante o dia para usar quando precisar.',
   },
   {
     id: 'elitio-nautica',
     name: 'JFA e-Lítio Náutica',
-    desktopImage: '/images/banner_nautica_desktop.webp',
-    mobileImage: '/images/banner_nautica_mobile.webp',
-    href: 'https://loja.jfaeletronicos.com',
-    alt: 'Campanha JFA e-Lítio Náutica: baterias de lítio para acompanhar sua rotina náutica, mais tempo na água.',
-  },
-  {
-    id: 'elitio-pro-automotivo',
-    name: 'JFA e-Lítio Pro Automotivo',
-    desktopImage: '/images/banner_automotivo_desktop.webp',
-    mobileImage: '/images/banner_automotivo_mobile.webp',
-    href: 'https://loja.jfaeletronicos.com',
-    alt: 'Campanha JFA e-Lítio Pro: energia de alta performance para projetos de som automotivo.',
+    desktopImage: '/images/banner_nautica_2000.webp',
+    href: '#/baterias/e-litio-nautica-12-8v-100ah',
+    alt: 'Campanha JFA e-Lítio Náutica: mais tempo na água, menos preocupação com energia. Baterias de lítio para acompanhar sua rotina náutica.',
   },
 ];

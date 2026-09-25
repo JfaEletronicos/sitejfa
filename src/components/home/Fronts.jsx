@@ -1,7 +1,7 @@
 /** Frentes JFA (Moov, Energia, Parts, Automotivo). */
 export default function Fronts() {
   return (
-    <section className="fronts" id="frontsSection">
+    <section className="fronts" id="frontsSection" data-theme-keep>
       <span className="jfa-anchor" id="frentes" aria-hidden="true" />{' '}
       <canvas
         className="section-energy-canvas section-fronts-mesh"
@@ -11,14 +11,11 @@ export default function Fronts() {
       <div className="fronts-top">
         <span className="fronts-eyebrow">{'\u00a0'}4 frentes. 4 caminhos. Uma só JFA.</span>
         <h2 className="fronts-title">
-          Conheça as
-          <br />
-          áreas da <em>JFA</em>.
+          Conheça as áreas da <em>JFA</em>.
         </h2>
         <p className="fronts-sub">
-          Cada frente segue seu próprio caminho, levando a tecnologia e o
-          <br />
-          jeito JFA de fazer para diferentes mercados.
+          Cada frente segue seu próprio caminho, levando a tecnologia e o jeito JFA de fazer para diferentes
+          mercados.
         </p>
       </div>
       <div className="fronts-stage" id="frontsStage">

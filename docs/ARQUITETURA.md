@@ -56,3 +56,12 @@ O CSS original foi dividido em arquivos por seção **sem reordenar regras**. `s
 A migração foi validada com screenshots de página inteira (Playwright/Chromium) do original e da versão React, nas larguras 390, 768, 900, 1200, 1440 e 1600px. As alturas das páginas são iguais e as únicas diferenças restantes são variações sub-pixel no desenho das imagens.
 
 O carregamento das imagens dos banners pelo `fetch` + base64 (`resolveCampaignImageSrc`) servia só para o sandbox do editor de design antigo e foi removido; em produção as imagens são carregadas direto de `public/images/`.
+
+## Modo claro
+
+O CSS continua escrito para o modo escuro. No build (e no `npm run dev`), o plugin PostCSS `tools/postcss-light-theme.js` cria, para cada regra com cor, uma cópia com o prefixo `html[data-theme="light"]`: fundos escuros viram claros, textos claros viram azul-marinho e tons médios (azul JFA, verde do WhatsApp) ficam iguais; sombras só ficam mais leves. Com isso, qualquer CSS novo ganha a versão clara sozinho.
+
+- Elementos com o atributo `data-theme-keep` (vídeo da Hero, seção Frentes, card da JFA Parts) e seus filhos mantêm as cores originais.
+- Ajustes que o automático não resolve ficam em `src/styles/theme-light.css` (último import de `styles/index.css`).
+- O tema é aplicado por um script inline no `index.html` antes da primeira pintura; o botão `#themeToggle` (em `behaviors/header.js`) alterna e salva a escolha em `localStorage` (`jfa-theme`).
+- Ao mudar `postcss.config.js` ou o plugin, reinicie o `npm run dev`.

@@ -73,7 +73,8 @@ function initCampaignCarousel(ctx) {
         markCampaignInteracted();
         goTo(loops ? i + 1 : i);
       });
-      campaignPagination.appendChild(b);
+      // Paginação é opcional: sem o container, os pontos não aparecem.
+      if (campaignPagination) campaignPagination.appendChild(b);
       return b;
     });
     let peek = 0,
@@ -92,7 +93,8 @@ function initCampaignCarousel(ctx) {
     const computeLayout = () => {
       const vw =
         campaignViewport.clientWidth || campaignViewport.getBoundingClientRect().width || window.innerWidth;
-      peek = Math.max(16, Math.min(140, vw * 0.05));
+      // Banner de ponta a ponta: cada slide ocupa a largura toda, sem espiar os vizinhos.
+      peek = 0;
       slideW = Math.max(1, vw - peek * 2);
       slideEls.forEach((el) => {
         el.style.width = slideW + 'px';

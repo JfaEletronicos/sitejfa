@@ -4,10 +4,10 @@
   .jfa-nav-left {
     gap: 14px;
   }
-  .jfa-nav-left a {
+  .jfa-nav-left a:not(.jfa-logo) {
     font-size: 10px;
   }
-  .jfa-nav-right > *:not(:last-child) {
+  .jfa-nav-right > a {
     display: none;
   }
 }

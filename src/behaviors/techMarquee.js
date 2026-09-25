@@ -1,5 +1,5 @@
 /**
- * Faixa tipográfica cujo deslocamento horizontal é função do scroll vertical.
+ * Faixa tipográfica inclinada que corre sozinha, pausando fora da tela.
  * @param {import('./context').BehaviorContext} ctx
  */
 function initTechMarquee(ctx) {
@@ -20,16 +20,21 @@ function initTechMarquee(ctx) {
       if (m > 0) m -= unitWidth;
       return m;
     };
-    const MARQUEE_SPEED = 1.6;
-    const MARQUEE_EASE = 0.16;
+    // Rolagem automática contínua (px por segundo), independente do scroll.
+    const MARQUEE_PX_PER_S = 38;
     let marqueeX = 0;
     let marqueeRaf = null;
     let marqueeInView = false;
-    const tickMarquee = () => {
+    let lastTs = null;
+    const tickMarquee = (ts) => {
       marqueeRaf = null;
-      if (!marqueeInView || ctx.reduceMotion) return;
-      const targetX = (window.scrollY || window.pageYOffset || 0) * MARQUEE_SPEED;
-      marqueeX += (targetX - marqueeX) * MARQUEE_EASE;
+      if (!marqueeInView || ctx.reduceMotion) {
+        lastTs = null;
+        return;
+      }
+      const dt = lastTs == null ? 0 : Math.min(ts - lastTs, 64);
+      lastTs = ts;
+      marqueeX -= (MARQUEE_PX_PER_S * dt) / 1000;
       techMarqueeTrack.style.transform = 'translate3d(' + wrapMarqueeX(marqueeX) + 'px,0,0)';
       marqueeRaf = requestAnimationFrame(tickMarquee);
     };
@@ -41,6 +46,7 @@ function initTechMarquee(ctx) {
         cancelAnimationFrame(marqueeRaf);
         marqueeRaf = null;
       }
+      lastTs = null;
     };
     if ('IntersectionObserver' in window) {
       const marqueeInViewObs = new IntersectionObserver(

@@ -69,6 +69,10 @@ function initHeader(ctx) {
           ctx.reduceMotion ? 0 : 420,
         );
       }
+      if (which === 'suporte') {
+        trackEvent('whatsapp_click', { source: 'header_support' });
+        return;
+      }
       trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
         destination: which,
         source: 'header',
@@ -78,6 +82,10 @@ function initHeader(ctx) {
   Array.from(root.querySelectorAll('a[data-header-external]')).forEach((a) => {
     on(a, 'click', () => {
       const which = a.getAttribute('data-header-external');
+      if (which === 'suporte') {
+        trackEvent('whatsapp_click', { source: 'header_support' });
+        return;
+      }
       trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
         destination: which,
         source: 'header',
@@ -105,6 +113,32 @@ function initHeader(ctx) {
       if (tab) setTimeout(() => tab.click(), ctx.reduceMotion ? 0 : 260);
     });
   });
+  const whatsappFloat = root.getElementById('whatsappFloat');
+  if (whatsappFloat)
+    on(whatsappFloat, 'click', () => trackEvent('whatsapp_click', { source: 'floating_button' }));
+  // Modo claro/escuro: o escuro é o padrão; a escolha fica salva neste navegador.
+  const themeToggle = root.getElementById('themeToggle');
+  if (themeToggle) {
+    const htmlEl = document.documentElement;
+    const syncToggle = () => {
+      const light = htmlEl.dataset.theme === 'light';
+      themeToggle.setAttribute('aria-pressed', light ? 'true' : 'false');
+      themeToggle.title = light ? 'Mudar para o modo escuro' : 'Mudar para o modo claro';
+    };
+    syncToggle();
+    on(themeToggle, 'click', () => {
+      const light = htmlEl.dataset.theme !== 'light';
+      if (light) htmlEl.dataset.theme = 'light';
+      else delete htmlEl.dataset.theme;
+      try {
+        localStorage.setItem('jfa-theme', light ? 'light' : 'dark');
+      } catch {
+        // Sem armazenamento (aba anônima etc.): o tema vale só nesta visita.
+      }
+      syncToggle();
+      trackEvent('theme_toggle', { theme: light ? 'light' : 'dark' });
+    });
+  }
   if (navHome && heroSection && 'IntersectionObserver' in window) {
     const navObs = new IntersectionObserver(
       (entries) => {

@@ -4,7 +4,7 @@
   position: relative;
   z-index: 2;
   overflow: hidden;
-  padding: clamp(32px, 4vw, 56px) 0 clamp(10px, 1.4vw, 20px);
+  padding: clamp(32px, 4vw, 56px) 0 0;
 }
 
 .products-head {
@@ -110,9 +110,16 @@
 }
 
 .products-cert-seal {
-  width: clamp(44px, 3.6vw, 56px);
-  height: auto;
+  width: auto;
+  height: clamp(40px, 3.2vw, 50px);
   object-fit: contain;
+}
+
+/* O selo da Anatel é horizontal: altura menor e largura maior para ficar com
+   o mesmo peso visual do selo quadrado do Inmetro. */
+.products-cert-item:nth-child(2) .products-cert-seal {
+  height: clamp(22px, 1.8vw, 28px);
+  margin: calc((clamp(40px, 3.2vw, 50px) - clamp(22px, 1.8vw, 28px)) / 2) 0;
 }
 
 .products-cert-label {
@@ -154,7 +161,8 @@
 
 .carousel-viewport {
   position: relative;
-  height: calc(clamp(120px, 14.4vw, 228px) + clamp(56px, 5vw, 88px));
+  /* Folga só para o card selecionado subir e crescer sem ser cortado. */
+  height: calc(clamp(120px, 14.4vw, 228px) + clamp(34px, 3vw, 44px));
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -506,4 +514,32 @@
 .products-more:hover {
   opacity: 1;
   letter-spacing: 0.38em;
+}
+
+/* Filtros alinhados ao texto da seção, com "Encontrou o que procura?" na mesma linha. */
+.products-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  max-width: 1100px;
+  margin: clamp(14px, 1.8vw, 20px) auto 0;
+}
+
+.products-toolbar .products-category-nav {
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.products-toolbar .products-endcap {
+  margin: 0;
+  padding: 0;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .products-toolbar .products-endcap {
+    justify-content: flex-start;
+  }
 }

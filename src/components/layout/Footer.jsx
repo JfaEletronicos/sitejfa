@@ -1,7 +1,7 @@
 /** Rodapé. */
 export default function Footer() {
   return (
-    <footer className="jfa-footer" id="jfaFooter">
+    <footer className="jfa-footer" id="jfaFooter" data-theme-keep>
       <div className="jfa-footer-texture" aria-hidden="true" />
       <div className="jfa-footer-inner">
         <div className="jfa-footer-top">

@@ -14,7 +14,9 @@ function initEnergyField(ctx) {
     const manualsSectionEl = root.getElementById('manualsSection');
     const canvasCampaign = root.getElementById('campaignEnergyCanvas');
     const campaignSectionEl = root.getElementById('campaignSection');
-    if (!canvasProducts && !canvasReps && !canvasManuals && !canvasFronts && !canvasCampaign) return;
+    const canvasPage = root.getElementById('pageEnergyCanvas');
+    if (!canvasProducts && !canvasReps && !canvasManuals && !canvasFronts && !canvasCampaign && !canvasPage)
+      return;
     const clamp01f = (v) => Math.max(0, Math.min(1, v));
     const mulberry32f = (seed) => () => {
       seed |= 0;
@@ -454,6 +456,24 @@ function initEnergyField(ctx) {
             cfg: {
               seed: 4145761635,
               ...UNIFIED_FIELD_CFG,
+              avoidSelectors: [],
+            },
+          }
+        : null,
+      // Páginas internas: campo fixo atrás do conteúdo, bem mais discreto.
+      // Só existe na tela (e só anima) enquanto uma página interna está aberta.
+      canvasPage
+        ? {
+            canvas: canvasPage,
+            container: canvasPage,
+            cfg: {
+              seed: 1597334677,
+              ...UNIFIED_FIELD_CFG,
+              opacity: UNIFIED_FIELD_CFG.opacity * 0.5,
+              glowStrength: UNIFIED_FIELD_CFG.glowStrength * 0.5,
+              maxPulses: 3,
+              ambientCount: 4,
+              allowMouse: false,
               avoidSelectors: [],
             },
           }

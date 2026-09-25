@@ -15,6 +15,7 @@ import { initEnergyField } from './energyField';
 import { initFooter } from './footer';
 import { initCampaignCarousel } from './campaignCarousel';
 import { initRouter } from './router';
+import { initAssemble } from './assemble';
 
 /**
  * Liga todos os comportamentos interativos do site (animações, carrosséis, roteador,
@@ -45,6 +46,7 @@ export function initPageBehaviors() {
   initFooter(ctx);
   initCampaignCarousel(ctx);
   initRouter(ctx);
+  initAssemble(ctx);
 
   return () => {
     ctx.cleanups.forEach((fn) => {

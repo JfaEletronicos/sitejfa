@@ -48,7 +48,25 @@ export default function BatteryDetailPage() {
               <span className="bateria-app-badge" id="bateriaAppBadge" />
               <h1 className="bateria-title" id="bateriaTitle" />
               <p className="bateria-headline" id="bateriaHeadline" />
+              <div className="bateria-pickers">
+                <div
+                  className="bateria-variants"
+                  id="bateriaVariants"
+                  role="radiogroup"
+                  aria-label="Capacidade"
+                  hidden
+                />
+                <div
+                  className="bateria-variants"
+                  id="bateriaApps"
+                  role="radiogroup"
+                  aria-label="Aplicação"
+                  hidden
+                />
+              </div>
+              <p className="bateria-app-context" id="bateriaAppContext" hidden />
               <p className="bateria-desc" id="bateriaSub" />
+              <div className="bateria-seals" id="bateriaSeals" hidden />
               <div className="bateria-commerce" id="bateriaCommerceHero" />
             </div>
           </div>
@@ -112,18 +130,20 @@ export default function BatteryDetailPage() {
         </div>
       </section>
 
-      {/* 05 · Especificações técnicas */}
-      <section className="bateria-section bateria-specs-section" data-reveal>
+      {/* 05 · Por que escolher: texto muda com capacidade e aplicação */}
+      <section className="bateria-section bateria-why-section" id="bateriaWhySection" data-reveal>
         <div className="bateria-section-inner">
           <div className="bateria-block-head">
-            <span className="bateria-label">Especificações</span>
-            <h2 className="bateria-block-title">
-              Os n<span className="accent-fix">ú</span>meros por tr<span className="accent-fix">á</span>s da
-              energia.
-            </h2>
-            <p className="bateria-block-sub">Confira os principais dados técnicos deste modelo.</p>
+            <span className="bateria-label">Por que escolher</span>
+            <h2 className="bateria-block-title">A escolha certa para o seu projeto.</h2>
           </div>
-          <div className="bateria-spec-groups" id="bateriaSpecGroups" />
+          <div className="bateria-why" id="bateriaWhy">
+            <div className="bateria-why-copy">
+              <h3 className="bateria-why-title" id="bateriaWhyTitle" />
+              <p className="bateria-why-text" id="bateriaWhyText" />
+            </div>
+            <div className="bateria-why-reasons" id="bateriaWhyReasons" />
+          </div>
         </div>
       </section>
 
@@ -133,16 +153,13 @@ export default function BatteryDetailPage() {
           <div className="bateria-system-copy">
             <span className="bateria-label">Seu sistema</span>
             <h2 className="bateria-block-title">
-              Pensada para trabalhar como parte de uma solu<span className="accent-fix">çã</span>o completa.
+              Desempenho de sistema, n<span className="accent-fix">ã</span>o s
+              <span className="accent-fix">ó</span> de bateria.
             </h2>
-            <p className="bateria-block-sub-lg">
-              Bateria, carregamento e gerenciamento precisam trabalhar juntos. A escolha correta dos
-              componentes ajuda a construir um sistema mais organizado, seguro e adequado à necessidade do
-              projeto.
-            </p>
+            <p className="bateria-block-sub-lg" id="bateriaSystemText" />
           </div>
           <div className="bateria-system-visual" aria-hidden="true">
-            <div className="bateria-system-node is-active">
+            <div className="bateria-system-node">
               <span className="bateria-system-node-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <rect x="3" y="7" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -157,6 +174,7 @@ export default function BatteryDetailPage() {
                 </svg>
               </span>
               <span className="bateria-system-node-label">Bateria</span>
+              <span className="bateria-system-node-caption" id="bateriaSysCap1" />
             </div>
             <span className="bateria-system-link" aria-hidden="true" />
             <div className="bateria-system-node">
@@ -171,6 +189,7 @@ export default function BatteryDetailPage() {
                 </svg>
               </span>
               <span className="bateria-system-node-label">Carregamento</span>
+              <span className="bateria-system-node-caption" id="bateriaSysCap2" />
             </div>
             <span className="bateria-system-link" aria-hidden="true" />
             <div className="bateria-system-node">
@@ -186,6 +205,7 @@ export default function BatteryDetailPage() {
                 </svg>
               </span>
               <span className="bateria-system-node-label">Gerenciamento</span>
+              <span className="bateria-system-node-caption" id="bateriaSysCap3" />
             </div>
           </div>
         </div>
@@ -236,17 +256,13 @@ export default function BatteryDetailPage() {
       {/* 10 · Outras baterias */}
       <section className="bateria-section bateria-others-section" data-reveal>
         <div className="bateria-section-inner">
-          <div className="bateria-block-head">
-            <span className="bateria-label">Outras opções</span>
-            <h2 className="bateria-block-title">Encontre a bateria certa para o seu projeto.</h2>
-            <p className="bateria-block-sub">Compare outras configurações disponíveis no portfólio JFA.</p>
+          <div className="bateria-others-head">
+            <span className="bateria-label">Outras baterias JFA</span>
+            <a href="#/baterias" className="bateria-others-all">
+              Ver todas <ArrowIcon />
+            </a>
           </div>
           <div className="catalog-grid" id="bateriaOthersGrid" />
-          <p className="bateria-others-cta">
-            <a href="#/baterias" className="hero-cta hero-cta-tertiary">
-              Ver todas as baterias <ArrowIcon />
-            </a>
-          </p>
         </div>
       </section>
     </div>

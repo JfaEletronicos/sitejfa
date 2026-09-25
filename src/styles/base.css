@@ -21,17 +21,16 @@
     'liga' 0,
     'clig' 0;
   font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  /* Grid quadrado discreto sobre um degradê com mais variação de cor
+     (azul JFA, ciano, índigo e um toque violeta) sobre o navy de base. */
   background:
-    repeating-linear-gradient(
-      155deg,
-      rgba(255, 255, 255, 0.04) 0px,
-      rgba(255, 255, 255, 0.04) 1px,
-      rgba(255, 255, 255, 0) 1px,
-      rgba(255, 255, 255, 0) 34px
-    ),
-    radial-gradient(900px 700px at 92% 38%, rgba(140, 200, 255, 0.22), rgba(140, 200, 255, 0) 55%),
-    radial-gradient(1100px 860px at 6% -10%, rgba(47, 125, 255, 0.4), rgba(47, 125, 255, 0) 60%),
-    linear-gradient(165deg, #051530 0%, #071b3f 24%, #051230 50%, #030a1c 76%, #01040c 100%);
+    linear-gradient(rgba(150, 190, 255, 0.045) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(150, 190, 255, 0.045) 1px, transparent 1px) 0 0 / 44px 44px,
+    radial-gradient(1100px 860px at 6% -10%, rgba(47, 125, 255, 0.38), rgba(47, 125, 255, 0) 60%),
+    radial-gradient(900px 700px at 94% 30%, rgba(40, 200, 230, 0.16), rgba(40, 200, 230, 0) 58%),
+    radial-gradient(1000px 800px at 20% 62%, rgba(96, 84, 230, 0.14), rgba(96, 84, 230, 0) 60%),
+    radial-gradient(900px 760px at 86% 88%, rgba(0, 150, 200, 0.13), rgba(0, 150, 200, 0) 60%),
+    linear-gradient(165deg, #06173a 0%, #0a1d48 22%, #061436 46%, #04102c 70%, #020714 100%);
   color: #fff;
   min-height: 100%;
 }

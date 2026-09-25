@@ -67,3 +67,25 @@
     display: none;
   }
 }
+
+/* Partículas de energia atrás das páginas internas (baterias, setores) */
+.page-energy-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.is-page-view .page-energy-canvas {
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .page-energy-canvas {
+    opacity: 0.45;
+  }
+}

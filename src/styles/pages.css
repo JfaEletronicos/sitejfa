@@ -2,6 +2,7 @@
 
 .page-view {
   position: relative;
+  z-index: 1;
 }
 
 .page-hero {
@@ -75,7 +76,7 @@
   position: relative;
   z-index: 2;
   padding: 0 clamp(18px, 3.6vw, 56px) clamp(64px, 8vw, 100px);
-  background: #030c22;
+  background: transparent;
 }
 
 .catalog-grid {
@@ -194,7 +195,7 @@ a.catalog-card:hover .catalog-card-cta svg {
   z-index: 2;
   padding: 0 clamp(18px, 3.6vw, 56px) clamp(24px, 3vw, 32px);
   text-align: center;
-  background: #030c22;
+  background: transparent;
 }
 
 .setor-intro-text {
@@ -210,7 +211,7 @@ a.catalog-card:hover .catalog-card-cta svg {
   position: relative;
   z-index: 2;
   padding: 0 clamp(18px, 3.6vw, 56px) clamp(48px, 6vw, 72px);
-  background: #030c22;
+  background: transparent;
 }
 
 .setor-solutions-empty {
@@ -231,7 +232,7 @@ a.catalog-card:hover .catalog-card-cta svg {
   z-index: 2;
   padding: 0 clamp(18px, 3.6vw, 56px) clamp(64px, 8vw, 100px);
   text-align: center;
-  background: #030c22;
+  background: transparent;
 }
 
 .setor-cta {

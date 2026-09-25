@@ -237,3 +237,207 @@
 .parts-promo-cta-big:hover svg {
   transform: translateX(4px);
 }
+
+/* Versão compacta: texto, destaques e botão à esquerda; foto à direita. */
+@media (min-width: 861px) {
+  .parts-promo-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-areas:
+      'head media'
+      'grid media'
+      'cta media';
+    grid-template-rows: auto auto 1fr;
+    column-gap: clamp(24px, 3vw, 40px);
+    row-gap: clamp(12px, 1.4vw, 16px);
+    align-items: start;
+    padding: clamp(20px, 2.2vw, 28px) clamp(22px, 2.8vw, 36px);
+  }
+
+  .parts-promo-body {
+    display: contents;
+  }
+
+  .parts-promo-head {
+    grid-area: head;
+    max-width: 900px;
+    margin: 0;
+    text-align: left;
+  }
+
+  .parts-promo-grid {
+    grid-area: grid;
+    gap: 8px;
+  }
+
+  .parts-promo-media {
+    grid-area: media;
+    align-self: stretch;
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+
+  .parts-promo-cta-wrap {
+    grid-area: cta;
+    margin: 0;
+    text-align: left;
+  }
+}
+
+.parts-promo-card {
+  padding: 10px 14px;
+}
+
+.parts-promo-card-title {
+  margin-bottom: 0.15em;
+}
+
+/* Menos contraste: superfície clara fria no lugar do branco puro. */
+.parts-promo-inner {
+  background: linear-gradient(160deg, #eef2f8 0%, #e3e9f3 100%);
+  box-shadow: 0 16px 40px rgba(2, 8, 24, 0.28);
+}
+
+.parts-promo-media {
+  background: #f4f7fb;
+  border-color: #d9e1ec;
+}
+
+/* Destaques só com o título, em linhas compactas. */
+.parts-promo-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border-color: #d3deee;
+}
+
+.parts-promo-card::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jfa-blue, #0068ff);
+}
+
+.parts-promo-card-title {
+  margin: 0;
+}
+
+@media (min-width: 861px) {
+  .parts-promo-media {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+
+  .parts-promo-cta-wrap {
+    align-self: end;
+  }
+}
+
+/* Texto institucional da JFA Parts */
+.parts-promo-story {
+  margin-top: clamp(10px, 1.2vw, 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+}
+
+.parts-promo-story p {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(13.5px, 0.98vw, 15px);
+  line-height: 1.6;
+  color: #4a5266;
+}
+
+.parts-promo-story .parts-promo-story-accent {
+  font-weight: 700;
+  color: #0b1528;
+}
+
+@media (min-width: 861px) {
+  .parts-promo-inner {
+    grid-template-areas:
+      'head media'
+      'cta media';
+    grid-template-rows: 1fr auto;
+    align-items: center;
+  }
+
+  .parts-promo-media {
+    align-self: center;
+  }
+}
+
+/* Carrossel de fotos: sem fade; passagem lateral rápida, como um movimento
+   de câmera, com distorção de movimento durante o deslocamento. */
+.parts-promo-media-slide {
+  opacity: 1;
+  visibility: hidden;
+  transform: translate3d(100%, 0, 0);
+  transition: none;
+}
+
+.parts-promo-media-slide.is-active {
+  visibility: visible;
+  transform: none;
+  animation: partsCamIn 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+.parts-promo-media-slide.is-leaving {
+  visibility: visible;
+  opacity: 1;
+  animation: partsCamOut 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+@keyframes partsCamIn {
+  from {
+    transform: translate3d(100%, 0, 0) scaleX(1.12);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes partsCamOut {
+  from {
+    transform: none;
+  }
+
+  to {
+    transform: translate3d(-100%, 0, 0) scaleX(1.12);
+  }
+}
+
+.parts-promo-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Fotos com tamanho visual equivalente: placas largas limitadas pela largura,
+   placas mais quadradas pela altura. */
+.parts-promo-media-slide img {
+  width: auto;
+  height: auto;
+  max-width: 86%;
+  max-height: 64%;
+  filter: drop-shadow(0 14px 18px rgba(2, 8, 24, 0.22));
+}
+
+/* A primeira foto já começa no lugar, sem passagem. */
+.parts-promo-media-slide.is-active:first-child:not(.was-cycled) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parts-promo-media-slide.is-active,
+  .parts-promo-media-slide.is-leaving {
+    animation: none;
+  }
+}

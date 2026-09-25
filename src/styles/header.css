@@ -7,7 +7,7 @@
   right: 0;
   z-index: 500;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
   align-items: center;
   column-gap: clamp(12px, 2vw, 32px);
   padding: clamp(8px, 1vw, 13px) clamp(18px, 3.6vw, 56px);
@@ -410,4 +410,58 @@
   .jfa-nav-right > a {
     display: none;
   }
+}
+
+.jfa-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(30px, 2.2vw, 36px);
+  height: clamp(30px, 2.2vw, 36px);
+  flex: none;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(120, 170, 255, 0.2);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.3s ease;
+}
+
+.jfa-theme-toggle:hover,
+.jfa-theme-toggle:focus-visible {
+  background: rgba(0, 104, 255, 0.16);
+  border-color: rgba(0, 104, 255, 0.5);
+}
+
+.jfa-theme-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.jfa-theme-icon-moon {
+  display: none;
+}
+
+html[data-theme='light'] .jfa-theme-icon-sun {
+  display: none;
+}
+
+html[data-theme='light'] .jfa-theme-icon-moon {
+  display: block;
+}
+
+/* Logo à esquerda, antes de Bateria e Setores. */
+.jfa-nav-left .jfa-logo {
+  justify-self: auto;
+  margin-right: clamp(6px, 1vw, 14px);
+  opacity: 1;
+  padding: 0;
+}
+
+.jfa-nav-left .jfa-logo::after {
+  display: none;
 }

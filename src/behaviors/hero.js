@@ -1,5 +1,5 @@
 /**
- * Hero: intro animada da headline (2s), vídeo de fundo sob demanda e leve parallax no scroll.
+ * Hero: intro animada da headline (1s, sem desfoque), vídeo de fundo sob demanda e leve parallax no scroll.
  * @param {import('./context').BehaviorContext} ctx
  */
 export function initHero(ctx) {
@@ -41,16 +41,17 @@ export function initHero(ctx) {
   let displayProgress = 0;
   let introStartTime = null;
   let rafId = null;
-  const HERO_INTRO_DURATION_MS = 2e3;
+  const HERO_INTRO_DURATION_MS = 1e3;
   const applyFrame = (progress) => {
-    const textPhase = phaseOf(progress, 0.5, 1);
+    // O texto começa a entrar logo no início (antes esperava metade da intro).
+    const textPhase = phaseOf(progress, 0, 1);
     const headlinePhase = textPhase;
     const subPhase = phaseOf(textPhase, 0.15, 1);
     const ctaPhase = phaseOf(textPhase, 0.25, 1);
     const sceneFade = phaseOf(progress, 0.78, 1);
     const TITLE_BASE_OPACITY = 0.3,
       TITLE_BASE_Y = 10,
-      TITLE_BASE_BLUR = 18;
+      TITLE_BASE_BLUR = 0;
     const wordCount = titleWords.length || 1;
     const wordStagger = wordCount > 1 ? 0.36 / (wordCount - 1) : 0;
     titleWords.forEach((word, i) => {
@@ -64,7 +65,7 @@ export function initHero(ctx) {
     });
     const SUB_BASE_OPACITY = 0.2,
       SUB_BASE_Y = 8,
-      SUB_BASE_BLUR = 12;
+      SUB_BASE_BLUR = 0;
     if (heroSub) {
       const ks = 1 - subPhase;
       heroSub.style.opacity = String(SUB_BASE_OPACITY + (1 - SUB_BASE_OPACITY) * subPhase);
@@ -74,7 +75,7 @@ export function initHero(ctx) {
     }
     const CTA_BASE_OPACITY = 0,
       CTA_BASE_Y = 14,
-      CTA_BASE_BLUR = 10;
+      CTA_BASE_BLUR = 0;
     if (heroCtaRow) {
       const kc = 1 - ctaPhase;
       heroCtaRow.style.opacity = String(CTA_BASE_OPACITY + (1 - CTA_BASE_OPACITY) * ctaPhase);

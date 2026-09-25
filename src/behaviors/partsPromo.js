@@ -13,16 +13,42 @@ function initPartsPromo(ctx) {
         partsMediaSlides.findIndex((s) => s.classList.contains('is-active')),
       );
       let partsMediaTimer = null;
+      // Borrão de movimento só na horizontal (filtro SVG): sobe rápido no início da
+      // passagem e zera quando a foto assenta.
+      const blurNode = root.getElementById('partsMotionBlurAmount');
+      const MOTION_MS = 600;
+      let blurRaf = null;
+      const runMotionBlur = (els) => {
+        if (!blurNode) return;
+        if (blurRaf) cancelAnimationFrame(blurRaf);
+        els.forEach((el) => (el.style.filter = 'url(#partsMotionBlur)'));
+        const t0 = performance.now();
+        const step = (now) => {
+          const t = Math.min(1, (now - t0) / MOTION_MS);
+          const amount = Math.sin(Math.PI * t) * 38;
+          blurNode.setAttribute('stdDeviation', amount.toFixed(1) + ' 0');
+          if (t < 1) blurRaf = requestAnimationFrame(step);
+          else {
+            blurRaf = null;
+            els.forEach((el) => (el.style.filter = ''));
+          }
+        };
+        blurRaf = requestAnimationFrame(step);
+      };
+      cleanups.push(() => {
+        if (blurRaf) cancelAnimationFrame(blurRaf);
+      });
       let partsMediaInView = true;
       const advancePartsMedia = () => {
         if (ctx.reduceMotion) return;
         const prevEl = partsMediaSlides[partsMediaIdx];
         const nextIdx = (partsMediaIdx + 1) % partsMediaSlides.length;
         const nextEl = partsMediaSlides[nextIdx];
+        runMotionBlur([prevEl, nextEl]);
         prevEl.classList.remove('is-active');
         prevEl.classList.add('is-leaving');
-        nextEl.classList.add('is-active');
-        window.setTimeout(() => prevEl.classList.remove('is-leaving'), 900);
+        nextEl.classList.add('is-active', 'was-cycled');
+        window.setTimeout(() => prevEl.classList.remove('is-leaving'), 700);
         partsMediaIdx = nextIdx;
       };
       const stopPartsMedia = () => {
