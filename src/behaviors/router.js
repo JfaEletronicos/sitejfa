@@ -1155,10 +1155,6 @@ function initRouter(ctx) {
       bateriaVariants.innerHTML = '';
       bateriaVariants.hidden = !base.variants;
       if (!base.variants) return;
-      const label = document.createElement('span');
-      label.className = 'bateria-variants-label';
-      label.textContent = 'Capacidade';
-      bateriaVariants.appendChild(label);
       const group = document.createElement('div');
       group.className = 'bateria-variants-options';
       base.variants.forEach((v) => {
@@ -1207,10 +1203,6 @@ function initRouter(ctx) {
       bateriaAppContext.hidden = !multi;
       if (!multi) return false;
       if (!b.sectors.includes(heroApp)) heroApp = b.sectors[0];
-      const label = document.createElement('span');
-      label.className = 'bateria-variants-label';
-      label.textContent = 'Aplica\xE7\xE3o';
-      bateriaApps.appendChild(label);
       const group = document.createElement('div');
       group.className = 'bateria-variants-options';
       b.sectors.forEach((sector) => {

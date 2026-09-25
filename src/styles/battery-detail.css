@@ -1736,3 +1736,26 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 .bateria-desc[hidden] {
   display: none;
 }
+
+/* Capacidade e aplicação lado a lado, sem rótulos visíveis */
+.bateria-pickers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: clamp(12px, 1.4vw, 16px) 0 0;
+}
+
+.bateria-pickers .bateria-variants {
+  margin: 0;
+}
+
+.bateria-pickers:not(:has(.bateria-variants:not([hidden]))) {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .bateria-pickers {
+    justify-content: center;
+  }
+}
