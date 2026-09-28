@@ -149,6 +149,7 @@ const PAGE_VIEWS = {
       ['#setorCatalogGrid .catalog-card', 'asmDomino'],
     ],
   },
+  // Produto de setor: mesma sequência da página de bateria.
   produto: {
     view: '#produtoView',
     parts: [
@@ -156,9 +157,14 @@ const PAGE_VIEWS = {
       ['.bateria-gallery-stage', 'asmFlipUp'],
       ['.bateria-gallery-thumbs', 'asmFromLeft'],
       ['.bateria-hero-content-in > *', 'asmFromRight'],
+      ['.bateria-quickspec-item', 'asmDrop'],
       ['.bateria-block-head > *', 'asmSkew'],
-      ['.produto-about > *', 'asmRise'],
+      ['.bateria-tech-card', 'asmFlipDown'],
+      ['.bateria-why-copy > *', 'asmFromLeft'],
+      ['.bateria-why-reason', 'asmPop'],
+      ['.produto-table-wrap', 'asmRise'],
       ['.bateria-doc-row', 'asmFromRight'],
+      ['.bateria-support-line', 'asmRise'],
       ['.bateria-others-head', 'asmRise'],
       ['#produtoOthersGrid .catalog-card', 'asmFromLeft'],
     ],

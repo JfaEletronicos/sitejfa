@@ -66,8 +66,7 @@ export default function MoovPage() {
               </li>
             </ul>
           </div>
-          {/* Fotos com fundo branco: ficam num painel claro nos dois temas. */}
-          <div className="moov-hero-visual" data-theme-keep>
+          <div className="moov-hero-visual">
             <img
               src="/images/moov/adventure.webp"
               alt="Bicicleta elétrica Adventure 3000W"
@@ -157,7 +156,7 @@ export default function MoovPage() {
             rel="noopener noreferrer"
             data-moov-cta="vitrine"
           >
-            <span className="moov-showcase-media" data-theme-keep>
+            <span className="moov-showcase-media">
               <img
                 src="/images/moov/urban.webp"
                 alt="Bicicleta elétrica Urban 750W"

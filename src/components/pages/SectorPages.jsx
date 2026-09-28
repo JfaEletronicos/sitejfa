@@ -62,7 +62,24 @@ export function SectorInstitutionalPage() {
   );
 }
 
-/** Página #/setores/:setor/:produto: detalhe de um produto do setor (layout da página de bateria). */
+const ArrowIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M5 12h13M13 6l6 6-6 6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/**
+ * Página #/setores/:setor/:produto: detalhe de um produto do setor, com a mesma
+ * estrutura da página de bateria (Hero, especificações rápidas, tecnologia, por que
+ * escolher, ficha técnica, suporte técnico e outros produtos). Preenchida por
+ * behaviors/sectorPages.js; seções sem conteúdo ficam escondidas.
+ */
 export function SectorProductPage() {
   return (
     <div className="page-view" id="produtoView" hidden>
@@ -75,11 +92,12 @@ export function SectorProductPage() {
         </span>{' '}
         <span className="bateria-breadcrumb-current" id="produtoBreadcrumbCurrent" />
       </nav>
+
+      {/* 01 · Hero: galeria + nome, headline, descrição e onde comprar */}
       <section className="bateria-hero">
         <div className="bateria-hero-inner">
           <div className="bateria-gallery">
-            {/* Palco claro nos dois temas (as fotos têm fundos claros variados). */}
-            <div className="bateria-gallery-stage" data-theme-keep>
+            <div className="bateria-gallery-stage">
               <div className="bateria-gallery-grid" aria-hidden="true" />
               <div className="bateria-gallery-mesh" aria-hidden="true" />
               <div className="bateria-floor-shadow" aria-hidden="true" />
@@ -96,41 +114,95 @@ export function SectorProductPage() {
           <div className="bateria-hero-content">
             <div className="bateria-hero-content-in">
               <span className="bateria-label" id="produtoEyebrow" />
+              <span className="bateria-app-badge" id="produtoBadge" />
               <h1 className="bateria-title" id="produtoTitle" />
-              <p className="bateria-desc" id="produtoSummary" />
-              <div className="bateria-cta-row">
-                <a className="hero-cta bateria-cta-buy" href="#/representantes">
-                  Encontrar representante
-                </a>
-                <a
-                  className="bateria-cta-link"
-                  id="produtoManualCta"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Baixar manual
-                </a>
+              <p className="bateria-headline" id="produtoHeadline" />
+              <p className="bateria-desc" id="produtoDesc" />
+              <div className="bateria-commerce">
+                <p className="bateria-commerce-fallback-text">Consulte disponibilidade.</p>
+                <div className="bateria-cta-row">
+                  <a className="hero-cta" href="#/representantes">
+                    Encontrar onde comprar
+                  </a>
+                </div>
+                <p className="bateria-commerce-microcopy">Compra pelos canais oficiais JFA.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <section className="bateria-section produto-about-section">
+
+      {/* 02 · Faixa de especificações rápidas */}
+      <section className="bateria-quickspecs is-visible" id="produtoQuickSpecsSection">
         <div className="bateria-section-inner">
-          <div className="bateria-block-head">
-            <span className="bateria-label">Sobre o produto</span>
-          </div>
-          <div className="produto-about" id="produtoAbout" />
+          <div className="bateria-quickspecs-row" id="produtoQuickSpecs" />
         </div>
       </section>
+
+      {/* 03 · Tecnologia: os diferenciais do produto */}
+      <section className="bateria-section bateria-tech-section is-visible" id="produtoTechSection">
+        <div className="bateria-section-inner">
+          <div className="bateria-block-head">
+            <span className="bateria-label">Tecnologia</span>
+            <h2 className="bateria-block-title">Recursos que fazem a diferença.</h2>
+            <p className="bateria-block-sub">Os principais diferenciais deste produto JFA.</p>
+          </div>
+          <div className="bateria-tech-grid" id="produtoTechGrid" />
+        </div>
+      </section>
+
+      {/* 04 · Por que escolher: descrição completa e aplicações */}
+      <section className="bateria-section bateria-why-section" id="produtoWhySection">
+        <div className="bateria-section-inner">
+          <div className="bateria-block-head">
+            <span className="bateria-label">Por que escolher</span>
+            <h2 className="bateria-block-title">A escolha certa para o seu projeto.</h2>
+          </div>
+          <div className="bateria-why" id="produtoWhy">
+            <div className="bateria-why-copy">
+              <h3 className="bateria-why-title" id="produtoWhyTitle" />
+              <div className="produto-why-text" id="produtoWhyText" />
+            </div>
+            <div className="bateria-why-reasons" id="produtoWhyReasons" />
+          </div>
+        </div>
+      </section>
+
+      {/* 05 · Ficha técnica (quando o site traz tabela) */}
+      <section className="bateria-section produto-specs-section" id="produtoSpecsSection">
+        <div className="bateria-section-inner">
+          <div className="bateria-block-head">
+            <span className="bateria-label">Características técnicas</span>
+            <h2 className="bateria-block-title">Ficha técnica.</h2>
+          </div>
+          <div id="produtoSpecsTable" />
+        </div>
+      </section>
+
+      {/* 06 · Manuais, documentos e suporte */}
       <section className="bateria-section bateria-docs-section">
         <div className="bateria-section-inner">
           <div className="bateria-block-head">
-            <span className="bateria-label">Documentos</span>
+            <span className="bateria-label">Suporte técnico</span>
+            <h2 className="bateria-block-title">
+              Informa<span className="accent-fix">çã</span>o para instalar e utilizar com confian
+              <span className="accent-fix">ç</span>a.
+            </h2>
+            <p className="bateria-block-sub">
+              Encontre os documentos técnicos disponíveis para este produto.
+            </p>
           </div>
           <div className="bateria-docs-hub" id="produtoDocs" />
+          <p className="bateria-support-line">
+            Precisa de ajuda para escolher seu produto?{' '}
+            <a id="produtoSupportCta" target="_blank" rel="noopener noreferrer">
+              Falar com a JFA <ArrowIcon />
+            </a>
+          </p>
         </div>
       </section>
+
+      {/* 07 · Outros produtos */}
       <section className="bateria-section bateria-others-section">
         <div className="bateria-section-inner">
           <div className="bateria-others-head">
@@ -138,16 +210,7 @@ export function SectorProductPage() {
               Outros produtos
             </span>
             <a href="#/setores/automotivo" className="bateria-others-all" id="produtoOthersAll">
-              Ver todos{' '}
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M5 12h13M13 6l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              Ver todos <ArrowIcon />
             </a>
           </div>
           <div className="catalog-grid" id="produtoOthersGrid" />
