@@ -154,20 +154,8 @@ function initPartsPage(ctx) {
     });
   }
 
-  // Carrossel: rolagem horizontal (arraste no celular) com setas no computador.
+  // Carrossel: rolagem horizontal com arraste/scroll (sem setas).
   const carousel = root.getElementById('partsCarousel');
-  const step = () => {
-    const card = carousel && carousel.querySelector('.parts-card');
-    return card ? card.getBoundingClientRect().width + 20 : 300;
-  };
-  view.querySelectorAll('[data-parts-carousel]').forEach((btn) =>
-    on(btn, 'click', () =>
-      carousel.scrollBy({
-        left: Number(btn.dataset.partsCarousel) * step(),
-        behavior: ctx.reduceMotion ? 'auto' : 'smooth',
-      }),
-    ),
-  );
   // "Ver placa" do resultado: rola até o card e dá um destaque.
   const highlightCard = (model) => {
     const card = carousel && carousel.querySelector('.parts-card[data-model="' + model + '"]');

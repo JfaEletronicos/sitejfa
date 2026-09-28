@@ -3,6 +3,8 @@
 .parts-page {
   position: relative;
   z-index: 1;
+  /* Um pouco mais escuro que o resto do site. */
+  background: rgba(1, 5, 16, 0.42);
 }
 
 .parts-inner {
@@ -137,7 +139,7 @@
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.32;
 }
 
 .parts-circuit-base {
@@ -149,13 +151,14 @@
 .parts-circuit-pulse {
   fill: none;
   stroke: #4d95ff;
-  stroke-width: 2;
+  stroke-width: 1.6;
   stroke-linecap: round;
-  stroke-dasharray: 60 900;
-  stroke-dashoffset: 960;
-  filter: drop-shadow(0 0 4px rgba(77, 149, 255, 0.9));
-  animation: partsPulse 9s linear infinite;
-  animation-delay: calc(var(--i) * -1.15s);
+  stroke-dasharray: 80 900;
+  stroke-dashoffset: 980;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 3px rgba(77, 149, 255, 0.6));
+  animation: partsPulse 22s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: calc(var(--i) * -2.8s);
 }
 
 .parts-circuit-node {
@@ -176,15 +179,15 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(38% 50% at 75% 50%, rgba(47, 125, 255, 0.3), rgba(47, 125, 255, 0) 70%),
-    radial-gradient(40% 40% at 10% 20%, rgba(100, 175, 255, 0.1), rgba(100, 175, 255, 0) 70%);
+    radial-gradient(38% 50% at 75% 50%, rgba(47, 125, 255, 0.18), rgba(47, 125, 255, 0) 70%),
+    radial-gradient(40% 40% at 10% 20%, rgba(100, 175, 255, 0.06), rgba(100, 175, 255, 0) 70%);
 }
 
 /* 1 · Hero */
 .parts-hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(96px, 10vw, 132px) clamp(18px, 3.6vw, 56px) clamp(40px, 5vw, 64px);
+  padding: clamp(92px, 9.5vw, 124px) clamp(18px, 3.6vw, 56px) clamp(32px, 4vw, 52px);
 }
 
 .parts-hero-inner {
@@ -203,7 +206,7 @@
 .parts-final-board {
   position: relative;
   filter: drop-shadow(0 30px 50px rgba(0, 20, 60, 0.6)) drop-shadow(0 0 40px rgba(47, 125, 255, 0.25));
-  animation: partsFloat 6s ease-in-out infinite;
+  animation: partsFloat 12s ease-in-out infinite;
 }
 
 .parts-hero-board img,
@@ -220,7 +223,7 @@
 
 @keyframes partsFloat {
   50% {
-    translate: 0 -10px;
+    translate: 0 -6px;
   }
 }
 
@@ -232,12 +235,12 @@
   background: linear-gradient(
     100deg,
     rgba(120, 190, 255, 0) 35%,
-    rgba(120, 190, 255, 0.35) 50%,
+    rgba(120, 190, 255, 0.16) 50%,
     rgba(120, 190, 255, 0) 65%
   );
   background-size: 250% 100%;
   mix-blend-mode: screen;
-  animation: partsScan 4.5s ease-in-out infinite;
+  animation: partsScan 11s ease-in-out infinite;
 }
 
 @keyframes partsScan {
@@ -252,25 +255,106 @@
 /* Seções */
 .parts-section {
   position: relative;
-  padding: clamp(36px, 4.4vw, 64px) clamp(18px, 3.6vw, 56px);
+  padding: clamp(28px, 3.4vw, 48px) clamp(18px, 3.6vw, 56px);
 }
 
 .parts-head {
   text-align: center;
-  margin-bottom: clamp(22px, 2.6vw, 32px);
+  margin-bottom: clamp(18px, 2.2vw, 26px);
 }
 
-.parts-head-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  text-align: left;
-}
-
-/* 2 · Buscador */
+/* 2 · Buscador: seção branca (mantida igual nos dois temas) */
 .parts-finder-section {
-  background: linear-gradient(180deg, rgba(47, 125, 255, 0.06), rgba(47, 125, 255, 0));
+  padding-top: clamp(40px, 4.6vw, 64px);
+  padding-bottom: clamp(40px, 4.6vw, 64px);
+  background: #fff;
+}
+
+.parts-finder-section .parts-h2 {
+  color: #0b1b3a;
+}
+
+.parts-finder-section .parts-text {
+  color: rgba(11, 27, 58, 0.66);
+}
+
+.parts-finder-section .parts-finder-field {
+  background: #f3f6fb;
+  border-color: #d4deed;
+  box-shadow: 0 18px 40px -28px rgba(0, 60, 160, 0.45);
+}
+
+.parts-finder-section .parts-finder-field:focus-within {
+  background: #fff;
+  border-color: #2f7dff;
+}
+
+.parts-finder-section .parts-finder-field > svg {
+  color: rgba(11, 27, 58, 0.45);
+}
+
+.parts-finder-section .parts-finder-field input {
+  color: #0b1b3a;
+}
+
+.parts-finder-section .parts-finder-field input::placeholder {
+  color: rgba(11, 27, 58, 0.42);
+}
+
+.parts-finder-section .parts-finder-suggest {
+  background: #fff;
+  border-color: #d4deed;
+  box-shadow: 0 20px 44px -20px rgba(0, 30, 90, 0.35);
+}
+
+.parts-finder-section .parts-finder-suggest-item {
+  color: rgba(11, 27, 58, 0.62);
+}
+
+.parts-finder-section .parts-finder-suggest-item strong {
+  color: #0b1b3a;
+}
+
+.parts-finder-section .parts-finder-suggest-item:hover {
+  background: #eef3fc;
+}
+
+.parts-finder-section .parts-finder-result {
+  background: #f6f8fc;
+  border-color: #dde5f1;
+}
+
+.parts-finder-section .parts-finder-scan,
+.parts-finder-section .parts-finder-empty {
+  color: rgba(11, 27, 58, 0.72);
+}
+
+.parts-finder-section .parts-finder-data dt {
+  color: #2f6fd6;
+}
+
+.parts-finder-section .parts-finder-data dd {
+  color: #0b1b3a;
+}
+
+.parts-finder-section .parts-finder-found-media {
+  background: #e9eef8;
+}
+
+.parts-finder-section .parts-cta.is-ghost {
+  color: #0b1b3a;
+  background: #fff;
+  border-color: #c9d5e8;
+}
+
+.parts-finder-section .parts-cta.is-ghost:hover {
+  background: #eef3fc;
+}
+
+.parts-finder-section .parts-cta.is-whats {
+  color: #0d6b35;
+  background: rgba(37, 211, 102, 0.14);
+  border-color: rgba(37, 160, 90, 0.4);
 }
 
 .parts-finder-field {
@@ -483,34 +567,6 @@
 }
 
 /* 3 · Carrossel */
-.parts-carousel-arrows {
-  display: flex;
-  gap: 8px;
-}
-
-.parts-arrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  color: #fff;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(140, 190, 255, 0.3);
-  transition: background 0.2s ease;
-}
-
-.parts-arrow svg {
-  width: 18px;
-  height: 18px;
-}
-
-.parts-arrow:hover {
-  background: rgba(0, 104, 255, 0.2);
-}
-
 .parts-carousel {
   display: grid;
   grid-auto-flow: column;
@@ -827,8 +883,8 @@
 .parts-final {
   position: relative;
   overflow: hidden;
-  margin-top: clamp(20px, 3vw, 40px);
-  padding: clamp(48px, 6vw, 84px) clamp(18px, 3.6vw, 56px);
+  margin-top: clamp(12px, 1.6vw, 24px);
+  padding: clamp(36px, 4.6vw, 64px) clamp(18px, 3.6vw, 56px);
   text-align: center;
   border-top: 1px solid rgba(120, 170, 255, 0.14);
 }
@@ -848,7 +904,7 @@
 }
 
 .parts-final-board {
-  width: min(100%, 620px);
+  width: min(100%, 440px);
   margin-bottom: clamp(24px, 3vw, 36px);
 }
 
@@ -881,13 +937,6 @@
 }
 
 @media (max-width: 640px) {
-  .parts-head-row {
-    justify-content: center;
-    text-align: center;
-  }
-  .parts-carousel-arrows {
-    display: none;
-  }
   .parts-carousel {
     grid-auto-columns: 78%;
   }

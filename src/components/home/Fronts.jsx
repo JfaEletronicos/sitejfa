@@ -109,7 +109,7 @@ export default function Fronts() {
             <div className="front-visual">
               <img
                 className="front-visual-img"
-                src="/images/front_parts.webp"
+                src="/images/board_lb1009.webp"
                 alt="Placa eletrônica JFA Parts"
                 loading="lazy"
                 decoding="async"

@@ -137,7 +137,7 @@ export default function PartsPage() {
       </section>
 
       {/* 2 · Encontre sua placa */}
-      <section className="parts-section parts-finder-section" id="partsFinder">
+      <section className="parts-section parts-finder-section" id="partsFinder" data-theme-keep>
         <div className="parts-inner parts-narrow">
           <div className="parts-head">
             <span className="parts-label">Encontre sua placa</span>
@@ -170,19 +170,9 @@ export default function PartsPage() {
       {/* 3 · Carrossel de produtos */}
       <section className="parts-section" id="partsCatalog">
         <div className="parts-inner">
-          <div className="parts-head parts-head-row">
-            <div>
-              <span className="parts-label">Catálogo</span>
-              <h2 className="parts-h2">Conheça algumas das nossas placas</h2>
-            </div>
-            <div className="parts-carousel-arrows">
-              <button type="button" className="parts-arrow" data-parts-carousel="-1" aria-label="Anterior">
-                <Icon d="M15 5l-7 7 7 7" />
-              </button>
-              <button type="button" className="parts-arrow" data-parts-carousel="1" aria-label="Próxima">
-                <Icon d="M9 5l7 7-7 7" />
-              </button>
-            </div>
+          <div className="parts-head">
+            <span className="parts-label">Catálogo</span>
+            <h2 className="parts-h2">Conheça algumas das nossas placas</h2>
           </div>
           <div className="parts-carousel" id="partsCarousel">
             {PARTS_BOARDS.map((b) => (
@@ -262,7 +252,7 @@ export default function PartsPage() {
           </div>
           <div className="parts-story-visual">
             <img
-              src="/images/front_parts.webp"
+              src="/images/board_lb1004_cut.webp"
               alt="Placa eletrônica JFA Parts"
               loading="lazy"
               decoding="async"
@@ -292,10 +282,10 @@ export default function PartsPage() {
         <div className="parts-hero-glow" aria-hidden="true" />
         <div className="parts-inner parts-final-inner">
           <div className="parts-final-board">
-            <img src="/images/board_lb1004_cut.webp" alt="" loading="lazy" decoding="async" />
+            <img src="/images/board_lb1009.webp" alt="" loading="lazy" decoding="async" />
             <span
               className="parts-scan"
-              style={scanMask('/images/board_lb1004_cut.webp')}
+              style={scanMask('/images/board_lb1009.webp')}
               aria-hidden="true"
             />
           </div>
