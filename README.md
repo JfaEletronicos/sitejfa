@@ -68,6 +68,7 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 | `#/baterias` | Abertura curta e catálogo de baterias e-Lítio, com filtro animado por aplicação |
 | `#/baterias/:slug` | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp |
 | `#/setores/automotivo`, `#/setores/telecom` | Catálogo do setor no layout da página de baterias (produtos de `src/data/sectors.js`) |
+| `#/setores/:setor/:produto` | Página do produto (fotos, descrição e documentos de `src/data/productDetails.js`) |
 | `#/setores/moov`, `#/setores/parts` | Páginas institucionais |
 | `#/suporte` | Suporte técnico: mesmo mapa de Representantes, com os contatos de suporte (`src/data/support.js`) |
 | `#/representantes` | A seção de Representantes da Home, sozinha numa página |

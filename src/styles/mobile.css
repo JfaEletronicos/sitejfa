@@ -25,25 +25,39 @@
   #bateriasView .catalog-card-lines,
   #setorCatalogView .catalog-card-lines,
   #bateriaView .bateria-desc,
+  #produtoView .bateria-desc,
   #bateriaView .bateria-block-sub,
+  #produtoView .bateria-block-sub,
   #bateriaView .bateria-block-sub-lg,
+  #produtoView .bateria-block-sub-lg,
   #bateriaView .bateria-tech-text,
+  #produtoView .bateria-tech-text,
   #bateriaView .bateria-why-text,
+  #produtoView .bateria-why-text,
   #bateriaView .bateria-why-reason-text,
+  #produtoView .bateria-why-reason-text,
   #bateriaView .bateria-system-node-caption,
+  #produtoView .bateria-system-node-caption,
   #bateriaView .bateria-doc-row-text,
+  #produtoView .bateria-doc-row-text,
   #bateriaView .bateria-commerce-microcopy,
-  #bateriaView .catalog-card-meta {
+  #produtoView .bateria-commerce-microcopy,
+  #bateriaView .catalog-card-meta,
+  #produtoView .catalog-card-meta {
     display: none !important;
   }
 
   /* Texto da aplicação: fica só a frase de destaque. */
-  #bateriaView .bateria-app-context {
+  #bateriaView .bateria-app-context ,
+
+  /* Texto da aplicação: fica só a frase de destaque. */
+  #produtoView .bateria-app-context {
     font-size: 0;
     max-width: none;
   }
 
-  #bateriaView .bateria-app-context strong {
+  #bateriaView .bateria-app-context strong,
+  #produtoView .bateria-app-context strong {
     margin: 0;
     font-size: 15px;
   }
@@ -105,8 +119,11 @@
   #homeView .products-head-row,
   #homeView .products-toolbar,
   #bateriaView .bateria-pickers,
+  #produtoView .bateria-pickers,
   #bateriaView .bateria-seals,
-  #bateriaView .bateria-cta-row {
+  #produtoView .bateria-seals,
+  #bateriaView .bateria-cta-row,
+  #produtoView .bateria-cta-row {
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -200,44 +217,54 @@
   }
 
   /* Página da bateria: listas e cards em uma coluna, centralizados. */
-  #bateriaView .bateria-doc-row {
+  #bateriaView .bateria-doc-row,
+  centralizados. */ #produtoView .bateria-doc-row {
     flex-direction: column;
     text-align: center;
     gap: 10px;
   }
 
-  #bateriaView .bateria-doc-row.is-primary .bateria-doc-row-arrow {
+  #bateriaView .bateria-doc-row.is-primary .bateria-doc-row-arrow,
+  #produtoView .bateria-doc-row.is-primary .bateria-doc-row-arrow {
     margin-left: 0;
   }
 
   #bateriaView .bateria-why-reason,
+  #produtoView .bateria-why-reason,
   #bateriaView .bateria-tech-card,
-  #bateriaView .bateria-system-copy {
+  #produtoView .bateria-tech-card,
+  #bateriaView .bateria-system-copy,
+  #produtoView .bateria-system-copy {
     text-align: center;
     align-items: center;
   }
 
-  #bateriaView .bateria-tech-icon {
+  #bateriaView .bateria-tech-icon,
+  #produtoView .bateria-tech-icon {
     margin-left: auto;
     margin-right: auto;
   }
 
-  #bateriaView .bateria-others-head {
+  #bateriaView .bateria-others-head,
+  #produtoView .bateria-others-head {
     flex-direction: column;
     gap: 8px;
   }
 
-  #bateriaView #bateriaOthersGrid .catalog-card {
+  #bateriaView #bateriaOthersGrid .catalog-card,
+  #produtoView #produtoOthersGrid .catalog-card {
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
   }
 
-  #bateriaView #bateriaOthersGrid .catalog-card-media {
+  #bateriaView #bateriaOthersGrid .catalog-card-media,
+  #produtoView #produtoOthersGrid .catalog-card-media {
     grid-row: auto;
   }
 
-  #bateriaView .bateria-breadcrumb {
+  #bateriaView .bateria-breadcrumb,
+  #produtoView .bateria-breadcrumb {
     justify-content: center;
   }
 }

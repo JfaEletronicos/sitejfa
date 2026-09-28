@@ -149,6 +149,20 @@ const PAGE_VIEWS = {
       ['#setorCatalogGrid .catalog-card', 'asmDomino'],
     ],
   },
+  produto: {
+    view: '#produtoView',
+    parts: [
+      ['.bateria-breadcrumb', 'asmFromLeft'],
+      ['.bateria-gallery-stage', 'asmFlipUp'],
+      ['.bateria-gallery-thumbs', 'asmFromLeft'],
+      ['.bateria-hero-content-in > *', 'asmFromRight'],
+      ['.bateria-block-head > *', 'asmSkew'],
+      ['.produto-about > *', 'asmRise'],
+      ['.bateria-doc-row', 'asmFromRight'],
+      ['.bateria-others-head', 'asmRise'],
+      ['#produtoOthersGrid .catalog-card', 'asmFromLeft'],
+    ],
+  },
   setorInst: {
     view: '#setorInstView',
     parts: [

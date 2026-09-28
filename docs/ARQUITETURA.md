@@ -17,7 +17,7 @@ As animações (intro da Hero, carrosséis com inércia, faixa tipográfica, cam
 
 ### Setores
 
-O botão **Setores** do header (`behaviors/header.js`) abre um menu em leque com Automotivo, Telecom, Moov e Parts (`SECTOR_MENU` em `data/sectors.js`). Automotivo e Telecom abrem `#setorCatalogView`, no mesmo layout de `#/baterias`: `behaviors/sectorPages.js` monta os cards a partir de `SECTOR_CATALOGS` (grupos = abas do filtro, ids de `data/products.js`; as baterias do setor vêm do catálogo de baterias). Moov e Parts abrem `#setorInstView`, preenchida com `SECTOR_INSTITUTIONAL`. O filtro animado, a entrada dos cards e o parallax ficam em `behaviors/catalogGrid.js`, compartilhado com a página de baterias.
+O botão **Setores** do header (`behaviors/header.js`) abre um menu em leque com Automotivo, Telecom, Moov e Parts (`SECTOR_MENU` em `data/sectors.js`). Automotivo e Telecom abrem `#setorCatalogView`, no mesmo layout de `#/baterias`: `behaviors/sectorPages.js` monta os cards a partir de `SECTOR_CATALOGS` (grupos = abas do filtro, ids de `data/products.js`; as baterias do setor vêm do catálogo de baterias). Cada produto com detalhes em `data/productDetails.js` tem página própria (`#produtoView`, `#/setores/:setor/:id`) no layout da página de bateria: galeria, resumo, "Sobre o produto", documentos e outros produtos da mesma linha. Os textos e fotos vieram do site automotivo.jfaeletronicos.com (fotos em WebP em `public/images/produtos/`). Moov e Parts abrem `#setorInstView`, preenchida com `SECTOR_INSTITUTIONAL`. O filtro animado, a entrada dos cards e o parallax ficam em `behaviors/catalogGrid.js`, compartilhado com a página de baterias.
 
 ### Páginas de Suporte, Representantes e Manuais
 

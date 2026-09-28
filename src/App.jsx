@@ -13,7 +13,11 @@ import TechMarquee from './components/home/TechMarquee';
 import DarkExperience from './components/home/DarkExperience';
 import BatteriesPage from './components/pages/BatteriesPage';
 import BatteryDetailPage from './components/pages/BatteryDetailPage';
-import { SectorCatalogPage, SectorInstitutionalPage } from './components/pages/SectorPages';
+import {
+  SectorCatalogPage,
+  SectorInstitutionalPage,
+  SectorProductPage,
+} from './components/pages/SectorPages';
 import { SupportPage, RepresentativesPage, ManualsPage } from './components/pages/SectionPages';
 import { initPageBehaviors } from './behaviors';
 
@@ -42,6 +46,7 @@ export default function App() {
       <BatteryDetailPage />
       <SectorCatalogPage />
       <SectorInstitutionalPage />
+      <SectorProductPage />
       <SupportPage />
       <RepresentativesPage />
       <ManualsPage />

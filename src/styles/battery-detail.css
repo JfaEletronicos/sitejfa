@@ -1178,14 +1178,16 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
   transform: translateX(3px);
 }
 
-#bateriaOthersGrid {
+#bateriaOthersGrid,
+#produtoOthersGrid {
   max-width: 1180px;
   margin: 0 auto;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: clamp(8px, 1vw, 12px);
 }
 
-#bateriaOthersGrid .catalog-card {
+#bateriaOthersGrid .catalog-card,
+#produtoOthersGrid .catalog-card {
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr);
   column-gap: 12px;
@@ -1195,25 +1197,31 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
   border-radius: 12px;
 }
 
-#bateriaOthersGrid .catalog-card-media {
+#bateriaOthersGrid .catalog-card-media,
+#produtoOthersGrid .catalog-card-media {
   grid-row: 1 / span 2;
   width: 52px;
   aspect-ratio: 1;
   border-radius: 8px;
 }
 
-#bateriaOthersGrid .catalog-card-name {
+#bateriaOthersGrid .catalog-card-name,
+#produtoOthersGrid .catalog-card-name {
   font-size: clamp(12.5px, 0.9vw, 13.5px);
   line-height: 1.3;
 }
 
-#bateriaOthersGrid .catalog-card-meta {
+#bateriaOthersGrid .catalog-card-meta,
+#produtoOthersGrid .catalog-card-meta {
   font-size: 11.5px;
 }
 
 #bateriaOthersGrid .catalog-card-lines,
+#produtoOthersGrid .catalog-card-lines,
 #bateriaOthersGrid .catalog-card-desc,
-#bateriaOthersGrid .catalog-card-cta {
+#produtoOthersGrid .catalog-card-desc,
+#bateriaOthersGrid .catalog-card-cta,
+#produtoOthersGrid .catalog-card-cta {
   display: none;
 }
 
@@ -1240,29 +1248,37 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 
 /* Entrada sequencial da Hero, galeria em crossfade e seções em stagger */
 
-#bateriaView.is-entering .bateria-hero-content-in > * {
+#bateriaView.is-entering .bateria-hero-content-in > *,
+galeria em crossfade e seções em stagger */ #produtoView.is-entering .bateria-hero-content-in > * {
   animation: bateriaContentIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 #bateriaView.is-entering .bateria-hero-content-in > :nth-child(1),
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(2) {
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(1),
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(2),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(2) {
   animation-delay: 0.18s;
 }
 
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(3) {
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(3),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(3) {
   animation-delay: 0.24s;
 }
 
 #bateriaView.is-entering .bateria-hero-content-in > :nth-child(4),
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(5) {
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(4),
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(5),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(5) {
   animation-delay: 0.32s;
 }
 
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(6) {
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(6),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(6) {
   animation-delay: 0.4s;
 }
 
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(7) {
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(7),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(7) {
   animation-delay: 0.5s;
 }
 
@@ -1338,7 +1354,8 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #bateriaView.is-entering .bateria-hero-content-in > * {
+  #bateriaView.is-entering .bateria-hero-content-in > *,
+  #produtoView.is-entering .bateria-hero-content-in > * {
     animation: none;
   }
 
@@ -1624,7 +1641,8 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
   padding: 2px;
 }
 
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(8) {
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(8),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(8) {
   animation-delay: 0.56s;
 }
 
@@ -1682,7 +1700,8 @@ a.bateria-doc-row:focus-visible .bateria-doc-row-arrow {
   background: linear-gradient(135deg, #3a82ff, #0a58dc);
 }
 
-#bateriaView.is-entering .bateria-hero-content-in > :nth-child(n + 9) {
+#bateriaView.is-entering .bateria-hero-content-in > :nth-child(n + 9),
+#produtoView.is-entering .bateria-hero-content-in > :nth-child(n + 9) {
   animation-delay: 0.62s;
 }
 
@@ -1975,4 +1994,114 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
   .bateria-doc-row.is-primary .bateria-doc-row-arrow {
     margin-left: calc(38px + clamp(14px, 1.6vw, 20px));
   }
+}
+
+/* Página de produto de setor (#/setores/:setor/:produto): usa o layout da página de
+   bateria; aqui só o que é próprio dela (galeria simples e texto "Sobre o produto"). */
+.produto-hero-media img {
+  transition: opacity 0.35s ease;
+}
+
+.produto-hero-media img.is-swapping {
+  opacity: 0;
+}
+
+.produto-about-section .bateria-block-head {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.produto-about {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.produto-about p {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.7;
+  color: rgba(230, 238, 255, 0.72);
+}
+
+.produto-about strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.produto-about h3 {
+  margin: 0.8em 0 0;
+  font-weight: 800;
+  font-size: clamp(16px, 1.3vw, 19px);
+  color: #fff;
+}
+
+.produto-about ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.produto-about li {
+  position: relative;
+  padding: 14px 16px 14px 42px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(120, 170, 255, 0.16);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(230, 238, 255, 0.78);
+}
+
+.produto-about li::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 19px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6fa8ff 0 35%, rgba(47, 125, 255, 0.25) 36% 100%);
+}
+
+@media (max-width: 640px) {
+  .produto-about {
+    text-align: center;
+  }
+  .produto-about ul {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+}
+
+/* As fotos dos produtos vêm com fundos variados (branco, cinza, transparente):
+   o palco fica claro, igual aos cards do catálogo, para todas ficarem bem. */
+#produtoView .bateria-gallery-stage {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 42%, rgba(246, 249, 255, 0.95), rgba(246, 249, 255, 0) 72%),
+    linear-gradient(165deg, #e4ebf5 0%, #cfdaea 100%);
+}
+
+#produtoView .bateria-gallery-grid,
+#produtoView .bateria-gallery-mesh {
+  display: none;
+}
+
+#produtoView .produto-hero-media img {
+  border-radius: 12px;
+}
+
+#setorCatalogGrid .catalog-card-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

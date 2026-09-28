@@ -277,6 +277,7 @@ html.asm-on .reps-state {
 /* Com a montagem ativa, as entradas antigas por animação de classe não rodam
    (senão repetiriam depois que a nova termina). */
 html.asm-on #bateriaView.is-entering .bateria-hero-content-in > *,
+html.asm-on #produtoView.is-entering .bateria-hero-content-in > *,
 html.asm-on #bateriasView.is-entering .baterias-intro-title,
 html.asm-on #setorCatalogView.is-entering .baterias-intro-title,
 html.asm-on #bateriasView.is-entering .catalog-filter-nav,

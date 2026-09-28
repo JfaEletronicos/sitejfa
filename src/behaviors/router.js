@@ -4,7 +4,7 @@ import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
 
 /**
- * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
+ * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/setores/:slug/:produto, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
  * @param {import('./context').BehaviorContext} ctx
  */
 function initRouter(ctx) {
@@ -16,7 +16,9 @@ function initRouter(ctx) {
     // Páginas de setor (#/setores/:slug): montadas por behaviors/sectorPages.js.
     const setorCatalogView = root.getElementById('setorCatalogView');
     const setorInstView = root.getElementById('setorInstView');
-    if (!homeView || !bateriasView || !bateriaView || !setorCatalogView || !setorInstView) return;
+    const produtoView = root.getElementById('produtoView');
+    if (!homeView || !bateriasView || !bateriaView || !setorCatalogView || !setorInstView || !produtoView)
+      return;
     // Suporte, Representantes e Manuais: páginas próprias. As de Representantes e
     // Manuais recebem a própria seção da Home (movida para a página ao abrir e
     // devolvida ao lugar original ao voltar), então tudo funciona igual nas duas.
@@ -1385,6 +1387,7 @@ function initRouter(ctx) {
       bateriaView.hidden = name !== 'bateria';
       setorCatalogView.hidden = name !== 'setorCatalog';
       setorInstView.hidden = name !== 'setorInst';
+      produtoView.hidden = name !== 'produto';
       placeSections(name);
       Object.keys(SECTION_PAGES).forEach((key) => {
         if (SECTION_PAGES[key].view) SECTION_PAGES[key].view.hidden = name !== key;
@@ -1393,7 +1396,10 @@ function initRouter(ctx) {
       pageBody.classList.toggle('is-page-view', name !== 'home');
       if (navBaterias) navBaterias.classList.toggle('is-active', name === 'baterias' || name === 'bateria');
       if (navSetores)
-        navSetores.classList.toggle('is-active', name === 'setorCatalog' || name === 'setorInst');
+        navSetores.classList.toggle(
+          'is-active',
+          name === 'setorCatalog' || name === 'setorInst' || name === 'produto',
+        );
       if (name === 'baterias') playBateriasEntrance();
       if (name === 'setorCatalog') {
         setorCatalogView.classList.remove('is-entering');
@@ -1437,7 +1443,9 @@ function initRouter(ctx) {
         trackEvent('page_view', { view: 'baterias' });
       } else if (parts[0] === 'setores') {
         // Setor sem página (ou só #/setores): volta para a Home com o menu de setores aberto.
-        const view = parts[1] && ctx.renderSectorPage ? ctx.renderSectorPage(parts[1]) : null;
+        let view = null;
+        if (parts[2] && ctx.renderSectorProduct) view = ctx.renderSectorProduct(parts[1], parts[2]);
+        else if (parts[1] && ctx.renderSectorPage) view = ctx.renderSectorPage(parts[1]);
         if (view) {
           showView(view);
         } else {

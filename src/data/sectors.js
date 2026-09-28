@@ -27,7 +27,8 @@ export const SECTOR_MENU = [
 /**
  * Catálogos por setor. `groups` são as abas do filtro; cada grupo lista ids de
  * `products.js`. `batterySector` puxa as baterias desse setor (com página própria).
- * `images` associa foto a um produto (os demais usam o ícone do setor).
+ * Fotos e página de cada produto vêm de `productDetails.js` (sem detalhes, o card
+ * mostra o ícone do setor e abre o manual).
  */
 export const SECTOR_CATALOGS = {
   automotivo: {
@@ -70,7 +71,6 @@ export const SECTOR_CATALOGS = {
           'fonte-storm-truck',
           'fonte-carregador-redline',
           'carregador-portatil-redline',
-          'fonte-carregador-sci-10a',
           'fontes-carregadores-sci',
           'fonte-m120a',
         ],
@@ -81,10 +81,6 @@ export const SECTOR_CATALOGS = {
         ids: ['pbs-protetor-baterias-serie', 'voltimetro-sequenciador-vs5hi', 'sr5-evolution'],
       },
     ],
-    images: {
-      'fonte-storm-lithium': '/images/card_storm.webp',
-      'controle-redline': '/images/card_redline.webp',
-    },
   },
   telecom: {
     title: 'Energia para sistemas que precisam permanecer conectados.',
@@ -105,7 +101,6 @@ export const SECTOR_CATALOGS = {
         ],
       },
     ],
-    images: {},
   },
 };
 
