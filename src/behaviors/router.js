@@ -67,6 +67,7 @@ function initRouter(ctx) {
       solar: 'Solar',
       nautico: 'N\xE1utico',
       telecom: 'Telecom',
+      motorhome: 'Motorhome',
     };
     const APP_CONTEXT = {
       automotivo: {
@@ -76,6 +77,10 @@ function initRouter(ctx) {
       solar: {
         title: 'Armazene energia para usar quando precisar.',
         text: 'Uma solu\xE7\xE3o desenvolvida para integrar sistemas de armazenamento de energia, ajudando a manter energia dispon\xEDvel com gerenciamento inteligente e alta capacidade.',
+      },
+      motorhome: {
+        title: 'Energia para quem vive na estrada.',
+        text: 'Armazenamento de energia de l\xEDtio para os sistemas de bordo do motorhome, com estabilidade e autonomia para as paradas.',
       },
       telecom: {
         title: 'Energia para sistemas que precisam permanecer conectados.',
@@ -138,7 +143,7 @@ function initRouter(ctx) {
         voltage: '12,8V',
         capacity: '50Ah | 100Ah',
         technology: 'LiFePO4',
-        sectors: ['solar', 'automotivo'],
+        sectors: ['solar', 'automotivo', 'motorhome'],
         features: ['BMS'],
         shortDescription: 'Armazenamento inteligente de energia em duas capacidades.',
         image: '/images/bateria_elitio_pro_12v8_100a.webp',
@@ -192,8 +197,8 @@ function initRouter(ctx) {
         voltage: '48V',
         capacity: '100Ah',
         technology: 'LiFePO4',
-        // Rack: Telecom (e, como toda bateria que não é náutica, também Automotivo).
-        sectors: ['telecom', 'automotivo'],
+        // Rack: Telecom e Solar (e, como toda bateria que não é náutica, também Automotivo).
+        sectors: ['telecom', 'solar', 'automotivo'],
         features: ['Rack'],
         shortDescription: 'Integra\xE7\xE3o em rack para sistemas de energia de maior porte.',
         marketingHeadline: 'Mais capacidade em formato rack.',
@@ -217,7 +222,7 @@ function initRouter(ctx) {
         voltage: '48V',
         capacity: '50Ah',
         technology: 'LiFePO4',
-        sectors: ['solar', 'automotivo'],
+        sectors: ['automotivo'],
         features: ['BMS'],
         shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
         marketingHeadline: 'Alta tens\xE3o, energia sob controle.',
@@ -267,7 +272,7 @@ function initRouter(ctx) {
         voltage: '25,6V',
         capacity: '50Ah',
         technology: 'LiFePO4',
-        sectors: ['automotivo'],
+        sectors: ['automotivo', 'motorhome'],
         features: ['BMS'],
         shortDescription: 'Energia est\xE1vel e monitorada para sistemas de armazenamento.',
         marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
@@ -291,7 +296,7 @@ function initRouter(ctx) {
         voltage: '25,6V',
         capacity: '100Ah',
         technology: 'LiFePO4',
-        sectors: ['automotivo'],
+        sectors: ['automotivo', 'motorhome'],
         features: ['BMS'],
         shortDescription: 'Mais capacidade para projetos que exigem maior autonomia.',
         marketingHeadline: 'Mais capacidade para projetos maiores.',
@@ -516,6 +521,7 @@ function initRouter(ctx) {
       solar: { slug: 'solar', title: 'Solar' },
       nautico: { slug: 'nautica', title: 'N\xE1utica' },
       telecom: { slug: 'telecom', title: 'Telecom' },
+      motorhome: { slug: 'motorhome', title: 'Motorhome' },
     };
     // Miniaturas só aparecem com mais de 1 foto; onSelect move o carrossel principal.
     const buildGalleryThumbs = (photos, altBase, onSelect) => {

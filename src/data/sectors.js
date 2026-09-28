@@ -30,7 +30,7 @@ export const SECTOR_ICONS = {
 export const SECTOR_MENU = [
   { slug: 'automotivo', title: 'Automotivo', line: 'Áudio, controles, fontes e baterias.' },
   { slug: 'telecom', title: 'Telecom', line: 'Energia, distribuição e inversores.' },
-  { slug: 'motorhome', title: 'Motorhome', line: 'Energia para a estrada.' },
+  { slug: 'motorhome', title: 'Motorhome', line: 'Baterias e inversor para a estrada.' },
   { slug: 'solar', title: 'Solar', line: 'Baterias para armazenar energia.' },
   { slug: 'nautica', title: 'Náutica', line: 'Baterias para ir a bordo.' },
   // OCULTO: Moov/Parts — só entram no menu com as flags de data/visibility.js.
@@ -129,9 +129,15 @@ export const SECTOR_CATALOGS = {
   },
   motorhome: {
     title: 'Energia para quem vive na estrada.',
-    groups: [{ key: 'inversores', label: 'Inversores', ids: ['inversor-offgrid-senoidal-black'] }],
+    // Baterias Pro 12,8V e 25,6V + Inversor Black.
+    batterySector: 'motorhome',
+    batteryGroup: 'baterias',
+    groups: [
+      { key: 'baterias', label: 'Baterias', ids: [] },
+      { key: 'inversores', label: 'Inversores', ids: ['inversor-offgrid-senoidal-black'] },
+    ],
   },
-  // Solar: só baterias (nenhum inversor): E-Lítio Pro 12,8V e Pro 48V 50Ah.
+  // Solar: só baterias (nenhum inversor): E-Lítio Pro 12,8V e a Pro 48V 100Ah Rack.
   solar: {
     title: 'Armazene energia para usar quando precisar.',
     batterySector: 'solar',
