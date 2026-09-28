@@ -243,6 +243,34 @@ export default function Products() {
           </div>
         </div>
       </div>
+      {/* Celular: selos abaixo dos produtos, com o texto (no desktop ficam no topo). */}
+      <div className="products-certs-below">
+        <div className="products-certs-row">
+          <span className="products-cert-item">
+            <img
+              className="products-cert-seal"
+              src="/images/seal_inmetro.webp"
+              alt="Selo Inmetro"
+              loading="lazy"
+              decoding="async"
+            />{' '}
+            <span className="products-cert-label">Inmetro</span>
+          </span>{' '}
+          <span className="products-cert-item">
+            <img
+              className="products-cert-seal"
+              src="/images/seal_anatel.webp"
+              alt="Selo Anatel"
+              loading="lazy"
+              decoding="async"
+            />{' '}
+            <span className="products-cert-label">Anatel</span>
+          </span>
+        </div>
+        <p className="products-certs-note">
+          Produtos com certificação Inmetro e homologação Anatel. Consulte as informações de cada modelo.
+        </p>
+      </div>
     </section>
   );
 }

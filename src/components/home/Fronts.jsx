@@ -21,7 +21,7 @@ export default function Fronts() {
           {'\u00a0' + FRONTS_COUNT + ' frentes. ' + FRONTS_COUNT + ' caminhos. Uma só JFA.'}
         </span>
         <h2 className="fronts-title">
-          Conheça as áreas da <em>JFA</em>.
+          Conheça as <span className="accent-fix">á</span>reas da <em>JFA</em>.
         </h2>
         <p className="fronts-sub">
           Cada frente segue seu próprio caminho, levando a tecnologia e o jeito JFA de fazer para diferentes

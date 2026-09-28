@@ -519,3 +519,8 @@
     justify-content: flex-start;
   }
 }
+
+/* Selos repetidos abaixo do carrossel: só aparecem no celular (ver mobile-review.css). */
+.products-certs-below {
+  display: none;
+}

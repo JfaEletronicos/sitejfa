@@ -48,9 +48,7 @@
   }
 
   /* Texto da aplicação: fica só a frase de destaque. */
-  #bateriaView .bateria-app-context ,
-
-  /* Texto da aplicação: fica só a frase de destaque. */
+  #bateriaView .bateria-app-context,
   #produtoView .bateria-app-context {
     font-size: 0;
     max-width: none;
@@ -218,7 +216,7 @@
 
   /* Página da bateria: listas e cards em uma coluna, centralizados. */
   #bateriaView .bateria-doc-row,
-  centralizados. */ #produtoView .bateria-doc-row {
+  #produtoView .bateria-doc-row {
     flex-direction: column;
     text-align: center;
     gap: 10px;

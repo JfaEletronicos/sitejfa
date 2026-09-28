@@ -105,8 +105,9 @@ function initProductsCarousel(ctx) {
       singleSetWidth = w;
       const avgCardWidth = w / uniqueCount;
       const secondsPerCard = window.innerWidth <= 767 ? 13 : window.innerWidth <= 1024 ? 9.5 : 8;
-      // +20% de velocidade sobre o tempo por card definido acima.
-      autoplayPxPerSec = avgCardWidth > 0 ? (avgCardWidth / secondsPerCard) * 1.2 : 0;
+      // +20% de velocidade sobre o tempo por card definido acima; no celular, mais 80%.
+      const mobileBoost = window.innerWidth <= 767 ? 1.8 : 1;
+      autoplayPxPerSec = avgCardWidth > 0 ? (avgCardWidth / secondsPerCard) * 1.2 * mobileBoost : 0;
     };
     const applyTransform = () => {
       track.style.transform = `translate3d(${posX}px,0,0)`;

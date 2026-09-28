@@ -1,0 +1,313 @@
+/*
+ * Revisão do celular (até 640px), por cima de mobile.css:
+ * - Hero: o vídeo fica em cima e o texto embaixo (o texto não cobre mais o vídeo);
+ * - headlines 40% maiores e textos de leitura maiores;
+ * - botões com a mesma proporção;
+ * - acesso rápido com ícone e texto lado a lado, 70% maiores;
+ * - "Onde comprar": texto, produto + logo lado a lado e botão;
+ * - selos Inmetro/Anatel abaixo dos produtos, com o texto (como no desktop);
+ * - banners 90% mais altos (recorte pelo centro);
+ * - logo do rodapé centralizado em qualquer navegador.
+ */
+@media (max-width: 640px) {
+  /* ---------- Hero: vídeo em cima, texto embaixo ---------- */
+  .hero-shell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-shell > .jfa-header-spacer {
+    order: -2;
+  }
+
+  .hero-shell > .hero-bg-video {
+    order: -1;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: clamp(220px, 62vw, 320px);
+    object-fit: cover;
+    object-position: center;
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(180deg, #000 70%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  .hero-shell > .hero-vignette {
+    display: none;
+  }
+
+  #homeView .hero {
+    padding: 4px 10px 28px;
+  }
+
+  /* ---------- Headlines 40% maiores ---------- */
+  #homeView .hero-title {
+    font-size: 31.5px;
+    letter-spacing: -0.02em;
+    margin-left: -6px;
+    margin-right: -6px;
+  }
+
+  #homeView .fronts-title,
+  #homeView .products-title,
+  #homeView .buy-title,
+  #homeView .manuals-title,
+  #homeView .parts-promo-title,
+  .jfa-page .manuals-title {
+    font-size: 26.9px;
+  }
+
+  #homeView .reps-title,
+  .jfa-page .reps-title {
+    font-size: 25.2px;
+  }
+
+  .jfa-page .baterias-intro-title,
+  .jfa-page .export-title {
+    font-size: 30.8px;
+  }
+
+  #bateriaView .bateria-title,
+  #produtoView .bateria-title {
+    font-size: 36.4px;
+  }
+
+  #bateriaView .bateria-block-title,
+  #produtoView .bateria-block-title {
+    font-size: 30px;
+  }
+
+  /* ---------- Textos de leitura maiores ---------- */
+  #homeView .hero-sub {
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  #homeView .fronts-eyebrow,
+  #homeView .buy-eyebrow,
+  #homeView .manuals-eyebrow,
+  #homeView .quick-access-title,
+  .jfa-page .bateria-label {
+    font-size: 12.5px;
+  }
+
+  #homeView .front-headline {
+    font-size: 18px;
+  }
+
+  #homeView .products-category-pill,
+  .jfa-page .manuals-tab {
+    font-size: 14.5px;
+  }
+
+  #homeView .products-endcap-text {
+    font-size: 15px;
+  }
+
+  #homeView .p-card-name {
+    font-size: 13px;
+  }
+
+  #homeView .buy-rep-strip-title {
+    font-size: 17px;
+  }
+
+  .jfa-page .catalog-card-name {
+    font-size: 17px;
+  }
+
+  #bateriaView .bateria-headline,
+  #produtoView .bateria-headline {
+    font-size: 17px;
+  }
+
+  .jfa-footer-col a {
+    font-size: 15px;
+  }
+
+  .jfa-footer-tagline {
+    font-size: 15px;
+  }
+
+  /* ---------- Botões com a mesma proporção ---------- */
+  .jfa-page .hero-cta {
+    zoom: 1;
+    font-size: 13.5px;
+  }
+
+  .jfa-page .hero-cta:not(.hero-cta-tertiary) {
+    width: min(100%, 300px);
+    justify-content: center;
+    padding: 16px 22px;
+  }
+
+  .jfa-page .hero-cta-tertiary {
+    font-size: 15px;
+  }
+
+  #homeView .hero-cta-row {
+    gap: 12px;
+  }
+
+  .jfa-page .buy-card-arrow,
+  .jfa-page .front-cta,
+  .jfa-page .products-endcap-link,
+  .jfa-page .buy-rep-strip-cta {
+    zoom: 1;
+    font-size: 14px;
+  }
+
+  /* ---------- Acesso rápido: ícone e texto lado a lado, 70% maiores ---------- */
+  #homeView .quick-access-item {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 18px;
+    padding: 18px 24px;
+  }
+
+  #homeView .quick-access-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+  }
+
+  #homeView .quick-access-icon svg {
+    width: 29px;
+    height: 29px;
+  }
+
+  #homeView .quick-access-item-title {
+    font-size: 22px;
+  }
+
+  /* ---------- Onde comprar: texto, produto + logo lado a lado e botão ---------- */
+  #homeView .buy-grid .buy-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'title title'
+      'media brand'
+      'cta cta';
+    align-items: center;
+    justify-items: center;
+    row-gap: 16px;
+    column-gap: 12px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  #homeView .buy-card-title {
+    grid-area: title;
+    margin: 0;
+    font-size: 19px;
+  }
+
+  #homeView .buy-card-media {
+    grid-area: media;
+    order: 0;
+    width: 100%;
+    max-width: 150px;
+    margin: 0;
+  }
+
+  #homeView .buy-card-eyebrow.buy-card-brand {
+    grid-area: brand;
+    margin: 0;
+  }
+
+  #homeView .buy-card-brand img {
+    height: 34px;
+  }
+
+  #homeView .buy-card-arrow {
+    grid-area: cta;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* ---------- Selos: embaixo dos produtos, com o texto ---------- */
+  #homeView .products-head-certs {
+    display: none;
+  }
+
+  #homeView .products-certs-below {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 18px auto 0;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  #homeView .products-certs-below .products-certs-row {
+    justify-content: center;
+    gap: 20px;
+  }
+
+  #homeView .products-certs-below .products-cert-label {
+    display: inline !important;
+    font-size: 13px;
+  }
+
+  #homeView .products-certs-below .products-certs-note {
+    display: block !important;
+    text-align: center;
+    max-width: 320px;
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Banners 90% mais altos, recortados pelo centro ---------- */
+  .campaign-slide {
+    aspect-ratio: 2000 / 515;
+  }
+
+  .campaign-slide-media img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* ---------- Rodapé: logo centralizado (Safari inclusive) ---------- */
+  .jfa-footer-logo {
+    justify-content: center;
+  }
+
+  /* ---------- Páginas de bateria/produto: nada passa da tela ---------- */
+  #bateriaView .bateria-hero-inner,
+  #produtoView .bateria-hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #bateriaView .bateria-gallery,
+  #produtoView .bateria-gallery,
+  #bateriaView .bateria-hero-content,
+  #produtoView .bateria-hero-content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Abas de aplicação: rolam na horizontal quando não cabem. */
+  #bateriaView .bateria-variants,
+  #produtoView .bateria-variants {
+    max-width: 100%;
+  }
+
+  #bateriaView .bateria-variants-options,
+  #produtoView .bateria-variants-options {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Rodapé: faixa de baixo dentro da tela. */
+  .jfa-footer-rule,
+  .jfa-footer-bottom {
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
