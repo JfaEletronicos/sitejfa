@@ -16,6 +16,7 @@ import { initEnergyField } from './energyField';
 import { initFooter } from './footer';
 import { initCampaignCarousel } from './campaignCarousel';
 import { initSectorPages } from './sectorPages';
+import { initPartsPage } from './partsPage';
 import { initRouter } from './router';
 import { initAssemble } from './assemble';
 
@@ -49,6 +50,7 @@ export function initPageBehaviors() {
   initFooter(ctx);
   initCampaignCarousel(ctx);
   initSectorPages(ctx);
+  initPartsPage(ctx);
   initRouter(ctx);
   initAssemble(ctx);
 

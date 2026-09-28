@@ -2,7 +2,7 @@
  * Setores do menu "Setores" do header.
  * - Automotivo e Telecom: catálogos no layout da página de baterias (#/setores/:slug),
  *   com os produtos de `products.js` separados em grupos (as abas do filtro).
- * - Moov e Parts: páginas institucionais.
+ * - Moov e Parts: landing pages próprias (MoovPage.jsx e PartsPage.jsx).
  */
 
 // Ícones do menu e dos cards sem foto (traço, 24x24).
@@ -110,24 +110,5 @@ export const SECTOR_CATALOGS = {
         ],
       },
     ],
-  },
-};
-
-/** Página institucional da Parts (#/setores/parts). A Moov tem landing page própria (MoovPage.jsx). */
-export const SECTOR_INSTITUTIONAL = {
-  parts: {
-    eyebrow: 'JFA Parts',
-    title: 'Tecnologia para continuar funcionando.',
-    sub: 'Placas eletrônicas para linha branca, desenvolvidas no Brasil.',
-    image: '/images/front_parts.webp',
-    imageAlt: 'Placa eletrônica JFA Parts',
-    story: [
-      'A história da JFA sempre foi movida por um princípio simples: entender uma necessidade e desenvolver a própria solução para ela. Foi assim que conhecimento, tecnologia e experiência foram se acumulando ao longo dos anos e abrindo espaço para novos caminhos.',
-      'A JFA Parts nasce para levar o jeito JFA de desenvolver tecnologia às placas eletrônicas para linha branca, unindo fabricação própria, conhecimento técnico e uma estrutura construída para estar próxima de quem trabalha todos os dias fazendo equipamentos voltarem a funcionar.',
-    ],
-    accent: 'Uma nova história começa aqui. Com toda a experiência da JFA por trás.',
-    manualsTab: 'parts',
-    manualsLabel: 'Ver manuais da JFA Parts',
-    whatsappText: 'Olá, quero saber mais sobre a JFA Parts!',
   },
 };

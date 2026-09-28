@@ -15,11 +15,10 @@ function initRouter(ctx) {
     const bateriaView = root.getElementById('bateriaView');
     // Páginas de setor (#/setores/:slug): montadas por behaviors/sectorPages.js.
     const setorCatalogView = root.getElementById('setorCatalogView');
-    const setorInstView = root.getElementById('setorInstView');
     const produtoView = root.getElementById('produtoView');
     const moovView = root.getElementById('moovView');
-    if (!homeView || !bateriasView || !bateriaView || !setorCatalogView || !setorInstView || !produtoView)
-      return;
+    const partsView = root.getElementById('partsView');
+    if (!homeView || !bateriasView || !bateriaView || !setorCatalogView || !produtoView) return;
     // Suporte, Representantes e Manuais: páginas próprias. As de Representantes e
     // Manuais recebem a própria seção da Home (movida para a página ao abrir e
     // devolvida ao lugar original ao voltar), então tudo funciona igual nas duas.
@@ -1387,9 +1386,9 @@ function initRouter(ctx) {
       bateriasView.hidden = name !== 'baterias';
       bateriaView.hidden = name !== 'bateria';
       setorCatalogView.hidden = name !== 'setorCatalog';
-      setorInstView.hidden = name !== 'setorInst';
       produtoView.hidden = name !== 'produto';
       if (moovView) moovView.hidden = name !== 'moov';
+      if (partsView) partsView.hidden = name !== 'parts';
       placeSections(name);
       Object.keys(SECTION_PAGES).forEach((key) => {
         if (SECTION_PAGES[key].view) SECTION_PAGES[key].view.hidden = name !== key;
@@ -1400,7 +1399,7 @@ function initRouter(ctx) {
       if (navSetores)
         navSetores.classList.toggle(
           'is-active',
-          name === 'setorCatalog' || name === 'setorInst' || name === 'produto' || name === 'moov',
+          name === 'setorCatalog' || name === 'produto' || name === 'moov' || name === 'parts',
         );
       if (name === 'baterias') playBateriasEntrance();
       if (name === 'setorCatalog') {
@@ -1413,12 +1412,6 @@ function initRouter(ctx) {
       // Entrada "montando a página" nas páginas de baterias (ver behaviors/assemble.js).
       if (ctx.replayAssemble && name !== 'home') ctx.replayAssemble(name);
       if (name === 'manuais' && ctx.refreshManualsField) ctx.refreshManualsField();
-      // Vindo de "Ver manuais" de um setor: abre direto a aba daquela linha.
-      if (name === 'manuais' && ctx.pendingManualsTab) {
-        const tab = root.querySelector('.manuals-tab[data-line="' + ctx.pendingManualsTab + '"]');
-        ctx.pendingManualsTab = null;
-        if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
-      }
     };
     const applyRoute = () => {
       const hash = location.hash || '';

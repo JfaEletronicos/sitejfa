@@ -186,12 +186,23 @@ const PAGE_VIEWS = {
       ['.moov-legal', 'asmRise'],
     ],
   },
-  setorInst: {
-    view: '#setorInstView',
+  // Parts: landing page montando seção por seção ao rolar.
+  parts: {
+    view: '#partsView',
     parts: [
-      ['.setor-inst-copy > *', 'asmFromLeft'],
-      ['.setor-inst-visual', 'asmZoomOut'],
-      ['.setor-inst-story > p', 'asmRise'],
+      ['.parts-hero-copy > *', 'asmFromLeft'],
+      ['.parts-hero-visual', 'asmZoomOut'],
+      ['.parts-head > *', 'asmSkew'],
+      ['.parts-finder', 'asmExpand'],
+      ['.parts-card', 'asmDomino'],
+      ['.parts-feature', 'asmDomino'],
+      ['.parts-story-copy > *', 'asmFromLeft'],
+      ['.parts-story-visual', 'asmFlipUp'],
+      ['.parts-partner', 'asmRise'],
+      ['.parts-final-board', 'asmFlipUp'],
+      ['.parts-final-inner > .parts-h2', 'asmSkew'],
+      ['.parts-final-inner > .parts-text', 'asmRise'],
+      ['.parts-final-inner > .parts-ctas', 'asmPop'],
     ],
   },
 };

@@ -1,6 +1,6 @@
 import { trackEvent } from '../lib/analytics';
 import { PRODUCTS } from '../data/products';
-import { SECTOR_CATALOGS, SECTOR_INSTITUTIONAL, SECTOR_ICONS } from '../data/sectors';
+import { SECTOR_CATALOGS, SECTOR_ICONS } from '../data/sectors';
 import { PRODUCT_DETAILS } from '../data/productDetails';
 import { PRODUCT_QUICK_SPECS } from '../data/productSpecs';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
@@ -14,7 +14,7 @@ const ARROW_OUT_SVG =
 /**
  * Páginas de setor: Automotivo e Telecom como catálogo (mesmo layout de #/baterias),
  * com página própria para cada produto que tem detalhes em `productDetails.js`,
- * e Moov e Parts como páginas institucionais. O roteador chama
+ * e Moov e Parts como landing pages próprias. O roteador chama
  * `ctx.renderSectorPage(slug)` e `ctx.renderSectorProduct(slug, id)`, que montam a
  * página e devolvem a view a mostrar.
  * @param {import('./context').BehaviorContext} ctx
@@ -22,8 +22,7 @@ const ARROW_OUT_SVG =
 function initSectorPages(ctx) {
   const { root, on } = ctx;
   const catalogView = root.getElementById('setorCatalogView');
-  const instView = root.getElementById('setorInstView');
-  if (!catalogView || !instView) return;
+  if (!catalogView) return;
   const productsById = {};
   PRODUCTS.forEach((p) => {
     productsById[p.id] = p;
@@ -140,51 +139,6 @@ function initSectorPages(ctx) {
       catalog.positionIndicator(track.querySelector('.catalog-filter-tab.is-active')),
     );
   };
-
-  // Institucional
-  const inst = {
-    eyebrow: root.getElementById('setorInstEyebrow'),
-    title: root.getElementById('setorInstTitle'),
-    sub: root.getElementById('setorInstSub'),
-    image: root.getElementById('setorInstImage'),
-    story: root.getElementById('setorInstStory'),
-    manuals: root.getElementById('setorInstManuals'),
-    manualsLabel: root.getElementById('setorInstManualsLabel'),
-    whatsapp: root.getElementById('setorInstWhatsapp'),
-  };
-  let instSlug = null;
-  const renderInstitutional = (slug) => {
-    const s = SECTOR_INSTITUTIONAL[slug];
-    instSlug = slug;
-    instView.dataset.sector = slug;
-    inst.eyebrow.textContent = s.eyebrow;
-    inst.title.textContent = s.title;
-    inst.sub.textContent = s.sub;
-    inst.image.src = s.image;
-    inst.image.alt = s.imageAlt;
-    inst.story.innerHTML = '';
-    s.story.forEach((text) => {
-      const p = document.createElement('p');
-      p.textContent = text;
-      inst.story.appendChild(p);
-    });
-    if (s.accent) {
-      const p = document.createElement('p');
-      p.className = 'setor-inst-accent';
-      p.textContent = s.accent;
-      inst.story.appendChild(p);
-    }
-    inst.manualsLabel.textContent = s.manualsLabel;
-    inst.whatsapp.href =
-      'https://api.whatsapp.com/send?phone=' + WHATSAPP_PHONE + '&text=' + encodeURIComponent(s.whatsappText);
-  };
-  // "Ver manuais": abre #/manuais já na aba do setor (o roteador aplica ao mostrar a página).
-  on(inst.manuals, 'click', () => {
-    if (instSlug) ctx.pendingManualsTab = SECTOR_INSTITUTIONAL[instSlug].manualsTab;
-  });
-  on(inst.whatsapp, 'click', () =>
-    trackEvent('whatsapp_click', { source: 'setor_page', sector: instSlug || '' }),
-  );
 
   // Página do produto: mesma estrutura da página de bateria.
   const byId = (x) => root.getElementById(x);
@@ -476,10 +430,10 @@ function initSectorPages(ctx) {
       trackEvent('sector_page_view', { sector: slug });
       return 'setorCatalog';
     }
-    if (SECTOR_INSTITUTIONAL[slug]) {
-      renderInstitutional(slug);
+    // Parts: landing page fixa (components/pages/PartsPage.jsx).
+    if (slug === 'parts' && root.getElementById('partsView')) {
       trackEvent('sector_page_view', { sector: slug });
-      return 'setorInst';
+      return 'parts';
     }
     return null;
   };

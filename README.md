@@ -70,7 +70,7 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 | `#/setores/automotivo`, `#/setores/telecom` | Catálogo do setor no layout da página de baterias (produtos de `src/data/sectors.js`) |
 | `#/setores/:setor/:produto` | Página do produto (fotos, descrição e documentos de `src/data/productDetails.js`) |
 | `#/setores/moov` | Landing page da JFA Moov (bicicletas elétricas), em `components/pages/MoovPage.jsx` |
-| `#/setores/parts` | Página institucional da JFA Parts |
+| `#/setores/parts` | Landing page da JFA Parts (buscador de placas, catálogo, diferenciais e história), em `components/pages/PartsPage.jsx` |
 | `#/suporte` | Suporte técnico: mesmo mapa de Representantes, com os contatos de suporte (`src/data/support.js`) |
 | `#/representantes` | A seção de Representantes da Home, sozinha numa página |
 | `#/manuais` | A seção de Manuais da Home, sozinha numa página |
