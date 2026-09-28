@@ -44,3 +44,11 @@ html[data-theme='light'] .bateria-doc-row.is-primary .bateria-doc-row-icon {
 html[data-theme='light'] .whatsapp-float {
   color: #fff;
 }
+
+/* Suporte no modo claro: azul mais claro que o de Representantes, sem saturar. */
+html[data-theme='light'] .dark-page-support .dark-experience-bg:not([data-theme-keep], [data-theme-keep] *) {
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(60, 140, 255, 0.16), rgba(60, 140, 255, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(110, 185, 255, 0.14), rgba(110, 185, 255, 0) 62%),
+    linear-gradient(180deg, #dbe7fb 0%, #d4e3fb 46%, #dbe7fb 100%);
+}
