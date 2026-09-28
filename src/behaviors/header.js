@@ -73,7 +73,7 @@ function initHeader(ctx) {
         trackEvent('whatsapp_click', { source: 'header_support' });
         return;
       }
-      trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
+      trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'shopee_click', {
         destination: which,
         source: 'header',
       });
@@ -86,7 +86,7 @@ function initHeader(ctx) {
         trackEvent('whatsapp_click', { source: 'header_support' });
         return;
       }
-      trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'store_official_click', {
+      trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'shopee_click', {
         destination: which,
         source: 'header',
       });

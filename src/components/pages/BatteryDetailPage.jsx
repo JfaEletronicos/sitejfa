@@ -15,7 +15,9 @@ export default function BatteryDetailPage() {
   return (
     <div className="page-view" id="bateriaView" hidden>
       <nav className="bateria-breadcrumb" aria-label="Você está aqui">
-        <a href="#/baterias">Baterias</a>{' '}
+        <a href="#/baterias" id="bateriaBreadcrumbCategory">
+          Baterias
+        </a>{' '}
         <span className="bateria-breadcrumb-sep" aria-hidden="true">
           /
         </span>{' '}
@@ -242,6 +244,20 @@ export default function BatteryDetailPage() {
             </p>
           </div>
           <div className="bateria-docs-hub" id="bateriaDocsHub" />
+          <div className="product-photos" id="bateriaPhotoDownloads" hidden>
+            <div className="product-photos-head">
+              <div>
+                <p className="bateria-doc-row-title">Fotos do produto</p>
+                <p className="bateria-doc-row-text">
+                  Imagens em alta qualidade, sem fundo, para baixar e divulgar.
+                </p>
+              </div>
+              <button className="product-photos-all" type="button">
+                Baixar todas
+              </button>
+            </div>
+            <div className="product-photos-grid" />
+          </div>
           <p className="bateria-support-line">
             Precisa de ajuda para escolher sua bateria?{' '}
             <a id="bateriaSupportCta" target="_blank" rel="noopener noreferrer">
@@ -258,7 +274,7 @@ export default function BatteryDetailPage() {
         <div className="bateria-section-inner">
           <div className="bateria-others-head">
             <span className="bateria-label">Outras baterias JFA</span>
-            <a href="#/baterias" className="bateria-others-all">
+            <a href="#/baterias" className="bateria-others-all" id="bateriaOthersAll">
               Ver todas <ArrowIcon />
             </a>
           </div>

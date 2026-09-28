@@ -1,4 +1,6 @@
-/** Onde comprar: Loja Oficial, Mercado Livre e representantes. */
+import { SHOPEE_URL, SHOPEE_LOGO, MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
+
+/** Onde comprar: Shopee, Mercado Livre e representantes (cada loja identificada pelo logo). */
 export default function BuySection() {
   return (
     <section className="buy-section" id="buySection">
@@ -16,8 +18,8 @@ export default function BuySection() {
       <div className="buy-grid" id="buyGrid">
         <a
           className="buy-card"
-          data-buy-path="loja-oficial"
-          href="https://loja.jfaeletronicos.com"
+          data-buy-path="shopee"
+          href={SHOPEE_URL}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -25,13 +27,13 @@ export default function BuySection() {
           <span className="buy-card-media" aria-hidden="true">
             <img src="/images/card_elitio50.webp" alt="" loading="lazy" decoding="async" draggable="false" />
           </span>{' '}
-          <span className="buy-card-eyebrow">Loja Oficial JFA</span>{' '}
+          <span className="buy-card-eyebrow buy-card-brand" data-theme-keep>
+            <img src={SHOPEE_LOGO} alt="Shopee" width="96" height="31" loading="lazy" decoding="async" />
+          </span>{' '}
           <span className="buy-card-title">Procurando baterias de lítio? Compre aqui.</span>
-          <p className="buy-card-body">
-            Baterias de lítio e soluções JFA Parts disponíveis direto na nossa Loja Oficial.
-          </p>
+          <p className="buy-card-body">Baterias de lítio JFA disponíveis direto na nossa loja.</p>
           <span className="buy-card-arrow">
-            Comprar na Loja Oficial{' '}
+            Comprar agora{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
@@ -46,7 +48,7 @@ export default function BuySection() {
         <a
           className="buy-card"
           data-buy-path="mercado-livre"
-          href="https://www.mercadolivre.com.br/loja/jfa-eletronicos?item_id=MLB3492722035&category_id=MLB5672&official_store_id=223044&client=recoview-selleritems&recos_listing=true"
+          href={MERCADO_LIVRE_URL}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -54,11 +56,20 @@ export default function BuySection() {
           <span className="buy-card-media" aria-hidden="true">
             <img src="/images/card_nautica.webp" alt="" loading="lazy" decoding="async" draggable="false" />
           </span>{' '}
-          <span className="buy-card-eyebrow">Mercado Livre</span>{' '}
+          <span className="buy-card-eyebrow buy-card-brand" data-theme-keep>
+            <img
+              src={MERCADO_LIVRE_LOGO}
+              alt="Mercado Livre"
+              width="134"
+              height="34"
+              loading="lazy"
+              decoding="async"
+            />
+          </span>{' '}
           <span className="buy-card-title">Confira nosso catálogo completo.</span>
           <p className="buy-card-body">
             Fontes, controles, amplificadores e as outras linhas do nosso catálogo estão disponíveis
-            exclusivamente pela loja oficial JFA no Mercado Livre.
+            exclusivamente pela nossa loja oficial.
           </p>
           <span className="buy-card-arrow">
             Ver produtos{' '}

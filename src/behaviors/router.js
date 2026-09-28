@@ -1,7 +1,8 @@
 import { trackEvent } from '../lib/analytics';
-import { MERCADO_LIVRE_URL } from '../data/links';
+import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO, SHOPEE_LOGO } from '../data/links';
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
-import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
+import { createCatalogGrid } from './catalogGrid';
+import { renderPhotoDownloads } from './photoDownloads';
 
 /**
  * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/setores/:slug/:produto, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
@@ -55,6 +56,9 @@ function initRouter(ctx) {
     };
     const sectionNavLinks = Array.from(root.querySelectorAll('#jfaHeader [data-nav-page]'));
     const pageBody = root.body || document.body;
+    // Botões de compra: o nome da loja (Shopee / Mercado Livre) vira o logo dela.
+    const brandLabel = (text, logo, alt) =>
+      text + ' <span class="brand-chip" data-theme-keep><img src="' + logo + '" alt="' + alt + '"></span>';
     const fixStretchProAccent = (str) =>
       String(str).replace(/[ÁáÚú]/g, (c) => '<span class="accent-fix">' + c + '</span>');
     const APP_LABELS = { automotivo: 'Automotivo', solar: 'Solar', nautico: 'N\xE1utico' };
@@ -312,10 +316,6 @@ function initRouter(ctx) {
       if (dupe && import.meta.env.DEV) console.warn('[baterias] item duplicado ignorado:', b.id);
       return !dupe;
     });
-    // Abas fixas do filtro (Automotivo aparece mesmo sem produto ainda) + qualquer setor extra dos dados.
-    const BATTERY_SECTORS = Array.from(
-      new Set(['automotivo', 'solar', 'nautico', ...BATTERY_CATALOG.flatMap((b) => b.sectors)]),
-    );
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
     // Links antigos das baterias que viraram variantes de uma página só.
     const SLUG_ALIASES = {
@@ -333,7 +333,6 @@ function initRouter(ctx) {
     const navBaterias = root.getElementById('navBaterias');
     const navSetores = root.getElementById('navSetores');
     const bateriasGrid = root.getElementById('bateriasGrid');
-    let bateriasBuilt = false;
     const buildBateriaCard = (b) => {
       const a = document.createElement('a');
       a.className = 'catalog-card';
@@ -400,20 +399,6 @@ function initRouter(ctx) {
       empty: root.getElementById('bateriasEmpty'),
     });
     const positionFilterIndicator = bateriasCatalog.positionIndicator;
-    const buildBateriasView = () => {
-      if (bateriasBuilt) return;
-      bateriasBuilt = true;
-      buildFilterTabs(bateriasNav, [
-        { key: 'all', label: 'Todas' },
-        ...BATTERY_SECTORS.map((s) => ({ key: s, label: APP_LABELS[s] || s })),
-      ]);
-      bindFilterTrack(ctx, bateriasNav, bateriasCatalog);
-      BATTERY_CATALOG.forEach((b) => {
-        const card = buildBateriaCard(b);
-        bateriasGrid.appendChild(card);
-        bateriasCatalog.observe(card);
-      });
-    };
     // Entrada da página /baterias: título, filtro e grid em sequência (a cada abertura).
     const playBateriasEntrance = () => {
       bateriasView.classList.remove('is-entering');
@@ -508,9 +493,18 @@ function initRouter(ctx) {
     const bateriaRelatedSection = root.getElementById('bateriaRelatedSection');
     const bateriaRelatedGrid = root.getElementById('bateriaRelatedGrid');
     const bateriaDocsHub = root.getElementById('bateriaDocsHub');
+    const bateriaPhotoDownloads = root.getElementById('bateriaPhotoDownloads');
     const bateriaSupportCta = root.getElementById('bateriaSupportCta');
     const bateriaOthersGrid = root.getElementById('bateriaOthersGrid');
     const bateriaBreadcrumbCurrent = root.getElementById('bateriaBreadcrumbCurrent');
+    const bateriaBreadcrumbCategory = root.getElementById('bateriaBreadcrumbCategory');
+    const bateriaOthersAll = root.getElementById('bateriaOthersAll');
+    // Setor da bateria -> categoria do menu (#/setores/:slug).
+    const BATTERY_CATEGORY = {
+      automotivo: { slug: 'automotivo', title: 'Automotivo' },
+      solar: { slug: 'solar', title: 'Solar' },
+      nautico: { slug: 'nautica', title: 'N\xE1utica' },
+    };
     // Miniaturas só aparecem com mais de 1 foto; onSelect move o carrossel principal.
     const buildGalleryThumbs = (photos, altBase, onSelect) => {
       bateriaGalleryThumbs.innerHTML = '';
@@ -816,10 +810,8 @@ function initRouter(ctx) {
           a.href = commerce.storeUrl;
           a.target = '_blank';
           a.rel = 'noopener noreferrer';
-          a.textContent = 'Comprar na Loja Oficial';
-          on(a, 'click', () =>
-            trackEvent('battery_buy_click', { battery_id: b.id, channel: 'loja_oficial' }),
-          );
+          a.innerHTML = brandLabel('Comprar na', SHOPEE_LOGO, 'Shopee');
+          on(a, 'click', () => trackEvent('battery_buy_click', { battery_id: b.id, channel: 'shopee' }));
           actions.appendChild(a);
         }
         if (commerce.mercadoLivreUrl) {
@@ -828,7 +820,7 @@ function initRouter(ctx) {
           a.href = commerce.mercadoLivreUrl;
           a.target = '_blank';
           a.rel = 'noopener noreferrer';
-          a.textContent = 'Comprar no Mercado Livre';
+          a.innerHTML = brandLabel('Comprar no', MERCADO_LIVRE_LOGO, 'Mercado Livre');
           on(a, 'click', () =>
             trackEvent('battery_buy_click', { battery_id: b.id, channel: 'mercado_livre' }),
           );
@@ -850,7 +842,8 @@ function initRouter(ctx) {
         ml.target = '_blank';
         ml.rel = 'noopener noreferrer';
         ml.innerHTML =
-          'Comprar no Mercado Livre <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+          brandLabel('Comprar no', MERCADO_LIVRE_LOGO, 'Mercado Livre') +
+          ' <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
         on(ml, 'click', () =>
           trackEvent('mercado_livre_click', {
             source: 'bateria_page',
@@ -1282,6 +1275,13 @@ function initRouter(ctx) {
       bateriaHeadline.hidden = !b.marketingHeadline;
       bateriaSub.textContent = b.longDescription || b.shortDescription;
       bateriaBreadcrumbCurrent.textContent = b.name;
+      // Baterias não têm mais página à parte: o caminho volta para a categoria da bateria.
+      const category = BATTERY_CATEGORY[b.sectors[0]] || BATTERY_CATEGORY.automotivo;
+      if (bateriaBreadcrumbCategory) {
+        bateriaBreadcrumbCategory.href = '#/setores/' + category.slug;
+        bateriaBreadcrumbCategory.textContent = category.title;
+      }
+      if (bateriaOthersAll) bateriaOthersAll.href = '#/setores/' + category.slug;
       buildCommerceBlock(bateriaCommerceHero, b, { compact: true, fallbackLabel: 'Encontrar onde comprar' });
       // 02 · Especificações rápidas
       bateriaQuickSpecs.innerHTML = '';
@@ -1356,6 +1356,7 @@ function initRouter(ctx) {
       related.forEach((r) => bateriaRelatedGrid.appendChild(buildEditorialCard(r)));
       // 08 · Documentos e suporte
       buildDocsHub(b);
+      renderPhotoDownloads(bateriaPhotoDownloads, bateriaPhotos, b.name, { battery_id: b.id });
       bateriaSupportCta.href =
         'https://api.whatsapp.com/send?phone=' +
         WHATSAPP_PHONE +
@@ -1433,9 +1434,11 @@ function initRouter(ctx) {
         }
         showView('bateria');
       } else if (parts[0] === 'baterias') {
-        buildBateriasView();
-        showView('baterias');
-        trackEvent('page_view', { view: 'baterias' });
+        // Baterias não são mais um lugar à parte: #/baterias volta para a Home com o
+        // menu de Categorias aberto (cada categoria mostra as suas baterias).
+        history.replaceState(null, '', '#/');
+        showView('home');
+        if (ctx.openSectorMenu) ctx.openSectorMenu();
       } else if (parts[0] === 'setores') {
         // Setor sem página (ou só #/setores): volta para a Home com o menu de setores aberto.
         let view = null;

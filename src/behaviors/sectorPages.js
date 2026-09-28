@@ -1,9 +1,10 @@
 import { trackEvent } from '../lib/analytics';
 import { PRODUCTS } from '../data/products';
-import { SECTOR_CATALOGS, SECTOR_ICONS } from '../data/sectors';
+import { SECTOR_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../data/sectors';
 import { PRODUCT_DETAILS } from '../data/productDetails';
 import { PRODUCT_QUICK_SPECS } from '../data/productSpecs';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
+import { renderPhotoDownloads } from './photoDownloads';
 
 const WHATSAPP_PHONE = '553125336100';
 const ARROW_SVG =
@@ -12,7 +13,7 @@ const ARROW_OUT_SVG =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 
 /**
- * Páginas de setor: Automotivo e Telecom como catálogo (mesmo layout de #/baterias),
+ * Páginas de categoria: Automotivo, Telecom, Motorhome, Solar e Náutica como catálogo (mesmo layout de #/baterias),
  * com página própria para cada produto que tem detalhes em `productDetails.js`,
  * e Moov e Parts como landing pages próprias. O roteador chama
  * `ctx.renderSectorPage(slug)` e `ctx.renderSectorProduct(slug, id)`, que montam a
@@ -164,12 +165,13 @@ function initSectorPages(ctx) {
     specsSection: byId('produtoSpecsSection'),
     specsTable: byId('produtoSpecsTable'),
     docs: byId('produtoDocs'),
+    photos: byId('produtoPhotos'),
     support: byId('produtoSupportCta'),
     othersLabel: byId('produtoOthersLabel'),
     othersAll: byId('produtoOthersAll'),
     others: byId('produtoOthersGrid'),
   };
-  const SECTOR_TITLES = { automotivo: 'Automotivo', telecom: 'Telecom' };
+  const SECTOR_TITLES = Object.fromEntries(SECTOR_MENU.map((m) => [m.slug, m.title]));
   const svg = (d) =>
     '<svg viewBox="0 0 24 24" fill="none"><path d="' +
     d +
@@ -387,6 +389,7 @@ function initSectorPages(ctx) {
         on(row, 'click', () => trackEvent('manual_download', { product_id: id, source: 'produto_docs' }));
       prod.docs.appendChild(row);
     });
+    renderPhotoDownloads(prod.photos, detail.images, pname, { product_id: id });
     prod.support.href =
       'https://api.whatsapp.com/send?phone=' +
       WHATSAPP_PHONE +

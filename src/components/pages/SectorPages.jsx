@@ -150,6 +150,20 @@ export function SectorProductPage() {
             </p>
           </div>
           <div className="bateria-docs-hub" id="produtoDocs" />
+          <div className="product-photos" id="produtoPhotos" hidden>
+            <div className="product-photos-head">
+              <div>
+                <p className="bateria-doc-row-title">Fotos do produto</p>
+                <p className="bateria-doc-row-text">
+                  Imagens em alta qualidade, sem fundo, para baixar e divulgar.
+                </p>
+              </div>
+              <button className="product-photos-all" type="button">
+                Baixar todas
+              </button>
+            </div>
+            <div className="product-photos-grid" />
+          </div>
           <p className="bateria-support-line">
             Precisa de ajuda para escolher seu produto?{' '}
             <a id="produtoSupportCta" target="_blank" rel="noopener noreferrer">

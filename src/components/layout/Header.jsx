@@ -1,17 +1,5 @@
-import { STORE_URL, MERCADO_LIVRE_URL } from '../../data/links';
+import { SHOPEE_URL, SHOPEE_LOGO, MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
 import { SECTOR_MENU, SECTOR_ICONS } from '../../data/sectors';
-
-const ExternalIcon = () => (
-  <svg className="jfa-nav-external-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M9 7h8v8M17 7 7 17"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 /** Header fixo com navegação e o painel de busca global. */
 export default function Header() {
@@ -28,9 +16,7 @@ export default function Header() {
             <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
             <span className="jfa-logo-word">JFA</span>
           </a>
-          <a href="#/baterias" id="navBaterias">
-            Bateria
-          </a>{' '}
+          {/* Baterias não têm mais um item próprio: cada categoria mostra as suas. */}
           <div className="jfa-sector-nav" id="sectorNav">
             <button
               className="jfa-sector-trigger"
@@ -39,7 +25,7 @@ export default function Header() {
               aria-expanded="false"
               aria-controls="sectorMenu"
             >
-              Setores
+              Categorias
               <svg className="jfa-sector-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M6 9l6 6 6-6"
@@ -83,23 +69,28 @@ export default function Header() {
           <a href="#/representantes" data-nav-page="representantes">
             Representantes
           </a>{' '}
+          {/* Lojas: no lugar do nome, o logo de cada marketplace. */}
           <a
-            href={STORE_URL}
-            className="jfa-nav-external"
-            data-header-external="loja-oficial"
+            href={SHOPEE_URL}
+            className="jfa-nav-external jfa-nav-brand is-shopee"
+            data-theme-keep
+            data-header-external="shopee"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Shopee"
           >
-            Loja Oficial <ExternalIcon />
+            <img src={SHOPEE_LOGO} alt="Shopee" width="72" height="23" />
           </a>{' '}
           <a
             href={MERCADO_LIVRE_URL}
-            className="jfa-nav-external"
+            className="jfa-nav-external jfa-nav-brand is-ml"
+            data-theme-keep
             data-header-external="mercado-livre"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Mercado Livre"
           >
-            Mercado Livre <ExternalIcon />
+            <img src={MERCADO_LIVRE_LOGO} alt="Mercado Livre" width="87" height="22" />
           </a>{' '}
           <button
             className="jfa-theme-toggle"

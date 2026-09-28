@@ -1,6 +1,7 @@
 import { trackEvent } from '../lib/analytics';
 import { normalize, compact, searchCatalog } from '../lib/search';
 import { PRODUCTS } from '../data/products';
+import { SHOW_PARTS } from '../data/visibility';
 
 /**
  * Busca global do header (produtos, manuais, categorias, Parts, Energia e suporte).
@@ -20,12 +21,17 @@ function initGlobalSearch(ctx) {
     const lineLabelFor = (p) => p.lines.map((l) => LINE_LABELS[l] || l).join('/');
     const CATEGORIES = Array.from(new Set(PRODUCTS.map((p) => p.category))).sort();
     const STATIC_GROUPS = {
-      parts: {
-        label: 'JFA PARTS',
-        name: 'JFA Parts',
-        meta: 'Placas eletr\xF4nicas para linha branca',
-        keywords: ['parts', 'placa', 'placas', 'linha branca'],
-      },
+      // OCULTO: Moov/Parts — o atalho da JFA Parts só aparece com SHOW_PARTS (data/visibility.js).
+      ...(SHOW_PARTS
+        ? {
+            parts: {
+              label: 'JFA PARTS',
+              name: 'JFA Parts',
+              meta: 'Placas eletr\xF4nicas para linha branca',
+              keywords: ['parts', 'placa', 'placas', 'linha branca'],
+            },
+          }
+        : {}),
       energia: {
         label: 'ENERGIA',
         name: 'JFA Energia',

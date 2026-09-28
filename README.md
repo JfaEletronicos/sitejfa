@@ -4,13 +4,13 @@ Site institucional da **JFA Eletrônicos**, migrado de uma página HTML única (
 
 ## Stack
 
-| Camada | Tecnologia |
-| --- | --- |
-| UI | React 18 (componentes funcionais) |
-| Build/dev server | Vite 5 |
-| Estilos | CSS puro, dividido por seção (ordem da cascata preservada) |
-| Qualidade | ESLint 9 + Prettier 3 |
-| Hospedagem | Vercel |
+| Camada           | Tecnologia                                                 |
+| ---------------- | ---------------------------------------------------------- |
+| UI               | React 18 (componentes funcionais)                          |
+| Build/dev server | Vite 5                                                     |
+| Estilos          | CSS puro, dividido por seção (ordem da cascata preservada) |
+| Qualidade        | ESLint 9 + Prettier 3                                      |
+| Hospedagem       | Vercel                                                     |
 
 ## Como rodar
 
@@ -55,30 +55,33 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 - **Frentes JFA** (Moov, Energia, Parts, Automotivo): carrossel com arraste, setas, navegação numerada e uma demonstração automática.
 - **Soluções/Produtos**: selos INMETRO/ANATEL, filtro por linha e carrossel infinito com arraste, inércia, autoplay e seleção de card.
 - **Faixa tipográfica**: move na horizontal conforme o scroll vertical.
-- **Onde comprar**: cards da Loja Oficial e do Mercado Livre, com parallax e luz no hover.
-- **JFA Parts**: carrossel automático de fotos.
+- **Onde comprar**: cards da Shopee e do Mercado Livre (identificados pelos logos), com parallax e luz no hover.
+- **JFA Parts**: texto institucional, placas e linhas atendidas (oculta por enquanto, ver abaixo).
 - **Manuais**: busca por nome/modelo/código, abas por linha e categoria, e download dos PDFs.
 - **Representantes**: mapa interativo do Brasil, busca por estado, painel de contato e vendas internacionais.
 - **Carrossel de campanhas**: banners com loop infinito, arraste, setas, paginação e autoplay (desktop e mobile).
 
 ### Páginas internas (roteamento por hash)
 
-| URL | Página |
-| --- | --- |
-| `#/baterias` | Abertura curta e catálogo de baterias e-Lítio, com filtro animado por aplicação |
-| `#/baterias/:slug` | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp |
-| `#/setores/automotivo`, `#/setores/telecom` | Catálogo do setor no layout da página de baterias (produtos de `src/data/sectors.js`) |
-| `#/setores/:setor/:produto` | Página do produto (fotos, descrição e documentos de `src/data/productDetails.js`) |
-| `#/setores/moov` | Landing page da JFA Moov (bicicletas elétricas), em `components/pages/MoovPage.jsx` |
-| `#/setores/parts` | Landing page da JFA Parts (buscador de placas, catálogo, diferenciais e história), em `components/pages/PartsPage.jsx` |
-| `#/suporte` | Suporte técnico: mesmo mapa de Representantes, com os contatos de suporte (`src/data/support.js`) |
-| `#/representantes` | A seção de Representantes da Home, sozinha numa página |
-| `#/manuais` | A seção de Manuais da Home, sozinha numa página |
+| URL                                                                | Página                                                                                                                 |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `#/baterias`                                                       | Não é mais uma página: volta para a Home com o menu de Categorias aberto                                               |
+| `#/baterias/:slug`                                                 | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp                                        |
+| `#/setores/automotivo`, `telecom`, `motorhome`, `solar`, `nautica` | Catálogo da categoria no layout da antiga página de baterias (produtos e baterias de `src/data/sectors.js`)            |
+| `#/setores/:setor/:produto`                                        | Página do produto (fotos, descrição e documentos de `src/data/productDetails.js`)                                      |
+| `#/setores/moov`                                                   | Landing page da JFA Moov (bicicletas elétricas), em `components/pages/MoovPage.jsx`                                    |
+| `#/setores/parts`                                                  | Landing page da JFA Parts (buscador de placas, catálogo, diferenciais e história), em `components/pages/PartsPage.jsx` |
+| `#/suporte`                                                        | Suporte técnico: mesmo mapa de Representantes, com os contatos de suporte (`src/data/support.js`)                      |
+| `#/representantes`                                                 | A seção de Representantes da Home, sozinha numa página                                                                 |
+| `#/manuais`                                                        | A seção de Manuais da Home, sozinha numa página                                                                        |
 
-O botão **Setores** do header abre um menu com os quatro setores; `#/setores` sozinho volta para a Home com esse menu aberto.
+O botão **Categorias** do header abre um menu com Automotivo, Telecom, Motorhome, Solar e Náutica (as baterias ficam dentro de cada categoria; os inversores rack no Telecom, o Black no Motorhome e o Solar só tem baterias); `#/setores` sozinho volta para a Home com esse menu aberto. As páginas de produto e de bateria têm **fotos para download** (uma a uma ou todas).
+
+**Moov e JFA Parts estão ocultas até segunda ordem**: as flags `SHOW_MOOV` e `SHOW_PARTS` de `src/data/visibility.js` controlam todos os pontos (menu, Frentes, seção da Home, abas de Manuais, busca, rodapé e rotas). Para voltar, basta trocá-las para `true`; os trechos estão marcados com o comentário `OCULTO: Moov/Parts`.
 
 Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
-- **Rodapé**: links internos e "voltar ao topo".
+
+- **Rodapé**: categorias, links internos, Instagram e YouTube da JFA e "voltar ao topo".
 
 Modo claro/escuro: botão de sol/lua no header. O escuro é o padrão e a escolha fica salva no navegador do visitante. As cores do modo claro são geradas no build por `tools/postcss-light-theme.js` a partir do CSS escuro; ajustes manuais ficam em `src/styles/theme-light.css`, e áreas com `data-theme-keep` mantêm as cores originais.
 Acessibilidade: todas as animações respeitam `prefers-reduced-motion`, inclusive se a preferência mudar com a página aberta.

@@ -1,3 +1,10 @@
+import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
+import { SECTOR_MENU } from '../../data/sectors';
+import { INSTAGRAM_URL, YOUTUBE_URL } from '../../data/links';
+
+// Categorias do rodapé (JFA Parts e Moov continuam com os links antigos logo abaixo).
+const FOOTER_CATEGORIES = SECTOR_MENU.filter((s) => s.slug !== 'parts' && s.slug !== 'moov');
+
 /** Rodapé. */
 export default function Footer() {
   return (
@@ -11,22 +18,52 @@ export default function Footer() {
               <span className="jfa-logo-word">JFA</span>
             </div>
             <p className="jfa-footer-tagline">Tecnologia feita por nós.</p>
+            {/* Redes sociais */}
+            <div className="jfa-footer-social" aria-label="Redes sociais da JFA">
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram da JFA">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
+                  <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
+                  <circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" />
+                </svg>
+              </a>
+              <a
+                href={YOUTUBE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Canal da JFA no YouTube"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                  <path d="m10 15 5.2-3L10 9v6Z" fill="currentColor" />
+                </svg>
+              </a>
+            </div>
           </div>
           <nav className="jfa-footer-cols" aria-label="Links do rodapé">
             <div className="jfa-footer-col" data-footer-col="0">
               <span className="jfa-footer-col-title">Produtos</span>{' '}
-              <a href="#frentes" data-footer-goto="0">
-                Automotivo
-              </a>{' '}
-              <a href="#frentes" data-footer-goto="1">
-                Energia
-              </a>{' '}
-              <a href="#frentes" data-footer-goto="2">
-                Parts
-              </a>{' '}
-              <a href="#frentes" data-footer-goto="3">
-                Moov
-              </a>
+              {FOOTER_CATEGORIES.map((c) => (
+                <a key={c.slug} href={'#/setores/' + c.slug}>
+                  {c.title}
+                </a>
+              ))}{' '}
+              {/* OCULTO: Moov/Parts (data/visibility.js) */}
+              {SHOW_PARTS && (
+                <a href="#frentes" data-footer-goto="2">
+                  Parts
+                </a>
+              )}{' '}
+              {SHOW_MOOV && (
+                <a href="#frentes" data-footer-goto="3">
+                  Moov
+                </a>
+              )}
             </div>
             <div className="jfa-footer-col" data-footer-col="1">
               <span className="jfa-footer-col-title">JFA</span>{' '}

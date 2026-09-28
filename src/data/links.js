@@ -1,5 +1,10 @@
 /** Links externos de compra usados no header e nas páginas de produto. */
-export const STORE_URL = 'https://loja.jfaeletronicos.com';
+// Shopee: substitui a antiga Loja Oficial (loja.jfaeletronicos.com) em todo o site.
+// Enquanto o link da loja da JFA na Shopee não for confirmado, abre a busca
+// "JFA Eletrônicos" dentro da Shopee; troque aqui pelo link da loja.
+export const SHOPEE_URL = 'https://shopee.com.br/search?keyword=jfa%20eletr%C3%B4nicos';
+export const SHOPEE_LOGO = '/images/brands/shopee.svg';
+export const MERCADO_LIVRE_LOGO = '/images/brands/mercado-livre.webp';
 export const MERCADO_LIVRE_URL =
   'https://www.mercadolivre.com.br/loja/jfa-eletronicos?item_id=MLB3492722035&category_id=MLB5672&official_store_id=223044&client=recoview-selleritems&recos_listing=true';
 
@@ -24,3 +29,7 @@ export const MOOV_WHATSAPP_URL =
 export const SUPPORT_WHATSAPP_URL =
   'https://api.whatsapp.com/send?phone=553125336100&text=' +
   encodeURIComponent('Olá! Preciso de suporte com um produto JFA.');
+
+// Redes sociais (rodapé).
+export const INSTAGRAM_URL = 'https://www.instagram.com/jfaeletronicos/';
+export const YOUTUBE_URL = 'https://www.youtube.com/user/JFACANAL';

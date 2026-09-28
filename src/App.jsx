@@ -18,6 +18,7 @@ import { SupportPage, RepresentativesPage, ManualsPage } from './components/page
 import MoovPage from './components/pages/MoovPage';
 import PartsPage from './components/pages/PartsPage';
 import { initPageBehaviors } from './behaviors';
+import { SHOW_MOOV, SHOW_PARTS } from './data/visibility';
 
 export default function App() {
   // Os comportamentos interativos (incluindo o roteador por hash, que alterna
@@ -36,7 +37,8 @@ export default function App() {
         <Products />
         <BuySection />
         <CampaignCarousel />
-        <PartsPromo />
+        {/* OCULTO: Moov/Parts (data/visibility.js) */}
+        {SHOW_PARTS && <PartsPromo />}
         <TechMarquee />
         <DarkExperience />
       </div>
@@ -44,8 +46,9 @@ export default function App() {
       <BatteryDetailPage />
       <SectorCatalogPage />
       <SectorProductPage />
-      <MoovPage />
-      <PartsPage />
+      {/* OCULTO: Moov/Parts (data/visibility.js) */}
+      {SHOW_MOOV && <MoovPage />}
+      {SHOW_PARTS && <PartsPage />}
       <SupportPage />
       <RepresentativesPage />
       <ManualsPage />

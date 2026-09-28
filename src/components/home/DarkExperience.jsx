@@ -1,4 +1,5 @@
 import StateMapSection from '../shared/StateMapSection';
+import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
 
 /** Ambiente escuro compartilhado por Manuais e Representantes (as seções também abrem nas páginas #/manuais e #/representantes). */
 export default function DarkExperience() {
@@ -99,12 +100,23 @@ export default function DarkExperience() {
             >
               Energia
             </button>{' '}
-            <button className="manuals-tab" type="button" role="tab" data-line="parts" aria-selected="false">
-              Parts
-            </button>{' '}
-            <button className="manuals-tab" type="button" role="tab" data-line="moov" aria-selected="false">
-              Moov
-            </button>
+            {/* OCULTO: Moov/Parts (data/visibility.js) */}
+            {SHOW_PARTS && (
+              <button
+                className="manuals-tab"
+                type="button"
+                role="tab"
+                data-line="parts"
+                aria-selected="false"
+              >
+                Parts
+              </button>
+            )}{' '}
+            {SHOW_MOOV && (
+              <button className="manuals-tab" type="button" role="tab" data-line="moov" aria-selected="false">
+                Moov
+              </button>
+            )}
           </div>
           <div
             className="manuals-category-tabs"

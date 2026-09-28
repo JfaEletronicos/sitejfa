@@ -2068,3 +2068,147 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
   margin-right: auto;
   text-align: center;
 }
+
+/* Logo da loja dentro do botão de compra (no lugar do nome). */
+.brand-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.3em;
+  padding: 0.35em 0.8em;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.brand-chip img {
+  display: block;
+  width: auto;
+  height: 1.9em;
+}
+
+/* Fotos para download (páginas de produto e de bateria) */
+.product-photos {
+  margin-top: clamp(14px, 1.8vw, 20px);
+  padding: clamp(16px, 2vw, 22px);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(120, 170, 255, 0.16);
+}
+
+.product-photos-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: clamp(12px, 1.4vw, 16px);
+}
+
+.product-photos-head .bateria-doc-row-title,
+.product-photos-head .bateria-doc-row-text {
+  margin: 0;
+}
+
+.product-photos-all {
+  flex: none;
+  padding: 0.7em 1.3em;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  background: var(--jfa-blue, #0068ff);
+  border: 0;
+  transition: transform 0.2s ease;
+}
+
+.product-photos-all:hover,
+.product-photos-all:focus-visible {
+  transform: translateY(-1px);
+}
+
+.product-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.product-photo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(120, 170, 255, 0.14);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.product-photo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.product-photo-tag {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  padding: 0.4em;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 104, 255, 0.9);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.product-photo-tag svg {
+  width: 13px;
+  height: 13px;
+}
+
+.product-photo:hover,
+.product-photo:focus-visible {
+  border-color: rgba(0, 104, 255, 0.55);
+  background: rgba(0, 104, 255, 0.08);
+}
+
+.product-photo:hover .product-photo-tag,
+.product-photo:focus-visible .product-photo-tag {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sem mouse: o botão de baixar fica sempre visível. */
+@media (hover: none) {
+  .product-photo-tag {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-photos-head {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
