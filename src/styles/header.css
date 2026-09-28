@@ -340,11 +340,7 @@
 .jfa-nav-brand img {
   display: block;
   width: auto;
-  height: clamp(17px, 1.45vw, 22px);
-}
-
-.jfa-nav-brand.is-ml img {
-  height: clamp(20px, 1.7vw, 26px);
+  height: clamp(20px, 1.65vw, 25px);
 }
 
 /* Logo das lojas: texto branco no escuro; no modo claro, o texto na cor original. */

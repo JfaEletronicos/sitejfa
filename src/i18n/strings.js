@@ -230,7 +230,11 @@ export const STRINGS = {
   },
   'howto.download': { pt: 'Baixar vídeo', en: 'Download video', es: 'Descargar video' },
   'howto.soon': { pt: 'Vídeo em breve', en: 'Video coming soon', es: 'Video próximamente' },
-  'howto.soonButton': { pt: 'Vídeo em breve', en: 'Video coming soon', es: 'Video próximamente' },
+  'howto.soonButton': {
+    pt: 'Download do vídeo (em breve)',
+    en: 'Video download (coming soon)',
+    es: 'Descarga del video (próximamente)',
+  },
   'howto.videoOf': {
     pt: 'Vídeo: como usar o {name}',
     en: 'Video: how to use the {name}',

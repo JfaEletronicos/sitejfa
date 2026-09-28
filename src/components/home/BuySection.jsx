@@ -16,7 +16,7 @@ export default function BuySection() {
       <div className="buy-section-texture" aria-hidden="true" />
       <div className="buy-head">
         <span className="buy-eyebrow">DÚVIDAS SOBRE ONDE COMPRAR?</span>
-        <h2 className="buy-title">Compre direto nas lojas oficiais da JFA!</h2>
+        <h2 className="buy-title">Compre direto nos marketplaces oficiais da JFA!</h2>
         <p className="buy-sub">
           As baterias de lítio estão na nossa loja da Shopee. Fontes, controles, amplificadores e o restante
           do catálogo, na nossa loja do Mercado Livre.
