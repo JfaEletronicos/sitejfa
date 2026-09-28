@@ -16,13 +16,11 @@
   box-shadow: 0 16px 40px rgba(2, 8, 24, 0.28);
 }
 
-/* Cabeçalho: selo + título à esquerda, texto à direita. */
+/* Cabeçalho centralizado: selo + título. */
 .parts-promo-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(16px, 3vw, 48px);
-  align-items: end;
-  margin-bottom: clamp(20px, 2.6vw, 32px);
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto clamp(18px, 2.4vw, 28px);
 }
 
 .parts-promo-eyebrow {
@@ -49,10 +47,14 @@
   color: #0b0d14;
 }
 
+/* Texto logo após as placas, centralizado. */
 .parts-promo-story {
   display: flex;
   flex-direction: column;
   gap: 0.6em;
+  max-width: 720px;
+  margin: 0 auto clamp(24px, 3vw, 40px);
+  text-align: center;
 }
 
 .parts-promo-story p {
@@ -68,35 +70,69 @@
   color: #0b1528;
 }
 
-/* Placas: mostram logo de cara do que se trata a JFA Parts. */
+/* Placas sobrepostas (a quadrada por cima da comprida), sem fundo, com um
+   reflexo de luz passando de tempos em tempos. */
 .parts-promo-boards {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(20px, 4vw, 64px);
-  margin-bottom: clamp(24px, 3vw, 40px);
-  padding: clamp(20px, 3vw, 40px) clamp(12px, 3vw, 40px);
-  border-radius: 18px;
-  background:
-    radial-gradient(50% 70% at 50% 50%, rgba(0, 104, 255, 0.14), rgba(0, 104, 255, 0) 72%),
-    rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(11, 27, 58, 0.08);
+  width: min(100%, 720px);
+  aspect-ratio: 720 / 300;
+  margin: 0 auto clamp(18px, 2.4vw, 28px);
 }
 
 .parts-promo-board {
+  position: absolute;
   display: block;
-  min-width: 0;
+  filter: drop-shadow(0 18px 22px rgba(2, 8, 24, 0.3));
+}
+
+.parts-promo-board img {
+  display: block;
+  width: 100%;
   height: auto;
-  filter: drop-shadow(0 18px 22px rgba(2, 8, 24, 0.28));
 }
 
 .parts-promo-board.is-long {
-  width: min(56%, 560px);
+  left: 0;
+  bottom: 8%;
+  width: 74%;
 }
 
 .parts-promo-board.is-square {
-  width: min(30%, 300px);
+  right: 2%;
+  top: 0;
+  width: 38%;
+  z-index: 1;
+}
+
+.parts-promo-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 42%,
+    rgba(255, 255, 255, 0.12) 46%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0.12) 54%,
+    rgba(255, 255, 255, 0) 58%
+  );
+  background-size: 300% 100%;
+  background-position: 150% 0;
+  animation: partsPromoShine 6s ease-in-out infinite;
+}
+
+.parts-promo-board.is-square .parts-promo-shine {
+  animation-delay: 0.45s;
+}
+
+@keyframes partsPromoShine {
+  0% {
+    background-position: 150% 0;
+  }
+  45%,
+  100% {
+    background-position: -50% 0;
+  }
 }
 
 /* Blocos das linhas de máquinas */
@@ -262,25 +298,8 @@
 }
 
 @media (max-width: 860px) {
-  .parts-promo-head {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
   .parts-promo-lines {
     grid-template-columns: 1fr;
-  }
-
-  .parts-promo-boards {
-    gap: 14px;
-  }
-
-  .parts-promo-board.is-long {
-    width: 60%;
-  }
-
-  .parts-promo-board.is-square {
-    width: 34%;
   }
 
   .parts-line-card {
@@ -298,5 +317,9 @@
   .parts-line-card,
   .parts-line-icon {
     transition: none;
+  }
+
+  .parts-promo-shine {
+    animation: none;
   }
 }

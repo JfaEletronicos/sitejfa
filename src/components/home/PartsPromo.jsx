@@ -42,6 +42,16 @@ const PARTS_LINES = [
   },
 ];
 
+const BOARD_LONG = '/images/board_lb1004_cut.webp';
+const BOARD_SQUARE = '/images/board_lb1009.webp';
+// Reflexo recortado no formato da placa (a luz não passa pelo fundo transparente).
+const shineMask = (src) => ({
+  WebkitMaskImage: `url(${src})`,
+  maskImage: `url(${src})`,
+  WebkitMaskSize: '100% 100%',
+  maskSize: '100% 100%',
+});
+
 const Arrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path
@@ -63,39 +73,31 @@ export default function PartsPromo() {
       <div className="parts-promo-texture" aria-hidden="true" />
       <div className="parts-promo-inner" data-theme-keep>
         <div className="parts-promo-head">
-          <div className="parts-promo-head-main">
-            <span className="parts-promo-eyebrow">JFA Parts</span>
-            <h2 className="parts-promo-title">Da experiência da JFA, nasce uma nova frente.</h2>
-          </div>
-          <div className="parts-promo-story">
-            <p>
-              Ao longo de sua história, a JFA construiu experiência, estrutura e conhecimento no
-              desenvolvimento de soluções para o mercado.
-            </p>
-            <p>
-              Agora, essa experiência dá origem à JFA Parts: uma nova frente dedicada ao desenvolvimento e
-              fabricação de placas eletrônicas próprias para linha branca.
-            </p>
-            <p className="parts-promo-story-accent">
-              Uma nova marca, construída sobre uma história que já existe.
-            </p>
-          </div>
+          <span className="parts-promo-eyebrow">JFA Parts</span>
+          <h2 className="parts-promo-title">Da experiência da JFA, nasce uma nova frente.</h2>
         </div>
         <div className="parts-promo-boards">
-          <img
-            className="parts-promo-board is-long"
-            src="/images/board_lb1004_cut.webp"
-            alt="Placa eletrônica JFA Parts LB1004"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            className="parts-promo-board is-square"
-            src="/images/board_lb1009.webp"
-            alt="Placa eletrônica JFA Parts LB1009"
-            loading="lazy"
-            decoding="async"
-          />
+          <span className="parts-promo-board is-long">
+            <img src={BOARD_LONG} alt="Placa eletrônica JFA Parts LB1004" loading="lazy" decoding="async" />
+            <span className="parts-promo-shine" style={shineMask(BOARD_LONG)} aria-hidden="true" />
+          </span>
+          <span className="parts-promo-board is-square">
+            <img src={BOARD_SQUARE} alt="Placa eletrônica JFA Parts LB1009" loading="lazy" decoding="async" />
+            <span className="parts-promo-shine" style={shineMask(BOARD_SQUARE)} aria-hidden="true" />
+          </span>
+        </div>
+        <div className="parts-promo-story">
+          <p>
+            Ao longo de sua história, a JFA construiu experiência, estrutura e conhecimento no desenvolvimento
+            de soluções para o mercado.
+          </p>
+          <p>
+            Agora, essa experiência dá origem à JFA Parts: uma nova frente dedicada ao desenvolvimento e
+            fabricação de placas eletrônicas próprias para linha branca.
+          </p>
+          <p className="parts-promo-story-accent">
+            Uma nova marca, construída sobre uma história que já existe.
+          </p>
         </div>
         <div className="parts-promo-lines">
           {PARTS_LINES.map((line) => (
