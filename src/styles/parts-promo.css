@@ -47,14 +47,14 @@
   color: #0b0d14;
 }
 
-/* Texto logo após as placas, centralizado. */
+/* Texto logo após as placas, alinhado à esquerda (com os cards). */
 .parts-promo-story {
   display: flex;
   flex-direction: column;
   gap: 0.6em;
-  max-width: 720px;
-  margin: 0 auto clamp(24px, 3vw, 40px);
-  text-align: center;
+  max-width: 760px;
+  margin: 0 0 clamp(24px, 3vw, 40px);
+  text-align: left;
 }
 
 .parts-promo-story p {
@@ -70,19 +70,23 @@
   color: #0b1528;
 }
 
-/* Placas sobrepostas (a quadrada por cima da comprida), sem fundo, com um
-   reflexo de luz passando de tempos em tempos. */
+/* Placas lado a lado, alinhadas pelo centro e na proporção real (a quadrada é
+   bem menor que a azul), sem fundo, com um reflexo de luz passando. */
 .parts-promo-boards {
-  position: relative;
-  width: min(100%, 720px);
-  aspect-ratio: 720 / 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2.4vw, 28px);
+  width: min(100%, 760px);
   margin: 0 auto clamp(18px, 2.4vw, 28px);
+  padding: clamp(8px, 1.4vw, 16px) 0;
 }
 
 .parts-promo-board {
-  position: absolute;
+  position: relative;
   display: block;
-  filter: drop-shadow(0 18px 22px rgba(2, 8, 24, 0.3));
+  min-width: 0;
+  filter: drop-shadow(0 16px 20px rgba(2, 8, 24, 0.3));
 }
 
 .parts-promo-board img {
@@ -92,16 +96,11 @@
 }
 
 .parts-promo-board.is-long {
-  left: 0;
-  bottom: 8%;
-  width: 74%;
+  width: 72%;
 }
 
 .parts-promo-board.is-square {
-  right: 2%;
-  top: 0;
-  width: 38%;
-  z-index: 1;
+  width: 22%;
 }
 
 .parts-promo-shine {
@@ -232,8 +231,17 @@
 
 .parts-line-title {
   font-weight: 800;
-  font-size: clamp(17px, 1.4vw, 21px);
+  font-size: clamp(16px, 1.3vw, 19px);
   line-height: 1.2;
+}
+
+.parts-line-prefix {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.parts-line-name {
+  white-space: nowrap;
 }
 
 .parts-line-text {

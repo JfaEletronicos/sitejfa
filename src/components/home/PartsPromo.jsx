@@ -74,7 +74,7 @@ export default function PartsPromo() {
       <div className="parts-promo-inner" data-theme-keep>
         <div className="parts-promo-head">
           <span className="parts-promo-eyebrow">JFA Parts</span>
-          <h2 className="parts-promo-title">Da experiência da JFA, nasce uma nova frente.</h2>
+          <h2 className="parts-promo-title">Da experiência nasce uma nova história.</h2>
         </div>
         <div className="parts-promo-boards">
           <span className="parts-promo-board is-long">
@@ -122,7 +122,10 @@ export default function PartsPromo() {
               </svg>
               <span className="parts-line-body">
                 <span className="parts-line-tag">{line.tag}</span>
-                <span className="parts-line-title">{line.title}</span>
+                <span className="parts-line-title">
+                  <span className="parts-line-prefix">Placas para </span>
+                  <span className="parts-line-name">{line.title}</span>
+                </span>
                 <span className="parts-line-text">{line.text}</span>
                 <span className="parts-line-more">
                   Ver placas <Arrow />
