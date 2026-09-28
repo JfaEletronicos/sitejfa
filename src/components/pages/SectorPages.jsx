@@ -1,4 +1,5 @@
 import { t, IS_EXPORT } from '../../i18n';
+import HowToSection from '../shared/HowToSection';
 
 /**
  * Páginas de setor, preenchidas por behaviors/sectorPages.js:
@@ -143,6 +144,9 @@ export function SectorProductPage() {
           <div id="produtoSpecsTable" />
         </div>
       </section>
+
+      {/* Como usar: texto, vídeo vertical e botão para baixar o vídeo */}
+      <HowToSection prefix="produto" />
 
       {/* 06 · Manuais, documentos e suporte */}
       <section className="bateria-section bateria-docs-section">

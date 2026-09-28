@@ -2069,14 +2069,11 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
   text-align: center;
 }
 
-/* Logo da loja dentro do botão de compra (no lugar do nome). */
+/* Logo da loja dentro do botão de compra (no lugar do nome), sem fundo. */
 .brand-chip {
   display: inline-flex;
   align-items: center;
-  margin-left: 0.3em;
-  padding: 0.35em 0.8em;
-  border-radius: 999px;
-  background: #fff;
+  margin-left: 0.35em;
 }
 
 .brand-chip img {
@@ -2210,5 +2207,160 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
     flex-direction: column;
     align-items: stretch;
     text-align: center;
+  }
+}
+
+/* Como usar: texto à esquerda, vídeo vertical (9:16) à direita e botão de baixar */
+.howto {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+}
+
+.howto-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9em;
+}
+
+.howto-copy .bateria-block-title {
+  text-align: left;
+  margin: 0;
+}
+
+.howto-text {
+  margin: 0;
+  max-width: 520px;
+  font-weight: 500;
+  font-size: clamp(14.5px, 1.1vw, 16.5px);
+  line-height: 1.6;
+  color: rgba(230, 238, 255, 0.72);
+}
+
+.howto-steps {
+  margin: 0.2em 0 0.6em;
+  padding: 0;
+  list-style: none;
+  counter-reset: howto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+}
+
+.howto-steps li {
+  counter-increment: howto;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  font-weight: 600;
+  font-size: clamp(13.5px, 1vw, 15px);
+  color: rgba(230, 238, 255, 0.86);
+}
+
+.howto-steps li::before {
+  content: counter(howto, decimal-leading-zero);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 12px;
+  color: #8fb8ff;
+  background: rgba(0, 104, 255, 0.12);
+  border: 1px solid rgba(64, 150, 255, 0.4);
+}
+
+.howto-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+}
+
+.howto-download svg {
+  width: 16px;
+  height: 16px;
+}
+
+.howto-download.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+.howto-media {
+  display: flex;
+  justify-content: center;
+}
+
+.howto-video {
+  position: relative;
+  width: min(100%, 320px);
+  aspect-ratio: 9 / 16;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #02081a;
+  border: 1px solid rgba(120, 170, 255, 0.24);
+  box-shadow:
+    0 30px 60px -24px rgba(2, 8, 24, 0.8),
+    0 0 0 6px rgba(255, 255, 255, 0.03);
+}
+
+.howto-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.howto-video.is-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: rgba(156, 196, 255, 0.7);
+  background:
+    radial-gradient(60% 40% at 50% 40%, rgba(0, 104, 255, 0.22), rgba(0, 104, 255, 0) 70%),
+    linear-gradient(180deg, #061433 0%, #02081a 100%);
+}
+
+.howto-video.is-empty svg {
+  width: 64px;
+  height: 64px;
+}
+
+.howto-soon {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 800px) {
+  .howto {
+    grid-template-columns: 1fr;
+  }
+
+  .howto-copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .howto-copy .bateria-block-title {
+    text-align: center;
+  }
+
+  .howto-steps li {
+    text-align: left;
+  }
+
+  .howto-video {
+    width: min(78%, 300px);
   }
 }

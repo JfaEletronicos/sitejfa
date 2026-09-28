@@ -6,5 +6,5 @@
   </defs>
   <rect x="9" y="24" width="34" height="34" fill="#fff"/>
   <use href="#p" fill="#ee4d2d" clip-path="url(#bag)"/>
-  <use href="#p" fill="#ee4d2d" clip-path="url(#txt)"/>
+  <use href="#p" fill="#fff" clip-path="url(#txt)"/>
 </svg>

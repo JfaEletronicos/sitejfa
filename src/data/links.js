@@ -3,8 +3,12 @@
 // Enquanto o link da loja da JFA na Shopee não for confirmado, abre a busca
 // "JFA Eletrônicos" dentro da Shopee; troque aqui pelo link da loja.
 export const SHOPEE_URL = 'https://shopee.com.br/search?keyword=jfa%20eletr%C3%B4nicos';
-export const SHOPEE_LOGO = '/images/brands/shopee.svg';
-export const MERCADO_LIVRE_LOGO = '/images/brands/mercado-livre.webp';
+// Logos: símbolo na cor original e texto em branco (fundos escuros); a versão
+// com o texto na cor original entra no modo claro.
+export const SHOPEE_LOGO = '/images/brands/shopee-white.svg';
+export const SHOPEE_LOGO_LIGHT = '/images/brands/shopee.svg';
+export const MERCADO_LIVRE_LOGO = '/images/brands/mercado-livre-white.webp';
+export const MERCADO_LIVRE_LOGO_LIGHT = '/images/brands/mercado-livre.webp';
 export const MERCADO_LIVRE_URL =
   'https://www.mercadolivre.com.br/loja/jfa-eletronicos?item_id=MLB3492722035&category_id=MLB5672&official_store_id=223044&client=recoview-selleritems&recos_listing=true';
 

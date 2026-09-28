@@ -35,6 +35,12 @@ const detectLang = () => {
   } catch {
     /* armazenamento bloqueado */
   }
+  // Robôs de busca (Google etc.) ficam no português: o endereço principal é o site brasileiro.
+  if (
+    typeof navigator !== 'undefined' &&
+    /bot|crawl|spider|slurp|lighthouse|headless/i.test(navigator.userAgent)
+  )
+    return 'pt';
   const langs = (typeof navigator !== 'undefined' && (navigator.languages || [navigator.language])) || [];
   for (const l of langs) {
     const code = String(l || '')

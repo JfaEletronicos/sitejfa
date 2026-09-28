@@ -19,36 +19,48 @@ export default function Footer() {
               <span className="jfa-logo-word">JFA</span>
             </div>
             <p className="jfa-footer-tagline">{t('footer.tagline')}</p>
-            {/* Redes sociais */}
-            <div className="jfa-footer-social" aria-label={t('footer.social')}>
-              <a
-                href={INSTAGRAM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={t('footer.instagram')}
-              >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
-                  <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
-                  <circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" />
-                </svg>
-              </a>
-              <a
-                href={YOUTUBE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={t('footer.youtube')}
-              >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8Z"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinejoin="round"
-                  />
-                  <path d="m10 15 5.2-3L10 9v6Z" fill="currentColor" />
-                </svg>
-              </a>
+            {/* Redes sociais: ícone na cor original de cada rede + nome. */}
+            <div className="jfa-footer-social-wrap">
+              <span className="jfa-footer-social-title">{t('footer.follow')}</span>
+              <div className="jfa-footer-social" aria-label={t('footer.social')}>
+                <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" data-social="instagram">
+                  <svg className="jfa-social-icon is-instagram" viewBox="0 0 24 24" aria-hidden="true">
+                    <defs>
+                      <radialGradient id="igGradient" cx="30%" cy="107%" r="150%">
+                        <stop offset="0%" stopColor="#fdf497" />
+                        <stop offset="5%" stopColor="#fdf497" />
+                        <stop offset="45%" stopColor="#fd5949" />
+                        <stop offset="60%" stopColor="#d6249f" />
+                        <stop offset="90%" stopColor="#285AEB" />
+                      </radialGradient>
+                    </defs>
+                    <rect x="1" y="1" width="22" height="22" rx="6.5" fill="url(#igGradient)" />
+                    <rect
+                      x="5.5"
+                      y="5.5"
+                      width="13"
+                      height="13"
+                      rx="4"
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth="1.8"
+                    />
+                    <circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" strokeWidth="1.8" />
+                    <circle cx="16.3" cy="7.7" r="1" fill="#fff" />
+                  </svg>
+                  <span>{t('footer.instagramLabel')}</span>
+                </a>
+                <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" data-social="youtube">
+                  <svg className="jfa-social-icon is-youtube" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2C.5 9.1.5 12 .5 12s0 2.9.5 4.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-4.8.5-4.8s0-2.9-.5-4.8Z"
+                      fill="#FF0000"
+                    />
+                    <path d="M9.7 15.3 15.6 12 9.7 8.7v6.6Z" fill="#fff" />
+                  </svg>
+                  <span>{t('footer.youtubeLabel')}</span>
+                </a>
+              </div>
             </div>
           </div>
           {IS_EXPORT ? (

@@ -1,6 +1,13 @@
-import { SHOPEE_URL, SHOPEE_LOGO, MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
+import {
+  SHOPEE_URL,
+  SHOPEE_LOGO,
+  SHOPEE_LOGO_LIGHT,
+  MERCADO_LIVRE_URL,
+  MERCADO_LIVRE_LOGO,
+  MERCADO_LIVRE_LOGO_LIGHT,
+} from '../../data/links';
 
-/** Onde comprar: Shopee, Mercado Livre e representantes (cada loja identificada pelo logo). */
+/** Onde comprar: um card para a Shopee, outro para o Mercado Livre (identificados pelo logo) e representantes. */
 export default function BuySection() {
   return (
     <section className="buy-section" id="buySection">
@@ -9,10 +16,10 @@ export default function BuySection() {
       <div className="buy-section-texture" aria-hidden="true" />
       <div className="buy-head">
         <span className="buy-eyebrow">DÚVIDAS SOBRE ONDE COMPRAR?</span>
-        <h2 className="buy-title">Saiba onde achar cada produto!</h2>
+        <h2 className="buy-title">Compre direto nas lojas oficiais da JFA!</h2>
         <p className="buy-sub">
-          Nem todo produto JFA é vendido no mesmo lugar. Escolha o canal certo e encontre o que procura mais
-          rápido.
+          As baterias de lítio estão na nossa loja da Shopee. Fontes, controles, amplificadores e o restante
+          do catálogo, na nossa loja do Mercado Livre.
         </p>
       </div>
       <div className="buy-grid" id="buyGrid">
@@ -27,13 +34,32 @@ export default function BuySection() {
           <span className="buy-card-media" aria-hidden="true">
             <img src="/images/card_elitio50.webp" alt="" loading="lazy" decoding="async" draggable="false" />
           </span>{' '}
-          <span className="buy-card-eyebrow buy-card-brand" data-theme-keep>
-            <img src={SHOPEE_LOGO} alt="Shopee" width="96" height="31" loading="lazy" decoding="async" />
+          <span className="buy-card-eyebrow buy-card-brand">
+            <img
+              className="brand-logo is-on-dark"
+              src={SHOPEE_LOGO}
+              alt="Shopee"
+              width="96"
+              height="32"
+              loading="lazy"
+              decoding="async"
+            />
+            <img
+              className="brand-logo is-on-light"
+              src={SHOPEE_LOGO_LIGHT}
+              alt=""
+              width="96"
+              height="32"
+              loading="lazy"
+              decoding="async"
+            />
           </span>{' '}
-          <span className="buy-card-title">Procurando baterias de lítio? Compre aqui.</span>
-          <p className="buy-card-body">Baterias de lítio JFA disponíveis direto na nossa loja.</p>
+          <span className="buy-card-title">Baterias de lítio JFA.</span>
+          <p className="buy-card-body">
+            A linha e-Lítio para os seus projetos de energia, direto na loja oficial da JFA na Shopee.
+          </p>
           <span className="buy-card-arrow">
-            Comprar agora{' '}
+            Comprar na Shopee{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
@@ -54,25 +80,41 @@ export default function BuySection() {
         >
           <span className="buy-card-glow" aria-hidden="true" />{' '}
           <span className="buy-card-media" aria-hidden="true">
-            <img src="/images/card_nautica.webp" alt="" loading="lazy" decoding="async" draggable="false" />
-          </span>{' '}
-          <span className="buy-card-eyebrow buy-card-brand" data-theme-keep>
             <img
+              src="/images/produtos/fonte-storm-1.webp"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+            />
+          </span>{' '}
+          <span className="buy-card-eyebrow buy-card-brand">
+            <img
+              className="brand-logo is-on-dark"
               src={MERCADO_LIVRE_LOGO}
               alt="Mercado Livre"
-              width="134"
-              height="34"
+              width="126"
+              height="32"
+              loading="lazy"
+              decoding="async"
+            />
+            <img
+              className="brand-logo is-on-light"
+              src={MERCADO_LIVRE_LOGO_LIGHT}
+              alt=""
+              width="126"
+              height="32"
               loading="lazy"
               decoding="async"
             />
           </span>{' '}
-          <span className="buy-card-title">Confira nosso catálogo completo.</span>
+          <span className="buy-card-title">Catálogo completo JFA.</span>
           <p className="buy-card-body">
-            Fontes, controles, amplificadores e as outras linhas do nosso catálogo estão disponíveis
-            exclusivamente pela nossa loja oficial.
+            Fontes, controles, amplificadores e as demais linhas do nosso catálogo, na loja oficial da JFA no
+            Mercado Livre.
           </p>
           <span className="buy-card-arrow">
-            Ver produtos{' '}
+            Comprar no Mercado Livre{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"

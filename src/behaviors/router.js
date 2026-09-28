@@ -3,6 +3,7 @@ import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO, SHOPEE_LOGO } from '../data/link
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
+import { renderHowTo } from './howTo';
 
 /**
  * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/setores/:slug/:produto, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
@@ -1357,6 +1358,7 @@ function initRouter(ctx) {
       // 08 · Documentos e suporte
       buildDocsHub(b);
       renderPhotoDownloads(bateriaPhotoDownloads, bateriaPhotos, b.name, { battery_id: b.id });
+      renderHowTo('bateria', { id: b.slug, name: b.name, video: b.video, poster: b.videoPoster });
       bateriaSupportCta.href =
         'https://api.whatsapp.com/send?phone=' +
         WHATSAPP_PHONE +

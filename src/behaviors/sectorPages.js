@@ -8,6 +8,7 @@ import { INTERNATIONAL_SALES } from '../data/representatives';
 import { t, tf, pick, IS_EXPORT } from '../i18n';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
+import { renderHowTo } from './howTo';
 
 // Em inglês/espanhol (exportação), o catálogo, os textos e o contato são os de
 // exportação: produtos de data/exportProducts.js numa categoria só (automotivo).
@@ -29,6 +30,7 @@ const PRODUCT_DETAILS = IS_EXPORT
           summary: pick(p.summary),
           blocks: pick(p.blocks),
           docs: [{ label: t('product.manual'), url: p.manualUrl }],
+          video: p.video,
         },
       ]),
     )
@@ -441,6 +443,8 @@ function initSectorPages(ctx) {
       prod.docs.appendChild(row);
     });
     renderPhotoDownloads(prod.photos, detail.images, pname, { product_id: id });
+    // Como usar: vídeo do campo `video` do produto (sem vídeo: "Vídeo em breve").
+    renderHowTo('produto', { id, name: pname, video: detail.video, poster: detail.videoPoster });
     prod.support.href =
       'https://api.whatsapp.com/send?phone=' +
       WHATSAPP_PHONE +

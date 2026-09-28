@@ -201,6 +201,42 @@ export const STRINGS = {
     es: '¡Hola! Quiero saber más sobre el {name}.',
   },
 
+  // Como usar (vídeo vertical)
+  'howto.label': { pt: 'Como usar', en: 'How to use', es: 'Cómo usar' },
+  'howto.title': {
+    pt: 'Aprenda a usar o seu produto.',
+    en: 'Learn how to use your product.',
+    es: 'Aprenda a usar su producto.',
+  },
+  'howto.text': {
+    pt: 'Veja no vídeo, passo a passo, como instalar e usar o {name} com segurança.',
+    en: 'Watch the video to see, step by step, how to install and use the {name} safely.',
+    es: 'Vea en el video, paso a paso, cómo instalar y usar el {name} con seguridad.',
+  },
+  'howto.step1': {
+    pt: 'Confira o conteúdo da embalagem.',
+    en: 'Check the contents of the package.',
+    es: 'Verifique el contenido del embalaje.',
+  },
+  'howto.step2': {
+    pt: 'Siga a instalação mostrada no vídeo.',
+    en: 'Follow the installation shown in the video.',
+    es: 'Siga la instalación que muestra el video.',
+  },
+  'howto.step3': {
+    pt: 'Em caso de dúvida, consulte o manual ou fale com a JFA.',
+    en: 'If in doubt, check the manual or talk to JFA.',
+    es: 'Si tiene dudas, consulte el manual o hable con JFA.',
+  },
+  'howto.download': { pt: 'Baixar vídeo', en: 'Download video', es: 'Descargar video' },
+  'howto.soon': { pt: 'Vídeo em breve', en: 'Video coming soon', es: 'Video próximamente' },
+  'howto.soonButton': { pt: 'Vídeo em breve', en: 'Video coming soon', es: 'Video próximamente' },
+  'howto.videoOf': {
+    pt: 'Vídeo: como usar o {name}',
+    en: 'Video: how to use the {name}',
+    es: 'Video: cómo usar el {name}',
+  },
+
   // Fotos para download
   'photos.title': { pt: 'Fotos do produto', en: 'Product photos', es: 'Fotos del producto' },
   'photos.text': {
@@ -230,6 +266,9 @@ export const STRINGS = {
   'footer.social': { pt: 'Redes sociais da JFA', en: 'JFA on social media', es: 'JFA en redes sociales' },
   'footer.instagram': { pt: 'Instagram da JFA', en: 'JFA on Instagram', es: 'JFA en Instagram' },
   'footer.youtube': { pt: 'Canal da JFA no YouTube', en: 'JFA on YouTube', es: 'JFA en YouTube' },
+  'footer.follow': { pt: 'Siga as nossas redes', en: 'Follow us', es: 'Síganos' },
+  'footer.instagramLabel': { pt: 'JFA Instagram', en: 'JFA Instagram', es: 'JFA Instagram' },
+  'footer.youtubeLabel': { pt: 'JFA YouTube', en: 'JFA YouTube', es: 'JFA YouTube' },
   'footer.toTop': { pt: 'Voltar ao topo', en: 'Back to top', es: 'Volver arriba' },
   'footer.automotive': { pt: 'Automotivo', en: 'Car audio and power', es: 'Audio automotriz y energía' },
 

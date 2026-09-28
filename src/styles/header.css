@@ -318,17 +318,13 @@
   }
 }
 
-/* Lojas (Shopee e Mercado Livre): o logo de cada uma numa pílula branca. */
+/* Lojas (Shopee e Mercado Livre): só o logo, sem fundo. */
 .jfa-nav-right a.jfa-nav-brand {
-  padding: 0 0.85em;
-  height: clamp(28px, 2.3vw, 36px);
-  border-radius: 999px;
-  background: #fff;
-  opacity: 1;
-  box-shadow: 0 2px 10px rgba(2, 8, 24, 0.25);
+  padding: 0.2em 0;
+  opacity: 0.92;
   transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
 .jfa-nav-right a.jfa-nav-brand::after {
@@ -337,18 +333,31 @@
 
 .jfa-nav-right a.jfa-nav-brand:hover,
 .jfa-nav-right a.jfa-nav-brand:focus-visible {
+  opacity: 1;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(2, 8, 24, 0.35);
 }
 
 .jfa-nav-brand img {
   display: block;
   width: auto;
-  height: clamp(15px, 1.3vw, 20px);
+  height: clamp(17px, 1.45vw, 22px);
 }
 
 .jfa-nav-brand.is-ml img {
-  height: clamp(19px, 1.6vw, 25px);
+  height: clamp(20px, 1.7vw, 26px);
+}
+
+/* Logo das lojas: texto branco no escuro; no modo claro, o texto na cor original. */
+.brand-logo.is-on-light {
+  display: none;
+}
+
+html[data-theme='light'] .brand-logo.is-on-dark:not([data-theme-keep] .brand-logo) {
+  display: none;
+}
+
+html[data-theme='light'] .brand-logo.is-on-light:not([data-theme-keep] .brand-logo) {
+  display: block;
 }
 
 .jfa-logo {

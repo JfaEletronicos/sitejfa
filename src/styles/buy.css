@@ -331,18 +331,14 @@ a.buy-card:hover .buy-card-arrow svg,
   }
 }
 
-/* Logo da loja (Shopee / Mercado Livre) no lugar do nome, numa pílula branca. */
+/* Logo da loja (Shopee / Mercado Livre) no lugar do nome, sem fundo. */
 .buy-card-eyebrow.buy-card-brand {
   display: inline-flex;
   align-items: center;
-  padding: 0.45em 0.9em;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(2, 8, 24, 0.25);
+  margin-bottom: 0.8em;
 }
 
 .buy-card-brand img {
-  display: block;
   width: auto;
-  height: clamp(18px, 1.5vw, 24px);
+  height: clamp(24px, 2vw, 32px);
 }

@@ -1,4 +1,11 @@
-import { SHOPEE_URL, SHOPEE_LOGO, MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
+import {
+  SHOPEE_URL,
+  SHOPEE_LOGO,
+  SHOPEE_LOGO_LIGHT,
+  MERCADO_LIVRE_URL,
+  MERCADO_LIVRE_LOGO,
+  MERCADO_LIVRE_LOGO_LIGHT,
+} from '../../data/links';
 import { SECTOR_MENU, SECTOR_ICONS } from '../../data/sectors';
 import { t, LANG, LANGS, IS_EXPORT } from '../../i18n';
 
@@ -91,24 +98,48 @@ export default function Header() {
               <a
                 href={SHOPEE_URL}
                 className="jfa-nav-external jfa-nav-brand is-shopee"
-                data-theme-keep
                 data-header-external="shopee"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Shopee"
               >
-                <img src={SHOPEE_LOGO} alt="Shopee" width="72" height="23" />
+                <img
+                  className="brand-logo is-on-dark"
+                  src={SHOPEE_LOGO}
+                  alt="Shopee"
+                  width="75"
+                  height="25"
+                />
+                <img
+                  className="brand-logo is-on-light"
+                  src={SHOPEE_LOGO_LIGHT}
+                  alt=""
+                  width="75"
+                  height="25"
+                />
               </a>{' '}
               <a
                 href={MERCADO_LIVRE_URL}
                 className="jfa-nav-external jfa-nav-brand is-ml"
-                data-theme-keep
                 data-header-external="mercado-livre"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Mercado Livre"
               >
-                <img src={MERCADO_LIVRE_LOGO} alt="Mercado Livre" width="87" height="22" />
+                <img
+                  className="brand-logo is-on-dark"
+                  src={MERCADO_LIVRE_LOGO}
+                  alt="Mercado Livre"
+                  width="95"
+                  height="24"
+                />
+                <img
+                  className="brand-logo is-on-light"
+                  src={MERCADO_LIVRE_LOGO_LIGHT}
+                  alt=""
+                  width="95"
+                  height="24"
+                />
               </a>{' '}
             </>
           )}

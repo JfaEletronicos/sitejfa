@@ -1,3 +1,5 @@
+import HowToSection from '../shared/HowToSection';
+
 const ArrowIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path
@@ -229,6 +231,9 @@ export default function BatteryDetailPage() {
           <div className="bateria-editorial-grid" id="bateriaRelatedGrid" />
         </div>
       </section>
+
+      {/* Como usar: texto, vídeo vertical e botão para baixar o vídeo */}
+      <HowToSection prefix="bateria" reveal />
 
       {/* 08 · Manuais, documentos e suporte */}
       <section className="bateria-section bateria-docs-section" data-reveal>

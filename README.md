@@ -81,7 +81,7 @@ O botão **Categorias** do header abre um menu com Automotivo, Telecom, Motorhom
 
 Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
 
-- **Rodapé**: categorias, links internos, Instagram e YouTube da JFA e "voltar ao topo".
+- **Rodapé**: categorias, links internos, "Siga as nossas redes" (JFA Instagram e JFA YouTube, com os ícones nas cores de cada rede) e "voltar ao topo".
 
 **Idiomas** (seletor PT / EN / ES no header): o português é o site completo; inglês e espanhol mostram a **visualização de exportação** (Hero, catálogo de exportação com página de cada produto, manuais de exportação para baixar e contatos de vendas internacionais). O idioma vem de `?lang=`, da escolha salva do visitante ou do idioma do navegador (pt → PT, es → ES, outros → EN). Textos em `src/i18n/strings.js`; produtos de exportação (inglês e espanhol) em `src/data/exportProducts.js`, a partir do site de exportação da JFA (automotivo.jfaeletronicos.com/en).
 
@@ -95,6 +95,7 @@ Analytics: os eventos de conversão passam por `src/lib/analytics.js`, que envia
 - **Campanhas (banners)**: `src/data/campaigns.js`, com imagens em `public/images/`.
 - **Setores**: `src/data/sectors.js`.
 - **Baterias (páginas internas)**: dados no topo de `src/behaviors/router.js`.
+- **Vídeo "Como usar" (páginas de produto e de bateria)**: coloque o vídeo vertical (9:16, .mp4) em `public/media/produtos/` e informe o caminho no campo `video` do produto (`src/data/productDetails.js`, `src/data/exportProducts.js` ou, nas baterias, no catálogo do topo de `src/behaviors/router.js`). Sem vídeo, a seção mostra "Vídeo em breve"; com vídeo, aparece o player e o botão "Baixar vídeo".
 - **Trocar imagens**: substitua o arquivo em `public/images/`, mantendo o mesmo nome.
 - **Representantes**: dados em `src/behaviors/representatives.js`.
 
