@@ -81,8 +81,12 @@ export default function PartsPromo() {
             <img src={BOARD_LONG} alt="Placa eletrônica JFA Parts LB1004" loading="lazy" decoding="async" />
             <span className="parts-promo-shine" style={shineMask(BOARD_LONG)} aria-hidden="true" />
           </span>
-          <span className="parts-promo-board is-square">
+          <span className="parts-promo-board is-square is-left">
             <img src={BOARD_SQUARE} alt="Placa eletrônica JFA Parts LB1009" loading="lazy" decoding="async" />
+            <span className="parts-promo-shine" style={shineMask(BOARD_SQUARE)} aria-hidden="true" />
+          </span>
+          <span className="parts-promo-board is-square is-right">
+            <img src={BOARD_SQUARE} alt="" loading="lazy" decoding="async" />
             <span className="parts-promo-shine" style={shineMask(BOARD_SQUARE)} aria-hidden="true" />
           </span>
         </div>

@@ -70,23 +70,19 @@
   color: #0b1528;
 }
 
-/* Placas lado a lado, alinhadas pelo centro e na proporção real (a quadrada é
-   bem menor que a azul), sem fundo, com um reflexo de luz passando. */
+/* Placas em composição: a azul comprida ao centro e as quadradas por cima
+   das pontas, mais baixas e levemente giradas; reflexo de luz passando. */
 .parts-promo-boards {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(12px, 2.4vw, 28px);
-  width: min(100%, 760px);
+  position: relative;
+  width: min(100%, 780px);
+  aspect-ratio: 400 / 142;
   margin: 0 auto clamp(18px, 2.4vw, 28px);
-  padding: clamp(8px, 1.4vw, 16px) 0;
 }
 
 .parts-promo-board {
-  position: relative;
+  position: absolute;
   display: block;
-  min-width: 0;
-  filter: drop-shadow(0 16px 20px rgba(2, 8, 24, 0.3));
+  filter: drop-shadow(0 14px 18px rgba(2, 8, 24, 0.3));
 }
 
 .parts-promo-board img {
@@ -96,11 +92,26 @@
 }
 
 .parts-promo-board.is-long {
-  width: 72%;
+  left: 6%;
+  top: 2%;
+  width: 88%;
 }
 
 .parts-promo-board.is-square {
-  width: 22%;
+  width: 28%;
+  z-index: 1;
+}
+
+.parts-promo-board.is-left {
+  left: 0;
+  top: 30%;
+  rotate: -4deg;
+}
+
+.parts-promo-board.is-right {
+  right: 0;
+  top: 27%;
+  rotate: 3deg;
 }
 
 .parts-promo-shine {
@@ -120,8 +131,12 @@
   animation: partsPromoShine 6s ease-in-out infinite;
 }
 
-.parts-promo-board.is-square .parts-promo-shine {
-  animation-delay: 0.45s;
+.parts-promo-board.is-left .parts-promo-shine {
+  animation-delay: -0.35s;
+}
+
+.parts-promo-board.is-right .parts-promo-shine {
+  animation-delay: 0.5s;
 }
 
 @keyframes partsPromoShine {
