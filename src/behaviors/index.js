@@ -2,7 +2,6 @@ import { createBehaviorContext, watchReducedMotion } from './context';
 import { initHeader } from './header';
 import { initGlobalSearch } from './globalSearch';
 import { initQuickAccess } from './quickAccess';
-import { initPartsPromo } from './partsPromo';
 import { initBuySection } from './buySection';
 import { initTechMarquee } from './techMarquee';
 import { initHero } from './hero';
@@ -37,7 +36,6 @@ export function initPageBehaviors() {
   initHeader(ctx);
   initGlobalSearch(ctx);
   initQuickAccess(ctx);
-  initPartsPromo(ctx);
   initBuySection(ctx);
   initHero(ctx);
   initFronts(ctx);

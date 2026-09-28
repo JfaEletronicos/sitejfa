@@ -283,11 +283,7 @@ export default function PartsPage() {
         <div className="parts-inner parts-final-inner">
           <div className="parts-final-board">
             <img src="/images/board_lb1009.webp" alt="" loading="lazy" decoding="async" />
-            <span
-              className="parts-scan"
-              style={scanMask('/images/board_lb1009.webp')}
-              aria-hidden="true"
-            />
+            <span className="parts-scan" style={scanMask('/images/board_lb1009.webp')} aria-hidden="true" />
           </div>
           <h2 className="parts-h2">Encontre a placa ideal para o seu equipamento.</h2>
           <p className="parts-text">

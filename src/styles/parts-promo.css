@@ -1,4 +1,4 @@
-/* JFA Parts: carrossel de fotos e cards */
+/* JFA Parts (Home): texto institucional e blocos das linhas de máquinas atendidas */
 
 .parts-promo-section {
   position: relative;
@@ -10,26 +10,33 @@
   max-width: 1180px;
   margin: 0 auto;
   position: relative;
-  background: #fff;
   border-radius: 20px;
-  padding: clamp(22px, 2.6vw, 34px) clamp(22px, 3.2vw, 44px);
-  box-shadow: 0 20px 50px rgba(2, 8, 24, 0.32);
+  padding: clamp(24px, 3vw, 40px) clamp(20px, 3vw, 40px);
+  background: linear-gradient(160deg, #eef2f8 0%, #e3e9f3 100%);
+  box-shadow: 0 16px 40px rgba(2, 8, 24, 0.28);
 }
 
+/* Cabeçalho: selo + título à esquerda, texto à direita. */
 .parts-promo-head {
-  max-width: 640px;
-  margin: 0 auto clamp(16px, 2vw, 22px);
-  text-align: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 48px);
+  align-items: end;
+  margin-bottom: clamp(20px, 2.6vw, 32px);
 }
 
 .parts-promo-eyebrow {
-  display: block;
+  display: inline-block;
   font-weight: 700;
   font-size: clamp(10.5px, 0.75vw, 12px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--jfa-blue, #0068ff);
-  margin: 0 0 0.35em;
+  padding: 0.5em 1.1em;
+  margin: 0 0 0.9em;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 104, 255, 0.35);
+  background: rgba(0, 104, 255, 0.08);
 }
 
 .parts-promo-title {
@@ -42,79 +49,159 @@
   color: #0b0d14;
 }
 
-.parts-promo-body {
+.parts-promo-story {
   display: flex;
-  align-items: stretch;
-  gap: clamp(18px, 2.4vw, 30px);
-  margin-bottom: clamp(16px, 2vw, 22px);
+  flex-direction: column;
+  gap: 0.6em;
 }
 
-@media (max-width: 860px) {
-  .parts-promo-body {
-    flex-direction: column;
-  }
+.parts-promo-story p {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(13.5px, 0.98vw, 15px);
+  line-height: 1.6;
+  color: #4a5266;
 }
 
-.parts-promo-media {
+.parts-promo-story .parts-promo-story-accent {
+  font-weight: 700;
+  color: #0b1528;
+}
+
+/* Blocos das linhas de máquinas */
+.parts-promo-lines {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+}
+
+.parts-line-card {
   position: relative;
-  flex: 1 1 56%;
-  min-width: 0;
-  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e7e8ec;
-  box-shadow: 0 12px 28px rgba(2, 8, 24, 0.14);
-  background: #fff;
-  aspect-ratio: 5 / 3;
+  isolation: isolate;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 14px 30px rgba(2, 8, 24, 0.22);
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
 }
 
-@media (max-width: 860px) {
-  .parts-promo-media {
-    aspect-ratio: 5 / 2.4;
-  }
+.parts-line-card:hover,
+.parts-line-card:focus-visible {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: 0 20px 40px rgba(2, 8, 24, 0.3);
 }
 
-.parts-promo-media-slide {
+/* Cada linha com sua própria superfície (metal escovado, azul, grafite). */
+.parts-line-card.is-geladeiras {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(255, 255, 255, 0) 1px 7px),
+    linear-gradient(100deg, #5d7188 0%, #8397ad 28%, #62778f 52%, #8a9db2 76%, #5b6f86 100%);
+}
+
+.parts-line-card.is-lavadoras {
+  background:
+    radial-gradient(60% 60% at 70% 30%, rgba(120, 190, 255, 0.35), rgba(120, 190, 255, 0) 70%),
+    linear-gradient(150deg, #1f5fd1 0%, #0d3c96 55%, #082a6c 100%);
+}
+
+.parts-line-card.is-ar-condicionado {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.035) 0 1px, rgba(255, 255, 255, 0) 1px 5px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 0 1px, rgba(255, 255, 255, 0) 1px 5px),
+    linear-gradient(160deg, #3a4456 0%, #252d3b 60%, #1b212c 100%);
+}
+
+/* Linhas horizontais suaves e escurecimento na base para o texto. */
+.parts-line-texture {
   position: absolute;
   inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0) 0 46px, rgba(0, 0, 0, 0.14) 46px 47px),
+    linear-gradient(180deg, rgba(3, 8, 20, 0) 35%, rgba(3, 8, 20, 0.62) 100%);
+}
+
+.parts-line-icon {
+  position: absolute;
+  top: 9%;
+  left: 50%;
+  width: 24%;
+  max-width: 96px;
+  translate: -50% 0;
+  color: rgba(255, 255, 255, 0.78);
+  filter: drop-shadow(0 8px 14px rgba(2, 8, 24, 0.3));
+  transition: transform 0.5s ease;
+}
+
+.parts-line-card:hover .parts-line-icon {
+  transform: scale(1.06);
+}
+
+.parts-line-body {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45em;
+  padding: clamp(14px, 1.6vw, 20px);
+}
+
+.parts-line-tag {
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4em 0.9em;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+}
+
+.parts-line-title {
+  font-weight: 800;
+  font-size: clamp(17px, 1.4vw, 21px);
+  line-height: 1.2;
+}
+
+.parts-line-text {
+  font-weight: 500;
+  font-size: clamp(12.5px, 0.9vw, 13.5px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.parts-line-more {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: clamp(14px, 2.2vw, 24px);
-  opacity: 0;
-  transform: translate3d(36px, 0, 0);
-  transition:
-    opacity 0.85s ease,
-    transform 0.85s ease;
-  pointer-events: none;
+  gap: 0.35em;
+  margin-top: 0.3em;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: #8fc2ff;
 }
 
-.parts-promo-media-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.parts-line-more svg,
+.parts-promo-cta-big svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s ease;
 }
 
-.parts-promo-media-slide.is-active {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  pointer-events: auto;
+.parts-line-card:hover .parts-line-more svg,
+.parts-promo-cta-big:hover svg {
+  transform: translateX(4px);
 }
 
-.parts-promo-media-slide.is-leaving {
-  opacity: 0;
-  transform: translate3d(-36px, 0, 0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .parts-promo-media-slide {
-    transition: none;
-  }
-}
-
+/* Botão principal */
 .parts-promo-cta-wrap {
   text-align: center;
-  margin-top: clamp(14px, 1.8vw, 18px);
+  margin-top: clamp(20px, 2.4vw, 28px);
 }
 
 .parts-promo-cta-big {
@@ -143,182 +230,30 @@
   transform: translate3d(0, -2px, 0);
 }
 
-.parts-promo-cta-big svg {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.25s ease;
-}
-
-.parts-promo-cta-big:hover svg {
-  transform: translateX(4px);
-}
-
-/* Versão compacta: texto, destaques e botão à esquerda; foto à direita. */
-@media (min-width: 861px) {
-  .parts-promo-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    grid-template-areas:
-      'head media'
-      'grid media'
-      'cta media';
-    grid-template-rows: auto auto 1fr;
-    column-gap: clamp(24px, 3vw, 40px);
-    row-gap: clamp(12px, 1.4vw, 16px);
-    align-items: start;
-    padding: clamp(20px, 2.2vw, 28px) clamp(22px, 2.8vw, 36px);
-  }
-
-  .parts-promo-body {
-    display: contents;
-  }
-
+@media (max-width: 860px) {
   .parts-promo-head {
-    grid-area: head;
-    max-width: 900px;
-    margin: 0;
-    text-align: left;
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 
-  .parts-promo-media {
-    grid-area: media;
-    align-self: stretch;
+  .parts-promo-lines {
+    grid-template-columns: 1fr;
+  }
+
+  .parts-line-card {
     aspect-ratio: auto;
-    min-height: 100%;
+    min-height: 250px;
   }
 
-  .parts-promo-cta-wrap {
-    grid-area: cta;
-    margin: 0;
-    text-align: left;
+  .parts-line-icon {
+    top: 9%;
+    width: 84px;
   }
-}
-
-/* Menos contraste: superfície clara fria no lugar do branco puro. */
-.parts-promo-inner {
-  background: linear-gradient(160deg, #eef2f8 0%, #e3e9f3 100%);
-  box-shadow: 0 16px 40px rgba(2, 8, 24, 0.28);
-}
-
-.parts-promo-media {
-  background: #f4f7fb;
-  border-color: #d9e1ec;
-}
-
-/* Destaques só com o título, em linhas compactas. */
-
-@media (min-width: 861px) {
-  .parts-promo-media {
-    aspect-ratio: 16 / 10;
-    min-height: 0;
-  }
-
-  .parts-promo-cta-wrap {
-    align-self: end;
-  }
-}
-
-/* Texto institucional da JFA Parts */
-.parts-promo-story {
-  margin-top: clamp(10px, 1.2vw, 14px);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75em;
-}
-
-.parts-promo-story p {
-  margin: 0;
-  font-weight: 500;
-  font-size: clamp(13.5px, 0.98vw, 15px);
-  line-height: 1.6;
-  color: #4a5266;
-}
-
-.parts-promo-story .parts-promo-story-accent {
-  font-weight: 700;
-  color: #0b1528;
-}
-
-@media (min-width: 861px) {
-  .parts-promo-inner {
-    grid-template-areas:
-      'head media'
-      'cta media';
-    grid-template-rows: 1fr auto;
-    align-items: center;
-  }
-
-  .parts-promo-media {
-    align-self: center;
-  }
-}
-
-/* Carrossel de fotos: sem fade; passagem lateral rápida, como um movimento
-   de câmera, com distorção de movimento durante o deslocamento. */
-.parts-promo-media-slide {
-  opacity: 1;
-  visibility: hidden;
-  transform: translate3d(100%, 0, 0);
-  transition: none;
-}
-
-.parts-promo-media-slide.is-active {
-  visibility: visible;
-  transform: none;
-  animation: partsCamIn 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
-}
-
-.parts-promo-media-slide.is-leaving {
-  visibility: visible;
-  opacity: 1;
-  animation: partsCamOut 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
-}
-
-@keyframes partsCamIn {
-  from {
-    transform: translate3d(100%, 0, 0) scaleX(1.12);
-  }
-
-  to {
-    transform: none;
-  }
-}
-
-@keyframes partsCamOut {
-  from {
-    transform: none;
-  }
-
-  to {
-    transform: translate3d(-100%, 0, 0) scaleX(1.12);
-  }
-}
-
-.parts-promo-filters {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
-
-/* Fotos com tamanho visual equivalente: placas largas limitadas pela largura,
-   placas mais quadradas pela altura. */
-.parts-promo-media-slide img {
-  width: auto;
-  height: auto;
-  max-width: 86%;
-  max-height: 64%;
-  filter: drop-shadow(0 14px 18px rgba(2, 8, 24, 0.22));
-}
-
-/* A primeira foto já começa no lugar, sem passagem. */
-.parts-promo-media-slide.is-active:first-child:not(.was-cycled) {
-  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .parts-promo-media-slide.is-active,
-  .parts-promo-media-slide.is-leaving {
-    animation: none;
+  .parts-line-card,
+  .parts-line-icon {
+    transition: none;
   }
 }

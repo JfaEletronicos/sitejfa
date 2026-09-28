@@ -29,33 +29,33 @@ O `<StrictMode>` fica desligado de propósito, porque os comportamentos devem se
 
 ## Contexto compartilhado (`behaviors/context.js`)
 
-| Campo | Uso |
-| --- | --- |
-| `root`, `on`, `cleanups` | Consultas de DOM e registro de listeners com remoção automática |
-| `reduceMotion` | Estado atual de `prefers-reduced-motion`, atualizado ao vivo |
-| `reduceMotionListeners` | Callbacks disparados quando a preferência muda (ex.: pausar o vídeo da Hero) |
-| `fineMQ` | Media query de ponteiro fino (mouse) |
-| `syncHeaderSpacer` | Exposto pelo header e usado pela Hero |
-| `setProductsCategory` | Exposto pelo carrossel e usado pelos links "Conheça a linha" |
-| `refreshManualsField` | Exposto pelo campo de energia e usado por Manuais |
+| Campo                    | Uso                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `root`, `on`, `cleanups` | Consultas de DOM e registro de listeners com remoção automática              |
+| `reduceMotion`           | Estado atual de `prefers-reduced-motion`, atualizado ao vivo                 |
+| `reduceMotionListeners`  | Callbacks disparados quando a preferência muda (ex.: pausar o vídeo da Hero) |
+| `fineMQ`                 | Media query de ponteiro fino (mouse)                                         |
+| `syncHeaderSpacer`       | Exposto pelo header e usado pela Hero                                        |
+| `setProductsCategory`    | Exposto pelo carrossel e usado pelos links "Conheça a linha"                 |
+| `refreshManualsField`    | Exposto pelo campo de energia e usado por Manuais                            |
 
 ## Mapa componente ↔ comportamento ↔ estilo
 
-| Componente | Comportamento | CSS |
-| --- | --- | --- |
-| `Header` | `header.js`, `globalSearch.js` | `header.css`, `responsive-overrides.css` |
-| `Hero` | `hero.js` | `hero.css`, `base.css` |
-| `QuickAccess` | `quickAccess.js` | `quick-access.css` |
-| `Fronts` | `fronts.js` | `fronts.css` |
-| `Products` | `productsCarousel.js` | `products.css`, `section-backgrounds.css` |
-| `TechMarquee` | `techMarquee.js` | `tech-marquee.css` |
-| `BuySection` | `buySection.js` | `buy.css` |
-| `PartsPromo` | `partsPromo.js` | `parts-promo.css` |
+| Componente                                  | Comportamento                                           | CSS                                                                      |
+| ------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `Header`                                    | `header.js`, `globalSearch.js`                          | `header.css`, `responsive-overrides.css`                                 |
+| `Hero`                                      | `hero.js`                                               | `hero.css`, `base.css`                                                   |
+| `QuickAccess`                               | `quickAccess.js`                                        | `quick-access.css`                                                       |
+| `Fronts`                                    | `fronts.js`                                             | `fronts.css`                                                             |
+| `Products`                                  | `productsCarousel.js`                                   | `products.css`, `section-backgrounds.css`                                |
+| `TechMarquee`                               | `techMarquee.js`                                        | `tech-marquee.css`                                                       |
+| `BuySection`                                | `buySection.js`                                         | `buy.css`                                                                |
+| `PartsPromo`                                | —                                                       | `parts-promo.css`                                                        |
 | `DarkExperience` (Manuais + Representantes) | `manuals.js`, `representatives.js`, `darkExperience.js` | `manuals.css`, `manuals-panel.css`, `representatives.css`, `ambient.css` |
-| `CampaignCarousel` | `campaignCarousel.js` | `campaign.css` |
-| `pages/*` | `router.js` | `pages.css`, `battery-detail.css` |
-| `Footer` | `footer.js` | `footer.css` |
-| (canvases de várias seções) | `energyField.js` | `ambient.css` |
+| `CampaignCarousel`                          | `campaignCarousel.js`                                   | `campaign.css`                                                           |
+| `pages/*`                                   | `router.js`                                             | `pages.css`, `battery-detail.css`                                        |
+| `Footer`                                    | `footer.js`                                             | `footer.css`                                                             |
+| (canvases de várias seções)                 | `energyField.js`                                        | `ambient.css`                                                            |
 
 ## CSS
 
