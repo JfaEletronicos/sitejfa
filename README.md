@@ -69,7 +69,8 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 | `#/baterias/:slug` | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp |
 | `#/setores/automotivo`, `#/setores/telecom` | Catálogo do setor no layout da página de baterias (produtos de `src/data/sectors.js`) |
 | `#/setores/:setor/:produto` | Página do produto (fotos, descrição e documentos de `src/data/productDetails.js`) |
-| `#/setores/moov`, `#/setores/parts` | Páginas institucionais |
+| `#/setores/moov` | Landing page da JFA Moov (bicicletas elétricas), em `components/pages/MoovPage.jsx` |
+| `#/setores/parts` | Página institucional da JFA Parts |
 | `#/suporte` | Suporte técnico: mesmo mapa de Representantes, com os contatos de suporte (`src/data/support.js`) |
 | `#/representantes` | A seção de Representantes da Home, sozinha numa página |
 | `#/manuais` | A seção de Manuais da Home, sozinha numa página |

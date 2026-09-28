@@ -163,6 +163,23 @@ const PAGE_VIEWS = {
       ['#produtoOthersGrid .catalog-card', 'asmFromLeft'],
     ],
   },
+  // Moov: landing page montando seção por seção ao rolar.
+  moov: {
+    view: '#moovView',
+    parts: [
+      ['.moov-hero-copy > *', 'asmFromLeft'],
+      ['.moov-badges li', 'asmPop'],
+      ['.moov-hero-visual', 'asmZoomOut'],
+      ['.moov-about > .moov-inner > *', 'asmRise'],
+      ['.moov-head > *', 'asmSkew'],
+      ['.moov-feature', 'asmDomino'],
+      ['.moov-showcase', 'asmFlipUp'],
+      ['.moov-quote', 'asmFromLeft'],
+      ['.moov-guarantee', 'asmFromRight'],
+      ['.moov-final-cta', 'asmPop'],
+      ['.moov-legal', 'asmRise'],
+    ],
+  },
   setorInst: {
     view: '#setorInstView',
     parts: [

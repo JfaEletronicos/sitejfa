@@ -11,6 +11,15 @@ export const WHATSAPP_FLOAT_URL =
   '&text=' +
   encodeURIComponent('Olá! Vim pelo site da JFA e gostaria de mais informações.');
 
+// JFA Moov: categoria de bicicletas elétricas da loja oficial, e-mail e WhatsApp
+// de atendimento (o número publicado no site da loja).
+export const MOOV_STORE_URL = 'https://www.lojacamelstore.com/bicicleta-eletrica';
+export const MOOV_EMAIL = 'atendimento@lojacamelstore.com';
+export const MOOV_WHATSAPP_LABEL = '(31) 98902-0339';
+export const MOOV_WHATSAPP_URL =
+  'https://api.whatsapp.com/send?phone=5531989020339&text=' +
+  encodeURIComponent('Olá! Vim pelo site da JFA e quero saber mais sobre as bicicletas elétricas.');
+
 // Suporte técnico da JFA (mesmo número usado nos botões "Falar com a JFA" das páginas).
 export const SUPPORT_WHATSAPP_URL =
   'https://api.whatsapp.com/send?phone=553125336100&text=' +

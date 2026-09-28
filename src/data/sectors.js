@@ -104,22 +104,8 @@ export const SECTOR_CATALOGS = {
   },
 };
 
-/** Páginas institucionais (#/setores/moov e #/setores/parts). */
+/** Página institucional da Parts (#/setores/parts). A Moov tem landing page própria (MoovPage.jsx). */
 export const SECTOR_INSTITUTIONAL = {
-  moov: {
-    eyebrow: 'JFA Moov',
-    title: 'Mobilidade elétrica.',
-    sub: 'Tecnologia aplicada à mobilidade.',
-    image: '/images/front_moov.webp',
-    imageAlt: 'Bicicleta elétrica JFA Moov',
-    story: [
-      'Expandimos nossa atuação para soluções voltadas ao transporte elétrico, com foco principal em bicicletas elétricas e mobilidade com autonomia.',
-      'A JFA Moov é a frente da JFA dedicada à mobilidade: a mesma experiência em energia e eletrônica, agora aplicada a quem se movimenta pela cidade.',
-    ],
-    manualsTab: 'moov',
-    manualsLabel: 'Ver manuais da JFA Moov',
-    whatsappText: 'Olá, quero saber mais sobre a JFA Moov!',
-  },
   parts: {
     eyebrow: 'JFA Parts',
     title: 'Tecnologia para continuar funcionando.',

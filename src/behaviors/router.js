@@ -17,6 +17,7 @@ function initRouter(ctx) {
     const setorCatalogView = root.getElementById('setorCatalogView');
     const setorInstView = root.getElementById('setorInstView');
     const produtoView = root.getElementById('produtoView');
+    const moovView = root.getElementById('moovView');
     if (!homeView || !bateriasView || !bateriaView || !setorCatalogView || !setorInstView || !produtoView)
       return;
     // Suporte, Representantes e Manuais: páginas próprias. As de Representantes e
@@ -1388,6 +1389,7 @@ function initRouter(ctx) {
       setorCatalogView.hidden = name !== 'setorCatalog';
       setorInstView.hidden = name !== 'setorInst';
       produtoView.hidden = name !== 'produto';
+      if (moovView) moovView.hidden = name !== 'moov';
       placeSections(name);
       Object.keys(SECTION_PAGES).forEach((key) => {
         if (SECTION_PAGES[key].view) SECTION_PAGES[key].view.hidden = name !== key;
@@ -1398,7 +1400,7 @@ function initRouter(ctx) {
       if (navSetores)
         navSetores.classList.toggle(
           'is-active',
-          name === 'setorCatalog' || name === 'setorInst' || name === 'produto',
+          name === 'setorCatalog' || name === 'setorInst' || name === 'produto' || name === 'moov',
         );
       if (name === 'baterias') playBateriasEntrance();
       if (name === 'setorCatalog') {

@@ -308,7 +308,20 @@ function initSectorPages(ctx) {
   };
   ctx.renderSectorProduct = renderSectorProduct;
 
+  // Moov: cliques nos botões que levam à loja oficial.
+  const moovView = root.getElementById('moovView');
+  if (moovView) {
+    moovView
+      .querySelectorAll('[data-moov-cta]')
+      .forEach((a) => on(a, 'click', () => trackEvent('moov_store_click', { position: a.dataset.moovCta })));
+  }
+
   ctx.renderSectorPage = (slug) => {
+    // Moov: landing page fixa (components/pages/MoovPage.jsx).
+    if (slug === 'moov' && root.getElementById('moovView')) {
+      trackEvent('sector_page_view', { sector: slug });
+      return 'moov';
+    }
     if (SECTOR_CATALOGS[slug]) {
       renderCatalog(slug);
       trackEvent('sector_page_view', { sector: slug });

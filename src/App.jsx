@@ -19,6 +19,7 @@ import {
   SectorProductPage,
 } from './components/pages/SectorPages';
 import { SupportPage, RepresentativesPage, ManualsPage } from './components/pages/SectionPages';
+import MoovPage from './components/pages/MoovPage';
 import { initPageBehaviors } from './behaviors';
 
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
       <SectorCatalogPage />
       <SectorInstitutionalPage />
       <SectorProductPage />
+      <MoovPage />
       <SupportPage />
       <RepresentativesPage />
       <ManualsPage />

@@ -1,0 +1,476 @@
+/* JFA Moov (#/setores/moov): landing page das bicicletas elétricas */
+
+.moov-page {
+  position: relative;
+  z-index: 1;
+}
+
+.moov-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.moov-narrow {
+  max-width: 780px;
+  text-align: center;
+}
+
+.moov-eyebrow,
+.moov-label {
+  display: block;
+  margin: 0 0 1em;
+  font-weight: 700;
+  font-size: clamp(12px, 0.9vw, 14px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
+}
+
+.moov-title,
+.moov-h2 {
+  margin: 0;
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.moov-title {
+  font-size: clamp(24px, 2.9vw, 44px);
+  line-height: 1.08;
+}
+
+.moov-h2 {
+  font-size: clamp(20px, 2.2vw, 32px);
+  line-height: 1.12;
+}
+
+.moov-sub,
+.moov-text {
+  margin: 1em 0 0;
+  font-weight: 500;
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.65;
+  color: rgba(230, 238, 255, 0.72);
+}
+
+.moov-sub {
+  max-width: 52ch;
+}
+
+.moov-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: clamp(24px, 3vw, 34px);
+  padding: 1em 1.8em;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: clamp(12px, 0.95vw, 14px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(135deg, #2f7dff, #0068ff);
+  border: 1px solid rgba(140, 190, 255, 0.45);
+  box-shadow: 0 12px 34px -12px rgba(0, 104, 255, 0.75);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.moov-cta svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.25s ease;
+}
+
+.moov-cta:hover,
+.moov-cta:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px -12px rgba(0, 104, 255, 0.9);
+}
+
+.moov-cta:hover svg {
+  transform: translateX(4px);
+}
+
+/* 1 · Hero */
+.moov-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(104px, 11vw, 150px) clamp(18px, 3.6vw, 56px) clamp(56px, 7vw, 96px);
+}
+
+.moov-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 50% at 78% 45%, rgba(47, 125, 255, 0.28), rgba(47, 125, 255, 0) 70%),
+    radial-gradient(40% 40% at 10% 20%, rgba(100, 175, 255, 0.12), rgba(100, 175, 255, 0) 70%);
+}
+
+.moov-hero-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+}
+
+.moov-badges {
+  list-style: none;
+  margin: clamp(28px, 3.4vw, 40px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.moov-badges li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6em 1em;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(230, 238, 255, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(120, 170, 255, 0.2);
+}
+
+.moov-badges svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  color: #6fa8ff;
+}
+
+.moov-hero-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  max-height: 520px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 30px 70px -30px rgba(0, 104, 255, 0.55),
+    0 0 0 1px rgba(140, 190, 255, 0.35);
+}
+
+.moov-hero-visual img {
+  width: 92%;
+  height: 92%;
+  object-fit: contain;
+}
+
+/* Seções */
+.moov-section {
+  position: relative;
+  padding: clamp(48px, 6vw, 88px) clamp(18px, 3.6vw, 56px);
+}
+
+.moov-head {
+  text-align: center;
+  margin-bottom: clamp(28px, 3.4vw, 44px);
+}
+
+/* 3 · Diferenciais */
+.moov-features {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 20px);
+}
+
+.moov-feature {
+  padding: clamp(22px, 2.2vw, 28px);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(120, 170, 255, 0.16);
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moov-feature:hover {
+  background: rgba(0, 104, 255, 0.1);
+  border-color: rgba(64, 150, 255, 0.45);
+  transform: translateY(-3px);
+}
+
+.moov-feature-icon,
+.moov-showcase-icon,
+.moov-guarantee-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  color: #6fa8ff;
+  background: rgba(47, 125, 255, 0.12);
+  border: 1px solid rgba(120, 170, 255, 0.24);
+}
+
+.moov-feature-icon svg,
+.moov-showcase-icon svg,
+.moov-guarantee-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.moov-feature h3,
+.moov-guarantee h3 {
+  margin: 18px 0 8px;
+  font-weight: 800;
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.3;
+  color: #fff;
+}
+
+.moov-feature p,
+.moov-guarantee p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(230, 238, 255, 0.66);
+}
+
+/* 4 · Vitrine */
+.moov-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(20px, 3vw, 48px);
+  padding: clamp(20px, 2.4vw, 32px);
+  border-radius: 24px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(120, 170, 255, 0.2);
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.moov-showcase:hover,
+.moov-showcase:focus-visible {
+  background: rgba(0, 104, 255, 0.1);
+  border-color: rgba(64, 150, 255, 0.5);
+}
+
+.moov-showcase-media {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.moov-showcase-media img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moov-showcase:hover .moov-showcase-media img {
+  transform: scale(1.05);
+}
+
+.moov-showcase:hover .moov-showcase-media img:nth-child(2) {
+  transition-delay: 60ms;
+}
+
+.moov-showcase:hover .moov-showcase-media img:nth-child(3) {
+  transition-delay: 120ms;
+}
+
+.moov-showcase-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.moov-showcase-title {
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(18px, 1.8vw, 26px);
+  line-height: 1.15;
+  color: #fff;
+}
+
+.moov-showcase-text {
+  font-weight: 500;
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.65;
+  color: rgba(230, 238, 255, 0.72);
+}
+
+.moov-showcase-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
+}
+
+.moov-showcase-cta svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.25s ease;
+}
+
+.moov-showcase:hover .moov-showcase-cta svg {
+  transform: translateX(4px);
+}
+
+/* 5 · Prova social */
+.moov-proof {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(14px, 1.6vw, 20px);
+}
+
+.moov-quote {
+  position: relative;
+  margin: 0;
+  padding: clamp(26px, 3vw, 40px);
+  border-radius: 20px;
+  background: linear-gradient(160deg, rgba(47, 125, 255, 0.16), rgba(47, 125, 255, 0.04));
+  border: 1px solid rgba(120, 170, 255, 0.24);
+}
+
+.moov-quote-mark {
+  width: 36px;
+  height: 36px;
+  color: #6fa8ff;
+  opacity: 0.8;
+}
+
+.moov-quote blockquote {
+  margin: 14px 0 18px;
+  font-weight: 600;
+  font-size: clamp(17px, 1.5vw, 22px);
+  line-height: 1.5;
+  color: #fff;
+}
+
+.moov-quote figcaption {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(156, 196, 255, 0.85);
+}
+
+.moov-guarantee {
+  padding: clamp(26px, 3vw, 40px);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(120, 170, 255, 0.16);
+}
+
+.moov-final-cta {
+  margin-top: clamp(20px, 2.6vw, 32px);
+  text-align: center;
+}
+
+/* 6 · Rodapé institucional */
+.moov-legal {
+  padding: clamp(32px, 4vw, 48px) clamp(18px, 3.6vw, 56px);
+  border-top: 1px solid rgba(120, 170, 255, 0.14);
+  text-align: center;
+}
+
+.moov-legal p {
+  margin: 0.3em 0;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(230, 238, 255, 0.6);
+}
+
+.moov-legal .moov-legal-name {
+  font-weight: 800;
+  font-size: 14px;
+  color: rgba(230, 238, 255, 0.88);
+}
+
+.moov-legal-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+}
+
+.moov-legal a {
+  color: rgba(156, 196, 255, 0.9);
+}
+
+.moov-legal a:hover {
+  color: #fff;
+}
+
+@media (max-width: 980px) {
+  .moov-hero-inner,
+  .moov-showcase,
+  .moov-proof {
+    grid-template-columns: 1fr;
+  }
+  .moov-hero-copy {
+    text-align: center;
+  }
+  .moov-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .moov-badges {
+    justify-content: center;
+  }
+  .moov-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .moov-showcase-copy {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .moov-features {
+    grid-template-columns: 1fr;
+  }
+  .moov-feature,
+  .moov-guarantee,
+  .moov-quote {
+    text-align: center;
+  }
+  .moov-badges {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moov-cta,
+  .moov-feature,
+  .moov-showcase-media img {
+    transition: none;
+  }
+}

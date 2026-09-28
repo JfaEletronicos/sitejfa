@@ -52,3 +52,8 @@ html[data-theme='light'] .dark-page-support .dark-experience-bg:not([data-theme-
     radial-gradient(44% 40% at 85% 28%, rgba(110, 185, 255, 0.14), rgba(110, 185, 255, 0) 62%),
     linear-gradient(180deg, #dbe7fb 0%, #d4e3fb 46%, #dbe7fb 100%);
 }
+
+/* Moov: texto branco no botão azul também no modo claro. */
+html[data-theme='light'] .moov-cta:not([data-theme-keep], [data-theme-keep] *) {
+  color: #fff;
+}
