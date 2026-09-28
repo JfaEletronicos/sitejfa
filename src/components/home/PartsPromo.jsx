@@ -81,6 +81,22 @@ export default function PartsPromo() {
             </p>
           </div>
         </div>
+        <div className="parts-promo-boards">
+          <img
+            className="parts-promo-board is-long"
+            src="/images/board_lb1004_cut.webp"
+            alt="Placa eletrônica JFA Parts LB1004"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            className="parts-promo-board is-square"
+            src="/images/board_lb1009.webp"
+            alt="Placa eletrônica JFA Parts LB1009"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
         <div className="parts-promo-lines">
           {PARTS_LINES.map((line) => (
             <a

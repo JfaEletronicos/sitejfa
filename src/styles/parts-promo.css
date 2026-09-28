@@ -11,7 +11,7 @@
   margin: 0 auto;
   position: relative;
   border-radius: 20px;
-  padding: clamp(24px, 3vw, 40px) clamp(20px, 3vw, 40px);
+  padding: clamp(28px, 4vw, 56px) clamp(20px, 3.6vw, 52px);
   background: linear-gradient(160deg, #eef2f8 0%, #e3e9f3 100%);
   box-shadow: 0 16px 40px rgba(2, 8, 24, 0.28);
 }
@@ -44,8 +44,8 @@
   font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
   font-weight: 400;
   text-transform: uppercase;
-  font-size: clamp(22px, 2.4vw, 30px);
-  line-height: 1.22;
+  font-size: clamp(24px, 2.8vw, 38px);
+  line-height: 1.18;
   color: #0b0d14;
 }
 
@@ -66,6 +66,37 @@
 .parts-promo-story .parts-promo-story-accent {
   font-weight: 700;
   color: #0b1528;
+}
+
+/* Placas: mostram logo de cara do que se trata a JFA Parts. */
+.parts-promo-boards {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 4vw, 64px);
+  margin-bottom: clamp(24px, 3vw, 40px);
+  padding: clamp(20px, 3vw, 40px) clamp(12px, 3vw, 40px);
+  border-radius: 18px;
+  background:
+    radial-gradient(50% 70% at 50% 50%, rgba(0, 104, 255, 0.14), rgba(0, 104, 255, 0) 72%),
+    rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(11, 27, 58, 0.08);
+}
+
+.parts-promo-board {
+  display: block;
+  min-width: 0;
+  height: auto;
+  filter: drop-shadow(0 18px 22px rgba(2, 8, 24, 0.28));
+}
+
+.parts-promo-board.is-long {
+  width: min(56%, 560px);
+}
+
+.parts-promo-board.is-square {
+  width: min(30%, 300px);
 }
 
 /* Blocos das linhas de máquinas */
@@ -238,6 +269,18 @@
 
   .parts-promo-lines {
     grid-template-columns: 1fr;
+  }
+
+  .parts-promo-boards {
+    gap: 14px;
+  }
+
+  .parts-promo-board.is-long {
+    width: 60%;
+  }
+
+  .parts-promo-board.is-square {
+    width: 34%;
   }
 
   .parts-line-card {

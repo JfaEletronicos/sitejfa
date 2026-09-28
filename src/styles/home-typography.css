@@ -92,9 +92,8 @@
 
 /* JFA Parts compacta: destaques em uma linha de título menor. */
 
-/* Headlines da Hero, da JFA Parts e de Representantes: metade do padrão
+/* Headlines da Hero e de Representantes: metade do padrão
    (mínimo de 18px para continuar legível no celular). */
-#homeView .parts-promo-title,
 #homeView .reps-title {
   font-size: max(18px, calc(var(--home-headline) * 0.5));
 }

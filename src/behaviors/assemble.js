@@ -67,7 +67,7 @@ const SECTIONS = [
   },
   // Banner: entra deslizando pela lateral direita.
   { section: '#campaignSection', parts: [['.campaign-carousel', 'asmSideIn']] },
-  // JFA Parts: card vira em 3D, textos sobem e os blocos das linhas entram em sequência.
+  // JFA Parts: card vira em 3D, textos sobem, placas aproximam e os blocos das linhas entram em sequência.
   {
     section: '#partsPromoSection',
     parts: [
@@ -75,6 +75,7 @@ const SECTIONS = [
       ['.parts-promo-eyebrow', 'asmPop'],
       ['.parts-promo-title', 'asmSkew'],
       ['.parts-promo-story > p', 'asmFromRight'],
+      ['.parts-promo-board', 'asmZoomOut'],
       ['.parts-line-card', 'asmRise'],
       ['.parts-promo-cta-wrap', 'asmPop'],
     ],
