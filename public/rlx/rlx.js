@@ -38,7 +38,35 @@
     floor.appendChild(row);
   }
 
+  // Cadastro do rodapé: só front-end nesta prévia.
+  var news = document.querySelector('.rlx-news');
+  news.addEventListener('submit', function (e) {
+    e.preventDefault();
+    news.hidden = true;
+    document.querySelector('.rlx-news-ok').hidden = false;
+  });
+
   if (reduce || !('IntersectionObserver' in window)) return;
+
+  // Números de "Quem somos" contam do zero até o valor.
+  var countUp = function (el, delay) {
+    var target = Number(el.getAttribute('data-count'));
+    var start = null;
+    var DURATION = 1600;
+    var fmt = function (n) {
+      return '+' + Math.round(n).toLocaleString('pt-BR');
+    };
+    el.textContent = fmt(0);
+    var tick = function (t) {
+      if (start === null) start = t;
+      var k = Math.min(1, (t - start) / DURATION);
+      el.textContent = fmt(target * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    setTimeout(function () {
+      requestAnimationFrame(tick);
+    }, delay);
+  };
   document.documentElement.classList.add('asm-on');
 
   // Instalação: da fileira da frente para o fundo, da esquerda para a direita.
@@ -75,6 +103,9 @@
         var base = section.classList.contains('rlx-hero') ? 350 : 0;
         section.querySelectorAll('.asm').forEach(function (el, i) {
           animate(el, base + Math.min(i * STEP_MS, MAX_DELAY_MS));
+        });
+        section.querySelectorAll('[data-count]').forEach(function (el, i) {
+          countUp(el, 300 + i * 150);
         });
       });
     },
