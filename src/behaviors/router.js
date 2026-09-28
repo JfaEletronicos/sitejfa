@@ -62,7 +62,12 @@ function initRouter(ctx) {
       text + ' <span class="brand-chip" data-theme-keep><img src="' + logo + '" alt="' + alt + '"></span>';
     const fixStretchProAccent = (str) =>
       String(str).replace(/[ÁáÚú]/g, (c) => '<span class="accent-fix">' + c + '</span>');
-    const APP_LABELS = { automotivo: 'Automotivo', solar: 'Solar', nautico: 'N\xE1utico' };
+    const APP_LABELS = {
+      automotivo: 'Automotivo',
+      solar: 'Solar',
+      nautico: 'N\xE1utico',
+      telecom: 'Telecom',
+    };
     const APP_CONTEXT = {
       automotivo: {
         title: 'Mais energia para projetos que exigem desempenho.',
@@ -71,6 +76,10 @@ function initRouter(ctx) {
       solar: {
         title: 'Armazene energia para usar quando precisar.',
         text: 'Uma solu\xE7\xE3o desenvolvida para integrar sistemas de armazenamento de energia, ajudando a manter energia dispon\xEDvel com gerenciamento inteligente e alta capacidade.',
+      },
+      telecom: {
+        title: 'Energia para sistemas que precisam permanecer conectados.',
+        text: 'Armazenamento de energia em formato rack para sistemas de telecomunica\xE7\xE3o que n\xE3o podem parar.',
       },
       nautico: {
         title: 'Energia preparada para ir a bordo.',
@@ -183,12 +192,13 @@ function initRouter(ctx) {
         voltage: '48V',
         capacity: '100Ah',
         technology: 'LiFePO4',
-        sectors: ['solar'],
+        // Rack: Telecom (e, como toda bateria que não é náutica, também Automotivo).
+        sectors: ['telecom', 'automotivo'],
         features: ['Rack'],
-        shortDescription: 'Integra\xE7\xE3o em rack para sistemas solares de maior porte.',
-        marketingHeadline: 'Mais capacidade para o seu sistema solar.',
+        shortDescription: 'Integra\xE7\xE3o em rack para sistemas de energia de maior porte.',
+        marketingHeadline: 'Mais capacidade em formato rack.',
         longDescription:
-          'Formato rack para uma integra\xE7\xE3o organizada em sistemas solares de maior porte.',
+          'Formato rack para uma integra\xE7\xE3o organizada em sistemas de energia de maior porte.',
         image: '/images/bateria_elitio_pro_48v100a.webp',
         images: [
           '/images/bateria_elitio_pro_48v100a_a1.webp',
@@ -207,7 +217,7 @@ function initRouter(ctx) {
         voltage: '48V',
         capacity: '50Ah',
         technology: 'LiFePO4',
-        sectors: ['solar'],
+        sectors: ['solar', 'automotivo'],
         features: ['BMS'],
         shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
         marketingHeadline: 'Alta tens\xE3o, energia sob controle.',
@@ -257,7 +267,7 @@ function initRouter(ctx) {
         voltage: '25,6V',
         capacity: '50Ah',
         technology: 'LiFePO4',
-        sectors: ['solar'],
+        sectors: ['automotivo'],
         features: ['BMS'],
         shortDescription: 'Energia est\xE1vel e monitorada para sistemas de armazenamento.',
         marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
@@ -281,10 +291,10 @@ function initRouter(ctx) {
         voltage: '25,6V',
         capacity: '100Ah',
         technology: 'LiFePO4',
-        sectors: ['solar'],
+        sectors: ['automotivo'],
         features: ['BMS'],
-        shortDescription: 'Mais capacidade para projetos solares que exigem maior autonomia.',
-        marketingHeadline: 'Mais capacidade para projetos solares maiores.',
+        shortDescription: 'Mais capacidade para projetos que exigem maior autonomia.',
+        marketingHeadline: 'Mais capacidade para projetos maiores.',
         longDescription:
           'Gerenciamento BMS para sistemas de armazenamento de energia que precisam de maior autonomia.',
         image: '/images/bateria_elitio_pro_25v6_100a.webp',
@@ -505,6 +515,7 @@ function initRouter(ctx) {
       automotivo: { slug: 'automotivo', title: 'Automotivo' },
       solar: { slug: 'solar', title: 'Solar' },
       nautico: { slug: 'nautica', title: 'N\xE1utica' },
+      telecom: { slug: 'telecom', title: 'Telecom' },
     };
     // Miniaturas só aparecem com mais de 1 foto; onSelect move o carrossel principal.
     const buildGalleryThumbs = (photos, altBase, onSelect) => {

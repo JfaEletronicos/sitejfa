@@ -75,7 +75,7 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 | `#/representantes`                                                 | A seção de Representantes da Home, sozinha numa página                                                                 |
 | `#/manuais`                                                        | A seção de Manuais da Home, sozinha numa página                                                                        |
 
-O botão **Categorias** do header abre um menu com Automotivo, Telecom, Motorhome, Solar e Náutica (as baterias ficam dentro de cada categoria; os inversores rack no Telecom, o Black no Motorhome e o Solar só tem baterias); `#/setores` sozinho volta para a Home com esse menu aberto. As páginas de produto e de bateria têm **fotos para download** (uma a uma ou todas).
+O botão **Categorias** do header abre um menu com Automotivo, Telecom, Motorhome, Solar e Náutica (as baterias ficam dentro de cada categoria: todas, menos as náuticas, também no Automotivo; as em rack no Telecom; no Solar só a Pro 12,8V e a Pro 48V 50Ah. Os inversores rack ficam no Telecom e o Black no Motorhome); `#/setores` sozinho volta para a Home com esse menu aberto. As páginas de produto e de bateria têm **fotos para download** (uma a uma ou todas).
 
 **Moov e JFA Parts estão ocultas até segunda ordem**: as flags `SHOW_MOOV` e `SHOW_PARTS` de `src/data/visibility.js` controlam todos os pontos (menu, Frentes, seção da Home, abas de Manuais, busca, rodapé e rotas). Para voltar, basta trocá-las para `true`; os trechos estão marcados com o comentário `OCULTO: Moov/Parts`.
 

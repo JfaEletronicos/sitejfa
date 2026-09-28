@@ -7,7 +7,7 @@
  * impresso no rótulo do produto.
  *
  * WHY_COPY: chave = id (ou "id:variante") e, dentro, a aplicação
- * (solar/automotivo/nautico). Cada texto tem um título, um parágrafo e
+ * (solar/automotivo/nautico/telecom). Cada texto tem um título, um parágrafo e
  * três motivos com um valor em destaque.
  */
 
@@ -75,9 +75,18 @@ export const WHY_COPY = {
     },
   },
   'elitio-pro-solar-48v-100ah-rack': {
-    solar: {
-      title: 'Capacidade de sobra para sistemas solares de maior porte.',
-      text: 'São 4,8 kWh em um módulo de rack 48V, com painel de controle frontal e portas de comunicação para integrar a bateria ao restante do sistema de armazenamento.',
+    telecom: {
+      title: 'Energia de reserva no formato dos racks de telecom.',
+      text: 'São 4,8 kWh em um módulo de rack 48V, com painel de controle frontal e portas de comunicação RS485 e CAN para integrar a bateria ao sistema de energia.',
+      reasons: [
+        { value: '4,8 kWh', text: 'de energia em um único módulo de rack' },
+        { value: 'RS485 e CAN', text: 'portas de comunicação no painel frontal' },
+        { value: '54V', text: 'de carga máxima, indicada no painel' },
+      ],
+    },
+    automotivo: {
+      title: 'Alta capacidade em 48V para projetos de grande porte.',
+      text: 'São 4,8 kWh em um único módulo de 48V, com painel de controle frontal e portas de comunicação, para projetos que precisam de muita energia armazenada.',
       reasons: [
         { value: '4,8 kWh', text: 'de energia em um único módulo de rack' },
         { value: 'RS485 e CAN', text: 'portas de comunicação no painel frontal' },
@@ -88,6 +97,11 @@ export const WHY_COPY = {
   'elitio-pro-48v-50ah': {
     solar: {
       title: 'Alta tensão para sistemas que precisam de eficiência.',
+      text: 'Em 48V, o sistema trabalha com menos corrente para a mesma potência, o que reduz perdas nos cabos. São 2,4 kWh em LiFePO₄ com BMS e painel de controle integrado.',
+      reasons: [{ value: '2,4 kWh', text: 'de energia armazenada em 48V' }, cyclesReason, bmsReason],
+    },
+    automotivo: {
+      title: 'Alta tensão para projetos que exigem eficiência.',
       text: 'Em 48V, o sistema trabalha com menos corrente para a mesma potência, o que reduz perdas nos cabos. São 2,4 kWh em LiFePO₄ com BMS e painel de controle integrado.',
       reasons: [{ value: '2,4 kWh', text: 'de energia armazenada em 48V' }, cyclesReason, bmsReason],
     },
@@ -104,16 +118,16 @@ export const WHY_COPY = {
     },
   },
   'elitio-pro-25-6v-50ah': {
-    solar: {
+    automotivo: {
       title: 'O equilíbrio entre tensão e capacidade.',
       text: 'Em 25,6V, a bateria atende sistemas de 24V com menos corrente que um sistema de 12V equivalente. São 1,28 kWh em LiFePO₄, com BMS acompanhando a operação.',
       reasons: [{ value: '1,28 kWh', text: 'de energia para sistemas de 24V' }, cyclesReason, bmsReason],
     },
   },
   'elitio-pro-25-6v-100ah': {
-    solar: {
-      title: 'Mais autonomia para sistemas solares de 24V.',
-      text: 'Com 2,56 kWh em 25,6V, a bateria guarda mais energia para as horas sem geração, com BMS e química LiFePO₄ feita para ciclos diários.',
+    automotivo: {
+      title: 'Mais autonomia para sistemas de 24V.',
+      text: 'Com 2,56 kWh em 25,6V, a bateria guarda mais energia para sistemas de 24V, com BMS e química LiFePO₄ feita para ciclos diários.',
       reasons: [{ value: '2,56 kWh', text: 'de energia armazenada em 25,6V' }, cyclesReason, bmsReason],
     },
   },

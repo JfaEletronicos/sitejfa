@@ -98,7 +98,11 @@ export const SECTOR_CATALOGS = {
   },
   telecom: {
     title: 'Energia para sistemas que precisam permanecer conectados.',
+    // Baterias em rack.
+    batterySector: 'telecom',
+    batteryGroup: 'baterias',
     groups: [
+      { key: 'baterias', label: 'Baterias', ids: [] },
       {
         key: 'distribuicao',
         label: 'Distribuição',
@@ -127,7 +131,7 @@ export const SECTOR_CATALOGS = {
     title: 'Energia para quem vive na estrada.',
     groups: [{ key: 'inversores', label: 'Inversores', ids: ['inversor-offgrid-senoidal-black'] }],
   },
-  // Solar: só baterias (nenhum inversor).
+  // Solar: só baterias (nenhum inversor): E-Lítio Pro 12,8V e Pro 48V 50Ah.
   solar: {
     title: 'Armazene energia para usar quando precisar.',
     batterySector: 'solar',

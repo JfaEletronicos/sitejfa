@@ -18,8 +18,7 @@ export default function BuySection() {
         <span className="buy-eyebrow">DÚVIDAS SOBRE ONDE COMPRAR?</span>
         <h2 className="buy-title">Compre direto nos marketplaces oficiais da JFA!</h2>
         <p className="buy-sub">
-          As baterias de lítio estão na nossa loja da Shopee. Fontes, controles, amplificadores e o restante
-          do catálogo, na nossa loja do Mercado Livre.
+          Encontre as baterias de lítio JFA na Shopee e todo o nosso catálogo no Mercado Livre.
         </p>
       </div>
       <div className="buy-grid" id="buyGrid">
@@ -56,10 +55,11 @@ export default function BuySection() {
           </span>{' '}
           <span className="buy-card-title">Baterias de lítio JFA.</span>
           <p className="buy-card-body">
-            A linha e-Lítio para os seus projetos de energia, direto na loja oficial da JFA na Shopee.
+            Encontre modelos da linha e-Lítio e aproveite a praticidade da Shopee para comprar sua bateria
+            JFA.
           </p>
           <span className="buy-card-arrow">
-            Comprar na Shopee{' '}
+            Ver baterias na Shopee{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
@@ -108,13 +108,13 @@ export default function BuySection() {
               decoding="async"
             />
           </span>{' '}
-          <span className="buy-card-title">Catálogo completo JFA.</span>
+          <span className="buy-card-title">Encontre seu produto JFA.</span>
           <p className="buy-card-body">
-            Fontes, controles, amplificadores e as demais linhas do nosso catálogo, na loja oficial da JFA no
-            Mercado Livre.
+            Acesse fontes, controles, amplificadores, baterias e outras linhas JFA reunidas em nosso catálogo
+            no Mercado Livre.
           </p>
           <span className="buy-card-arrow">
-            Comprar no Mercado Livre{' '}
+            Ver catálogo no Mercado Livre{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
