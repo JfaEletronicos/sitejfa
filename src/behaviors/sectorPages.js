@@ -1,12 +1,54 @@
 import { trackEvent } from '../lib/analytics';
-import { PRODUCTS } from '../data/products';
-import { SECTOR_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../data/sectors';
-import { PRODUCT_DETAILS } from '../data/productDetails';
-import { PRODUCT_QUICK_SPECS } from '../data/productSpecs';
+import { PRODUCTS as PT_PRODUCTS } from '../data/products';
+import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../data/sectors';
+import { PRODUCT_DETAILS as PT_DETAILS } from '../data/productDetails';
+import { PRODUCT_QUICK_SPECS as PT_QUICK_SPECS } from '../data/productSpecs';
+import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../data/exportProducts';
+import { INTERNATIONAL_SALES } from '../data/representatives';
+import { t, tf, pick, IS_EXPORT } from '../i18n';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
 
-const WHATSAPP_PHONE = '553125336100';
+// Em inglês/espanhol (exportação), o catálogo, os textos e o contato são os de
+// exportação: produtos de data/exportProducts.js numa categoria só (automotivo).
+const PRODUCTS = IS_EXPORT
+  ? EXPORT_PRODUCTS.map((p) => ({
+      id: p.id,
+      name: pick(p.name),
+      category: pick(p.category),
+      status: 'current',
+      manualUrl: p.manualUrl,
+    }))
+  : PT_PRODUCTS;
+const PRODUCT_DETAILS = IS_EXPORT
+  ? Object.fromEntries(
+      EXPORT_PRODUCTS.map((p) => [
+        p.id,
+        {
+          images: p.images,
+          summary: pick(p.summary),
+          blocks: pick(p.blocks),
+          docs: [{ label: t('product.manual'), url: p.manualUrl }],
+        },
+      ]),
+    )
+  : PT_DETAILS;
+const SECTOR_CATALOGS = IS_EXPORT
+  ? {
+      automotivo: {
+        title: t('export.catalogTitle'),
+        groups: EXPORT_GROUPS.map((g) => ({
+          key: g.key,
+          label: pick(g.label),
+          ids: EXPORT_PRODUCTS.filter((p) => p.group === g.key).map((p) => p.id),
+        })),
+      },
+    }
+  : PT_CATALOGS;
+const PRODUCT_QUICK_SPECS = IS_EXPORT ? {} : PT_QUICK_SPECS;
+const WHATSAPP_PHONE = IS_EXPORT
+  ? INTERNATIONAL_SALES.contacts[INTERNATIONAL_SALES.contacts.length - 1].phone.replace(/\D/g, '')
+  : '553125336100';
 const ARROW_SVG =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 const ARROW_OUT_SVG =
@@ -99,7 +141,7 @@ function initSectorPages(ctx) {
     }
     const cta = document.createElement('span');
     cta.className = 'catalog-card-cta';
-    cta.innerHTML = detail ? 'Conhecer produto ' + ARROW_SVG : 'Ver manual ' + ARROW_OUT_SVG;
+    cta.innerHTML = detail ? t('catalog.more') + ' ' + ARROW_SVG : t('catalog.manual') + ' ' + ARROW_OUT_SVG;
     a.appendChild(cta);
     on(a, 'click', () =>
       trackEvent(detail ? 'sector_product_click' : 'manual_download', {
@@ -119,7 +161,7 @@ function initSectorPages(ctx) {
     const batteries =
       cfg.batterySector && ctx.batteriesForSector ? ctx.batteriesForSector(cfg.batterySector) : [];
     const groups = cfg.groups.filter((g) => g.ids.length || (g.key === cfg.batteryGroup && batteries.length));
-    buildFilterTabs(track, [{ key: 'all', label: 'Todos' }, ...groups]);
+    buildFilterTabs(track, [{ key: 'all', label: t('catalog.all') }, ...groups]);
     groups.forEach((g) => {
       if (g.key === cfg.batteryGroup) {
         batteries.forEach((card) => {
@@ -171,7 +213,9 @@ function initSectorPages(ctx) {
     othersAll: byId('produtoOthersAll'),
     others: byId('produtoOthersGrid'),
   };
-  const SECTOR_TITLES = Object.fromEntries(SECTOR_MENU.map((m) => [m.slug, m.title]));
+  const SECTOR_TITLES = IS_EXPORT
+    ? { automotivo: t('nav.categories') }
+    : Object.fromEntries(SECTOR_MENU.map((m) => [m.slug, m.title]));
   const svg = (d) =>
     '<svg viewBox="0 0 24 24" fill="none"><path d="' +
     d +
@@ -241,13 +285,19 @@ function initSectorPages(ctx) {
     prod.crumbSector.href = '#/setores/' + slug;
     prod.crumbSector.textContent = sectorTitle;
     prod.crumbCurrent.textContent = pname;
-    prod.eyebrow.textContent = sectorTitle + ' JFA';
+    prod.eyebrow.textContent = IS_EXPORT ? t('product.eyebrow') : sectorTitle + ' JFA';
     prod.badge.textContent = p.category;
     prod.title.textContent = pname;
     prod.headline.textContent = detail.summary;
     const paras = detail.blocks.filter((b) => b.t === 'p');
-    const firstRest = paras[0] ? plain(paras[0].h).slice(detail.summary.length).trim() : '';
-    const descText = firstRest || (paras[1] ? plain(paras[1].h) : '');
+    // O resumo em português é o começo do 1º parágrafo ("…"): a descrição é o resto
+    // dele. Quando o resumo é uma frase própria (exportação), vale o parágrafo todo.
+    const firstPara = paras[0] ? plain(paras[0].h) : '';
+    const firstRest = firstPara.startsWith(detail.summary.replace(/…$/, ''))
+      ? firstPara.slice(detail.summary.length).trim()
+      : firstPara;
+    // Exportação: o resumo já é a frase de abertura; o texto completo fica em "Por que escolher".
+    const descText = IS_EXPORT ? '' : firstRest || (paras[1] ? plain(paras[1].h) : '');
     prod.desc.textContent = descText;
     prod.desc.hidden = !descText;
     prod.media.innerHTML = '';
@@ -263,7 +313,7 @@ function initSectorPages(ctx) {
         btn.type = 'button';
         btn.className = 'bateria-gallery-thumb';
         btn.setAttribute('role', 'tab');
-        btn.setAttribute('aria-label', 'Ver foto ' + (i + 1) + ' de ' + pname);
+        btn.setAttribute('aria-label', tf('product.photoOf', { n: i + 1, name: pname }));
         const img = document.createElement('img');
         img.src = src;
         img.alt = '';
@@ -360,15 +410,16 @@ function initSectorPages(ctx) {
     const rows = detail.docs.map((doc, i) => ({
       href: doc.url,
       external: true,
-      title: i === 0 ? 'Manual técnico' : doc.label,
-      text: i === 0 ? 'Informações de instalação, operação e cuidados.' : 'Documento técnico em PDF.',
-      cta: i === 0 ? 'Baixar manual' : 'Baixar',
+      title: i === 0 ? t('product.manual') : doc.label,
+      text: i === 0 ? t('product.manualText') : t('product.docText'),
+      cta: i === 0 ? t('product.downloadManual') : t('product.downloadDoc'),
     }));
     rows.push({
-      href: '#/manuais',
-      title: 'Central de manuais',
-      text: 'Manuais organizados por categoria na seção de Manuais do site.',
-      cta: 'Ver manuais',
+      // Exportação: a lista de manuais fica na Home (#manuais).
+      href: IS_EXPORT ? '#manuais' : '#/manuais',
+      title: t('product.manualsHub'),
+      text: t('product.manualsHubText'),
+      cta: t('product.seeManuals'),
     });
     rows.forEach((r, i) => {
       const row = document.createElement('a');
@@ -394,14 +445,14 @@ function initSectorPages(ctx) {
       'https://api.whatsapp.com/send?phone=' +
       WHATSAPP_PHONE +
       '&text=' +
-      encodeURIComponent('Olá, quero saber mais sobre o ' + pname + '!');
+      encodeURIComponent(tf('product.whatsappText', { name: pname }));
     prod.support.onclick = () => trackEvent('whatsapp_click', { source: 'produto_page', product_id: id });
     // 07 · Outros produtos da mesma linha (ou do setor, se a linha tiver só este).
     const pool = (group && group.ids.length > 1 ? group.ids : cfg.groups.flatMap((g) => g.ids)).filter(
       (x) => x !== id && productsById[x] && productsById[x].status === 'current',
     );
     prod.othersLabel.textContent =
-      group && group.ids.length > 1 ? 'Mais em ' + group.label : 'Outros produtos';
+      group && group.ids.length > 1 ? tf('product.moreIn', { group: group.label }) : t('product.others');
     prod.othersAll.href = '#/setores/' + slug;
     prod.others.innerHTML = '';
     pool.slice(0, 3).forEach((x) => {

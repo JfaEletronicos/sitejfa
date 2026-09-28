@@ -1,6 +1,7 @@
 import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
 import { SECTOR_MENU } from '../../data/sectors';
 import { INSTAGRAM_URL, YOUTUBE_URL } from '../../data/links';
+import { t, IS_EXPORT } from '../../i18n';
 
 // Categorias do rodapé (JFA Parts e Moov continuam com os links antigos logo abaixo).
 const FOOTER_CATEGORIES = SECTOR_MENU.filter((s) => s.slug !== 'parts' && s.slug !== 'moov');
@@ -17,10 +18,15 @@ export default function Footer() {
               <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
               <span className="jfa-logo-word">JFA</span>
             </div>
-            <p className="jfa-footer-tagline">Tecnologia feita por nós.</p>
+            <p className="jfa-footer-tagline">{t('footer.tagline')}</p>
             {/* Redes sociais */}
-            <div className="jfa-footer-social" aria-label="Redes sociais da JFA">
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram da JFA">
+            <div className="jfa-footer-social" aria-label={t('footer.social')}>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('footer.instagram')}
+              >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
                   <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
@@ -31,7 +37,7 @@ export default function Footer() {
                 href={YOUTUBE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Canal da JFA no YouTube"
+                aria-label={t('footer.youtube')}
               >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
@@ -45,48 +51,72 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          <nav className="jfa-footer-cols" aria-label="Links do rodapé">
-            <div className="jfa-footer-col" data-footer-col="0">
-              <span className="jfa-footer-col-title">Produtos</span>{' '}
-              {FOOTER_CATEGORIES.map((c) => (
-                <a key={c.slug} href={'#/setores/' + c.slug}>
-                  {c.title}
+          {IS_EXPORT ? (
+            <nav className="jfa-footer-cols" aria-label={t('footer.links')}>
+              <div className="jfa-footer-col" data-footer-col="0">
+                <span className="jfa-footer-col-title">{t('footer.products')}</span>{' '}
+                <a href="#/setores/automotivo">{t('footer.automotive')}</a>
+              </div>
+              <div className="jfa-footer-col" data-footer-col="1">
+                <span className="jfa-footer-col-title">{t('footer.jfa')}</span>{' '}
+                <a href="#home" data-footer-scroll="home">
+                  {t('footer.about')}
+                </a>{' '}
+                <a href="#contato" data-footer-scroll="contato">
+                  {t('nav.contact')}
                 </a>
-              ))}{' '}
-              {/* OCULTO: Moov/Parts (data/visibility.js) */}
-              {SHOW_PARTS && (
-                <a href="#frentes" data-footer-goto="2">
-                  Parts
+              </div>
+              <div className="jfa-footer-col" data-footer-col="2">
+                <span className="jfa-footer-col-title">{t('footer.support')}</span>{' '}
+                <a href="#manuais" data-footer-scroll="manuais">
+                  {t('nav.manuals')}
                 </a>
-              )}{' '}
-              {SHOW_MOOV && (
-                <a href="#frentes" data-footer-goto="3">
-                  Moov
+              </div>
+            </nav>
+          ) : (
+            <nav className="jfa-footer-cols" aria-label="Links do rodapé">
+              <div className="jfa-footer-col" data-footer-col="0">
+                <span className="jfa-footer-col-title">Produtos</span>{' '}
+                {FOOTER_CATEGORIES.map((c) => (
+                  <a key={c.slug} href={'#/setores/' + c.slug}>
+                    {c.title}
+                  </a>
+                ))}{' '}
+                {/* OCULTO: Moov/Parts (data/visibility.js) */}
+                {SHOW_PARTS && (
+                  <a href="#frentes" data-footer-goto="2">
+                    Parts
+                  </a>
+                )}{' '}
+                {SHOW_MOOV && (
+                  <a href="#frentes" data-footer-goto="3">
+                    Moov
+                  </a>
+                )}
+              </div>
+              <div className="jfa-footer-col" data-footer-col="1">
+                <span className="jfa-footer-col-title">JFA</span>{' '}
+                <a href="#home" data-footer-scroll="home">
+                  Sobre nós
+                </a>{' '}
+                <a href="#/representantes" data-nav-page="representantes">
+                  Representantes
+                </a>{' '}
+                <a href="#certificacoes" data-footer-scroll="certificacoes">
+                  Certificações
                 </a>
-              )}
-            </div>
-            <div className="jfa-footer-col" data-footer-col="1">
-              <span className="jfa-footer-col-title">JFA</span>{' '}
-              <a href="#home" data-footer-scroll="home">
-                Sobre nós
-              </a>{' '}
-              <a href="#/representantes" data-nav-page="representantes">
-                Representantes
-              </a>{' '}
-              <a href="#certificacoes" data-footer-scroll="certificacoes">
-                Certificações
-              </a>
-            </div>
-            <div className="jfa-footer-col" data-footer-col="2">
-              <span className="jfa-footer-col-title">Suporte</span>{' '}
-              <a href="#/manuais" data-nav-page="manuais">
-                Manuais
-              </a>{' '}
-              <a href="#/suporte" data-nav-page="suporte">
-                Contato
-              </a>
-            </div>
-          </nav>
+              </div>
+              <div className="jfa-footer-col" data-footer-col="2">
+                <span className="jfa-footer-col-title">Suporte</span>{' '}
+                <a href="#/manuais" data-nav-page="manuais">
+                  Manuais
+                </a>{' '}
+                <a href="#/suporte" data-nav-page="suporte">
+                  Contato
+                </a>
+              </div>
+            </nav>
+          )}
         </div>
         <div className="jfa-footer-rule" aria-hidden="true" />
         <div className="jfa-footer-bottom">
@@ -94,7 +124,7 @@ export default function Footer() {
             © <span id="footerYear" /> JFA Eletrônicos
           </span>{' '}
           <button className="jfa-footer-top-btn" id="footerToTop" type="button">
-            Voltar ao topo{' '}
+            {t('footer.toTop')}{' '}
             <span className="jfa-footer-top-arrow" aria-hidden="true">
               ↑
             </span>

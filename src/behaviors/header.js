@@ -1,4 +1,5 @@
 import { trackEvent } from '../lib/analytics';
+import { t, setLang, LANG } from '../i18n';
 
 /**
  * Header fixo: vidro no scroll, navegação suave entre seções e estado ativo do logo.
@@ -214,7 +215,7 @@ function initHeader(ctx) {
     const syncToggle = () => {
       const light = htmlEl.dataset.theme === 'light';
       themeToggle.setAttribute('aria-pressed', light ? 'true' : 'false');
-      themeToggle.title = light ? 'Mudar para o modo escuro' : 'Mudar para o modo claro';
+      themeToggle.title = light ? t('theme.toDark') : t('theme.toLight');
     };
     syncToggle();
     on(themeToggle, 'click', () => {
@@ -228,6 +229,50 @@ function initHeader(ctx) {
       }
       syncToggle();
       trackEvent('theme_toggle', { theme: light ? 'light' : 'dark' });
+    });
+  }
+  // Idioma: abre o menu e troca (a página recarrega no idioma escolhido).
+  const langSwitch = root.getElementById('langSwitch');
+  const langTrigger = root.getElementById('langTrigger');
+  const langMenu = root.getElementById('langMenu');
+  if (langSwitch && langTrigger && langMenu) {
+    const setOpen = (open) => {
+      langMenu.hidden = !open;
+      langTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      langSwitch.classList.toggle('is-open', open);
+    };
+    on(langTrigger, 'click', (e) => {
+      e.stopPropagation();
+      setOpen(langMenu.hidden);
+      if (!langMenu.hidden) {
+        const current = langMenu.querySelector('.is-active') || langMenu.querySelector('button');
+        if (current) current.focus();
+      }
+    });
+    on(langMenu, 'click', (e) => {
+      const item = e.target.closest('[data-lang]');
+      if (!item) return;
+      trackEvent('language_change', { from: LANG, to: item.dataset.lang });
+      setOpen(false);
+      setLang(item.dataset.lang);
+    });
+    on(langMenu, 'keydown', (e) => {
+      const items = Array.from(langMenu.querySelectorAll('[data-lang]'));
+      const i = items.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const next = items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length];
+        if (next) next.focus();
+      }
+    });
+    on(document, 'click', (e) => {
+      if (!langMenu.hidden && !langSwitch.contains(e.target)) setOpen(false);
+    });
+    on(document, 'keydown', (e) => {
+      if (e.key === 'Escape' && !langMenu.hidden) {
+        setOpen(false);
+        langTrigger.focus();
+      }
     });
   }
   if (navHome && heroSection && 'IntersectionObserver' in window) {

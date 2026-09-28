@@ -1,3 +1,6 @@
+import { Fragment } from 'react';
+import { t, IS_EXPORT } from '../../i18n';
+
 /** Hero com vídeo de fundo, headline animada e CTAs. */
 export default function Hero() {
   return (
@@ -23,34 +26,30 @@ export default function Hero() {
             <div className="hero-inner" id="heroInner">
               <div className="hero-copy" id="heroCopy">
                 <h1 className="hero-title">
-                  <span className="line">
-                    <span className="word">
-                      <em>Energia</em>
-                    </span>{' '}
-                    <span className="word">é</span> <span className="word">o</span>
-                  </span>{' '}
-                  <span className="line">
-                    <span className="word">que</span> <span className="word">nos</span>{' '}
-                    <span className="word">move</span>
-                  </span>{' '}
-                  <span className="line">
-                    <span className="word">desde</span> <span className="word">o</span>{' '}
-                    <span className="word">começo.</span>
-                  </span>
+                  {t('hero.lines').map((line, li) => (
+                    <Fragment key={li}>
+                      {li > 0 ? ' ' : null}
+                      <span className="line">
+                        {line.map((w, wi) => (
+                          <Fragment key={wi}>
+                            {wi > 0 ? ' ' : null}
+                            <span className="word">{w.startsWith('*') ? <em>{w.slice(1, -1)}</em> : w}</span>
+                          </Fragment>
+                        ))}
+                      </span>
+                    </Fragment>
+                  ))}
                 </h1>
-                <p className="hero-sub" id="heroSub">
-                  Há <strong>mais de duas décadas</strong>, desenvolvemos soluções para energia, movimento e
-                  eletrônica, com tecnologia, suporte e certificações aplicáveis a diferentes categorias.
-                </p>
+                <p className="hero-sub" id="heroSub" dangerouslySetInnerHTML={{ __html: t('hero.sub') }} />
                 <div className="hero-cta-row" id="heroCtaRow">
-                  <a href="#solucoes" className="hero-cta hero-cta-primary">
-                    Explorar produtos
+                  <a href={IS_EXPORT ? '#produtos' : '#solucoes'} className="hero-cta hero-cta-primary">
+                    {t('hero.ctaProducts')}
                   </a>{' '}
                   <a href="#manuais" className="hero-cta">
-                    Encontrar um manual
+                    {t('hero.ctaManual')}
                   </a>{' '}
-                  <a href="#loja" className="hero-cta hero-cta-tertiary">
-                    Onde comprar{' '}
+                  <a href={IS_EXPORT ? '#contato' : '#loja'} className="hero-cta hero-cta-tertiary">
+                    {t('hero.ctaBuy')}{' '}
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
                         d="M5 12h13M13 6l6 6-6 6"

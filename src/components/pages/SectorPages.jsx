@@ -1,3 +1,5 @@
+import { t, IS_EXPORT } from '../../i18n';
+
 /**
  * Páginas de setor, preenchidas por behaviors/sectorPages.js:
  * - #/setores/automotivo e #/setores/telecom: catálogo no layout da página de baterias;
@@ -8,7 +10,7 @@ export function SectorCatalogPage() {
     <div className="page-view" id="setorCatalogView" hidden>
       <section className="catalog-section baterias-catalog">
         <h1 className="baterias-intro-title" id="setorCatalogTitle" />
-        <div className="catalog-filter-nav" role="group" aria-label="Filtrar produtos por linha">
+        <div className="catalog-filter-nav" role="group" aria-label={t('catalog.filter')}>
           <div className="catalog-filter-track" id="setorCatalogNav">
             <span className="catalog-filter-indicator" id="setorCatalogIndicator" aria-hidden="true" />
           </div>
@@ -40,7 +42,7 @@ const ArrowIcon = () => (
 export function SectorProductPage() {
   return (
     <div className="page-view" id="produtoView" hidden>
-      <nav className="bateria-breadcrumb" aria-label="Você está aqui">
+      <nav className="bateria-breadcrumb" aria-label={t('product.breadcrumb')}>
         <a id="produtoBreadcrumbSector" href="#/setores/automotivo">
           Automotivo
         </a>{' '}
@@ -64,7 +66,7 @@ export function SectorProductPage() {
               className="bateria-gallery-thumbs"
               id="produtoThumbs"
               role="tablist"
-              aria-label="Fotos do produto"
+              aria-label={t('product.photos')}
               hidden
             />
           </div>
@@ -76,13 +78,19 @@ export function SectorProductPage() {
               <p className="bateria-headline" id="produtoHeadline" />
               <p className="bateria-desc" id="produtoDesc" />
               <div className="bateria-commerce">
-                <p className="bateria-commerce-fallback-text">Consulte disponibilidade.</p>
+                <p className="bateria-commerce-fallback-text">{t('product.fallback')}</p>
                 <div className="bateria-cta-row">
-                  <a className="hero-cta" href="#/representantes">
-                    Encontrar onde comprar
-                  </a>
+                  {IS_EXPORT ? (
+                    <a className="hero-cta" href="#contato" data-header-scroll="contato">
+                      {t('product.whereToBuy')}
+                    </a>
+                  ) : (
+                    <a className="hero-cta" href="#/representantes">
+                      {t('product.whereToBuy')}
+                    </a>
+                  )}
                 </div>
-                <p className="bateria-commerce-microcopy">Compra pelos canais oficiais JFA.</p>
+                <p className="bateria-commerce-microcopy">{t('product.microcopy')}</p>
               </div>
             </div>
           </div>
@@ -100,9 +108,9 @@ export function SectorProductPage() {
       <section className="bateria-section bateria-tech-section is-visible" id="produtoTechSection">
         <div className="bateria-section-inner">
           <div className="bateria-block-head">
-            <span className="bateria-label">Tecnologia</span>
-            <h2 className="bateria-block-title">Recursos que fazem a diferença.</h2>
-            <p className="bateria-block-sub">Os principais diferenciais deste produto JFA.</p>
+            <span className="bateria-label">{t('product.techLabel')}</span>
+            <h2 className="bateria-block-title">{t('product.techTitle')}</h2>
+            <p className="bateria-block-sub">{t('product.techSub')}</p>
           </div>
           <div className="bateria-tech-grid" id="produtoTechGrid" />
         </div>
@@ -112,8 +120,8 @@ export function SectorProductPage() {
       <section className="bateria-section bateria-why-section" id="produtoWhySection">
         <div className="bateria-section-inner">
           <div className="bateria-block-head">
-            <span className="bateria-label">Por que escolher</span>
-            <h2 className="bateria-block-title">A escolha certa para o seu projeto.</h2>
+            <span className="bateria-label">{t('product.whyLabel')}</span>
+            <h2 className="bateria-block-title">{t('product.whyTitle')}</h2>
           </div>
           <div className="bateria-why" id="produtoWhy">
             <div className="bateria-why-copy">
@@ -129,8 +137,8 @@ export function SectorProductPage() {
       <section className="bateria-section produto-specs-section" id="produtoSpecsSection">
         <div className="bateria-section-inner">
           <div className="bateria-block-head">
-            <span className="bateria-label">Características técnicas</span>
-            <h2 className="bateria-block-title">Ficha técnica.</h2>
+            <span className="bateria-label">{t('product.specsLabel')}</span>
+            <h2 className="bateria-block-title">{t('product.specsTitle')}</h2>
           </div>
           <div id="produtoSpecsTable" />
         </div>
@@ -140,34 +148,34 @@ export function SectorProductPage() {
       <section className="bateria-section bateria-docs-section">
         <div className="bateria-section-inner">
           <div className="bateria-block-head">
-            <span className="bateria-label">Suporte técnico</span>
-            <h2 className="bateria-block-title">
-              Informa<span className="accent-fix">çã</span>o para instalar e utilizar com confian
-              <span className="accent-fix">ç</span>a.
-            </h2>
-            <p className="bateria-block-sub">
-              Encontre os documentos técnicos disponíveis para este produto.
-            </p>
+            <span className="bateria-label">{t('product.supportLabel')}</span>
+            {IS_EXPORT ? (
+              <h2 className="bateria-block-title">{t('product.supportTitle')}</h2>
+            ) : (
+              <h2 className="bateria-block-title">
+                Informa<span className="accent-fix">çã</span>o para instalar e utilizar com confian
+                <span className="accent-fix">ç</span>a.
+              </h2>
+            )}
+            <p className="bateria-block-sub">{t('product.supportSub')}</p>
           </div>
           <div className="bateria-docs-hub" id="produtoDocs" />
           <div className="product-photos" id="produtoPhotos" hidden>
             <div className="product-photos-head">
               <div>
-                <p className="bateria-doc-row-title">Fotos do produto</p>
-                <p className="bateria-doc-row-text">
-                  Imagens em alta qualidade, sem fundo, para baixar e divulgar.
-                </p>
+                <p className="bateria-doc-row-title">{t('photos.title')}</p>
+                <p className="bateria-doc-row-text">{t('photos.text')}</p>
               </div>
               <button className="product-photos-all" type="button">
-                Baixar todas
+                {t('photos.all')}
               </button>
             </div>
             <div className="product-photos-grid" />
           </div>
           <p className="bateria-support-line">
-            Precisa de ajuda para escolher seu produto?{' '}
+            {t('product.help')}{' '}
             <a id="produtoSupportCta" target="_blank" rel="noopener noreferrer">
-              Falar com a JFA <ArrowIcon />
+              {t('product.talk')} <ArrowIcon />
             </a>
           </p>
         </div>
@@ -178,10 +186,10 @@ export function SectorProductPage() {
         <div className="bateria-section-inner">
           <div className="bateria-others-head">
             <span className="bateria-label" id="produtoOthersLabel">
-              Outros produtos
+              {t('product.others')}
             </span>
             <a href="#/setores/automotivo" className="bateria-others-all" id="produtoOthersAll">
-              Ver todos <ArrowIcon />
+              {t('product.seeAll')} <ArrowIcon />
             </a>
           </div>
           <div className="catalog-grid" id="produtoOthersGrid" />

@@ -83,6 +83,8 @@ Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no 
 
 - **Rodapé**: categorias, links internos, Instagram e YouTube da JFA e "voltar ao topo".
 
+**Idiomas** (seletor PT / EN / ES no header): o português é o site completo; inglês e espanhol mostram a **visualização de exportação** (Hero, catálogo de exportação com página de cada produto, manuais de exportação para baixar e contatos de vendas internacionais). O idioma vem de `?lang=`, da escolha salva do visitante ou do idioma do navegador (pt → PT, es → ES, outros → EN). Textos em `src/i18n/strings.js`; produtos de exportação (inglês e espanhol) em `src/data/exportProducts.js`, a partir do site de exportação da JFA (automotivo.jfaeletronicos.com/en).
+
 Modo claro/escuro: botão de sol/lua no header. O escuro é o padrão e a escolha fica salva no navegador do visitante. As cores do modo claro são geradas no build por `tools/postcss-light-theme.js` a partir do CSS escuro; ajustes manuais ficam em `src/styles/theme-light.css`, e áreas com `data-theme-keep` mantêm as cores originais.
 Acessibilidade: todas as animações respeitam `prefers-reduced-motion`, inclusive se a preferência mudar com a página aberta.
 Analytics: os eventos de conversão passam por `src/lib/analytics.js`, que envia para `gtag` (GA4) ou `dataLayer` (GTM) quando existirem.

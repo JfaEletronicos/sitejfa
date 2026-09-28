@@ -1,4 +1,5 @@
 import { trackEvent } from '../lib/analytics';
+import { t, tf } from '../i18n';
 
 const DOWNLOAD_ICON =
   '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
@@ -38,7 +39,7 @@ export function renderPhotoDownloads(container, images, name, track = {}) {
     a.className = 'product-photo';
     a.href = src;
     a.download = fileName(src, i);
-    a.setAttribute('aria-label', 'Baixar foto ' + (i + 1) + ' de ' + name);
+    a.setAttribute('aria-label', tf('photos.aria', { n: i + 1, name }));
     const img = document.createElement('img');
     img.src = src;
     img.alt = '';
@@ -47,7 +48,7 @@ export function renderPhotoDownloads(container, images, name, track = {}) {
     a.appendChild(img);
     const tag = document.createElement('span');
     tag.className = 'product-photo-tag';
-    tag.innerHTML = DOWNLOAD_ICON + '<span>Baixar</span>';
+    tag.innerHTML = DOWNLOAD_ICON + '<span>' + t('photos.one') + '</span>';
     a.appendChild(tag);
     a.onclick = () => trackEvent('photo_download', { ...track, photo: i + 1 });
     grid.appendChild(a);

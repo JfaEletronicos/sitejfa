@@ -19,12 +19,36 @@ import MoovPage from './components/pages/MoovPage';
 import PartsPage from './components/pages/PartsPage';
 import { initPageBehaviors } from './behaviors';
 import { SHOW_MOOV, SHOW_PARTS } from './data/visibility';
+import ExportHome from './components/home/ExportHome';
+import { IS_EXPORT } from './i18n';
 
 export default function App() {
   // Os comportamentos interativos (incluindo o roteador por hash, que alterna
   // entre a Home e as páginas internas) são ligados uma única vez sobre o DOM
   // renderizado e desfeitos por completo ao desmontar.
   useEffect(() => initPageBehaviors(), []);
+
+  // Inglês/Espanhol: visualização de exportação (Hero, catálogo de exportação,
+  // manuais e vendas internacionais, com página própria de cada produto).
+  if (IS_EXPORT) {
+    return (
+      <div className="jfa-page" id="jfaPage">
+        <canvas className="page-energy-canvas" id="pageEnergyCanvas" aria-hidden="true" />
+        <Header />
+        <div id="homeView">
+          <Hero />
+          <ExportHome />
+        </div>
+        {/* O roteador espera as views de bateria no documento (ficam sempre escondidas aqui). */}
+        <BatteriesPage />
+        <BatteryDetailPage />
+        <SectorCatalogPage />
+        <SectorProductPage />
+        <Footer />
+        <WhatsAppFloat />
+      </div>
+    );
+  }
 
   return (
     <div className="jfa-page" id="jfaPage">
