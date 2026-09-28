@@ -18,7 +18,7 @@ export const EXPORT_GROUPS = [
   { key: 'amplifiers', label: P('Amplifiers', 'Amplificadores') },
   { key: 'power', label: P('Power supplies and chargers', 'Fuentes y cargadores') },
   { key: 'controls', label: P('Remote controls', 'Controles remotos') },
-  { key: 'accessories', label: P('Processors and accessories', 'Procesadores y accesorios') },
+  { key: 'accessories', label: P('Accessories', 'Accesorios') },
 ];
 
 export const EXPORT_PRODUCTS = [
@@ -119,7 +119,8 @@ export const EXPORT_PRODUCTS = [
   {
     id: 'fonte-carregador-storm',
     group: 'power',
-    images: ['/images/produtos/fonte-storm-1.webp'],
+    // Foto do modelo de exportação (X-Line vermelha), sem fundo.
+    images: ['/images/produtos/fonte-xline-export-1.webp'],
     manualUrl:
       'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2022/10/jfa-product-manual-xline-power-pupply-and-charger-spanish-english.pdf',
     name: P('X-Line Power Supply and Charger', 'Fuente y Cargador X-Line'),
@@ -170,7 +171,8 @@ export const EXPORT_PRODUCTS = [
   {
     id: 'fonte-carregador-bob-storm',
     group: 'power',
-    images: ['/images/produtos/fonte-bob-storm-1.webp'],
+    // Foto do modelo de exportação (Bob X-Line vermelha), sem fundo.
+    images: ['/images/produtos/fonte-bob-xline-export-1.webp'],
     manualUrl:
       'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2022/10/MANUAL-X-LINE-compactado.pdf',
     name: P('Bob X-Line', 'Bob X-Line'),
@@ -209,151 +211,6 @@ export const EXPORT_PRODUCTS = [
             '<strong>200A</strong> mantiene hasta 3.800 WRMS de sonido.',
             '<strong>120A</strong> mantiene hasta 2.300 WRMS de sonido.',
             '<strong>90A</strong> mantiene hasta 1.700 WRMS de sonido.',
-          ],
-        },
-      ],
-    ),
-  },
-  {
-    id: 'fonte-carregador-redline',
-    group: 'power',
-    images: ['/images/produtos/fonte-redline-1.webp'],
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2021/07/jfa-manual-fontes-redline-RV01.pdf',
-    name: P('Redline Power Supply and Charger', 'Fuente y Cargador Redline'),
-    category: P('Power supply and charger', 'Fuente y cargador'),
-    summary: P(
-      'High-powered power supply to power and charge automotive batteries, with 3 operating modes.',
-      'Fuente de alta potencia para alimentar y cargar baterías automotrices, con 3 modos de operación.',
-    ),
-    blocks: P(
-      [
-        {
-          t: 'p',
-          h: 'The <strong>Redline Power Supply and Charger</strong> is a high-powered power supply to power and charge automotive batteries, operating in 3 modes.',
-        },
-        {
-          t: 'ul',
-          items: [
-            '<strong>Slow charging mode:</strong> charges in gradual stages (rise, absorption and equalization), ideal for batteries with a low charge, with maximum efficiency and longer battery life.',
-            '<strong>Auto SCI mode:</strong> for when the system is on or the battery needs a quick charge. Keeps the maximum output power (14.4V) and enters the pulsed SCI system only with the battery charged.',
-            '<strong>Output voltage mode:</strong> choose digitally among 8 output voltages, from 12.6V to 14.4V.',
-          ],
-        },
-        { t: 'p', h: 'Available in <strong>60A, 120A and 200A</strong>.' },
-      ],
-      [
-        {
-          t: 'p',
-          h: 'La <strong>Fuente y Cargador Redline</strong> es una fuente de alta potencia para alimentar y cargar baterías automotrices, con 3 modos de operación.',
-        },
-        {
-          t: 'ul',
-          items: [
-            '<strong>Modo de carga lenta:</strong> carga en etapas graduales (subida, absorción y ecualización), ideal para baterías con poca carga, con máxima eficiencia y mayor vida útil.',
-            '<strong>Modo Auto SCI:</strong> para cuando el sistema está encendido o la batería necesita una carga rápida. Mantiene la potencia máxima de salida (14,4V) y entra en el sistema SCI pulsado solo con la batería cargada.',
-            '<strong>Modo tensión de salida:</strong> elija digitalmente entre 8 tensiones de salida, de 12,6V a 14,4V.',
-          ],
-        },
-        { t: 'p', h: 'Disponible en <strong>60A, 120A y 200A</strong>.' },
-      ],
-    ),
-  },
-  {
-    id: 'fontes-carregadores-sci',
-    group: 'power',
-    images: ['/images/produtos/fonte-carregador-sci-1.webp'],
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2021/07/jfa-manual-fontes-SCI-36-a-200-mono.pdf',
-    name: P('SCI Power Supply and Charger', 'Fuente y Cargador SCI'),
-    category: P('Power supply and charger', 'Fuente y cargador'),
-    summary: P(
-      'Powers and charges 12V batteries with the exclusive JFA Smart Charging System (SCI).',
-      'Alimenta y carga baterías de 12V con el Sistema de Carga Inteligente (SCI) exclusivo de JFA.',
-    ),
-    blocks: P(
-      [
-        {
-          t: 'p',
-          h: 'The <strong>SCI Power Supply and Charger</strong> powers and charges batteries in 12V systems at 14.4V or Auto SCI, with maximum efficiency and without damaging them. The exclusive JFA Smart Charging System (SCI) increases the battery’s capacity to accumulate charge and its useful life, preventing its plates from overheating.',
-        },
-        {
-          t: 'ul',
-          items: [
-            'Display to monitor output voltage and current.',
-            'LED indicators for battery level and full charge.',
-            'Automatic 110/220Vac voltage selection.',
-          ],
-        },
-        {
-          t: 'p',
-          h: 'Available in <strong>10A, 36A, 50A, 60A, 70A, 100A, 120A, 150A, 200A and 200A monovolt</strong>.',
-        },
-      ],
-      [
-        {
-          t: 'p',
-          h: 'La <strong>Fuente y Cargador SCI</strong> alimenta y carga baterías de sistemas de 12V en 14,4V o Auto SCI, con máxima eficiencia y sin dañarlas. El Sistema de Carga Inteligente (SCI) exclusivo de JFA aumenta la capacidad de la batería para acumular carga y su vida útil, evitando el sobrecalentamiento de sus placas.',
-        },
-        {
-          t: 'ul',
-          items: [
-            'Display para monitorear la tensión y la corriente de salida.',
-            'Indicadores LED de nivel de batería y carga completa.',
-            'Selección automática de tensión 110/220Vac.',
-          ],
-        },
-        {
-          t: 'p',
-          h: 'Disponible en <strong>10A, 36A, 50A, 60A, 70A, 100A, 120A, 150A, 200A y 200A monovolt</strong>.',
-        },
-      ],
-    ),
-  },
-  {
-    id: 'carregador-portatil-redline',
-    group: 'power',
-    images: ['/images/produtos/carregador-portatil-redline-1.webp'],
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2022/02/jfa-product-manual-redline-60a-charger.pdf',
-    name: P('Redline F60 Portable Charger', 'Cargador Portátil Redline F60'),
-    category: P('Portable charger', 'Cargador portátil'),
-    summary: P(
-      'Versatile: works as a power supply or as a charger for your batteries.',
-      'Versátil: funciona como fuente de alimentación o como cargador de sus baterías.',
-    ),
-    blocks: P(
-      [
-        {
-          t: 'p',
-          h: 'The <strong>Redline F60 Portable Charger</strong> is versatile, with unprecedented functions and performance. It can be used as a power supply or as a charger for your batteries, with a <strong>multifunctional panel</strong> that controls all its functions.',
-        },
-        {
-          t: 'ul',
-          items: [
-            'Powers equipment with 12V outlets (tire inflators, vacuum cleaners, phone chargers and others).',
-            'Helps to start cars.',
-            'Charges and restores worn-out batteries.',
-            '<strong>Slow charging:</strong> restores batteries and extends their life.',
-            '<strong>Auto SCI:</strong> quick start and quick charge.',
-            '<strong>Output voltage:</strong> works as a power supply, with 8 digital output levels from 12.6V to 14.4V.',
-          ],
-        },
-      ],
-      [
-        {
-          t: 'p',
-          h: 'El <strong>Cargador Portátil Redline F60</strong> es versátil, con funciones y rendimiento inéditos. Se puede usar como fuente de alimentación o como cargador de sus baterías, con un <strong>panel multifunción</strong> que controla todas sus funciones.',
-        },
-        {
-          t: 'ul',
-          items: [
-            'Alimenta equipos con tomas de 12V (infladores, aspiradoras, cargadores de celular y otros).',
-            'Ayuda a arrancar vehículos.',
-            'Carga y recupera baterías desgastadas.',
-            '<strong>Carga lenta:</strong> recupera baterías y prolonga su vida útil.',
-            '<strong>Auto SCI:</strong> arranque rápido y carga rápida.',
-            '<strong>Tensión de salida:</strong> funciona como fuente, con 8 niveles digitales de salida de 12,6V a 14,4V.',
           ],
         },
       ],
@@ -544,59 +401,6 @@ export const EXPORT_PRODUCTS = [
             'Diseño anatómico con excelente ergonomía.',
             'Teclas de silicona de alta resistencia, grabadas en bajo relieve.',
             'Panel slim con receptor ultrasensible.',
-          ],
-        },
-      ],
-    ),
-  },
-  {
-    id: 'processador-audio-j4-redline',
-    group: 'accessories',
-    images: ['/images/produtos/processador-j4-redline-1.webp'],
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2022/08/jfa-product-manual-j4-redline-processor.pdf',
-    name: P('J4 Redline Processor', 'Procesador J4 Redline'),
-    category: P('Audio processor', 'Procesador de audio'),
-    summary: P(
-      'Reads input and output audio levels on the graphic display to adjust amplifier gains.',
-      'Lee los niveles de audio de entrada y salida en la pantalla gráfica para ajustar las ganancias de los amplificadores.',
-    ),
-    blocks: P(
-      [
-        {
-          t: 'p',
-          h: 'The main innovation of the <strong>J4 Redline Processor</strong> is reading the input and output audio levels on the graphic display, which makes it possible to adjust the amplifier gains. It also simulates the use of an oscilloscope.',
-        },
-        {
-          t: 'ul',
-          items: [
-            'Screen updated simultaneously with the audio variation.',
-            'Peak storage (hold peaks).',
-            'Easy adjustment of the limiter function.',
-            '15-band semi-parametric master equalizer.',
-            'Individual parametric equalizer on each output.',
-            'Oscilloscope function and voltmeter on the graphic screen.',
-            'Customizable text.',
-            'Input level excess indication and 15 Vpp output.',
-          ],
-        },
-      ],
-      [
-        {
-          t: 'p',
-          h: 'La principal innovación del <strong>Procesador J4 Redline</strong> es la lectura de los niveles de audio de entrada y salida en la pantalla gráfica, que permite ajustar las ganancias de los amplificadores. Además, simula el uso de un osciloscopio.',
-        },
-        {
-          t: 'ul',
-          items: [
-            'Pantalla actualizada al mismo tiempo que la variación del audio.',
-            'Almacenamiento de picos (hold peaks).',
-            'Ajuste sencillo de la función limitador.',
-            'Ecualizador maestro semiparamétrico de 15 bandas.',
-            'Ecualizador paramétrico individual en cada salida.',
-            'Función osciloscopio y voltímetro en la pantalla gráfica.',
-            'Texto personalizable.',
-            'Indicación de exceso de nivel de entrada y salida de 15 Vpp.',
           ],
         },
       ],
