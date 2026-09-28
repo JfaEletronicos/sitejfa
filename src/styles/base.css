@@ -101,12 +101,6 @@ a {
     rgba(3, 10, 26, 0.2);
 }
 
-.bg-shape {
-  position: absolute;
-  pointer-events: none;
-  will-change: transform;
-}
-
 .jfa-corner {
   position: absolute;
   pointer-events: none;
@@ -166,17 +160,6 @@ a {
   max-height: 700px;
   background: linear-gradient(155deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 55%);
   clip-path: polygon(100% 0, 100% 100%, 18% 100%);
-}
-
-.diag-2 {
-  bottom: -2%;
-  right: 10%;
-  width: 20vw;
-  height: 26vw;
-  max-width: 340px;
-  max-height: 440px;
-  background: rgba(255, 255, 255, 0.05);
-  clip-path: polygon(100% 0, 100% 100%, 0% 100%);
 }
 
 .scene-side {

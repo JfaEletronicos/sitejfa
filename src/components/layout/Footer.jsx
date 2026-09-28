@@ -33,7 +33,7 @@ export default function Footer() {
               <a href="#home" data-footer-scroll="home">
                 Sobre nós
               </a>{' '}
-              <a href="#representantes" data-footer-scroll="representantes">
+              <a href="#/representantes" data-nav-page="representantes">
                 Representantes
               </a>{' '}
               <a href="#certificacoes" data-footer-scroll="certificacoes">
@@ -42,10 +42,10 @@ export default function Footer() {
             </div>
             <div className="jfa-footer-col" data-footer-col="2">
               <span className="jfa-footer-col-title">Suporte</span>{' '}
-              <a href="#manuais" data-footer-scroll="manuais">
+              <a href="#/manuais" data-nav-page="manuais">
                 Manuais
               </a>{' '}
-              <a href="#representantes" data-footer-scroll="representantes">
+              <a href="#/suporte" data-nav-page="suporte">
                 Contato
               </a>
             </div>

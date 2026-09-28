@@ -15,6 +15,12 @@ useEffect(() => initPageBehaviors(), []);
 
 As animações (intro da Hero, carrosséis com inércia, faixa tipográfica, campo de energia em canvas, parallax) atualizam `transform` e variáveis CSS a cada frame. Fazer isso por `setState` causaria re-render a 60fps e poderia alterar o visual e o timing. Os módulos preservam exatamente a lógica original e usam refs de DOM, `requestAnimationFrame` e `IntersectionObserver`, que é o padrão recomendado para animações de alta frequência.
 
+### Páginas de Suporte, Representantes e Manuais
+
+`#/representantes` e `#/manuais` usam a **mesma** seção da Home: ao abrir a página, o roteador move `#repsSection` ou `#manualsSection` para o `[data-page-slot]` da view (`components/pages/SectionPages.jsx`) e devolve para o lugar original ao voltar para a Home. Assim não há código nem ids duplicados, e busca, abas, mapa e animações continuam iguais.
+
+`#/suporte` tem uma seção própria com o mesmo componente de mapa (`components/shared/StateMapSection.jsx`, prefixo de ids `sup`). A interatividade dos dois mapas vem de `behaviors/stateMap.js`; os dados ficam em `data/representatives.js` e `data/support.js`, gerados das planilhas `representante_JFA.csv` e `assistencias_JFA.csv`. No Suporte, o painel lista as assistências do estado com filtro por cidade, a busca aceita estado ou cidade, e estado sem assistência cai no suporte central da JFA.
+
 O `<StrictMode>` fica desligado de propósito, porque os comportamentos devem ser montados uma única vez.
 
 ## Contexto compartilhado (`behaviors/context.js`)

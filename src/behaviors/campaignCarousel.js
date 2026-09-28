@@ -13,7 +13,6 @@ function initCampaignCarousel(ctx) {
     const campaignTrack = root.getElementById('campaignTrack');
     const campaignPrev = root.getElementById('campaignPrev');
     const campaignNext = root.getElementById('campaignNext');
-    const campaignPagination = root.getElementById('campaignPagination');
     if (!campaignSection || !campaignViewport || !campaignTrack || !CAMPAIGN_BANNERS.length) return;
     const N = CAMPAIGN_BANNERS.length;
     const loops = N > 1;
@@ -62,21 +61,6 @@ function initCampaignCarousel(ctx) {
     campaignTrack.appendChild(frag);
     const slideEls = Array.from(campaignTrack.children);
     let current = loops ? 1 : 0;
-    const dots = CAMPAIGN_BANNERS.map((banner, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'campaign-dot';
-      b.setAttribute('role', 'tab');
-      b.setAttribute('aria-selected', 'false');
-      b.setAttribute('aria-label', 'Ir para: ' + (banner.name || banner.alt || 'Campanha ' + (i + 1)));
-      on(b, 'click', () => {
-        markCampaignInteracted();
-        goTo(loops ? i + 1 : i);
-      });
-      // Paginação é opcional: sem o container, os pontos não aparecem.
-      if (campaignPagination) campaignPagination.appendChild(b);
-      return b;
-    });
     let peek = 0,
       slideW = 0;
     const setTrackTransform = (animate) => {
@@ -116,16 +100,10 @@ function initCampaignCarousel(ctx) {
       });
     };
     const updateActiveState = () => {
-      const realIdx = realIndexOf(current);
       slideEls.forEach((el, i) => {
         const active = i === current;
         el.classList.toggle('is-active', active);
         if (el.getAttribute('aria-hidden') !== 'true') el.tabIndex = active ? 0 : -1;
-      });
-      dots.forEach((d, i) => {
-        const active = i === realIdx;
-        d.classList.toggle('is-active', active);
-        d.setAttribute('aria-selected', String(active));
       });
       maybeFireCampaignView();
     };

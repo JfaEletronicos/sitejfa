@@ -16,6 +16,41 @@ function initRouter(ctx) {
     const setoresView = root.getElementById('setoresView');
     const setorView = root.getElementById('setorView');
     if (!homeView || !bateriasView || !bateriaView || !setoresView || !setorView) return;
+    // Suporte, Representantes e Manuais: páginas próprias. As de Representantes e
+    // Manuais recebem a própria seção da Home (movida para a página ao abrir e
+    // devolvida ao lugar original ao voltar), então tudo funciona igual nas duas.
+    const SECTION_PAGES = {
+      suporte: { view: root.getElementById('suporteView'), nav: 'suporte' },
+      representantes: {
+        view: root.getElementById('representantesView'),
+        section: root.getElementById('repsSection'),
+        nav: 'representantes',
+      },
+      manuais: {
+        view: root.getElementById('manuaisView'),
+        section: root.getElementById('manualsSection'),
+        nav: 'manuais',
+      },
+    };
+    Object.values(SECTION_PAGES).forEach((pg) => {
+      if (!pg.section) return;
+      pg.home = { parent: pg.section.parentNode, next: pg.section.nextSibling };
+      pg.slot = pg.view && pg.view.querySelector('[data-page-slot]');
+    });
+    const placeSections = (name) => {
+      Object.keys(SECTION_PAGES).forEach((key) => {
+        const pg = SECTION_PAGES[key];
+        if (!pg.section || !pg.slot) return;
+        if (key === name) {
+          if (pg.section.parentNode !== pg.slot) pg.slot.appendChild(pg.section);
+        } else if (pg.section.parentNode !== pg.home.parent) {
+          // Volta para a posição original na Home (antes do irmão seguinte, se ainda estiver lá).
+          const next = pg.home.next && pg.home.next.parentNode === pg.home.parent ? pg.home.next : null;
+          pg.home.parent.insertBefore(pg.section, next);
+        }
+      });
+    };
+    const sectionNavLinks = Array.from(root.querySelectorAll('#jfaHeader [data-nav-page]'));
     const pageBody = root.body || document.body;
     const fixStretchProAccent = (str) =>
       String(str).replace(/[ÁáÚú]/g, (c) => '<span class="accent-fix">' + c + '</span>');
@@ -77,14 +112,6 @@ function initRouter(ctx) {
       return items.slice(0, 5);
     };
     const RAW_BATTERY_CATALOG = [
-      // Removidos nesta rodada (pedido explícito, "estão repetidos e sem
-      // foto"): 'elitio-12v-100ah' (E-Lítio 12V 100Ah -- sobreposto pelo
-      // "Pro 12V 100Ah" logo abaixo, que tem foto real confirmada),
-      // 'elitio-pro-48v-50ah' (E-Lítio Pro 48V 50Ah) e
-      // 'elitio-pro-solar-48v-50ah-rack' (E-Lítio Pro Solar 48V 50Ah
-      // Rack) -- nenhum dos dois tinha foto confirmada nem estava ligado
-      // a nenhuma combinação de voltagem/capacidade exclusiva no
-      // catálogo. Todo o catálogo agora tem foto real em 100% dos itens.
       // E-Lítio Pro 12,8V: uma página só, com as capacidades 50Ah e 100Ah como
       // variantes (fotos, recursos, manual e selos próprios de cada uma).
       {
@@ -151,12 +178,6 @@ function initRouter(ctx) {
         sectors: ['solar'],
         features: ['Rack'],
         shortDescription: 'Integra\xE7\xE3o em rack para sistemas solares de maior porte.',
-        // Foto real (pasta "Bateria de Lítio/48V 100A" do Drive JFA) --
-        // único produto do catálogo com essa combinação exata de
-        // tensão+capacidade (48V/100Ah), e a peça no rack visível na
-        // foto bate com o "Rack" do nome -- por isso é o único item
-        // com `image` até agora; os outros 5 seguem no ícone-placeholder
-        // (nenhuma foto real confirmada pra eles ainda).
         marketingHeadline: 'Mais capacidade para o seu sistema solar.',
         longDescription:
           'Formato rack para uma integra\xE7\xE3o organizada em sistemas solares de maior porte.',
@@ -207,8 +228,6 @@ function initRouter(ctx) {
         sectors: ['nautico'],
         features: [],
         shortDescription: 'Energia e autonomia para aplica\xE7\xF5es em embarca\xE7\xF5es.',
-        // Foto real confirmada (etiqueta impressa "e-LÍTIO NÁUTICA --
-        // BATERIA DE LÍTIO 12,8V 100A") -- bate exatamente com este item.
         marketingHeadline: 'Energia preparada para ir a bordo.',
         longDescription:
           'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem autonomia, estabilidade e confiabilidade em qualquer trajeto.',
@@ -223,14 +242,6 @@ function initRouter(ctx) {
         commerce: {},
         relatedProducts: [],
       },
-      // Rodada "FOTOS REAIS DO DRIVE" -- 4 produtos novos abaixo, cada um
-      // confirmado por foto real com etiqueta impressa (tensão/capacidade/
-      // tecnologia lidas diretamente do rótulo do produto, nunca
-      // inventadas) que não correspondia a nenhum item já existente no
-      // catálogo. Copy/setor seguem o mesmo padrão de frase curta e
-      // factual dos itens vizinhos de mesma linha (Pro/Náutica) -- sinalizar
-      // ao usuário pra revisão, já que setor/features exigem algum
-      // julgamento (não vêm literalmente escritos na etiqueta).
       {
         id: 'elitio-pro-25-6v-50ah',
         slug: 'e-litio-pro-25-6v-50ah',
@@ -1195,7 +1206,6 @@ function initRouter(ctx) {
     }
     const bateriaVariants = root.getElementById('bateriaVariants');
     const bateriaSeals = root.getElementById('bateriaSeals');
-    // Seletor de capacidade: troca fotos, textos, recursos, manual e selos sem recarregar.
     // Troca de texto animada após uma seleção: o conteúdo atual sai (sobe, some
     // e desfoca), o novo entra de baixo em sequência. `getTargets` é chamado
     // antes e depois da troca, porque parte dos elementos é recriada.
@@ -1233,6 +1243,7 @@ function initRouter(ctx) {
       bateriaWhyText,
       ...bateriaWhyReasons.querySelectorAll('.bateria-why-reason'),
     ];
+    // Seletor de capacidade: troca fotos, textos, recursos, manual e selos sem recarregar.
     const renderVariantPicker = (base, variant) => {
       bateriaVariants.innerHTML = '';
       bateriaVariants.hidden = !base.variants;
@@ -1558,13 +1569,19 @@ function initRouter(ctx) {
       bateriaView.hidden = name !== 'bateria';
       setoresView.hidden = name !== 'setores';
       setorView.hidden = name !== 'setor';
+      placeSections(name);
+      Object.keys(SECTION_PAGES).forEach((key) => {
+        if (SECTION_PAGES[key].view) SECTION_PAGES[key].view.hidden = name !== key;
+      });
+      sectionNavLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.navPage === name));
       pageBody.classList.toggle('is-page-view', name !== 'home');
       if (navBaterias) navBaterias.classList.toggle('is-active', name === 'baterias' || name === 'bateria');
       if (navSetores) navSetores.classList.toggle('is-active', name === 'setores' || name === 'setor');
       if (name === 'baterias') playBateriasEntrance();
       if (name !== 'home') window.scrollTo(0, 0);
       // Entrada "montando a página" nas páginas de baterias (ver behaviors/assemble.js).
-      if (ctx.replayAssemble && (name === 'baterias' || name === 'bateria')) ctx.replayAssemble(name);
+      if (ctx.replayAssemble && name !== 'home') ctx.replayAssemble(name);
+      if (name === 'manuais' && ctx.refreshManualsField) ctx.refreshManualsField();
     };
     const applyRoute = () => {
       const hash = location.hash || '';
@@ -1596,6 +1613,9 @@ function initRouter(ctx) {
         buildSetoresView();
         showView('setores');
         trackEvent('page_view', { view: 'setores' });
+      } else if (SECTION_PAGES[parts[0]] && SECTION_PAGES[parts[0]].view) {
+        showView(parts[0]);
+        trackEvent('page_view', { view: parts[0] });
       } else {
         showView('home');
       }
