@@ -15,6 +15,8 @@ function initEnergyField(ctx) {
     const canvasCampaign = root.getElementById('campaignEnergyCanvas');
     const campaignSectionEl = root.getElementById('campaignSection');
     const canvasPage = root.getElementById('pageEnergyCanvas');
+    const canvasSup = root.getElementById('supEnergyCanvas');
+    const supSectionEl = root.getElementById('supSection');
     if (!canvasProducts && !canvasReps && !canvasManuals && !canvasFronts && !canvasCampaign && !canvasPage)
       return;
     const clamp01f = (v) => Math.max(0, Math.min(1, v));
@@ -397,6 +399,18 @@ function initEnergyField(ctx) {
         ? {
             canvas: canvasReps,
             container: repsSectionEl,
+            cfg: {
+              seed: 2996657715,
+              ...UNIFIED_FIELD_CFG,
+              avoidSelectors: ['.reps-stage', '.reps-col2-lower'],
+            },
+          }
+        : null,
+      // Página de Suporte: o mesmo campo da seção de Representantes.
+      canvasSup && supSectionEl
+        ? {
+            canvas: canvasSup,
+            container: supSectionEl,
             cfg: {
               seed: 2996657715,
               ...UNIFIED_FIELD_CFG,

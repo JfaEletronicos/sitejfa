@@ -21,6 +21,8 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/no-unknown-property': 'off',
+      // Sem TypeScript/prop-types: as props dos componentes ficam documentadas no JSDoc.
+      'react/prop-types': 'off',
     },
   },
 ];

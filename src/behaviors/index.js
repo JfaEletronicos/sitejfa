@@ -9,6 +9,7 @@ import { initHero } from './hero';
 import { initProductsCarousel } from './productsCarousel';
 import { initFronts } from './fronts';
 import { initRepresentatives } from './representatives';
+import { initSupport } from './support';
 import { initManuals } from './manuals';
 import { initDarkExperience } from './darkExperience';
 import { initEnergyField } from './energyField';
@@ -40,6 +41,7 @@ export function initPageBehaviors() {
   initFronts(ctx);
   watchReducedMotion(ctx);
   initRepresentatives(ctx);
+  initSupport(ctx);
   initManuals(ctx);
   initDarkExperience(ctx);
   initEnergyField(ctx);

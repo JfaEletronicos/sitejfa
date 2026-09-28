@@ -1,4 +1,4 @@
-import { STORE_URL, MERCADO_LIVRE_URL, SUPPORT_WHATSAPP_URL } from '../../data/links';
+import { STORE_URL, MERCADO_LIVRE_URL } from '../../data/links';
 
 const ExternalIcon = () => (
   <svg className="jfa-nav-external-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -35,18 +35,13 @@ export default function Header() {
           </a>
         </nav>
         <nav className="jfa-nav-right" aria-label="Suporte e compra">
-          <a
-            href={SUPPORT_WHATSAPP_URL}
-            data-header-external="suporte"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="#/suporte" data-nav-page="suporte">
             Suporte
           </a>{' '}
-          <a href="#manuais" data-header-scroll="manuais">
+          <a href="#/manuais" data-nav-page="manuais">
             Manuais
           </a>{' '}
-          <a href="#representantes" data-header-scroll="representantes">
+          <a href="#/representantes" data-nav-page="representantes">
             Representantes
           </a>{' '}
           <a

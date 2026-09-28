@@ -5,6 +5,20 @@
  * com a animação da seção, em sequência.
  * @param {import('./context').BehaviorContext} ctx
  */
+// Representantes e Manuais aparecem na Home e nas próprias páginas, com a mesma entrada.
+const REPS_PARTS = [
+  ['.reps-top > *', 'asmFromLeft'],
+  ['.reps-search-wrap', 'asmExpand'],
+  ['.reps-col2-lower > *', 'asmRise'],
+  ['.reps-intl-wrap', 'asmFromLeft'],
+];
+const MANUALS_PARTS = [
+  ['.manuals-eyebrow', 'asmPop'],
+  ['.manuals-title', 'asmFlipDown'],
+  ['.manuals-sub', 'asmRiseBig'],
+  ['.manuals-search-wrap', 'asmExpand'],
+  ['.manuals-tabs > *', 'asmPop'],
+];
 // Cada seção: lista de [seletor, animação]. As peças entram em sequência.
 const SECTIONS = [
   // Acesso rápido: título desce e os blocos caem girando até encaixar.
@@ -70,23 +84,12 @@ const SECTIONS = [
   {
     section: '#repsSection',
     puzzle: '.reps-state',
-    parts: [
-      ['.reps-top > *', 'asmFromLeft'],
-      ['.reps-search-wrap', 'asmExpand'],
-      ['.reps-col2-lower > *', 'asmRise'],
-      ['.reps-intl-wrap', 'asmFromLeft'],
-    ],
+    parts: REPS_PARTS,
   },
   // Manuais: cabeçalho sobe, busca abre do centro, abas estouram em sequência.
   {
     section: '#manualsSection',
-    parts: [
-      ['.manuals-eyebrow', 'asmPop'],
-      ['.manuals-title', 'asmFlipDown'],
-      ['.manuals-sub', 'asmRiseBig'],
-      ['.manuals-search-wrap', 'asmExpand'],
-      ['.manuals-tabs > *', 'asmPop'],
-    ],
+    parts: MANUALS_PARTS,
   },
   // Rodapé: marca, colunas e base sobem em sequência.
   {
@@ -133,6 +136,10 @@ const PAGE_VIEWS = {
       ['#bateriaOthersGrid .catalog-card', 'asmFromLeft'],
     ],
   },
+  // Suporte e Representantes: a mesma entrada da seção da Home, com o mapa em quebra-cabeça.
+  suporte: { view: '#suporteView', puzzle: '.reps-state', parts: REPS_PARTS },
+  representantes: { view: '#representantesView', puzzle: '.reps-state', parts: REPS_PARTS },
+  manuais: { view: '#manuaisView', parts: MANUALS_PARTS },
 };
 const STEP_MS = 110;
 const MAX_DELAY_MS = 1300;
@@ -198,49 +205,6 @@ function initAssemble(ctx) {
       { once: true },
     );
   };
-  // Páginas: prepara as peças visíveis e anima cada uma ao entrar na tela.
-  const pageObservers = {};
-  ctx.replayAssemble = (name) => {
-    const cfg = PAGE_VIEWS[name];
-    const view = cfg && root.querySelector(cfg.view);
-    if (!view) return;
-    if (pageObservers[name]) pageObservers[name].disconnect();
-    view.querySelectorAll('.asm-pending').forEach((el) => el.classList.remove('asm-pending'));
-    const animOf = new Map();
-    cfg.parts.forEach(([sel, anim]) => {
-      view.querySelectorAll(sel).forEach((el) => {
-        if (!el.getClientRects().length || animOf.has(el)) return;
-        animOf.set(el, anim);
-        el.classList.add('asm-pending');
-      });
-    });
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries
-          .filter((en) => en.isIntersecting)
-          // Ordem do documento: da primeira peça para a última (efeito dominó).
-          .sort((a, b) =>
-            a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
-          )
-          .forEach((en, i) => {
-            const anim = animOf.get(en.target);
-            const step = anim === 'asmDomino' ? 140 : 90;
-            animate(en.target, anim, Math.min(i * step, MAX_DELAY_MS));
-            obs.unobserve(en.target);
-          });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -4% 0px' },
-    );
-    animOf.forEach((_, el) => obs.observe(el));
-    pageObservers[name] = obs;
-  };
-  cleanups.push(() => Object.values(pageObservers).forEach((o) => o.disconnect()));
-  // Se o site já abriu direto numa página de baterias, monta agora.
-  Object.keys(PAGE_VIEWS).forEach((name) => {
-    const view = root.querySelector(PAGE_VIEWS[name].view);
-    if (view && !view.hidden) ctx.replayAssemble(name);
-  });
-  if (!groups.length) return;
   // Quebra-cabeça: cada peça sobe de baixo girando levemente e encaixa, na ordem
   // da posição vertical (sul primeiro, norte por último).
   const playPuzzle = (pieces) => {
@@ -280,6 +244,67 @@ function initAssemble(ctx) {
       );
     });
   };
+  // Páginas: prepara as peças visíveis e anima cada uma ao entrar na tela.
+  const pageObservers = {};
+  let homeObs = null;
+  ctx.replayAssemble = (name) => {
+    const cfg = PAGE_VIEWS[name];
+    const view = cfg && root.querySelector(cfg.view);
+    if (!view) return;
+    if (pageObservers[name]) pageObservers[name].disconnect();
+    // Seção da Home aberta como página: a entrada passa a ser a da página.
+    groups.forEach((g) => {
+      if (view.contains(g.section) && homeObs) homeObs.unobserve(g.section);
+    });
+    view.querySelectorAll('.asm-pending').forEach((el) => el.classList.remove('asm-pending'));
+    // Mapa: as peças voltam a se montar como quebra-cabeça quando o mapa aparece.
+    const pieces = cfg.puzzle ? Array.from(view.querySelectorAll(cfg.puzzle)) : [];
+    const puzzleHost = pieces.length ? pieces[0].ownerSVGElement : null;
+    const animOf = new Map();
+    cfg.parts.forEach(([sel, anim]) => {
+      view.querySelectorAll(sel).forEach((el) => {
+        if (!el.getClientRects().length || animOf.has(el)) return;
+        animOf.set(el, anim);
+        el.classList.add('asm-pending');
+      });
+    });
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries
+          .filter((en) => en.isIntersecting)
+          // Ordem do documento: da primeira peça para a última (efeito dominó).
+          .sort((a, b) =>
+            a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+          )
+          .forEach((en, i) => {
+            obs.unobserve(en.target);
+            if (en.target === puzzleHost) {
+              playPuzzle(pieces);
+              return;
+            }
+            const anim = animOf.get(en.target);
+            const step = anim === 'asmDomino' ? 140 : 90;
+            animate(en.target, anim, Math.min(i * step, MAX_DELAY_MS));
+          });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -4% 0px' },
+    );
+    animOf.forEach((_, el) => obs.observe(el));
+    if (puzzleHost) {
+      pieces.forEach((el) => el.classList.add('asm-pending'));
+      const backdrop = puzzleHost.querySelector('.reps-map-backdrop');
+      if (backdrop) backdrop.classList.add('asm-pending');
+      obs.observe(puzzleHost);
+    }
+    pageObservers[name] = obs;
+  };
+  cleanups.push(() => Object.values(pageObservers).forEach((o) => o.disconnect()));
+  // Se o site já abriu direto numa página interna, monta agora.
+  Object.keys(PAGE_VIEWS).forEach((name) => {
+    const view = root.querySelector(PAGE_VIEWS[name].view);
+    if (view && !view.hidden) ctx.replayAssemble(name);
+  });
+  if (!groups.length) return;
   const play = (group) => {
     if (group.pieces && group.pieces.length) playPuzzle(group.pieces);
     group.section.classList.add('asm-live');
@@ -298,6 +323,7 @@ function initAssemble(ctx) {
     },
     { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
   );
+  homeObs = obs;
   groups.forEach((g) => obs.observe(g.section));
   cleanups.push(() => {
     obs.disconnect();

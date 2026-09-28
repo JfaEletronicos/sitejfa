@@ -5,6 +5,13 @@
   z-index: 1;
 }
 
+/* Páginas de Suporte, Representantes e Manuais: a seção da Home num fundo escuro próprio,
+   com espaço para o header fixo. */
+.dark-page .dark-experience {
+  padding-top: clamp(64px, 7vw, 88px);
+  min-height: 100vh;
+}
+
 .page-hero {
   position: relative;
   z-index: 2;

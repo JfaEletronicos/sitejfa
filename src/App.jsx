@@ -15,6 +15,7 @@ import BatteriesPage from './components/pages/BatteriesPage';
 import BatteryDetailPage from './components/pages/BatteryDetailPage';
 import SectorsPage from './components/pages/SectorsPage';
 import SectorDetailPage from './components/pages/SectorDetailPage';
+import { SupportPage, RepresentativesPage, ManualsPage } from './components/pages/SectionPages';
 import { initPageBehaviors } from './behaviors';
 
 export default function App() {
@@ -42,6 +43,9 @@ export default function App() {
       <BatteryDetailPage />
       <SectorsPage />
       <SectorDetailPage />
+      <SupportPage />
+      <RepresentativesPage />
+      <ManualsPage />
       <Footer />
       <WhatsAppFloat />
     </div>
