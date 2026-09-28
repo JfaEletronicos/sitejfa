@@ -17,9 +17,7 @@ export default function BuySection() {
       <div className="buy-head">
         <span className="buy-eyebrow">DÚVIDAS SOBRE ONDE COMPRAR?</span>
         <h2 className="buy-title">Compre direto nos marketplaces oficiais da JFA!</h2>
-        <p className="buy-sub">
-          Encontre as baterias de lítio JFA na Shopee e todo o nosso catálogo no Mercado Livre.
-        </p>
+        <p className="buy-sub">Escolha o marketplace de sua preferência e encontre os produtos JFA.</p>
       </div>
       <div className="buy-grid" id="buyGrid">
         <a
@@ -53,13 +51,10 @@ export default function BuySection() {
               decoding="async"
             />
           </span>{' '}
-          <span className="buy-card-title">Baterias de lítio JFA.</span>
-          <p className="buy-card-body">
-            Encontre modelos da linha e-Lítio e aproveite a praticidade da Shopee para comprar sua bateria
-            JFA.
-          </p>
+          <span className="buy-card-title">Tecnologia JFA, agora na Shopee.</span>
+          <p className="buy-card-body">Explore nosso catálogo e compre produtos JFA direto pela Shopee.</p>
           <span className="buy-card-arrow">
-            Ver baterias na Shopee{' '}
+            Ver catálogo na Shopee{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
@@ -108,10 +103,9 @@ export default function BuySection() {
               decoding="async"
             />
           </span>{' '}
-          <span className="buy-card-title">Encontre seu produto JFA.</span>
+          <span className="buy-card-title">Catálogo JFA no Mercado Livre.</span>
           <p className="buy-card-body">
-            Acesse fontes, controles, amplificadores, baterias e outras linhas JFA reunidas em nosso catálogo
-            no Mercado Livre.
+            Encontre nossas soluções e escolha o produto JFA ideal para o seu projeto.
           </p>
           <span className="buy-card-arrow">
             Ver catálogo no Mercado Livre{' '}
