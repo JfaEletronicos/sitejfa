@@ -99,7 +99,7 @@
 .moov-hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(104px, 11vw, 150px) clamp(18px, 3.6vw, 56px) clamp(56px, 7vw, 96px);
+  padding: clamp(96px, 10vw, 132px) clamp(18px, 3.6vw, 56px) clamp(28px, 3vw, 44px);
 }
 
 .moov-hero-bg {
@@ -155,35 +155,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.moov-hero-visual::before {
-  content: '';
-  position: absolute;
-  inset: 4% 6%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(47, 125, 255, 0.32), rgba(47, 125, 255, 0));
-  filter: blur(10px);
+  aspect-ratio: 5 / 4;
+  max-height: 480px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 30px 70px -30px rgba(0, 104, 255, 0.55),
+    0 0 0 1px rgba(140, 190, 255, 0.35);
 }
 
 .moov-hero-visual img {
-  position: relative;
-  width: 100%;
-  max-width: 580px;
-  max-height: 460px;
+  width: 86%;
+  height: 86%;
   object-fit: contain;
-  filter: drop-shadow(0 26px 40px rgba(0, 6, 20, 0.55));
 }
 
 /* Seções */
 .moov-section {
   position: relative;
-  padding: clamp(48px, 6vw, 88px) clamp(18px, 3.6vw, 56px);
+  padding: clamp(28px, 3.2vw, 44px) clamp(18px, 3.6vw, 56px);
 }
 
 .moov-head {
   text-align: center;
-  margin-bottom: clamp(28px, 3.4vw, 44px);
+  margin-bottom: clamp(20px, 2.4vw, 30px);
 }
 
 /* 3 · Diferenciais */
@@ -278,7 +274,7 @@
   gap: 4px;
   padding: 12px;
   border-radius: 16px;
-  background: radial-gradient(60% 70% at 50% 55%, rgba(47, 125, 255, 0.22), rgba(47, 125, 255, 0) 75%);
+  background: #fff;
   overflow: hidden;
 }
 
@@ -397,7 +393,8 @@
 
 /* 6 · Rodapé institucional */
 .moov-legal {
-  padding: clamp(32px, 4vw, 48px) clamp(18px, 3.6vw, 56px);
+  margin-top: clamp(20px, 2.4vw, 32px);
+  padding: clamp(24px, 3vw, 36px) clamp(18px, 3.6vw, 56px);
   border-top: 1px solid rgba(120, 170, 255, 0.14);
   text-align: center;
 }

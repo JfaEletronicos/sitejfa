@@ -66,12 +66,8 @@ export default function MoovPage() {
               </li>
             </ul>
           </div>
-          <div className="moov-hero-visual">
-            <img
-              src="/images/moov/adventure.webp"
-              alt="Bicicleta elétrica Adventure 3000W"
-              decoding="async"
-            />
+          <div className="moov-hero-visual" data-theme-keep>
+            <img src="/images/moov/urban.webp" alt="Bicicleta elétrica Urban 750W" decoding="async" />
           </div>
         </div>
       </section>
@@ -156,7 +152,13 @@ export default function MoovPage() {
             rel="noopener noreferrer"
             data-moov-cta="vitrine"
           >
-            <span className="moov-showcase-media">
+            <span className="moov-showcase-media" data-theme-keep>
+              <img
+                src="/images/moov/urban-sport.webp"
+                alt="Bicicleta elétrica Urban 750W aro 26"
+                loading="lazy"
+                decoding="async"
+              />
               <img
                 src="/images/moov/urban.webp"
                 alt="Bicicleta elétrica Urban 750W"
@@ -166,12 +168,6 @@ export default function MoovPage() {
               <img
                 src="/images/moov/extreme.webp"
                 alt="Bicicleta elétrica Extreme 2500W"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src="/images/moov/adventure.webp"
-                alt="Bicicleta elétrica Adventure 3000W"
                 loading="lazy"
                 decoding="async"
               />
