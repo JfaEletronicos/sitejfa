@@ -1,10 +1,10 @@
 import { trackEvent } from '../lib/analytics';
-import { SECTOR_PAGES } from '../data/sectors';
 import { MERCADO_LIVRE_URL } from '../data/links';
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
+import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
 
 /**
- * Roteador por hash (#/baterias, #/baterias/:slug, #/setores, #/setores/:slug): alterna as views e preenche o conteúdo das páginas internas.
+ * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
  * @param {import('./context').BehaviorContext} ctx
  */
 function initRouter(ctx) {
@@ -13,9 +13,10 @@ function initRouter(ctx) {
     const homeView = root.getElementById('homeView');
     const bateriasView = root.getElementById('bateriasView');
     const bateriaView = root.getElementById('bateriaView');
-    const setoresView = root.getElementById('setoresView');
-    const setorView = root.getElementById('setorView');
-    if (!homeView || !bateriasView || !bateriaView || !setoresView || !setorView) return;
+    // Páginas de setor (#/setores/:slug): montadas por behaviors/sectorPages.js.
+    const setorCatalogView = root.getElementById('setorCatalogView');
+    const setorInstView = root.getElementById('setorInstView');
+    if (!homeView || !bateriasView || !bateriaView || !setorCatalogView || !setorInstView) return;
     // Suporte, Representantes e Manuais: páginas próprias. As de Representantes e
     // Manuais recebem a própria seção da Home (movida para a página ao abrir e
     // devolvida ao lugar original ao voltar), então tudo funciona igual nas duas.
@@ -323,6 +324,9 @@ function initRouter(ctx) {
       inmetro: { src: '/images/seal_inmetro.webp', label: 'Inmetro' },
       anatel: { src: '/images/seal_anatel.webp', label: 'Anatel' },
     };
+    // Cards das baterias de um setor, para o catálogo do setor (ver behaviors/sectorPages.js).
+    ctx.batteriesForSector = (sector) =>
+      BATTERY_CATALOG.filter((b) => b.sectors.includes(sector)).map((b) => buildBateriaCard(b));
     const bateriasNav = root.getElementById('bateriasSectorNav');
     const navBaterias = root.getElementById('navBaterias');
     const navSetores = root.getElementById('navSetores');
@@ -386,170 +390,26 @@ function initRouter(ctx) {
       });
       return a;
     };
-    // Filtro por aplicação: saída com fade + leve redução, reorganização do grid
-    // animada (FLIP) e entrada com fade + translateY curto. Nunca recarrega.
-    const bateriasFilterIndicator = root.getElementById('bateriasFilterIndicator');
-    const bateriasEmpty = root.getElementById('bateriasEmpty');
     const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
-    let filterToken = 0;
-    const positionFilterIndicator = (btn) => {
-      if (!bateriasFilterIndicator || !btn) return;
-      bateriasFilterIndicator.style.width = btn.offsetWidth + 'px';
-      bateriasFilterIndicator.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
-    };
-    const filterBaterias = (sector) => {
-      const token = ++filterToken;
-      const cards = Array.from(bateriasGrid.querySelectorAll('.catalog-card'));
-      cards.forEach((c) => c.getAnimations().forEach((anim) => anim.cancel()));
-      const matches = (card) => sector === 'all' || (card.dataset.sectors || '').split(',').includes(sector);
-      const isEmpty = !cards.some(matches);
-      if (bateriasEmpty) {
-        bateriasEmpty.hidden = !isEmpty;
-        if (isEmpty && !ctx.reduceMotion && typeof bateriasEmpty.animate === 'function')
-          bateriasEmpty.animate(
-            [
-              { opacity: 0, transform: 'translateY(10px)' },
-              { opacity: 1, transform: 'none' },
-            ],
-            { duration: 420, delay: 180, easing: EASE_OUT, fill: 'backwards' },
-          );
-      }
-      if (ctx.reduceMotion || typeof bateriasGrid.animate !== 'function') {
-        cards.forEach((c) => {
-          c.hidden = !matches(c);
-          if (!c.hidden) c.classList.add('is-revealed');
-        });
-        return;
-      }
-      const leaving = cards.filter((c) => !c.hidden && !matches(c));
-      const entering = cards.filter((c) => c.hidden && matches(c));
-      const staying = cards.filter((c) => !c.hidden && matches(c));
-      const exits = leaving.map((c) =>
-        c.animate(
-          [
-            { opacity: 1, transform: 'scale(1)' },
-            { opacity: 0, transform: 'scale(0.96)' },
-          ],
-          { duration: 220, easing: 'ease', fill: 'forwards' },
-        ),
-      );
-      Promise.all(exits.map((anim) => anim.finished.catch(() => {}))).then(() => {
-        if (token !== filterToken) return;
-        const first = new Map(staying.map((c) => [c, c.getBoundingClientRect()]));
-        leaving.forEach((c) => {
-          c.hidden = true;
-          c.getAnimations().forEach((anim) => anim.cancel());
-        });
-        entering.forEach((c) => {
-          c.hidden = false;
-          c.classList.add('is-revealed');
-        });
-        staying.forEach((c) => {
-          const from = first.get(c);
-          const to = c.getBoundingClientRect();
-          const dx = from.left - to.left;
-          const dy = from.top - to.top;
-          if (dx || dy)
-            c.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], {
-              duration: 460,
-              easing: EASE_OUT,
-            });
-        });
-        entering.forEach((c, i) =>
-          c.animate(
-            [
-              { opacity: 0, transform: 'translateY(14px)' },
-              { opacity: 1, transform: 'none' },
-            ],
-            { duration: 460, delay: 80 + i * 60, easing: EASE_OUT, fill: 'backwards' },
-          ),
-        );
-      });
-    };
-    // Cards do catálogo entram uma única vez ao aparecer na tela, em stagger curto.
-    let catalogRevealObs = null;
-    if ('IntersectionObserver' in window) {
-      catalogRevealObs = new IntersectionObserver(
-        (entries) => {
-          const visible = entries.filter((en) => en.isIntersecting);
-          visible.forEach((en, i) => {
-            const card = en.target;
-            card.style.transitionDelay = 120 + i * 70 + 'ms';
-            card.classList.add('is-revealed');
-            setTimeout(() => {
-              card.style.transitionDelay = '';
-            }, 1200);
-            catalogRevealObs.unobserve(card);
-          });
-        },
-        { threshold: 0.12 },
-      );
-      ctx.cleanups.push(() => catalogRevealObs.disconnect());
-    }
-    // Parallax sutil da foto no card (só mouse): escreve variáveis CSS, 1x por frame.
-    let cardParallaxRaf = null;
-    let cardParallaxPending = null;
-    const flushCardParallax = () => {
-      cardParallaxRaf = null;
-      if (!cardParallaxPending) return;
-      const { card, nx, ny } = cardParallaxPending;
-      cardParallaxPending = null;
-      card.style.setProperty('--card-nx', nx.toFixed(3));
-      card.style.setProperty('--card-ny', ny.toFixed(3));
-    };
-    on(bateriasGrid, 'pointermove', (e) => {
-      if (e.pointerType !== 'mouse' || ctx.reduceMotion) return;
-      const card = e.target.closest('.catalog-card');
-      if (!card) return;
-      const rect = card.getBoundingClientRect();
-      cardParallaxPending = {
-        card,
-        nx: ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        ny: ((e.clientY - rect.top) / rect.height) * 2 - 1,
-      };
-      if (!cardParallaxRaf) cardParallaxRaf = requestAnimationFrame(flushCardParallax);
+    // Filtro animado, entrada dos cards e parallax: ver behaviors/catalogGrid.js.
+    const bateriasCatalog = createCatalogGrid(ctx, {
+      grid: bateriasGrid,
+      indicator: root.getElementById('bateriasFilterIndicator'),
+      empty: root.getElementById('bateriasEmpty'),
     });
-    on(bateriasGrid, 'pointerout', (e) => {
-      const card = e.target.closest('.catalog-card');
-      if (!card || card.contains(e.relatedTarget)) return;
-      card.style.removeProperty('--card-nx');
-      card.style.removeProperty('--card-ny');
-    });
-    ctx.cleanups.push(() => {
-      if (cardParallaxRaf) cancelAnimationFrame(cardParallaxRaf);
-    });
+    const positionFilterIndicator = bateriasCatalog.positionIndicator;
     const buildBateriasView = () => {
       if (bateriasBuilt) return;
       bateriasBuilt = true;
-      const addFilterTab = (sector, label, active) => {
-        const tab = document.createElement('button');
-        tab.type = 'button';
-        tab.className = 'catalog-filter-tab' + (active ? ' is-active' : '');
-        tab.dataset.sector = sector;
-        tab.setAttribute('aria-pressed', active ? 'true' : 'false');
-        tab.textContent = label;
-        bateriasNav.appendChild(tab);
-      };
-      addFilterTab('all', 'Todas', true);
-      BATTERY_SECTORS.forEach((s) => addFilterTab(s, APP_LABELS[s] || s, false));
-      on(bateriasNav, 'click', (e) => {
-        const tab = e.target.closest('.catalog-filter-tab');
-        if (!tab || tab.classList.contains('is-active')) return;
-        Array.from(bateriasNav.querySelectorAll('.catalog-filter-tab')).forEach((t) => {
-          t.classList.toggle('is-active', t === tab);
-          t.setAttribute('aria-pressed', t === tab ? 'true' : 'false');
-        });
-        positionFilterIndicator(tab);
-        filterBaterias(tab.dataset.sector);
-      });
-      on(window, 'resize', () =>
-        positionFilterIndicator(bateriasNav.querySelector('.catalog-filter-tab.is-active')),
-      );
+      buildFilterTabs(bateriasNav, [
+        { key: 'all', label: 'Todas' },
+        ...BATTERY_SECTORS.map((s) => ({ key: s, label: APP_LABELS[s] || s })),
+      ]);
+      bindFilterTrack(ctx, bateriasNav, bateriasCatalog);
       BATTERY_CATALOG.forEach((b) => {
         const card = buildBateriaCard(b);
         bateriasGrid.appendChild(card);
-        if (catalogRevealObs) catalogRevealObs.observe(card);
-        else card.classList.add('is-revealed');
+        bateriasCatalog.observe(card);
       });
     };
     // Entrada da página /baterias: título, filtro e grid em sequência (a cada abertura).
@@ -1518,57 +1378,13 @@ function initRouter(ctx) {
       trackEvent('battery_page_view', { battery_id: b.id, variant: b.variantKey, sectors: b.sectors });
       requestAnimationFrame(checkBateriaReveals);
     };
-    const setoresGrid = root.getElementById('setoresGrid');
-    let setoresBuilt = false;
-    const buildSetoresView = () => {
-      if (setoresBuilt) return;
-      setoresBuilt = true;
-      SECTOR_PAGES.forEach((s) => {
-        const a = document.createElement('a');
-        a.className = 'catalog-card';
-        a.href = '#/setores/' + s.slug;
-        const name = document.createElement('h3');
-        name.className = 'catalog-card-name';
-        name.textContent = s.title;
-        a.appendChild(name);
-        const lines = document.createElement('p');
-        lines.className = 'catalog-card-lines';
-        lines.textContent = s.sub;
-        a.appendChild(lines);
-        const cta = document.createElement('span');
-        cta.className = 'catalog-card-cta';
-        cta.innerHTML =
-          'Ver setor <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
-        a.appendChild(cta);
-        setoresGrid.appendChild(a);
-      });
-    };
     const WHATSAPP_PHONE = '553125336100';
-    const renderSetorView = (slug) => {
-      const s = SECTOR_PAGES.find((x) => x.slug === slug);
-      if (!s) {
-        location.hash = '#/setores';
-        return;
-      }
-      root.getElementById('setorEyebrow').textContent = 'Setores \xB7 ' + s.title;
-      root.getElementById('setorTitle').innerHTML = s.headline;
-      root.getElementById('setorSub').textContent = s.sub;
-      root.getElementById('setorIntro').textContent = s.intro;
-      const cta = root.getElementById('setorContactCta');
-      cta.href =
-        'https://api.whatsapp.com/send?phone=' +
-        WHATSAPP_PHONE +
-        '&text=' +
-        encodeURIComponent(s.whatsappText);
-      cta.onclick = () => trackEvent('whatsapp_click', { source: 'setor_page', sector: slug });
-      trackEvent('sector_page_view', { sector: slug });
-    };
     const showView = (name) => {
       homeView.hidden = name !== 'home';
       bateriasView.hidden = name !== 'baterias';
       bateriaView.hidden = name !== 'bateria';
-      setoresView.hidden = name !== 'setores';
-      setorView.hidden = name !== 'setor';
+      setorCatalogView.hidden = name !== 'setorCatalog';
+      setorInstView.hidden = name !== 'setorInst';
       placeSections(name);
       Object.keys(SECTION_PAGES).forEach((key) => {
         if (SECTION_PAGES[key].view) SECTION_PAGES[key].view.hidden = name !== key;
@@ -1576,12 +1392,25 @@ function initRouter(ctx) {
       sectionNavLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.navPage === name));
       pageBody.classList.toggle('is-page-view', name !== 'home');
       if (navBaterias) navBaterias.classList.toggle('is-active', name === 'baterias' || name === 'bateria');
-      if (navSetores) navSetores.classList.toggle('is-active', name === 'setores' || name === 'setor');
+      if (navSetores)
+        navSetores.classList.toggle('is-active', name === 'setorCatalog' || name === 'setorInst');
       if (name === 'baterias') playBateriasEntrance();
+      if (name === 'setorCatalog') {
+        setorCatalogView.classList.remove('is-entering');
+        void setorCatalogView.offsetWidth;
+        setorCatalogView.classList.add('is-entering');
+        if (ctx.positionSectorFilter) requestAnimationFrame(ctx.positionSectorFilter);
+      }
       if (name !== 'home') window.scrollTo(0, 0);
       // Entrada "montando a página" nas páginas de baterias (ver behaviors/assemble.js).
       if (ctx.replayAssemble && name !== 'home') ctx.replayAssemble(name);
       if (name === 'manuais' && ctx.refreshManualsField) ctx.refreshManualsField();
+      // Vindo de "Ver manuais" de um setor: abre direto a aba daquela linha.
+      if (name === 'manuais' && ctx.pendingManualsTab) {
+        const tab = root.querySelector('.manuals-tab[data-line="' + ctx.pendingManualsTab + '"]');
+        ctx.pendingManualsTab = null;
+        if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
+      }
     };
     const applyRoute = () => {
       const hash = location.hash || '';
@@ -1606,13 +1435,16 @@ function initRouter(ctx) {
         buildBateriasView();
         showView('baterias');
         trackEvent('page_view', { view: 'baterias' });
-      } else if (parts[0] === 'setores' && parts[1]) {
-        renderSetorView(parts[1]);
-        showView('setor');
       } else if (parts[0] === 'setores') {
-        buildSetoresView();
-        showView('setores');
-        trackEvent('page_view', { view: 'setores' });
+        // Setor sem página (ou só #/setores): volta para a Home com o menu de setores aberto.
+        const view = parts[1] && ctx.renderSectorPage ? ctx.renderSectorPage(parts[1]) : null;
+        if (view) {
+          showView(view);
+        } else {
+          history.replaceState(null, '', '#/');
+          showView('home');
+          if (ctx.openSectorMenu) ctx.openSectorMenu();
+        }
       } else if (SECTION_PAGES[parts[0]] && SECTION_PAGES[parts[0]].view) {
         showView(parts[0]);
         trackEvent('page_view', { view: parts[0] });

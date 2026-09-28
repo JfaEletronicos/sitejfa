@@ -1,4 +1,5 @@
 import { STORE_URL, MERCADO_LIVRE_URL } from '../../data/links';
+import { SECTOR_MENU, SECTOR_ICONS } from '../../data/sectors';
 
 const ExternalIcon = () => (
   <svg className="jfa-nav-external-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -30,9 +31,47 @@ export default function Header() {
           <a href="#/baterias" id="navBaterias">
             Bateria
           </a>{' '}
-          <a href="#/setores" id="navSetores">
-            Setores
-          </a>
+          <div className="jfa-sector-nav" id="sectorNav">
+            <button
+              className="jfa-sector-trigger"
+              id="navSetores"
+              type="button"
+              aria-expanded="false"
+              aria-controls="sectorMenu"
+            >
+              Setores
+              <svg className="jfa-sector-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <div className="jfa-sector-menu" id="sectorMenu" hidden>
+              {SECTOR_MENU.map((s, i) => (
+                <a
+                  key={s.slug}
+                  className="jfa-sector-item"
+                  href={`#/setores/${s.slug}`}
+                  data-sector={s.slug}
+                  style={{ '--i': i }}
+                >
+                  <span
+                    className="jfa-sector-icon"
+                    aria-hidden="true"
+                    dangerouslySetInnerHTML={{ __html: SECTOR_ICONS[s.slug] }}
+                  />
+                  <span className="jfa-sector-text">
+                    <span className="jfa-sector-name">{s.title}</span>
+                    <span className="jfa-sector-line">{s.line}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
         </nav>
         <nav className="jfa-nav-right" aria-label="Suporte e compra">
           <a href="#/suporte" data-nav-page="suporte">

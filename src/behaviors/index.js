@@ -15,6 +15,7 @@ import { initDarkExperience } from './darkExperience';
 import { initEnergyField } from './energyField';
 import { initFooter } from './footer';
 import { initCampaignCarousel } from './campaignCarousel';
+import { initSectorPages } from './sectorPages';
 import { initRouter } from './router';
 import { initAssemble } from './assemble';
 
@@ -47,6 +48,7 @@ export function initPageBehaviors() {
   initEnergyField(ctx);
   initFooter(ctx);
   initCampaignCarousel(ctx);
+  initSectorPages(ctx);
   initRouter(ctx);
   initAssemble(ctx);
 

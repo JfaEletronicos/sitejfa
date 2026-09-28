@@ -113,6 +113,97 @@ function initHeader(ctx) {
       if (tab) setTimeout(() => tab.click(), ctx.reduceMotion ? 0 : 260);
     });
   });
+  // Menu "Setores": abre em leque ao clicar (ou ao passar o mouse) e leva para a página do setor.
+  const sectorNav = root.getElementById('sectorNav');
+  const sectorTrigger = root.getElementById('navSetores');
+  const sectorMenu = root.getElementById('sectorMenu');
+  if (sectorNav && sectorTrigger && sectorMenu) {
+    let hideTimer = null;
+    let hoverTimer = null;
+    let openedByHover = false;
+    const isOpen = () => sectorTrigger.getAttribute('aria-expanded') === 'true';
+    const openMenu = () => {
+      clearTimeout(hideTimer);
+      if (isOpen()) return;
+      sectorMenu.hidden = false;
+      sectorTrigger.setAttribute('aria-expanded', 'true');
+      void sectorMenu.offsetWidth;
+      sectorMenu.classList.add('is-open');
+      const current = location.hash.match(/^#\/setores\/([\w-]+)/);
+      sectorMenu
+        .querySelectorAll('.jfa-sector-item')
+        .forEach((a) => a.classList.toggle('is-active', !!current && a.dataset.sector === current[1]));
+    };
+    const closeMenu = () => {
+      openedByHover = false;
+      if (!isOpen()) return;
+      sectorTrigger.setAttribute('aria-expanded', 'false');
+      sectorMenu.classList.remove('is-open');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        if (!isOpen()) sectorMenu.hidden = true;
+      }, 320);
+    };
+    ctx.openSectorMenu = openMenu;
+    on(sectorTrigger, 'click', () => {
+      // Aberto pelo mouse um instante antes: o clique confirma em vez de fechar.
+      if (isOpen() && openedByHover) {
+        openedByHover = false;
+        return;
+      }
+      if (isOpen()) closeMenu();
+      else openMenu();
+    });
+    on(sectorTrigger, 'keydown', (e) => {
+      if (e.key !== 'ArrowDown') return;
+      e.preventDefault();
+      openMenu();
+      const first = sectorMenu.querySelector('.jfa-sector-item');
+      if (first) first.focus();
+    });
+    on(sectorMenu, 'keydown', (e) => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      const items = Array.from(sectorMenu.querySelectorAll('.jfa-sector-item'));
+      const i = items.indexOf(document.activeElement);
+      const next = items[(i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length];
+      if (next) next.focus();
+    });
+    on(sectorMenu, 'click', (e) => {
+      const item = e.target.closest('.jfa-sector-item');
+      if (!item) return;
+      trackEvent('sector_menu_click', { sector: item.dataset.sector });
+      closeMenu();
+    });
+    // Mouse: abre ao passar por cima e fecha com uma pequena folga ao sair.
+    on(sectorNav, 'pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => {
+        if (!isOpen()) openedByHover = true;
+        openMenu();
+      }, 80);
+    });
+    on(sectorNav, 'pointerleave', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(closeMenu, 220);
+    });
+    on(document, 'pointerdown', (e) => {
+      if (isOpen() && !sectorNav.contains(e.target)) closeMenu();
+    });
+    on(document, 'keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) {
+        closeMenu();
+        sectorTrigger.focus();
+      }
+    });
+    on(window, 'hashchange', closeMenu);
+    cleanups.push(() => {
+      clearTimeout(hideTimer);
+      clearTimeout(hoverTimer);
+    });
+  }
   const whatsappFloat = root.getElementById('whatsappFloat');
   if (whatsappFloat)
     on(whatsappFloat, 'click', () => trackEvent('whatsapp_click', { source: 'floating_button' }));

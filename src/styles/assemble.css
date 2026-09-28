@@ -278,7 +278,9 @@ html.asm-on .reps-state {
    (senão repetiriam depois que a nova termina). */
 html.asm-on #bateriaView.is-entering .bateria-hero-content-in > *,
 html.asm-on #bateriasView.is-entering .baterias-intro-title,
-html.asm-on #bateriasView.is-entering .catalog-filter-nav {
+html.asm-on #setorCatalogView.is-entering .baterias-intro-title,
+html.asm-on #bateriasView.is-entering .catalog-filter-nav,
+html.asm-on #setorCatalogView.is-entering .catalog-filter-nav {
   animation: none;
 }
 

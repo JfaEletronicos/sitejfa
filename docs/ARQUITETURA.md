@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-A Home e as páginas internas ficam num único documento; o roteador por hash (`behaviors/router.js`) mostra/esconde as views `#homeView`, `#bateriasView`, `#bateriaView`, `#setoresView` e `#setorView`. A **marcação** é declarada em componentes React (`src/components`) e a **interatividade** fica em módulos de comportamento (`src/behaviors`), ligados uma única vez depois da montagem:
+A Home e as páginas internas ficam num único documento; o roteador por hash (`behaviors/router.js`) mostra/esconde as views `#homeView`, `#bateriasView`, `#bateriaView`, `#setorCatalogView`, `#setorInstView`, `#suporteView`, `#representantesView` e `#manuaisView`. A **marcação** é declarada em componentes React (`src/components`) e a **interatividade** fica em módulos de comportamento (`src/behaviors`), ligados uma única vez depois da montagem:
 
 ```jsx
 // src/App.jsx
@@ -14,6 +14,10 @@ useEffect(() => initPageBehaviors(), []);
 ### Por que comportamentos imperativos em vez de estado React?
 
 As animações (intro da Hero, carrosséis com inércia, faixa tipográfica, campo de energia em canvas, parallax) atualizam `transform` e variáveis CSS a cada frame. Fazer isso por `setState` causaria re-render a 60fps e poderia alterar o visual e o timing. Os módulos preservam exatamente a lógica original e usam refs de DOM, `requestAnimationFrame` e `IntersectionObserver`, que é o padrão recomendado para animações de alta frequência.
+
+### Setores
+
+O botão **Setores** do header (`behaviors/header.js`) abre um menu em leque com Automotivo, Telecom, Moov e Parts (`SECTOR_MENU` em `data/sectors.js`). Automotivo e Telecom abrem `#setorCatalogView`, no mesmo layout de `#/baterias`: `behaviors/sectorPages.js` monta os cards a partir de `SECTOR_CATALOGS` (grupos = abas do filtro, ids de `data/products.js`; as baterias do setor vêm do catálogo de baterias). Moov e Parts abrem `#setorInstView`, preenchida com `SECTOR_INSTITUTIONAL`. O filtro animado, a entrada dos cards e o parallax ficam em `behaviors/catalogGrid.js`, compartilhado com a página de baterias.
 
 ### Páginas de Suporte, Representantes e Manuais
 

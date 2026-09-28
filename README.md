@@ -67,11 +67,13 @@ docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
 | --- | --- |
 | `#/baterias` | Abertura curta e catálogo de baterias e-Lítio, com filtro animado por aplicação |
 | `#/baterias/:slug` | Detalhe da bateria: especificações, manual, relacionados e suporte por WhatsApp |
-| `#/setores` | Setores atendidos (Automotivo, Motorhome, Náutica, Telecom, Moov, Parts) |
-| `#/setores/:slug` | Página de um setor, com CTA de WhatsApp |
+| `#/setores/automotivo`, `#/setores/telecom` | Catálogo do setor no layout da página de baterias (produtos de `src/data/sectors.js`) |
+| `#/setores/moov`, `#/setores/parts` | Páginas institucionais |
 | `#/suporte` | Suporte técnico: mesmo mapa de Representantes, com os contatos de suporte (`src/data/support.js`) |
 | `#/representantes` | A seção de Representantes da Home, sozinha numa página |
 | `#/manuais` | A seção de Manuais da Home, sozinha numa página |
+
+O botão **Setores** do header abre um menu com os quatro setores; `#/setores` sozinho volta para a Home com esse menu aberto.
 
 Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
 - **Rodapé**: links internos e "voltar ao topo".

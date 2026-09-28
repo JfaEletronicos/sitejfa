@@ -140,6 +140,23 @@ const PAGE_VIEWS = {
   suporte: { view: '#suporteView', puzzle: '.reps-state', parts: REPS_PARTS },
   representantes: { view: '#representantesView', puzzle: '.reps-state', parts: REPS_PARTS },
   manuais: { view: '#manuaisView', parts: MANUALS_PARTS },
+  // Setores: catálogo igual ao de baterias; institucional com texto e foto em lados opostos.
+  setorCatalog: {
+    view: '#setorCatalogView',
+    parts: [
+      ['.baterias-intro-title', 'asmSkew'],
+      ['.catalog-filter-tab', 'asmPop'],
+      ['#setorCatalogGrid .catalog-card', 'asmDomino'],
+    ],
+  },
+  setorInst: {
+    view: '#setorInstView',
+    parts: [
+      ['.setor-inst-copy > *', 'asmFromLeft'],
+      ['.setor-inst-visual', 'asmZoomOut'],
+      ['.setor-inst-story > p', 'asmRise'],
+    ],
+  },
 };
 const STEP_MS = 110;
 const MAX_DELAY_MS = 1300;
