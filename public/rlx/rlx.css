@@ -457,7 +457,12 @@ ol {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(180deg, rgba(15, 12, 9, 0) 15%, rgba(15, 12, 9, 0.55) 50%, rgba(15, 12, 9, 0.92) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(15, 12, 9, 0) 15%,
+    rgba(15, 12, 9, 0.55) 50%,
+    rgba(15, 12, 9, 0.92) 100%
+  );
 }
 
 .rlx-card-body {
@@ -495,7 +500,12 @@ ol {
 .tex-oak {
   background:
     repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 64px),
-    repeating-linear-gradient(90deg, transparent 0 11px, rgba(0, 0, 0, 0.05) 11px 12px, transparent 12px 29px),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 11px,
+      rgba(0, 0, 0, 0.05) 11px 12px,
+      transparent 12px 29px
+    ),
     linear-gradient(90deg, #b67a45, #d19a63 30%, #a86c3a 60%, #c88c55);
 }
 
@@ -713,8 +723,7 @@ ol {
 
 /* Representantes */
 .rlx-reps {
-  background:
-    radial-gradient(80% 120% at 50% 100%, #3a2c1d, var(--ink) 70%);
+  background: radial-gradient(80% 120% at 50% 100%, #3a2c1d, var(--ink) 70%);
   color: #fff;
   text-align: center;
 }

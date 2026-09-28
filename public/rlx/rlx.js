@@ -44,7 +44,8 @@
   // Instalação: da fileira da frente para o fundo, da esquerda para a direita.
   planks.forEach(function (p) {
     var order = (ROWS - 1 - p.r) * 0.7 + p.i;
-    p.el.style.animation = 'rlxPlank 0.9s cubic-bezier(0.16, 1, 0.3, 1) ' + Math.round(order * 45) + 'ms backwards';
+    p.el.style.animation =
+      'rlxPlank 0.9s cubic-bezier(0.16, 1, 0.3, 1) ' + Math.round(order * 45) + 'ms backwards';
   });
 
   var STEP_MS = 110;
