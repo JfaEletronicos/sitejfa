@@ -12,6 +12,15 @@
   min-height: 100vh;
 }
 
+/* Suporte: fundo em tom petróleo, para não confundir com o mapa de Representantes. */
+.dark-page-support .dark-experience-bg {
+  background:
+    radial-gradient(48% 42% at 15% 30%, rgba(0, 190, 170, 0.14), rgba(0, 190, 170, 0) 62%),
+    radial-gradient(44% 40% at 85% 28%, rgba(60, 210, 200, 0.1), rgba(60, 210, 200, 0) 62%),
+    radial-gradient(50% 40% at 50% 72%, rgba(10, 120, 110, 0.14), rgba(10, 120, 110, 0) 62%),
+    linear-gradient(180deg, #021619 0%, #031d21 22%, #042328 46%, #031d21 70%, #021619 100%);
+}
+
 .page-hero {
   position: relative;
   z-index: 2;

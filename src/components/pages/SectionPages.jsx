@@ -28,13 +28,13 @@ export function ManualsPage() {
 /** Página #/suporte: mesmo mapa de Representantes, com as assistências técnicas de cada estado. */
 export function SupportPage() {
   return (
-    <div className="page-view dark-page" id="suporteView" hidden>
+    <div className="page-view dark-page dark-page-support" id="suporteView" hidden>
       <div className="dark-experience">
         <div className="dark-experience-bg" aria-hidden="true" />
         <StateMapSection
           prefix="sup"
           anchorId="suporte"
-          title="Encontre o suporte técnico JFA."
+          title="Encontre o suporte técnico."
           sub="Escolha seu estado e encontre uma assistência técnica autorizada JFA perto de você."
           placeholder="Digite seu estado ou cidade"
         >
