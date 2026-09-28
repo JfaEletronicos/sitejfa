@@ -273,6 +273,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
   color: rgba(230, 238, 255, 0.6);
   transition:
     background 0.2s ease,
@@ -309,23 +313,38 @@
   color: rgba(120, 180, 255, 0.85);
 }
 
+/* Resultado: mesmo card translúcido dos blocos do site (Onde comprar, painéis do mapa). */
 .jfa-search-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  padding: 0.7em 0.7em;
-  border-radius: 10px;
+  margin: 0;
+  padding: 0.8em 1em;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(120, 170, 255, 0.14);
+  font: inherit;
   text-align: left;
+  text-decoration: none;
   color: #fff;
-  transition: background 0.15s ease;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.jfa-search-row + .jfa-search-row {
+  margin-top: 6px;
 }
 
 .jfa-search-row:hover,
 .jfa-search-row:focus-visible,
 .jfa-search-row.is-active {
-  background: rgba(255, 255, 255, 0.07);
+  outline: none;
+  background: rgba(0, 104, 255, 0.14);
+  border-color: rgba(64, 150, 255, 0.6);
 }
 
 .jfa-search-row-main {
@@ -356,9 +375,16 @@
   flex: none;
   font-weight: 700;
   font-size: 11px;
-  letter-spacing: 0.03em;
-  color: rgba(120, 180, 255, 0.9);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
   white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.jfa-search-row:hover .jfa-search-row-action,
+.jfa-search-row.is-active .jfa-search-row-action {
+  color: #4aa0ff;
 }
 
 .jfa-search-empty {
@@ -391,6 +417,10 @@
   }
   .jfa-search-card {
     max-height: 78vh;
+  }
+  .jfa-search-row-name,
+  .jfa-search-row-meta {
+    white-space: normal;
   }
 }
 
