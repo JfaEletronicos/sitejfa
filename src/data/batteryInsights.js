@@ -21,8 +21,8 @@ export const LABEL_SPECS = {
   'elitio-pro-solar-48v-100ah-rack': { energy: '4,8 kWh', chargeVoltage: '54V', comms: 'RS485 e CAN' },
   'elitio-pro-48v-50ah': { energy: '2,4 kWh', chargeVoltage: '54V', cycles: true, temp: true },
   'elitio-nautica-12-8v-100ah': { energy: '1,28 kWh', chargeVoltage: '14,4V', cycles: true, temp: true },
-  'elitio-pro-25-6v-50ah': { energy: '1,28 kWh', chargeVoltage: '28,8V', cycles: true, temp: true },
-  'elitio-pro-25-6v-100ah': { energy: '2,56 kWh', chargeVoltage: '28,8V', cycles: true, temp: true },
+  'elitio-pro-25-6v:50ah': { energy: '1,28 kWh', chargeVoltage: '28,8V', cycles: true, temp: true },
+  'elitio-pro-25-6v:100ah': { energy: '2,56 kWh', chargeVoltage: '28,8V', cycles: true, temp: true },
   'elitio-nautica-25-6v-100ah': { energy: '2,56 kWh', chargeVoltage: '28,8V', cycles: true, temp: true },
 };
 
@@ -140,7 +140,7 @@ export const WHY_COPY = {
       ],
     },
   },
-  'elitio-pro-25-6v-50ah': {
+  'elitio-pro-25-6v:50ah': {
     motorhome: {
       title: 'Energia estável para motorhomes de 24V.',
       text: 'Em 25,6V, a bateria atende sistemas de 24V com menos corrente que um sistema de 12V equivalente. São 1,28 kWh em LiFePO₄, com BMS acompanhando a operação.',
@@ -152,7 +152,7 @@ export const WHY_COPY = {
       reasons: [{ value: '1,28 kWh', text: 'de energia para sistemas de 24V' }, cyclesReason, bmsReason],
     },
   },
-  'elitio-pro-25-6v-100ah': {
+  'elitio-pro-25-6v:100ah': {
     motorhome: {
       title: 'Mais autonomia para motorhomes de 24V.',
       text: 'Com 2,56 kWh em 25,6V, a bateria guarda mais energia para os sistemas de bordo de 24V, com BMS e química LiFePO₄ feita para ciclos diários.',

@@ -265,45 +265,47 @@ function initRouter(ctx) {
         commerce: {},
         relatedProducts: [],
       },
+      // E-Lítio Pro 25,6V: uma página só, com as capacidades 50Ah e 100Ah como
+      // variantes (mesmo formato da Pro 12,8V).
       {
-        id: 'elitio-pro-25-6v-50ah',
-        slug: 'e-litio-pro-25-6v-50ah',
-        name: 'E-L\xEDtio Pro 25,6V 50Ah',
+        id: 'elitio-pro-25-6v',
+        slug: 'e-litio-pro-25-6v',
+        name: 'E-L\xEDtio Pro 25,6V',
         voltage: '25,6V',
-        capacity: '50Ah',
+        capacity: '50Ah | 100Ah',
         technology: 'LiFePO4',
         sectors: ['automotivo', 'motorhome'],
         features: ['BMS'],
-        shortDescription: 'Energia est\xE1vel e monitorada para sistemas de armazenamento.',
-        marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
-        longDescription:
-          'Gerenciamento BMS para sistemas de armazenamento de energia que exigem estabilidade e controle.',
-        image: '/images/bateria_elitio_pro_25v6_50a.webp',
-        images: [
-          '/images/bateria_elitio_pro_25v6_50a.webp',
-          '/images/bateria_elitio_pro_25v6_50a_a1.webp',
-          '/images/bateria_elitio_pro_25v6_50a_a2.webp',
-          '/images/bateria_elitio_pro_25v6_50a_a3.webp',
-        ],
-        manualUrl: '',
-        commerce: {},
-        relatedProducts: [],
-      },
-      {
-        id: 'elitio-pro-25-6v-100ah',
-        slug: 'e-litio-pro-25-6v-100ah',
-        name: 'E-L\xEDtio Pro 25,6V 100Ah',
-        voltage: '25,6V',
-        capacity: '100Ah',
-        technology: 'LiFePO4',
-        sectors: ['automotivo', 'motorhome'],
-        features: ['BMS'],
-        shortDescription: 'Mais capacidade para projetos que exigem maior autonomia.',
-        marketingHeadline: 'Mais capacidade para projetos maiores.',
-        longDescription:
-          'Gerenciamento BMS para sistemas de armazenamento de energia que precisam de maior autonomia.',
+        shortDescription: 'Energia est\xE1vel e monitorada em duas capacidades.',
         image: '/images/bateria_elitio_pro_25v6_100a.webp',
-        manualUrl: '',
+        defaultVariant: '100ah',
+        variants: [
+          {
+            key: '50ah',
+            capacity: '50Ah',
+            features: ['BMS'],
+            marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
+            longDescription:
+              'Gerenciamento BMS para sistemas de armazenamento de energia que exigem estabilidade e controle.',
+            images: [
+              '/images/bateria_elitio_pro_25v6_50a.webp',
+              '/images/bateria_elitio_pro_25v6_50a_a1.webp',
+              '/images/bateria_elitio_pro_25v6_50a_a2.webp',
+              '/images/bateria_elitio_pro_25v6_50a_a3.webp',
+            ],
+            manualUrl: '',
+          },
+          {
+            key: '100ah',
+            capacity: '100Ah',
+            features: ['BMS'],
+            marketingHeadline: 'Mais capacidade para projetos maiores.',
+            longDescription:
+              'Gerenciamento BMS para sistemas de armazenamento de energia que precisam de maior autonomia.',
+            images: ['/images/bateria_elitio_pro_25v6_100a.webp'],
+            manualUrl: '',
+          },
+        ],
         commerce: {},
         relatedProducts: [],
       },
@@ -337,6 +339,8 @@ function initRouter(ctx) {
     const SLUG_ALIASES = {
       'e-litio-pro-12v-100ah': ['e-litio-pro-12-8v', '100ah'],
       'e-litio-pro-12-8v-50ah': ['e-litio-pro-12-8v', '50ah'],
+      'e-litio-pro-25-6v-50ah': ['e-litio-pro-25-6v', '50ah'],
+      'e-litio-pro-25-6v-100ah': ['e-litio-pro-25-6v', '100ah'],
     };
     const CERT_SEALS = {
       inmetro: { src: '/images/seal_inmetro.webp', label: 'Inmetro' },
