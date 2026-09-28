@@ -27,6 +27,21 @@ function initSectorPages(ctx) {
   PRODUCTS.forEach((p) => {
     productsById[p.id] = p;
   });
+  // Variações que têm página própria no site mas não estão no catálogo de manuais
+  // (ex.: Patch Panel GIGA/FAST) vêm só de productDetails.js, com nome e categoria.
+  Object.keys(PRODUCT_DETAILS).forEach((id) => {
+    const d = PRODUCT_DETAILS[id];
+    if (!productsById[id] && d.name) {
+      productsById[id] = {
+        id,
+        name: d.name,
+        category: d.category,
+        status: 'current',
+        manualUrl: d.docs[0] ? d.docs[0].url : '',
+      };
+    }
+  });
+  const nameOf = (p) => (PRODUCT_DETAILS[p.id] && PRODUCT_DETAILS[p.id].name) || p.name;
 
   // Catálogo
   const title = root.getElementById('setorCatalogTitle');
@@ -57,7 +72,7 @@ function initSectorPages(ctx) {
     if (image) {
       const img = document.createElement('img');
       img.src = image;
-      img.alt = p.name;
+      img.alt = nameOf(p);
       img.loading = 'lazy';
       img.decoding = 'async';
       media.appendChild(img);
@@ -69,7 +84,7 @@ function initSectorPages(ctx) {
     a.appendChild(media);
     const name = document.createElement('h3');
     name.className = 'catalog-card-name';
-    name.textContent = p.name;
+    name.textContent = nameOf(p);
     a.appendChild(name);
     const meta = document.createElement('p');
     meta.className = 'catalog-card-meta';
@@ -218,13 +233,14 @@ function initSectorPages(ctx) {
     const group = cfg.groups.find((g) => g.ids.includes(id));
     prod.crumbSector.href = '#/setores/' + slug;
     prod.crumbSector.textContent = SECTOR_TITLES[slug] || slug;
-    prod.crumbCurrent.textContent = p.name;
+    const pname = nameOf(p);
+    prod.crumbCurrent.textContent = pname;
     prod.eyebrow.textContent = (SECTOR_TITLES[slug] || '') + ' \xB7 ' + p.category;
-    prod.title.textContent = p.name;
+    prod.title.textContent = pname;
     prod.summary.textContent = detail.summary;
     // Galeria: foto principal + miniaturas (só com mais de uma foto).
     prod.media.innerHTML = '';
-    showPhoto(detail.images[0], p.name);
+    showPhoto(detail.images[0], pname);
     prod.thumbs.innerHTML = '';
     prod.thumbs.hidden = detail.images.length <= 1;
     if (detail.images.length > 1) {
@@ -236,7 +252,7 @@ function initSectorPages(ctx) {
         btn.type = 'button';
         btn.className = 'bateria-gallery-thumb';
         btn.setAttribute('role', 'tab');
-        btn.setAttribute('aria-label', 'Ver foto ' + (i + 1) + ' de ' + p.name);
+        btn.setAttribute('aria-label', 'Ver foto ' + (i + 1) + ' de ' + pname);
         const img = document.createElement('img');
         img.src = src;
         img.alt = '';
@@ -258,7 +274,7 @@ function initSectorPages(ctx) {
       const goTo = (i) => {
         idx = (i + N) % N;
         syncThumbs();
-        showPhoto(detail.images[idx], p.name + ' \u2014 foto ' + (idx + 1));
+        showPhoto(detail.images[idx], pname + ' \u2014 foto ' + (idx + 1));
       };
       syncThumbs();
     }
@@ -271,11 +287,13 @@ function initSectorPages(ctx) {
       .map((b) => {
         if (b.t === 'h') return '<h3>' + b.h + '</h3>';
         if (b.t === 'ul') return '<ul>' + b.items.map((it) => '<li>' + it + '</li>').join('') + '</ul>';
+        if (b.t === 'table') return '<div class="produto-table-wrap">' + b.html + '</div>';
         return '<p>' + b.h + '</p>';
       })
       .join('');
     // Documentos: mesmo visual da página de bateria.
     prod.docs.innerHTML = '';
+    prod.docs.closest('section').hidden = !detail.docs.length;
     detail.docs.forEach((doc, i) => {
       const row = document.createElement('a');
       row.className = 'bateria-doc-row' + (i === 0 ? ' is-primary' : '');

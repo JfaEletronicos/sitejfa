@@ -85,11 +85,20 @@ export const SECTOR_CATALOGS = {
   telecom: {
     title: 'Energia para sistemas que precisam permanecer conectados.',
     groups: [
-      { key: 'distribuicao', label: 'Distribuição', ids: ['patch-panel-regua-poe', 'pdu-dc'] },
+      {
+        key: 'distribuicao',
+        label: 'Distribuição',
+        ids: ['patch-panel-poe-gerenciavel', 'patch-panel-poe-giga', 'patch-panel-poe-fast', 'pdu-dc'],
+      },
       {
         key: 'energia',
         label: 'Energia',
-        ids: ['fonte-nobreak', 'gerenciador-fonte-redundante', 'equalizador-balanceador-banco-baterias'],
+        ids: [
+          'fonte-nobreak',
+          'fonte-nobreak-snmp',
+          'gerenciador-fonte-redundante',
+          'equalizador-balanceador-banco-baterias',
+        ],
       },
       {
         key: 'conversao',

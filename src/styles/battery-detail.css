@@ -2105,3 +2105,52 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Tabela de características técnicas (vinda do site; pode ter células mescladas). */
+.produto-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(120, 170, 255, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.produto-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.produto-table-wrap th,
+.produto-table-wrap td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(120, 170, 255, 0.12);
+  border-right: 1px solid rgba(120, 170, 255, 0.08);
+  color: rgba(230, 238, 255, 0.78);
+  white-space: nowrap;
+}
+
+.produto-table-wrap thead th {
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(47, 125, 255, 0.14);
+}
+
+.produto-table-wrap tbody td:first-child {
+  font-weight: 700;
+  color: #fff;
+  text-align: left;
+}
+
+.produto-table-wrap tr:last-child td {
+  border-bottom: none;
+}
+
+.produto-table-wrap th:last-child,
+.produto-table-wrap td:last-child {
+  border-right: none;
+}

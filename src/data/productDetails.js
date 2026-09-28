@@ -1,8 +1,9 @@
 /**
- * Detalhes dos produtos do setor Automotivo (página #/setores/automotivo/:id).
- * Conteúdo e fotos vindos do site automotivo.jfaeletronicos.com (fotos convertidas
- * para WebP em public/images/produtos). As chaves são os ids de `products.js`.
- * `blocks`: p = parágrafo, h = subtítulo, ul = lista (HTML só com <strong>).
+ * Detalhes dos produtos dos setores (página #/setores/:setor/:id).
+ * Conteúdo e fotos vindos dos sites automotivo.jfaeletronicos.com e energia.jfaeletronicos.com
+ * (fotos convertidas para WebP em public/images/produtos). As chaves são os ids de `products.js`;
+ * produtos que não existem lá (variações com página própria no site) trazem `name` e `category`.
+ * `blocks`: p = parágrafo, h = subtítulo, ul = lista, table = tabela técnica (HTML só com <strong> e tags de tabela).
  */
 export const PRODUCT_DETAILS = {
   'fonte-storm-lithium': {
@@ -810,6 +811,386 @@ export const PRODUCT_DETAILS = {
       {
         label: 'Sistema 280V: 22 baterias 12,8V/100A em série',
         url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/07/SISTEMA-DE-CONEXAO-EM-SERIE-DE-22-BATERIAS-128V100A-1.pdf',
+      },
+    ],
+  },
+  'patch-panel-poe-giga': {
+    images: ['/images/produtos/patch-panel-poe-giga-1.webp'],
+    summary:
+      'O Patch Panel Régua PoE GIGA JFA permite que você controle equipamentos, com tráfego de dados e de energia no mesmo cabo UTP (PoE).',
+    blocks: [
+      {
+        t: 'p',
+        h: 'O <strong>Patch Panel Régua PoE GIGA JFA</strong> permite que você <strong>controle equipamentos, com tráfego de dados e de energia</strong> no mesmo cabo UTP (PoE). Dessa forma, a quantidade de cabos usados na instalação é reduzida, facilitando a <strong>organização do espaço.</strong>',
+      },
+      {
+        t: 'p',
+        h: 'Use o <strong>Patch Panel Régua PoE GIGA</strong> para alimentar aparelhos com tensão entre 10,8 Vdc e 52,8 Vdc — também é possível utilizar uma Fonte Nobreak em conjunto, garantindo assim o fornecimento contínuo de energia.',
+      },
+      {
+        t: 'p',
+        h: 'Elas podem ser encontradas com 5, 10 e 12 portas.',
+      },
+      {
+        t: 'p',
+        h: 'O sistema do Patch Panel JFA tem proteção individual e conectores RJ4 blindados.',
+      },
+      {
+        t: 'h',
+        h: 'Aplicações',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Equipamentos de telecomunicações',
+          'Pontos de acesso sem fio',
+          'Equipamentos de CFTV',
+          'Telefonia sobre IP (VOIP)',
+          'Redes industriais',
+        ],
+      },
+      {
+        t: 'h',
+        h: 'Características técnicas',
+      },
+      {
+        t: 'table',
+        html: '<table> <thead> <tr> <td></td><th>FAST 5 PORTAS</th><th>GIGA 5 PORTAS</th><th>FAST 10 PORTAS</th><th>GIGA 10 PORTAS</th><th>GIGA 12 PORTAS</th> </tr> </thead> <tbody> <tr> <td>Entrada Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Saída Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Portas LAN</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Portas POE</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Conexão RJ45</td><td colspan="5">Blindado</td> </tr> <tr> <td>Corrente por porta</td><td colspan="5">1A</td> </tr> <tr> <td>Proteção</td><td colspan="5">Curto circuito e sobrecarga</td> </tr> <tr> <td>Velocidade</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100/1000Mbps</td> </tr> <tr> <td>Peso em gramas</td><td>226</td><td>252</td><td>725</td><td>776</td><td>856</td> </tr> <tr> <td>Dimensões (LxAxP)</td><td>195x31x42mm</td><td>195x31x42mm</td><td>Rack 19U" 1U</td><td>Rack 19U" 1U</td><td>Rack 19" 1U</td> </tr> </tbody> </table>',
+      },
+    ],
+    docs: [],
+    name: 'Patch Panel Régua PoE GIGA',
+    category: 'Telecom',
+  },
+  'fonte-nobreak-snmp': {
+    images: [
+      '/images/produtos/fonte-nobreak-snmp-1.webp',
+      '/images/produtos/fonte-nobreak-snmp-2.webp',
+      '/images/produtos/fonte-nobreak-snmp-3.webp',
+      '/images/produtos/fonte-nobreak-snmp-4.webp',
+    ],
+    summary:
+      'A Fonte Nobreak JFA é ideal para alimentar equipamentos que necessitam de fluxos de energia contínuos e sem variações, demanda muito comum no mercado de provedores.',
+    blocks: [
+      {
+        t: 'p',
+        h: 'A <strong>Fonte Nobreak JFA</strong> é ideal para alimentar equipamentos que necessitam de <strong>fluxos de energia contínuos e sem variações</strong>, demanda muito comum no mercado de provedores.',
+      },
+      {
+        t: 'p',
+        h: 'Além disso, a Fonte Nobreak protege os equipamentos contra os danos ocasionados por falta da tensão ou oscilações da rede elétrica.',
+      },
+      {
+        t: 'p',
+        h: 'Outro ponto positivo da Fonte Nobreak da JFA é a funcionalidade de concentrar o fornecimento de energia para vários equipamentos do sistema, facilitando a conexão em apenas um ponto, o que permite a otimização e a melhor organização do espaço.',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Teste Remoto de Autonomia do Banco de Baterias',
+          'Gerenciamento Via Protocolo SNMP (ambiente ZABBIX)',
+          'Sistema de Carga Inteligente (SCI) para a otimização da carga e prolongamento da vida útil das baterias',
+          'Funcionamento on-line (sem comutação)',
+        ],
+      },
+      {
+        t: 'p',
+        h: 'Elas podem ser encontradas nas tensões: 24V e 48V.',
+      },
+      {
+        t: 'h',
+        h: 'Características técnicas',
+      },
+      {
+        t: 'table',
+        html: '<table> <thead> <tr> <th>MODELO </th><th>TENSÃO DE SAÍDA</th><th>CORRENTE DE SAÍDA</th><th>CAR. INTELIGENTE CARGA/FLUTUAÇÃO</th><th>CORRENTE DE CARGA</th><th>POTÊNCIA TOTAL</th> </tr> </thead> <tbody> <tr> <td>24V. 20A. 20A</td><td>24V</td><td>20A</td><td>28,8/27,6V</td><td>20A</td><td>1056W</td> </tr> <tr> <td>-48V. 15A. 15A</td><td>-48V</td><td>15A</td><td>57,6/55,2V</td><td>15A</td><td>1584W</td> </tr> <tr> <td>-48V. 30A. 15A</td><td>-48V</td><td>30A</td><td>57,6/55,2V</td><td>15A</td><td>2304W</td> </tr> <tr> <td>-48V. 40A. 10A</td><td>-48V</td><td>40A</td><td>57,6/55,2V</td><td>10A</td><td>2496W</td> </tr> <tr> <td>+48V. 15A. 15A</td><td>+48V</td><td>15A</td><td>57,6/55,2V</td><td>15A</td><td>1584W</td> </tr> <tr> <td>+48V. 30A. 15A</td><td>+48V</td><td>30A</td><td>57,6/55,2V</td><td>15A</td><td>2304W</td> </tr> <tr> <td>+48V. 40A. 10A</td><td>+48V</td><td>40A</td><td>57,6/55,2V</td><td>10A</td><td>2496W</td> </tr> </tbody> </table>',
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2025/06/manual-jfa-fonte-nobreak-246A128A_reduzido.pdf',
+      },
+    ],
+    name: 'Fonte Nobreak 24V e 48V (SNMP)',
+    category: 'Fontes Nobreak',
+  },
+  'fonte-nobreak': {
+    images: ['/images/produtos/fonte-nobreak-1.webp'],
+    summary:
+      'A Fonte Nobreak da JFA garante energia ininterrupta para os equipamentos e os mantém ligados quando há falta de rede AC (rede elétrica 127V/220V).',
+    blocks: [
+      {
+        t: 'p',
+        h: 'A <strong>Fonte Nobreak da JFA</strong> garante energia ininterrupta para os equipamentos e os mantém ligados quando há falta de rede AC (rede elétrica 127V/220V). Além disso, protege contra possíveis danos oriundos da rede elétrica.',
+      },
+      {
+        t: 'p',
+        h: 'A <strong>Fonte Nobreak</strong> possui conector para ligação a um banco de baterias, que são <strong>carregadas continuamente com carga inteligente,</strong> além de um <strong>display para monitoramento da tensão e corrente</strong>.',
+      },
+      {
+        t: 'h',
+        h: 'Aplicações',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Rádios Wireless',
+          'Antenas de transmissão e recepção de internet',
+          'Controle de alarmes',
+          'Sistemas de emergência e segurança (CFTV)',
+          'Switch',
+          'Roteadores',
+        ],
+      },
+      {
+        t: 'p',
+        h: 'O <strong>Sistema de Carga Inteligente da Fonte Nobreak da JFA</strong> garante recargas mais eficientes, prolongando a vida útil das baterias.',
+      },
+      {
+        t: 'p',
+        h: 'Elas podem ser encontradas nas tensões: 12V 8A e 24V 6A.',
+      },
+      {
+        t: 'h',
+        h: 'Características técnicas',
+      },
+      {
+        t: 'table',
+        html: '<table> <thead> <tr> <th>MODELO</th><th>12V . 8A </th><th>24V . 6A</th> </tr> </thead> <tbody> <tr> <td>Entrada de rede</td><td colspan="2">86 a 240Vac</td> </tr> <tr> <td>Frequência de entrada</td><td colspan="2">50/60Hz</td> </tr> <tr> <td>Saída principal</td><td>12V</td><td>24V</td> </tr> <tr> <td>Potência</td><td>107W</td><td>160W</td> </tr> <tr> <td>Saída carregador</td><td>13,8 / 14,4V - (Carregador inteligente)</td><td>27,6 / 28,8V - (Carregador inteligente)</td> </tr> <tr> <td>Corrente máxima</td><td>8A (Compartilhada principal / carregador)</td><td>6A (Compartilhada principal / carregador)</td> </tr> <tr> <td>Rendimento</td><td colspan="2">>87%</td> </tr> <tr> <td>Comutação rede/bateria</td><td colspan="2">Funcionamento online (Sem comutação)</td> </tr> <tr> <td rowspan="3">Proteções</td><td colspan="2">Curto e excesso de carga nas saídas principais e carregamento</td> </tr> <tr> <td colspan="2">Surtos de tensão e fusível interno 5A de entrada</td> </tr> <tr> <td colspan="2">Subteção no modo bateria com desligamento em 10,5V</td> </tr> <tr> <td rowspan="3">Painel de medidas</td><td colspan="2">Tensão de saída</td> </tr> <tr> <td colspan="2">Tensão de bateria</td> </tr> <tr> <td colspan="2">Corrente total (Carregador + Principal)</td> </tr> <tr> <td>MTBF</td><td colspan="2">>60.000 horas (estimado)</td> </tr> <tr> <td>Ventilação</td><td colspan="2">Forçada</td> </tr> <tr> <td rowspan="2">Dimensões adaptáveis</td><td colspan="2">Rack - 19\'\' 1U</td> </tr> <tr> <td colspan="2">Bancada - 220X140X44(mm) com fixação por parafuso</td> </tr> <tr> <td>Peso</td><td colspan="2">1,120kg</td> </tr> </tbody> </table>',
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2021/07/manual-jfa-fonte-nobreak-246A128A.pdf',
+      },
+    ],
+    name: 'Fonte Nobreak 12V e 24V',
+    category: 'Fontes Nobreak',
+  },
+  'conversor-dc-dc-step-down-up': {
+    images: ['/images/produtos/conversor-dc-dc-step-down-up-1.webp'],
+    summary:
+      'O Conversor DC DC Isolado alimenta equipamentos com referenciais de terra invertidos e que estejam instalados em um mesmo gabinete, possibilitando o uso de apenas um…',
+    blocks: [
+      {
+        t: 'p',
+        h: 'O <strong>Conversor DC DC Isolado</strong> alimenta equipamentos com referenciais de terra invertidos e que estejam instalados em um mesmo gabinete, possibilitando o uso de apenas um banco de baterias para todo o sistema.',
+      },
+      {
+        t: 'p',
+        h: 'Outra aplicação do <strong>Conversor DC DC Isolado</strong> é reduzir (<strong>E4824</strong>) ou elevar (<strong>E2448</strong>) as tensões de saída.',
+      },
+      {
+        t: 'p',
+        h: 'O <strong>Conversor DC DC Isolado</strong> possui processador ARM 32 bits, proporcionando:',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Proteção contra excesso de temperatura e corrente de saída',
+          'Desligamento automático por baixa tensão na entrada (descargas profundas)',
+          'Display com mostrador de tensão e corrente',
+        ],
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2021/07/manual-jfa-conversor-dc-dc-step-down-E48.24S-step-up-24.48S-isolado.pdf',
+      },
+    ],
+  },
+  'patch-panel-poe-fast': {
+    images: ['/images/produtos/patch-panel-poe-fast-1.webp'],
+    summary:
+      'A Patch Panel Régua PoE Fast JFA permite que você controle equipamentos, com tráfego de dados e de energia no mesmo cabo UTP (PoE).',
+    blocks: [
+      {
+        t: 'p',
+        h: 'A <strong>Patch Panel Régua PoE Fast JFA</strong> permite que você <strong>controle equipamentos, com tráfego de dados e de energia</strong> no mesmo cabo UTP (PoE). Dessa forma, a quantidade de cabos usados na instalação é reduzida, facilitando a <strong>organização do espaço.</strong>',
+      },
+      {
+        t: 'p',
+        h: 'Use o <strong>Patch Panel Régua PoE Fast</strong> para alimentar aparelhos com tensão entre 10,8 Vdc e 52,8 Vdc — também é possível utilizar uma Fonte Nobreak em conjunto, garantindo assim o fornecimento contínuo de energia.',
+      },
+      {
+        t: 'p',
+        h: 'O sistema do Patch Panel JFA tem proteção individual e conectores RJ4 blindados.',
+      },
+      {
+        t: 'h',
+        h: 'Aplicações',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Equipamentos de telecomunicações',
+          'Pontos de acesso sem fio',
+          'Equipamentos de CFTV',
+          'Telefonia sobre IP (VOIP)',
+          'Redes industriais',
+        ],
+      },
+      {
+        t: 'p',
+        h: 'Elas podem ser encontradas com 5 ou 10 portas.',
+      },
+      {
+        t: 'h',
+        h: 'Características técnicas',
+      },
+      {
+        t: 'table',
+        html: '<table> <thead> <tr> <td></td><th>FAST 5 PORTAS</th><th>GIGA 5 PORTAS</th><th>FAST 10 PORTAS</th><th>GIGA 10 PORTAS</th><th>GIGA 12 PORTAS</th> </tr> </thead> <tbody> <tr> <td>Entrada Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Saída Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Portas LAN</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Portas POE</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Conexão RJ45</td><td colspan="5">Blindado</td> </tr> <tr> <td>Corrente por porta</td><td colspan="5">1A</td> </tr> <tr> <td>Proteção</td><td colspan="5">Curto circuito e sobrecarga</td> </tr> <tr> <td>Velocidade</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100/1000Mbps</td> </tr> <tr> <td>Peso em gramas</td><td>226</td><td>252</td><td>725</td><td>776</td><td>856</td> </tr> <tr> <td>Dimensões (LxAxP)</td><td>195x31x42mm</td><td>195x31x42mm</td><td>Rack 19U" 1U</td><td>Rack 19U" 1U</td><td>Rack 19" 1U</td> </tr> </tbody> </table>',
+      },
+    ],
+    docs: [],
+    name: 'Patch Panel Régua PoE FAST',
+    category: 'Telecom',
+  },
+  'patch-panel-poe-gerenciavel': {
+    images: ['/images/produtos/patch-panel-poe-gerenciavel-1.webp'],
+    summary:
+      'O Patch Panel Régua PoE Gerenciável JFA permite que você controle até 10 equipamentos on-line, com tráfego de dados e de energia no mesmo cabo UTP (PoE).',
+    blocks: [
+      {
+        t: 'p',
+        h: 'O <strong>Patch Panel Régua PoE Gerenciável JFA</strong> permite que você <strong>controle até 10 equipamentos on-line</strong>, com <strong>tráfego de dados e de energia</strong> no mesmo cabo UTP (PoE). Essa característica reduz a quantidade de cabos na instalação, facilitando a <strong>organização do espaço</strong> e a gestão dos equipamentos.',
+      },
+      {
+        t: 'p',
+        h: 'O <strong>Patch Panel Régua PoE Gerenciável JFA</strong> utiliza o protocolo SNMP e pode ser conectado a alguns softwares de gerenciamento de rede (OpManager e Zabbix – não inclusos). <strong>Sua interface WEB permite o monitoramento de todas as funcionalidades em tempo real.</strong>',
+      },
+      {
+        t: 'h',
+        h: 'Aplicações',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Equipamentos de telecomunicações',
+          'Pontos de acesso sem fio',
+          'Equipamentos de CFTV',
+          'Telefonia sobre IP (VOIP)',
+          'Redes industriais',
+        ],
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2021/07/manual-jfa-patch-panel-POE-10P-gerenciavel-RV03-1.pdf',
+      },
+    ],
+    name: 'Patch Panel Régua PoE Gerenciável',
+    category: 'Telecom',
+  },
+  'pdu-dc': {
+    images: ['/images/produtos/pdu-dc-1.webp'],
+    summary:
+      'A Unidade de Divisão de Energia PDU DC é um equipamento com a qualidade JFA pensado para a distribuição em painéis elétricos e racks DC.',
+    blocks: [
+      {
+        t: 'p',
+        h: 'A <strong>Unidade de Divisão de Energia PDU DC</strong> é um equipamento com a qualidade <strong>JFA</strong> pensado para a distribuição em painéis elétricos e racks DC.',
+      },
+      {
+        t: 'p',
+        h: 'Permitindo que uma entrada de tensão contínua possa ser distribuída através de quatro saídas, acionadas através de quatro disjuntores individuais, com proteção de corrente.',
+      },
+      {
+        t: 'p',
+        h: 'Com design compacto, nas dimensões de 1U (uma unidade de rack 19”), o produto oferece segurança e agilidade no seccionamento e operação dos equipamentos.',
+      },
+      {
+        t: 'p',
+        h: 'Outra característica da <strong>Unidade de Divisão de Energia PDU DC</strong> é que ele pode ser ligado a qualquer nível de tensão DC entre 10V e 60V e possui três leds indicadores de entrada DC, sendo 12V (entre 9 e 16V), 24V (entre 17 e 36V) e 48V (entre 37 e 60V).',
+      },
+      {
+        t: 'p',
+        h: 'Por fim, também há um LED indicativo de polo invertido e cada saída, ao ser acionada pelo disjuntor, acende outro LED informando que está energizada.',
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2021/12/manual-jfa-qdcc.pdf',
+      },
+    ],
+  },
+  'gerenciador-fonte-redundante': {
+    images: ['/images/produtos/gerenciador-fonte-redundante-1.webp'],
+    summary:
+      'O Gerenciador de Fontes Redundante da JFA é uma solução moderna para a operação de fontes nobreak com a utilização de apenas um banco de baterias e a possibilidade de…',
+    blocks: [
+      {
+        t: 'p',
+        h: 'O Gerenciador de Fontes Redundante da JFA é uma solução moderna para a operação de fontes nobreak com a utilização de apenas um banco de baterias e a possibilidade de utilização em dois modos: 2 fontes ligadas em paralelo ou 1 fonte ligada e a outra em redundância. Tudo com máxima segurança e eficiência para o seu provedor.',
+      },
+      {
+        t: 'p',
+        h: 'Ele possui dois modos de funcionamento e é programado para ser também gerenciado remotamente, via protocolo SNMP (Simple Network Management Protocol), em conjunto com softwares como o OpManager e o Zabbix (não inclusos).',
+      },
+      {
+        t: 'p',
+        h: 'Além disso, o GFR conta com a tecnologia exclusiva “sensor de porta aberta”, que permite saber se pessoas não autorizadas tiveram acesso ao rack.',
+      },
+      {
+        t: 'h',
+        h: 'Diferenciais',
+      },
+      {
+        t: 'ul',
+        items: [
+          'Gerenciável à distância, via protocolo SNMP e Web',
+          'Funcionamento ininterrupto, sem comutação',
+        ],
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2021/11/manual-jfa-gerenciador-de-fonte-redundante.pdf',
+      },
+    ],
+  },
+  'equalizador-balanceador-banco-baterias': {
+    images: ['/images/produtos/equalizador-balanceador-banco-baterias-1.webp'],
+    summary:
+      'O Equalizador Balanceador para Banco de Baterias da JFA Eletrônicos é utilizado para controlar a tensão de cada bateria durante seu carregamento.',
+    blocks: [
+      {
+        t: 'p',
+        h: 'O Equalizador Balanceador para Banco de Baterias da JFA Eletrônicos é utilizado para controlar a tensão de cada bateria durante seu carregamento.',
+      },
+      {
+        t: 'p',
+        h: 'Isso permite que todas as suas baterias sejam carregadas em uma mesma tensão. Consequentemente, a sua vida útil será mais longa.',
+      },
+      {
+        t: 'p',
+        h: 'A finalidade de um balanceador para banco de baterias é equalizar a diferença na tensão que ocorre durante os processos de carga e descarga de suas baterias.',
+      },
+      {
+        t: 'p',
+        h: 'Veja suas principais características:',
+      },
+      {
+        t: 'ul',
+        items: [
+          '1 equalizador para cada 2 baterias',
+          'Conexão para 48V (4 baterias de 12V em série)',
+          'Conexão para 24V (2 baterias de 12V em série)',
+          'Display de LEDs com indicadores de fluxo de corrente',
+        ],
+      },
+    ],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2022/08/manual-jfa-equalizador-balanceador-para-banco-de-baterias.pdf',
       },
     ],
   },
