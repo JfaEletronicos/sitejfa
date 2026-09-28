@@ -3,7 +3,14 @@
  * Usada por Representantes (prefixo "reps") e Suporte (prefixo "sup"); a
  * interatividade fica em behaviors/stateMap.js, que acha as peças pelos ids.
  */
-export default function StateMapSection({ prefix, anchorId, title, sub, children }) {
+export default function StateMapSection({
+  prefix,
+  anchorId,
+  title,
+  sub,
+  placeholder = 'Digite seu estado',
+  children,
+}) {
   return (
     <section className="reps" id={`${prefix}Section`}>
       <span className="jfa-anchor" id={anchorId} aria-hidden="true" />{' '}
@@ -50,7 +57,7 @@ export default function StateMapSection({ prefix, anchorId, title, sub, children
                 <input
                   type="text"
                   id={`${prefix}SearchInput`}
-                  placeholder="Digite seu estado"
+                  placeholder={placeholder}
                   autoComplete="off"
                   aria-label="Buscar estado"
                   aria-expanded="false"

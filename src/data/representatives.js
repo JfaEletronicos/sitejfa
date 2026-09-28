@@ -1,21 +1,13 @@
-/** Representantes comerciais por estado (mapa da Home e da página #/representantes). */
+/** Representantes comerciais por estado (mapa da Home e da página #/representantes), conforme a planilha "representante_JFA.csv". */
 export const REPRESENTATIVES = [
   {
-    /* AGN Representações: nome/estados confirmados pelo pedido do
-       usuário ("Verified state mapping to use as baseline"); telefone/
-       e-mail/endereço NÃO foram fornecidos e não foram inventados --
-       ver renderPanel() abaixo, que já lida com phones/address
-       ausentes (mesmo padrão de "comercial-jfa", que também não tem
-       address). BA é atendido tanto por AGN quanto por Comercial JFA
-       ao mesmo tempo -- ver stateToRepresentative.BA (array) logo
-       abaixo, pedido explícito: "Preserve the official relationship
-       rather than arbitrarily removing one." */
     id: 'agn-representacoes',
     name: 'AGN Representa\xE7\xF5es',
     states: ['BA', 'SE'],
     stateNames: ['Bahia', 'Sergipe'],
-    phones: [],
-    address: null,
+    phones: ['(75) 98105-1220'],
+    address: 'Rua Ot\xEDlia Conrado, 65, Cruz das Almas/BA, CEP 44380-000',
+    email: 'agnaldo.extremo@hotmail.com',
   },
   {
     id: 'al-representacoes',
@@ -25,6 +17,7 @@ export const REPRESENTATIVES = [
     phones: ['(81) 99740-8996', '(81) 98747-7445', '(81) 99218-1452'],
     address:
       'Rua Evaristo da Veiga, 217 sala 107, Ed. Torque Empresarial, Casa Amarela, Recife/PE, CEP 52070-100',
+    email: 'nildojmf@gmail.com',
   },
   {
     id: 'bac-representacoes',
@@ -45,14 +38,16 @@ export const REPRESENTATIVES = [
     ],
     phones: ['(47) 99668-3447', '(51) 99167-7754'],
     address: 'Rua Governador Jorge Lacerda, 1131, 2\xBA andar, Velha, Blumenau/SC, CEP 89.045-000',
+    email: 'bacrepresentacao@hotmail.com',
   },
   {
     id: 'comercial-jfa',
     name: 'Comercial JFA',
-    states: ['BA', 'SP'],
-    stateNames: ['Bahia', 'S\xE3o Paulo'],
+    states: ['SP'],
+    stateNames: ['S\xE3o Paulo'],
     phones: ['(31) 98389-5799'],
     address: null,
+    email: 'comercial@jfaeletronicos.com',
   },
   {
     id: 'gyn-representacoes',
@@ -61,6 +56,7 @@ export const REPRESENTATIVES = [
     stateNames: ['Distrito Federal', 'Goi\xE1s', 'Tocantins'],
     phones: ['(62) 98108-8746', '(62) 98415-0653'],
     address: 'Rua 11, Quadra 25, Lote 15, n\xBA 213, Vila Santa Helena, Goi\xE2nia/GO, CEP 74555-230',
+    email: 'andreluizrep@gmail.com',
   },
   {
     id: 'jhs-representacoes',
@@ -68,7 +64,8 @@ export const REPRESENTATIVES = [
     states: ['RJ'],
     stateNames: ['Rio de Janeiro'],
     phones: ['(24) 99934-4467'],
-    address: 'Rua da Limeira, 6, Parque Mambucaba, Angra dos Reis/RJ, CEP conforme cadastro atual',
+    address: 'Rua da Limeira, 6, Parque Mambucaba, Angra dos Reis/RJ, CEP 23955-385',
+    email: 'jhsrepresentacoes01@gmail.com',
   },
   {
     id: 'jla-representacoes',
@@ -77,6 +74,7 @@ export const REPRESENTATIVES = [
     stateNames: ['Esp\xEDrito Santo', 'Minas Gerais'],
     phones: ['(31) 36540-300', '(31) 99167-5767'],
     address: 'Avenida Bar\xE3o Homem de Melo, 4386, sala 1304, Estoril, Belo Horizonte/MG, CEP 30.494-270',
+    email: 'joseluiz.leandro@gmail.com',
   },
   {
     id: 'm-almeida-representacoes',
@@ -85,6 +83,7 @@ export const REPRESENTATIVES = [
     stateNames: ['Cear\xE1'],
     phones: ['(85) 98881-4264'],
     address: 'Rua Mario Studart, 453, Monte Castelo',
+    email: 'marcelo.almeida75@yahoo.com.br',
   },
   {
     id: 'maxsound-representacoes',
@@ -93,6 +92,7 @@ export const REPRESENTATIVES = [
     stateNames: ['Maranh\xE3o', 'Piau\xED'],
     phones: ['(86) 99448-2237'],
     address: 'Teresina/PI, CEP 64019-160',
+    email: 'Maxdistribuidora_ma@hotmail.com',
   },
 ];
 export const STATE_TO_REPRESENTATIVE = {
@@ -100,7 +100,7 @@ export const STATE_TO_REPRESENTATIVE = {
   AL: 'al-representacoes',
   AP: 'bac-representacoes',
   AM: 'bac-representacoes',
-  BA: ['agn-representacoes', 'comercial-jfa'],
+  BA: 'agn-representacoes',
   CE: 'm-almeida-representacoes',
   DF: 'gyn-representacoes',
   ES: 'jla-representacoes',
@@ -129,7 +129,7 @@ export const INTERNATIONAL_SALES = {
   name: 'Venda Internacional | International Sales',
   regions: ['Am\xE9rica do Norte', 'Am\xE9rica Latina', 'Europa', '\xC1sia'],
   contacts: [
-    { name: 'BAC Representa\xE7\xF5es', phone: '+55 47 99668-3447' },
-    { name: 'Cristiano Rodrigues', phone: '+55 31 98421-0991' },
+    { name: 'BAC Representa\xE7\xF5es', phone: '+55 47 99668-3447', email: 'bacrepresentacao@hotmail.com' },
+    { name: 'Cristiano Rodrigues', phone: '+55 31 98421-0991', email: 'export@jfaeletronicos.com' },
   ],
 };

@@ -25,7 +25,7 @@ export function ManualsPage() {
   return <DarkSlotPage id="manuaisView" slot="manuals" />;
 }
 
-/** Página #/suporte: mesmo mapa de Representantes, com os contatos de suporte técnico. */
+/** Página #/suporte: mesmo mapa de Representantes, com as assistências técnicas de cada estado. */
 export function SupportPage() {
   return (
     <div className="page-view dark-page" id="suporteView" hidden>
@@ -35,9 +35,10 @@ export function SupportPage() {
           prefix="sup"
           anchorId="suporte"
           title="Encontre o suporte técnico JFA."
-          sub="Escolha seu estado e fale com quem pode ajudar com o seu produto JFA."
+          sub="Escolha seu estado e encontre uma assistência técnica autorizada JFA perto de você."
+          placeholder="Digite seu estado ou cidade"
         >
-          <div className="reps-intl-wrap">
+          <div className="reps-intl-wrap sup-actions">
             <a
               className="reps-intl"
               id="supWhatsapp"
@@ -64,6 +65,30 @@ export function SupportPage() {
                 />
               </svg>
             </a>
+            <button
+              className="reps-intl"
+              id="supIntlToggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="supIntlPanel"
+            >
+              <svg className="reps-intl-globe" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.4" stroke="currentColor" strokeWidth="1.5" />
+                <ellipse cx="12" cy="12" rx="3.6" ry="8.4" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M3.6 12h16.8" stroke="currentColor" strokeWidth="1.5" />
+              </svg>{' '}
+              <span>Assistência internacional</span>{' '}
+              <svg className="reps-intl-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M9 5l7 7-7 7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <div className="reps-intl-panel" id="supIntlPanel" />
           </div>
         </StateMapSection>
       </div>

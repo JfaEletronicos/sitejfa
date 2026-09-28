@@ -204,6 +204,15 @@
   letter-spacing: 0.05em;
 }
 
+.reps-suggest-kind {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .reps-suggest-item:hover,
 .reps-suggest-item.is-active {
   background: rgba(255, 255, 255, 0.08);
@@ -647,6 +656,118 @@
 
 .reps-intl-contacts a:hover {
   color: #fff;
+}
+
+/* Suporte: lista de assistências técnicas do estado, com filtro por cidade */
+.sup-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.sup-city-filter {
+  display: block;
+  margin: 0 0 clamp(14px, 1.6vw, 18px);
+}
+
+.sup-city-filter select {
+  width: 100%;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(140, 190, 255, 0.28);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.sup-city-filter select option {
+  color: #0b1b3a;
+}
+
+.sup-list {
+  list-style: none;
+  margin: 0 0 clamp(18px, 2vw, 22px);
+  padding: 0;
+}
+
+.sup-item {
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sup-item:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.sup-item-name {
+  margin: 0 0 2px;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.sup-item-city {
+  display: block;
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
+}
+
+.sup-item-phones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0 0 8px;
+}
+
+.sup-item-address {
+  margin: 0 0 6px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.sup-item-email {
+  font-weight: 600;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  word-break: break-all;
+}
+
+.sup-item-email:hover {
+  color: #fff;
+}
+
+.sup-list-foot {
+  margin: 0 0 8px;
+  font-weight: 500;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sup-intl-meta {
+  display: block;
+  margin-top: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 980px) {
+  .sup-actions {
+    align-items: center;
+  }
 }
 
 @media (max-width: 980px) {

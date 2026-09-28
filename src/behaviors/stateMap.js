@@ -19,7 +19,11 @@ const PHONE_SVG =
  *   stateMap: Record<string, string|string[]>,
  *   fallbackId?: string,
  *   emptyText?: string,
- *   intl?: { name: string, regions: string[], contacts: Array<{ name: string, phone: string }> },
+ *   intl?: { name?: string, regions?: string[], contacts?: Array<{ name: string, phone: string, email?: string }>,
+ *     render?: () => string },
+ *   renderEntries?: (entries: object[], uf: string, helpers: object) => string|null,
+ *   onPanelRender?: (panel: HTMLElement, opts: { city?: string }) => void,
+ *   extraMatches?: (query: string) => Array<{ uf: string, name: string, city: string }>,
  *   onContact?: (entry: object, kind: string) => void,
  * }} cfg
  */
@@ -94,6 +98,13 @@ function createStateMap(ctx, cfg) {
     if (arr.length === 2) return arr.join(' e ');
     return arr.slice(0, -1).join(', ') + ' e ' + arr[arr.length - 1];
   };
+  // Telefones da planilha vêm com o hífen fora do lugar ("(31) 36540-300"): mostra no padrão.
+  const formatPhone = (raw) => {
+    const d = raw.replace(/\D/g, '');
+    if (d.length === 11) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+    if (d.length === 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+    return raw;
+  };
   const telHref = (raw) => {
     const digits = raw.replace(/[^\d]/g, '');
     return 'tel:+55' + digits;
@@ -139,7 +150,12 @@ function createStateMap(ctx, cfg) {
         entry.phones
           .map(
             (ph) =>
-              '<li><a class="reps-panel-phone" href="' + telHref(ph) + '">' + PHONE_SVG + ph + '</a></li>',
+              '<li><a class="reps-panel-phone" href="' +
+              telHref(ph) +
+              '">' +
+              PHONE_SVG +
+              formatPhone(ph) +
+              '</a></li>',
           )
           .join('') +
         '</ul>';
@@ -172,7 +188,7 @@ function createStateMap(ctx, cfg) {
     }
     return html;
   };
-  const renderPanel = (uf) => {
+  const renderPanel = (uf, opts = {}) => {
     const st = stateByUf[uf];
     const entries = getIdsForUf(uf)
       .map((id) => entriesById[id])
@@ -183,7 +199,13 @@ function createStateMap(ctx, cfg) {
       '<button class="reps-panel-back" type="button" data-panel-back><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Ver mapa completo</button>';
     html += '<span class="reps-panel-uf">' + uf + '</span>';
     html += '<h3 class="reps-panel-state">' + stateName + '</h3>';
-    if (entries.length === 1) {
+    const custom =
+      cfg.renderEntries && entries.length
+        ? cfg.renderEntries(entries, uf, { telHref, formatPhone, PHONE_SVG, ARROW_SVG })
+        : null;
+    if (custom) {
+      html += custom;
+    } else if (entries.length === 1) {
       html += buildEntryBlock(entries[0]);
     } else if (entries.length > 1) {
       html += entries
@@ -210,8 +232,9 @@ function createStateMap(ctx, cfg) {
     });
     const backBtn = panel.querySelector('[data-panel-back]');
     if (backBtn) on(backBtn, 'click', () => deselectState());
+    if (cfg.onPanelRender) cfg.onPanelRender(panel, opts);
   };
-  const selectState = (uf) => {
+  const selectState = (uf, opts = {}) => {
     if (!statePaths[uf]) return;
     selectedUf = uf;
     clearHighlight();
@@ -232,11 +255,11 @@ function createStateMap(ctx, cfg) {
       statePaths[uf].classList.add('is-empty-selected');
     }
     stage.classList.add('has-selection');
-    renderPanel(uf);
+    renderPanel(uf, opts);
     hideSuggestions();
     hideTooltip();
     const st = stateByUf[uf];
-    if (searchInput && st) searchInput.value = st.name;
+    if (searchInput && st) searchInput.value = opts.city ? opts.city + ' - ' + uf : st.name;
     const heading = panel.querySelector('.reps-panel-state');
     if (heading) {
       heading.setAttribute('tabindex', '-1');
@@ -301,6 +324,7 @@ function createStateMap(ctx, cfg) {
           s.uf +
           '</span>' +
           s.name +
+          (s.city ? '<span class="reps-suggest-kind">cidade</span>' : '') +
           '</div>',
       )
       .join('');
@@ -308,7 +332,7 @@ function createStateMap(ctx, cfg) {
     Array.from(suggestEl.querySelectorAll('.reps-suggest-item')).forEach((el, i) => {
       on(el, 'mousedown', (e) => {
         e.preventDefault();
-        selectState(matches[i].uf);
+        selectState(matches[i].uf, { city: matches[i].city });
       });
     });
   };
@@ -319,7 +343,8 @@ function createStateMap(ctx, cfg) {
     if (exactUf) return [exactUf];
     const starts = BRAZIL_STATES.filter((s) => normalize(s.name).startsWith(q));
     const contains = BRAZIL_STATES.filter((s) => starts.indexOf(s) === -1 && normalize(s.name).includes(q));
-    return starts.concat(contains).slice(0, 8);
+    const extra = cfg.extraMatches ? cfg.extraMatches(q) : [];
+    return starts.concat(contains).concat(extra).slice(0, 8);
   };
   if (searchInput) {
     on(searchInput, 'input', () => {
@@ -344,7 +369,8 @@ function createStateMap(ctx, cfg) {
         updateActiveSuggestion();
       } else if (e.key === 'Enter') {
         e.preventDefault();
-        selectState(currentMatches[activeSuggestIndex >= 0 ? activeSuggestIndex : 0].uf);
+        const m = currentMatches[activeSuggestIndex >= 0 ? activeSuggestIndex : 0];
+        selectState(m.uf, { city: m.city });
       } else if (e.key === 'Escape') {
         hideSuggestions();
       }
@@ -365,25 +391,28 @@ function createStateMap(ctx, cfg) {
         return;
       }
       if (!intlBuilt) {
-        intlPanel.innerHTML =
-          '<p class="reps-intl-regions">' +
-          intl.name +
-          ', atendemos: ' +
-          intl.regions.join(', ') +
-          '.</p><ul class="reps-intl-contacts">' +
-          intl.contacts
-            .map(
-              (c) =>
-                '<li>' +
-                c.name +
-                ': <a href="tel:' +
-                c.phone.replace(/[^\d+]/g, '') +
-                '">' +
-                c.phone +
-                '</a></li>',
-            )
-            .join('') +
-          '</ul>';
+        intlPanel.innerHTML = intl.render
+          ? intl.render()
+          : '<p class="reps-intl-regions">' +
+            intl.name +
+            ', atendemos: ' +
+            intl.regions.join(', ') +
+            '.</p><ul class="reps-intl-contacts">' +
+            intl.contacts
+              .map(
+                (c) =>
+                  '<li>' +
+                  c.name +
+                  ': <a href="tel:' +
+                  c.phone.replace(/[^\d+]/g, '') +
+                  '">' +
+                  c.phone +
+                  '</a>' +
+                  (c.email ? ' \xB7 <a href="mailto:' + c.email + '">' + c.email + '</a>' : '') +
+                  '</li>',
+              )
+              .join('') +
+            '</ul>';
         intlBuilt = true;
       }
       intlPanel.classList.add('is-open');
