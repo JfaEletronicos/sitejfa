@@ -11,9 +11,6 @@ export const PRODUCT_DETAILS = {
       '/images/produtos/fonte-storm-lithium-1.webp',
       '/images/produtos/fonte-storm-lithium-2.webp',
       '/images/produtos/fonte-storm-lithium-3.webp',
-      '/images/produtos/fonte-storm-lithium-4.webp',
-      '/images/produtos/fonte-storm-lithium-5.webp',
-      '/images/produtos/fonte-storm-lithium-6.webp',
     ],
     summary:
       'A Storm Lithium chega para expandir as possibilidades da linha Storm, oferecendo ainda mais tecnologia, inteligência e versatilidade.',
@@ -867,7 +864,6 @@ export const PRODUCT_DETAILS = {
       '/images/produtos/fonte-nobreak-snmp-1.webp',
       '/images/produtos/fonte-nobreak-snmp-2.webp',
       '/images/produtos/fonte-nobreak-snmp-3.webp',
-      '/images/produtos/fonte-nobreak-snmp-4.webp',
     ],
     summary:
       'A Fonte Nobreak JFA é ideal para alimentar equipamentos que necessitam de fluxos de energia contínuos e sem variações, demanda muito comum no mercado de provedores.',

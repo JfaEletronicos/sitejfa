@@ -160,7 +160,6 @@ function initRouter(ctx) {
               '/images/bateria_elitio_pro_12v8_50a.webp',
               '/images/bateria_elitio_pro_12v8_50a_a1.webp',
               '/images/bateria_elitio_pro_12v8_50a_a2.webp',
-              '/images/bateria_elitio_pro_12v8_50a_a3.webp',
               '/images/bateria_elitio_pro_12v8_50a_a4.webp',
             ],
             // Mesmo produto de PRODUCTS['bateria-litio-12v-50a'] (alias "E-Lítio Pro 12V 50A").
@@ -177,7 +176,6 @@ function initRouter(ctx) {
               'Gerenciamento BMS e conectividade Bluetooth para acompanhar a bateria de perto, com a estabilidade e a autonomia que sistemas de armazenamento de energia exigem.',
             images: [
               '/images/bateria_elitio_pro_12v8_100a.webp',
-              '/images/bateria_elitio_pro_12v8_100a_a1.webp',
               '/images/bateria_elitio_pro_12v8_100a_a2.webp',
               '/images/bateria_elitio_pro_12v8_100a_a3.webp',
             ],
@@ -257,7 +255,6 @@ function initRouter(ctx) {
         image: '/images/bateria_elitio_nautica_12v8_100a.webp',
         images: [
           '/images/bateria_elitio_nautica_12v8_100a.webp',
-          '/images/bateria_elitio_nautica_12v8_100a_a1.webp',
           '/images/bateria_elitio_nautica_12v8_100a_a2.webp',
           '/images/bateria_elitio_nautica_12v8_100a_a3.webp',
         ],
