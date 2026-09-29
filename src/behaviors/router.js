@@ -1473,7 +1473,8 @@ function initRouter(ctx) {
         }
       } else if (SECTION_PAGES[parts[0]] && SECTION_PAGES[parts[0]].view) {
         showView(parts[0]);
-        trackEvent('page_view', { view: parts[0] });
+        // Nome próprio: "page_view" é reservado no GA4 (a tag já conta as páginas).
+        trackEvent('section_page_view', { view: parts[0] });
       } else {
         showView('home');
       }
