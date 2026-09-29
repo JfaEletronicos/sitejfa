@@ -17,6 +17,31 @@ export function SectorCatalogPage() {
             <span className="catalog-filter-indicator" id="setorCatalogIndicator" aria-hidden="true" />
           </div>
         </div>
+        {/* Visualização: grade (padrão) ou lista. */}
+        <div
+          className="catalog-view-toggle"
+          id="setorCatalogViewToggle"
+          role="group"
+          aria-label={t('catalog.view')}
+        >
+          <button type="button" className="catalog-view-btn is-active" data-view="grid" aria-pressed="true">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
+            </svg>
+            <span>{t('catalog.viewGrid')}</span>
+          </button>
+          <button type="button" className="catalog-view-btn" data-view="list" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="4" y="15" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M11 7h9M11 17h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+            <span>{t('catalog.viewList')}</span>
+          </button>
+        </div>
         <div className="catalog-grid" id="setorCatalogGrid" />
       </section>
     </div>

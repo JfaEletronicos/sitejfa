@@ -96,6 +96,34 @@ function initSectorPages(ctx) {
     attr: 'groups',
   });
   bindFilterTrack(ctx, track, catalog);
+  // Visualização em grade ou lista (a escolha fica salva neste navegador).
+  const viewToggle = root.getElementById('setorCatalogViewToggle');
+  const setView = (view) => {
+    grid.classList.toggle('is-list', view === 'list');
+    if (viewToggle)
+      viewToggle.querySelectorAll('[data-view]').forEach((b) => {
+        const on = b.dataset.view === view;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+  };
+  try {
+    if (localStorage.getItem('jfa-catalog-view') === 'list') setView('list');
+  } catch {
+    /* sem armazenamento: começa em grade */
+  }
+  if (viewToggle)
+    on(viewToggle, 'click', (e) => {
+      const btn = e.target.closest('[data-view]');
+      if (!btn) return;
+      setView(btn.dataset.view);
+      try {
+        localStorage.setItem('jfa-catalog-view', btn.dataset.view);
+      } catch {
+        /* sem armazenamento: vale só nesta visita */
+      }
+      trackEvent('catalog_view_change', { view: btn.dataset.view });
+    });
   const buildProductCard = (p, groupKey, slug) => {
     const detail = PRODUCT_DETAILS[p.id];
     const a = document.createElement('a');

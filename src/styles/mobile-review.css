@@ -459,4 +459,41 @@
   #homeView .fronts-arrow {
     display: none !important;
   }
+
+  /* ---------- Categorias: 2 produtos por linha (grade) e lista compacta ---------- */
+  #setorCatalogGrid:not(.is-list) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #setorCatalogGrid:not(.is-list) .catalog-card {
+    padding: 10px;
+    border-radius: 14px;
+    gap: 6px;
+  }
+
+  #setorCatalogGrid .catalog-card-name {
+    font-size: 13.5px;
+    line-height: 1.25;
+  }
+
+  #setorCatalogGrid .catalog-card-meta {
+    font-size: 11px;
+  }
+
+  #setorCatalogGrid .catalog-card-cta {
+    zoom: 1;
+    font-size: 12px;
+  }
+
+  #setorCatalogGrid.is-list .catalog-card {
+    grid-template-columns: 84px 1fr;
+    column-gap: 12px;
+    text-align: left;
+    padding: 10px 12px 10px 10px;
+  }
+
+  .catalog-view-toggle {
+    justify-content: center;
+  }
 }

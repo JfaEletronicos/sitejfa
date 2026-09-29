@@ -452,3 +452,88 @@ a.catalog-card:hover .catalog-card-cta svg {
 .catalog-empty a:focus-visible {
   color: #fff;
 }
+
+/* Categorias: seletor de visualização (grade / lista) */
+.catalog-view-toggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 1120px;
+  margin: clamp(14px, 1.8vw, 20px) auto 0;
+}
+
+.catalog-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(230, 238, 255, 0.6);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(120, 170, 255, 0.18);
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.catalog-view-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.catalog-view-btn:hover,
+.catalog-view-btn:focus-visible {
+  color: #fff;
+  border-color: rgba(64, 150, 255, 0.5);
+}
+
+.catalog-view-btn.is-active {
+  color: #fff;
+  background: rgba(0, 104, 255, 0.22);
+  border-color: rgba(64, 150, 255, 0.6);
+}
+
+#setorCatalogView .catalog-view-toggle + .catalog-grid {
+  margin-top: 14px;
+}
+
+/* Modo lista: um produto por linha, foto à esquerda e textos à direita. */
+#setorCatalogGrid.is-list {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+#setorCatalogGrid.is-list .catalog-card {
+  display: grid;
+  grid-template-columns: clamp(84px, 8vw, 110px) 1fr;
+  column-gap: clamp(14px, 2vw, 24px);
+  row-gap: 4px;
+  align-items: center;
+  padding: 12px clamp(14px, 2vw, 20px) 12px 12px;
+}
+
+#setorCatalogGrid.is-list .catalog-card-media {
+  grid-row: 1 / span 6;
+  aspect-ratio: 1;
+  align-self: center;
+}
+
+#setorCatalogGrid.is-list .catalog-card-name {
+  font-size: clamp(15px, 1.1vw, 17px);
+}
+
+#setorCatalogGrid.is-list .catalog-card > :not(.catalog-card-media) {
+  grid-column: 2;
+}
+
+#setorCatalogGrid.is-list .catalog-card-cta {
+  margin-top: 2px;
+  padding-top: 0;
+}
