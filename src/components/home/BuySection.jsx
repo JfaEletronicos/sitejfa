@@ -54,7 +54,28 @@ export default function BuySection() {
           <span className="buy-card-title">Tecnologia JFA, agora na Shopee.</span>
           <p className="buy-card-body">Explore nosso catálogo e compre produtos JFA direto pela Shopee.</p>
           <span className="buy-card-arrow">
-            Ver catálogo na Shopee{' '}
+            Ver catálogo na <span className="buy-cta-name">Shopee</span>
+            {/* Celular: o logo da loja no lugar do nome, dentro do botão. */}
+            <span className="buy-cta-logo" aria-hidden="true">
+              <img
+                className="brand-logo is-on-dark"
+                src={SHOPEE_LOGO}
+                alt=""
+                width="96"
+                height="32"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                className="brand-logo is-on-light"
+                src={SHOPEE_LOGO_LIGHT}
+                alt=""
+                width="96"
+                height="32"
+                loading="lazy"
+                decoding="async"
+              />
+            </span>{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"
@@ -108,7 +129,28 @@ export default function BuySection() {
             Encontre nossas soluções e escolha o produto JFA ideal para o seu projeto.
           </p>
           <span className="buy-card-arrow">
-            Ver catálogo no Mercado Livre{' '}
+            Ver catálogo no <span className="buy-cta-name">Mercado Livre</span>
+            {/* Celular: o logo da loja no lugar do nome, dentro do botão. */}
+            <span className="buy-cta-logo" aria-hidden="true">
+              <img
+                className="brand-logo is-on-dark"
+                src={MERCADO_LIVRE_LOGO}
+                alt=""
+                width="126"
+                height="32"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                className="brand-logo is-on-light"
+                src={MERCADO_LIVRE_LOGO_LIGHT}
+                alt=""
+                width="126"
+                height="32"
+                loading="lazy"
+                decoding="async"
+              />
+            </span>{' '}
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h13M13 6l6 6-6 6"

@@ -342,3 +342,8 @@ a.buy-card:hover .buy-card-arrow svg,
   width: auto;
   height: clamp(24px, 2vw, 32px);
 }
+
+/* Logo da loja dentro do botão: só no celular (ver mobile-review.css). */
+.buy-cta-logo {
+  display: none;
+}
