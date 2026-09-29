@@ -74,6 +74,10 @@
   height: clamp(26px, 2.2vw, 34px);
 }
 
+.jfa-footer-logo .jfa-logo-img {
+  height: clamp(30px, 2.6vw, 40px);
+}
+
 .jfa-footer-logo .jfa-logo-word {
   font-size: clamp(16px, 1.5vw, 22px);
 }

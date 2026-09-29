@@ -1,6 +1,23 @@
 import { searchCatalog } from '../lib/search';
 import { trackEvent } from '../lib/analytics';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS as PT_PRODUCTS } from '../data/products';
+import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../data/exportProducts';
+import { t, tf, pick, IS_EXPORT } from '../i18n';
+
+// Exportação (EN/ES): só os manuais dos produtos de exportação, com as linhas de
+// exportação como abas (cada aba tem uma categoria só, então a lista abre direto).
+const PRODUCTS = IS_EXPORT
+  ? EXPORT_PRODUCTS.map((p) => ({
+      id: p.id,
+      name: pick(p.name),
+      lines: [p.group],
+      category: pick(EXPORT_GROUPS.find((g) => g.key === p.group).label),
+      aliases: [p.name.en, p.name.es, pick(p.category)],
+      meta: pick(p.category),
+      status: 'current',
+      manualUrl: p.manualUrl,
+    }))
+  : PT_PRODUCTS;
 
 /**
  * Manuais: busca, abas por linha/categoria e lista de downloads.
@@ -22,29 +39,33 @@ function initManuals(ctx) {
     const showMoreBtn = root.getElementById('manualsShowMore');
     const announceEl = root.getElementById('manualsAnnounce');
     if (!manualsSection || !searchInput || !resultsEl) return;
-    const RELATED_DOCS = {
-      'fonte-carregador-bob-storm': [
-        {
-          label: 'Esquema de liga\xE7\xE3o | Modo Mem\xF3ria',
-          filename: 'esquema-ligacao-bob-storm.pdf',
-          url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2022/07/esquema-ligacao-bob-storm-modo-memoria.pdf',
-        },
-      ],
-      'fonte-carregador-storm': [
-        {
-          label: 'Bitola m\xEDnima dos cabos',
-          filename: 'bitola-cabos-storm.jpg',
-          url: 'https://images.weserv.nl/?output=webp&url=https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2023/11/tamanho-bitola-linha-storm-jfa-1.jpg',
-        },
-      ],
-    };
-    const LINE_LABELS = { automotivo: 'Automotivo', energia: 'Energia', parts: 'Parts', moov: 'Moov' };
+    const RELATED_DOCS = IS_EXPORT
+      ? {}
+      : {
+          'fonte-carregador-bob-storm': [
+            {
+              label: 'Esquema de liga\xE7\xE3o | Modo Mem\xF3ria',
+              filename: 'esquema-ligacao-bob-storm.pdf',
+              url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2022/07/esquema-ligacao-bob-storm-modo-memoria.pdf',
+            },
+          ],
+          'fonte-carregador-storm': [
+            {
+              label: 'Bitola m\xEDnima dos cabos',
+              filename: 'bitola-cabos-storm.jpg',
+              url: 'https://images.weserv.nl/?output=webp&url=https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2023/11/tamanho-bitola-linha-storm-jfa-1.jpg',
+            },
+          ],
+        };
+    const LINE_LABELS = IS_EXPORT
+      ? Object.fromEntries(EXPORT_GROUPS.map((g) => [g.key, pick(g.label)]))
+      : { automotivo: 'Automotivo', energia: 'Energia', parts: 'Parts', moov: 'Moov' };
     const RESULTS_CAP = 7;
     const productsById = {};
     PRODUCTS.forEach((p) => {
       productsById[p.id] = p;
     });
-    const runSearch = searchCatalog;
+    const runSearch = (q) => searchCatalog(q, PRODUCTS);
     let state = { query: '', showAll: false, activeIndex: -1 };
     let manualsRevealArmed = false;
     const escapeAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -57,7 +78,10 @@ function initManuals(ctx) {
     const lineLabel = (p) => p.lines.map((l) => LINE_LABELS[l] || l).join('/');
     const buildRow = (p, idx) => {
       const related = RELATED_DOCS[p.id];
-      const tag = p.status === 'discontinued' ? '<span class="manuals-result-tag">Fora de linha</span>' : '';
+      const tag =
+        p.status === 'discontinued'
+          ? '<span class="manuals-result-tag">' + t('manuals.discontinued') + '</span>'
+          : '';
       let html =
         '<div class="manuals-result" data-idx="' +
         idx +
@@ -67,16 +91,18 @@ function initManuals(ctx) {
         escapeAttr(p.manualUrl) +
         '" download="manual-jfa-' +
         p.id +
-        '.pdf" target="_blank" rel="noopener" aria-label="Baixar manual ' +
+        '.pdf" target="_blank" rel="noopener" aria-label="' +
+        escapeAttr(t('manuals.downloadAria')) +
+        ' ' +
         escapeAttr(p.name) +
         '"><span class="manuals-result-main"><span class="manuals-result-name">' +
         p.name +
         tag +
         '</span><span class="manuals-result-meta">' +
-        lineLabel(p) +
-        ' \u2022 ' +
-        p.category +
-        '</span></span><span class="manuals-result-dl"><span class="manuals-result-dl-label">Baixar manual</span>' +
+        (p.meta || lineLabel(p) + ' \u2022 ' + p.category) +
+        '</span></span><span class="manuals-result-dl"><span class="manuals-result-dl-label">' +
+        t('manuals.download') +
+        '</span>' +
         dlIconSvg +
         '</span></a>';
       if (related && related.length) {
@@ -119,7 +145,7 @@ function initManuals(ctx) {
           const row = a.closest('.manuals-result');
           const p = productsById[row ? row.getAttribute('data-id') : ''];
           if (!p) return;
-          announce('Download de ' + p.name + ' iniciado.');
+          announce(tf('manuals.started', { name: p.name }));
           trackEvent('manual_download', {
             product_name: p.name,
             category: p.category,
@@ -130,8 +156,9 @@ function initManuals(ctx) {
           if (dl && label) {
             const prevHtml = dl.innerHTML;
             dl.classList.add('is-done');
-            label.textContent = 'Download iniciado';
-            dl.innerHTML = '<span class="manuals-result-dl-label">Download iniciado</span>' + checkIconSvg;
+            label.textContent = t('manuals.startedShort');
+            dl.innerHTML =
+              '<span class="manuals-result-dl-label">' + t('manuals.startedShort') + '</span>' + checkIconSvg;
             setTimeout(() => {
               dl.classList.remove('is-done');
               dl.innerHTML = prevHtml;
@@ -165,7 +192,7 @@ function initManuals(ctx) {
         return;
       }
       const full = runSearch(state.query);
-      resultsLabel.textContent = 'Resultados';
+      resultsLabel.textContent = t('manuals.results');
       resultsLabel.hidden = false;
       const visible = state.showAll ? full : full.slice(0, RESULTS_CAP);
       resultsEl.innerHTML = visible.map((p, i) => buildRow(p, i)).join('');
@@ -225,11 +252,11 @@ function initManuals(ctx) {
     const buildTabPanelHtml = (line, category) => {
       const { byCategory, orderedCats } = getLineCategories(line);
       if (!orderedCats.length) {
-        return '<p class="manuals-tab-empty">Novos manuais ser\xE3o disponibilizados em breve.</p>';
+        return '<p class="manuals-tab-empty">' + t('manuals.soon') + '</p>';
       }
       const cats = category ? orderedCats.filter((c) => c === category) : orderedCats;
       if (!cats.length) {
-        return '<p class="manuals-tab-empty">Novos manuais ser\xE3o disponibilizados em breve.</p>';
+        return '<p class="manuals-tab-empty">' + t('manuals.soon') + '</p>';
       }
       return cats
         .map((cat) => {
@@ -284,7 +311,9 @@ function initManuals(ctx) {
         (isAllActive ? ' is-active' : '') +
         '" type="button" role="tab" aria-selected="' +
         (isAllActive ? 'true' : 'false') +
-        '">Todas</button>';
+        '">' +
+        t('manuals.allCategories') +
+        '</button>';
       categoryTabsEl.innerHTML = catBtns + allBtn;
       Array.from(categoryTabsEl.querySelectorAll('.manuals-category-tab')).forEach((btn) => {
         on(btn, 'click', () => {
@@ -316,7 +345,7 @@ function initManuals(ctx) {
         tabPanelEl.innerHTML = '';
         tabPanelEl.classList.remove('is-filtered');
         if (manualsTabPrompt) {
-          manualsTabPrompt.textContent = 'Escolha uma categoria acima para ver os manuais dispon\xEDveis.';
+          manualsTabPrompt.textContent = t('manuals.pickCategory');
           manualsTabPrompt.hidden = false;
         }
         return;

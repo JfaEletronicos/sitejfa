@@ -376,6 +376,12 @@ html[data-theme='light'] .brand-logo.is-on-light:not([data-theme-keep] .brand-lo
   flex: none;
 }
 
+.jfa-logo-img {
+  display: block;
+  width: auto;
+  height: clamp(24px, 2vw, 32px);
+}
+
 .jfa-logo-word {
   font-weight: 900;
   font-size: clamp(13px, 1.15vw, 18px);

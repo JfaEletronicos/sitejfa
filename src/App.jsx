@@ -19,7 +19,6 @@ import MoovPage from './components/pages/MoovPage';
 import PartsPage from './components/pages/PartsPage';
 import { initPageBehaviors } from './behaviors';
 import { SHOW_MOOV, SHOW_PARTS } from './data/visibility';
-import ExportHome from './components/home/ExportHome';
 import { IS_EXPORT } from './i18n';
 
 export default function App() {
@@ -28,8 +27,9 @@ export default function App() {
   // renderizado e desfeitos por completo ao desmontar.
   useEffect(() => initPageBehaviors(), []);
 
-  // Inglês/Espanhol: visualização de exportação (Hero, catálogo de exportação,
-  // manuais e vendas internacionais, com página própria de cada produto).
+  // Inglês/Espanhol: visualização de exportação com as mesmas seções do site em
+  // português (Hero, acesso rápido, áreas, soluções e manuais), só com os
+  // produtos de exportação, e página própria de cada produto.
   if (IS_EXPORT) {
     return (
       <div className="jfa-page" id="jfaPage">
@@ -37,7 +37,10 @@ export default function App() {
         <Header />
         <div id="homeView">
           <Hero />
-          <ExportHome />
+          <QuickAccess />
+          <Fronts />
+          <Products />
+          <DarkExperience />
         </div>
         {/* O roteador espera as views de bateria no documento (ficam sempre escondidas aqui). */}
         <BatteriesPage />

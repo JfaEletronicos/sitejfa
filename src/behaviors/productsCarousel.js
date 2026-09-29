@@ -44,7 +44,10 @@ function initProductsCarousel(ctx) {
   categoryPills.forEach((p) => {
     on(p, 'click', () => setProductsCategory(p.getAttribute('data-category')));
   });
-  const uniqueCards = cards.slice(0, 6);
+  // Quantidade de cards únicos (o resto são cópias para o loop infinito): vem de
+  // data-unique no trilho; o padrão é o do site em português (5).
+  const uniqueCount = track ? parseInt(track.dataset.unique || '5', 10) : 5;
+  const uniqueCards = cards.slice(0, uniqueCount + 1);
   if ('IntersectionObserver' in window) {
     const headObs = new IntersectionObserver(
       (entries) => {
@@ -70,8 +73,7 @@ function initProductsCarousel(ctx) {
     if (productsHead) productsHead.classList.add('is-visible');
     cards.forEach((c) => c.classList.add('is-visible'));
   }
-  if (viewport && track && cards.length >= 10) {
-    const uniqueCount = 5;
+  if (viewport && track && cards.length >= uniqueCount * 2) {
     let singleSetWidth = 0;
     let posX = 0;
     let dragging = false;

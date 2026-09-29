@@ -524,3 +524,20 @@
 .products-certs-below {
   display: none;
 }
+
+/* Exportação (EN/ES): cards dos produtos de exportação e filtro pelas linhas. */
+.card-export {
+  aspect-ratio: 1.2 / 1;
+}
+
+.carousel-track[data-active-line='amplifiers'] .p-card:not([data-line~='amplifiers']),
+.carousel-track[data-active-line='power'] .p-card:not([data-line~='power']),
+.carousel-track[data-active-line='controls'] .p-card:not([data-line~='controls']),
+.carousel-track[data-active-line='accessories'] .p-card:not([data-line~='accessories']) {
+  opacity: 0.32;
+  filter: blur(4px) saturate(75%);
+  transition:
+    opacity 0.35s ease,
+    filter 0.35s ease,
+    transform 0.35s ease;
+}

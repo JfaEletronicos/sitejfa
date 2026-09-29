@@ -52,48 +52,150 @@ export const STRINGS = {
   'hero.ctaManual': { pt: 'Encontrar um manual', en: 'Find a manual', es: 'Buscar un manual' },
   'hero.ctaBuy': { pt: 'Onde comprar', en: 'International sales', es: 'Ventas internacionales' },
 
+  // Acesso rápido
+  'qa.title': { pt: 'O que você procura?', en: 'What are you looking for?', es: '¿Qué está buscando?' },
+  'qa.products': { pt: 'Produtos', en: 'Products', es: 'Productos' },
+  'qa.productsSub': {
+    pt: 'Encontre por linha ou aplicação',
+    en: 'Browse our export lines',
+    es: 'Vea nuestras líneas de exportación',
+  },
+  'qa.manuals': { pt: 'Manuais', en: 'Manuals', es: 'Manuales' },
+  'qa.manualsSub': {
+    pt: 'Busque por nome, modelo ou código',
+    en: 'Search by name or model',
+    es: 'Busque por nombre o modelo',
+  },
+  'qa.talk': { pt: 'Falar com a JFA', en: 'Talk to JFA', es: 'Hablar con JFA' },
+  'qa.talkSub': {
+    pt: 'Atendimento pelo WhatsApp',
+    en: 'International sales on WhatsApp',
+    es: 'Ventas internacionales por WhatsApp',
+  },
+
+  // Frentes (exportação)
+  'fronts.eyebrow': {
+    pt: '{n} frentes. {n} caminhos. Uma só JFA.',
+    en: '{n} lines. {n} paths. One JFA.',
+    es: '{n} líneas. {n} caminos. Una sola JFA.',
+  },
+  'fronts.title': { pt: 'Conheça as áreas da', en: 'Discover the areas of', es: 'Conozca las áreas de' },
+  'fronts.sub': {
+    pt: 'Cada frente segue seu próprio caminho.',
+    en: 'Each line brings JFA technology and know-how to a different part of your car audio project.',
+    es: 'Cada línea lleva la tecnología JFA a una parte distinta de su proyecto de audio automotriz.',
+  },
+  'fronts.cta': { pt: 'Conheça a linha', en: 'See the line', es: 'Ver la línea' },
+  'fronts.prev': { pt: 'Frente anterior', en: 'Previous line', es: 'Línea anterior' },
+  'fronts.next': { pt: 'Próxima frente', en: 'Next line', es: 'Línea siguiente' },
+  'fronts.nav': { pt: 'Navegação entre frentes JFA', en: 'JFA lines', es: 'Líneas JFA' },
+
+  // Descubra as soluções (exportação)
+  // Título: [antes] JFA [depois]
+  'products.titleA': { pt: 'Descubra as soluções', en: 'Discover', es: 'Descubra las soluciones' },
+  'products.titleB': { pt: '', en: ' solutions', es: '' },
+  'products.sub': {
+    pt: '',
+    en: 'Amplifiers, power supplies, remote controls and accessories developed by JFA for car audio projects around the world.',
+    es: 'Amplificadores, fuentes, controles remotos y accesorios desarrollados por JFA para proyectos de audio automotriz en todo el mundo.',
+  },
+  'products.endcap': {
+    pt: 'Encontrou o que procura?',
+    en: 'Found what you need?',
+    es: '¿Encontró lo que busca?',
+  },
+  'products.endcapLink': {
+    pt: 'Veja onde comprar',
+    en: 'Talk to our export team',
+    es: 'Hable con exportación',
+  },
+
+  // Manuais
+  'manuals.eyebrow': { pt: 'Manuais', en: 'Manuals', es: 'Manuales' },
+  'manuals.title': {
+    pt: 'Encontre o manual que precisa.',
+    en: 'Find the manual you need.',
+    es: 'Encuentre el manual que necesita.',
+  },
+  'manuals.sub': {
+    pt: 'Escolha uma área e vá direto ao produto, ou pesquise pelo nome, modelo ou linha a qualquer momento.',
+    en: 'Choose a line and go straight to the product, or search by name or model at any time.',
+    es: 'Elija una línea y vaya directo al producto, o busque por nombre o modelo en cualquier momento.',
+  },
+  'manuals.searchLabel': {
+    pt: 'Buscar manual por produto, modelo ou linha',
+    en: 'Search manuals by product or model',
+    es: 'Buscar manuales por producto o modelo',
+  },
+  'manuals.placeholder': {
+    pt: 'Qual produto você procura?',
+    en: 'Which product are you looking for?',
+    es: '¿Qué producto busca?',
+  },
+  'manuals.hint': {
+    pt: 'Pesquise por nome, modelo ou linha: a busca funciona independente da linha selecionada abaixo.',
+    en: 'Search by name or model: the search works regardless of the line selected below.',
+    es: 'Busque por nombre o modelo: la búsqueda funciona sin importar la línea seleccionada abajo.',
+  },
+  'manuals.tabsAria': {
+    pt: 'Navegar manuais por linha',
+    en: 'Browse manuals by line',
+    es: 'Ver manuales por línea',
+  },
+  'manuals.categoryAria': {
+    pt: 'Filtrar por categoria',
+    en: 'Filter by category',
+    es: 'Filtrar por categoría',
+  },
+  'manuals.prompt': {
+    pt: 'Escolha uma área acima para ver os manuais disponíveis.',
+    en: 'Choose a line above to see the available manuals.',
+    es: 'Elija una línea arriba para ver los manuales disponibles.',
+  },
+  'manuals.pickCategory': {
+    pt: 'Escolha uma categoria acima para ver os manuais disponíveis.',
+    en: 'Choose a category above to see the available manuals.',
+    es: 'Elija una categoría arriba para ver los manuales disponibles.',
+  },
+  'manuals.results': { pt: 'Resultados', en: 'Results', es: 'Resultados' },
+  'manuals.resultsAria': { pt: 'Resultados de manuais', en: 'Manual results', es: 'Resultados de manuales' },
+  'manuals.empty1': {
+    pt: 'Nenhum manual encontrado.',
+    en: 'No manual found.',
+    es: 'No se encontró ningún manual.',
+  },
+  'manuals.empty2': {
+    pt: 'Tente pesquisar por outro nome ou modelo.',
+    en: 'Try searching for another name or model.',
+    es: 'Intente buscar otro nombre o modelo.',
+  },
+  'manuals.showMore': {
+    pt: 'Mostrar todos os resultados →',
+    en: 'Show all results →',
+    es: 'Mostrar todos los resultados →',
+  },
+  'manuals.download': { pt: 'Baixar manual', en: 'Download manual', es: 'Descargar manual' },
+  'manuals.downloadAria': { pt: 'Baixar manual', en: 'Download manual', es: 'Descargar manual' },
+  'manuals.started': {
+    pt: 'Download de {name} iniciado.',
+    en: '{name} download started.',
+    es: 'Descarga de {name} iniciada.',
+  },
+  'manuals.startedShort': { pt: 'Download iniciado', en: 'Download started', es: 'Descarga iniciada' },
+  'manuals.discontinued': { pt: 'Fora de linha', en: 'Discontinued', es: 'Descontinuado' },
+  'manuals.allCategories': { pt: 'Todas', en: 'All', es: 'Todas' },
+  'manuals.soon': {
+    pt: 'Novos manuais serão disponibilizados em breve.',
+    en: 'New manuals will be available soon.',
+    es: 'Pronto habrá nuevos manuales disponibles.',
+  },
+
   // Home de exportação
-  'export.catalogEyebrow': { pt: 'Produtos', en: 'Export catalog', es: 'Catálogo de exportación' },
   'export.catalogTitle': {
     pt: 'Tecnologia para o seu projeto automotivo.',
     en: 'Technology for your car audio project.',
     es: 'Tecnología para su proyecto de audio automotriz.',
   },
-  'export.catalogSub': {
-    pt: 'Produtos JFA disponíveis para exportação.',
-    en: 'JFA products available for export: amplifiers, power supplies, remote controls and accessories.',
-    es: 'Productos JFA disponibles para exportación: amplificadores, fuentes, controles remotos y accesorios.',
-  },
-  'export.seeAll': { pt: 'Ver todos os produtos', en: 'See all products', es: 'Ver todos los productos' },
-  'export.manualsEyebrow': { pt: 'Manuais', en: 'Manuals', es: 'Manuales' },
-  'export.manualsTitle': {
-    pt: 'Encontre o manual que precisa.',
-    en: 'Find the manual you need.',
-    es: 'Encuentre el manual que necesita.',
-  },
-  'export.manualsSub': {
-    pt: 'Baixe o manual de cada produto.',
-    en: 'Download the manual for each export product (PDF).',
-    es: 'Descargue el manual de cada producto de exportación (PDF).',
-  },
-  'export.download': { pt: 'Baixar', en: 'Download', es: 'Descargar' },
-  'export.contactEyebrow': {
-    pt: 'Vendas internacionais',
-    en: 'International sales',
-    es: 'Ventas internacionales',
-  },
-  'export.contactTitle': {
-    pt: 'Fale com a equipe de exportação.',
-    en: 'Talk to our export team.',
-    es: 'Hable con nuestro equipo de exportación.',
-  },
-  'export.contactSub': {
-    pt: 'Atendemos distribuidores na América do Norte, América Latina, Europa e Ásia.',
-    en: 'We serve distributors in North America, Latin America, Europe and Asia.',
-    es: 'Atendemos distribuidores en América del Norte, América Latina, Europa y Asia.',
-  },
-  'export.whatsapp': { pt: 'WhatsApp', en: 'WhatsApp', es: 'WhatsApp' },
-  'export.email': { pt: 'E-mail', en: 'Email', es: 'Correo' },
   'export.whatsappText': {
     pt: 'Olá! Vim pelo site da JFA e quero falar sobre vendas internacionais.',
     en: 'Hello! I found JFA on the website and would like to talk about international sales.',

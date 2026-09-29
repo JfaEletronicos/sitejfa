@@ -1,15 +1,9 @@
 import { WHATSAPP_FLOAT_URL } from '../../data/links';
-import { INTERNATIONAL_SALES } from '../../data/representatives';
 import { t, IS_EXPORT } from '../../i18n';
+import { exportWhatsappUrl } from '../../data/exportContact';
 
 // Exportação (EN/ES): o botão abre o WhatsApp de vendas internacionais.
-const EXPORT_CONTACT = INTERNATIONAL_SALES.contacts[INTERNATIONAL_SALES.contacts.length - 1];
-const FLOAT_URL = IS_EXPORT
-  ? 'https://api.whatsapp.com/send?phone=' +
-    EXPORT_CONTACT.phone.replace(/\D/g, '') +
-    '&text=' +
-    encodeURIComponent(t('export.whatsappText'))
-  : WHATSAPP_FLOAT_URL;
+const FLOAT_URL = IS_EXPORT ? exportWhatsappUrl() : WHATSAPP_FLOAT_URL;
 
 /** Botão flutuante do WhatsApp, fixo no canto inferior direito em todas as páginas. */
 export default function WhatsAppFloat() {

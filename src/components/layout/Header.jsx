@@ -8,6 +8,7 @@ import {
 } from '../../data/links';
 import { SECTOR_MENU, SECTOR_ICONS } from '../../data/sectors';
 import { t, LANG, LANGS, IS_EXPORT } from '../../i18n';
+import { exportWhatsappUrl } from '../../data/exportContact';
 
 const CURRENT_LANG = LANGS.find((l) => l.code === LANG) || LANGS[0];
 
@@ -18,8 +19,21 @@ export default function Header() {
       <header className="jfa-header" id="jfaHeader">
         <nav className="jfa-nav-left" aria-label={t('nav.main')}>
           <a className="jfa-logo jfa-logo-link" id="navHome" href="#home" aria-label={t('nav.home')}>
-            <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
-            <span className="jfa-logo-word">JFA</span>
+            {/* Logo oficial (imagem): texto branco no escuro, texto preto no modo claro. */}
+            <img
+              className="jfa-logo-img brand-logo is-on-dark"
+              src="/images/jfa_logo_white.webp"
+              alt="JFA"
+              width="720"
+              height="242"
+            />
+            <img
+              className="jfa-logo-img brand-logo is-on-light"
+              src="/images/jfa_logo_dark.webp"
+              alt=""
+              width="720"
+              height="241"
+            />
           </a>
           {IS_EXPORT ? (
             // Exportação (EN/ES): um catálogo só, direto na página dele.
@@ -79,7 +93,7 @@ export default function Header() {
               <a href="#manuais" data-header-scroll="manuais">
                 {t('nav.manuals')}
               </a>{' '}
-              <a href="#contato" data-header-scroll="contato">
+              <a href={exportWhatsappUrl()} target="_blank" rel="noopener noreferrer">
                 {t('nav.contact')}
               </a>{' '}
             </>

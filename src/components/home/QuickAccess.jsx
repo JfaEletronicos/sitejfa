@@ -1,9 +1,15 @@
+import { t, IS_EXPORT } from '../../i18n';
+import { exportWhatsappUrl } from '../../data/exportContact';
+
+const PT_WHATSAPP_URL =
+  'https://api.whatsapp.com/send?phone=553125336100&text=Ol%C3%A1%2C+quero+saber+mais+sobre+os+produtos+Automotivo%21';
+
 /** Atalhos "O que você procura?". */
 export default function QuickAccess() {
   return (
     <section className="quick-access" id="quickAccessSection">
       <div className="quick-access-inner">
-        <h2 className="quick-access-title">O que você procura?</h2>
+        <h2 className="quick-access-title">{t('qa.title')}</h2>
         <div className="quick-access-grid">
           <a className="quick-access-item" href="#solucoes" data-header-scroll="solucoes">
             <span className="quick-access-icon" aria-hidden="true">
@@ -23,8 +29,8 @@ export default function QuickAccess() {
               </svg>
             </span>{' '}
             <span className="quick-access-text">
-              <span className="quick-access-item-title">Produtos</span>{' '}
-              <span className="quick-access-item-sub">Encontre por linha ou aplicação</span>
+              <span className="quick-access-item-title">{t('qa.products')}</span>{' '}
+              <span className="quick-access-item-sub">{t('qa.productsSub')}</span>
             </span>
           </a>{' '}
           <a className="quick-access-item" href="#manuais" data-header-scroll="manuais">
@@ -41,31 +47,34 @@ export default function QuickAccess() {
               </svg>
             </span>{' '}
             <span className="quick-access-text">
-              <span className="quick-access-item-title">Manuais</span>{' '}
-              <span className="quick-access-item-sub">Busque por nome, modelo ou código</span>
+              <span className="quick-access-item-title">{t('qa.manuals')}</span>{' '}
+              <span className="quick-access-item-sub">{t('qa.manualsSub')}</span>
             </span>
           </a>{' '}
-          <a className="quick-access-item" href="#representantes" data-header-scroll="representantes">
-            <span className="quick-access-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 21s7-7.2 7-12a7 7 0 10-14 0c0 4.8 7 12 7 12z"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
-                />
-                <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.8" />
-              </svg>
-            </span>{' '}
-            <span className="quick-access-text">
-              <span className="quick-access-item-title">Representantes</span>{' '}
-              <span className="quick-access-item-sub">Encontre atendimento na sua região</span>
-            </span>
-          </a>{' '}
+          {/* Representantes: só no site em português (a exportação não tem o mapa). */}
+          {!IS_EXPORT && (
+            <a className="quick-access-item" href="#representantes" data-header-scroll="representantes">
+              <span className="quick-access-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 21s7-7.2 7-12a7 7 0 10-14 0c0 4.8 7 12 7 12z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+              </span>{' '}
+              <span className="quick-access-text">
+                <span className="quick-access-item-title">Representantes</span>{' '}
+                <span className="quick-access-item-sub">Encontre atendimento na sua região</span>
+              </span>
+            </a>
+          )}{' '}
           <a
             className="quick-access-item quick-access-whatsapp"
             id="quickAccessWhatsapp"
-            href="https://api.whatsapp.com/send?phone=553125336100&text=Ol%C3%A1%2C+quero+saber+mais+sobre+os+produtos+Automotivo%21"
+            href={IS_EXPORT ? exportWhatsappUrl() : PT_WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -80,8 +89,8 @@ export default function QuickAccess() {
               </svg>
             </span>{' '}
             <span className="quick-access-text">
-              <span className="quick-access-item-title">Falar com a JFA</span>{' '}
-              <span className="quick-access-item-sub">Atendimento pelo WhatsApp</span>
+              <span className="quick-access-item-title">{t('qa.talk')}</span>{' '}
+              <span className="quick-access-item-sub">{t('qa.talkSub')}</span>
             </span>
           </a>
         </div>

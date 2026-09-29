@@ -1,5 +1,6 @@
 import { t, IS_EXPORT } from '../../i18n';
 import HowToSection from '../shared/HowToSection';
+import { exportWhatsappUrl } from '../../data/exportContact';
 
 /**
  * Páginas de setor, preenchidas por behaviors/sectorPages.js:
@@ -82,7 +83,12 @@ export function SectorProductPage() {
                 <p className="bateria-commerce-fallback-text">{t('product.fallback')}</p>
                 <div className="bateria-cta-row">
                   {IS_EXPORT ? (
-                    <a className="hero-cta" href="#contato" data-header-scroll="contato">
+                    <a
+                      className="hero-cta"
+                      href={exportWhatsappUrl()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {t('product.whereToBuy')}
                     </a>
                   ) : (

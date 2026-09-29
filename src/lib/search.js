@@ -41,12 +41,13 @@ const scoreProduct = (p, q, qc) => {
 /**
  * Busca produtos por nome, alias ou categoria e devolve os resultados
  * ordenados por relevância. Itens fora de linha só aparecem em matches fortes.
+ * `list` troca o catálogo (a exportação busca só nos produtos de exportação).
  */
-export const searchCatalog = (query) => {
+export const searchCatalog = (query, list = PRODUCTS) => {
   const q = normalize(query),
     qc = compact(query);
   if (!q) return [];
-  let scored = PRODUCTS.map((p) => ({ p, score: scoreProduct(p, q, qc) })).filter((x) => x.score > 0);
+  let scored = list.map((p) => ({ p, score: scoreProduct(p, q, qc) })).filter((x) => x.score > 0);
   scored = scored.filter((x) => x.p.status !== 'discontinued' || x.score >= 90);
   scored.sort((a, b) => b.score - a.score);
   return scored.map((x) => x.p);

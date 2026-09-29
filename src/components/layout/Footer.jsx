@@ -2,6 +2,7 @@ import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
 import { SECTOR_MENU } from '../../data/sectors';
 import { INSTAGRAM_URL, YOUTUBE_URL } from '../../data/links';
 import { t, IS_EXPORT } from '../../i18n';
+import { exportWhatsappUrl } from '../../data/exportContact';
 
 // Categorias do rodapé (JFA Parts e Moov continuam com os links antigos logo abaixo).
 const FOOTER_CATEGORIES = SECTOR_MENU.filter((s) => s.slug !== 'parts' && s.slug !== 'moov');
@@ -15,8 +16,15 @@ export default function Footer() {
         <div className="jfa-footer-top">
           <div className="jfa-footer-brand">
             <div className="jfa-logo jfa-footer-logo">
-              <img className="jfa-logo-mark" src="/images/jfa_logo_mark.webp" alt="" width="40" height="40" />{' '}
-              <span className="jfa-logo-word">JFA</span>
+              <img
+                className="jfa-logo-img"
+                src="/images/jfa_logo_white.webp"
+                alt="JFA"
+                width="720"
+                height="242"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <p className="jfa-footer-tagline">{t('footer.tagline')}</p>
             {/* Redes sociais: ícone na cor original de cada rede + nome. */}
@@ -74,7 +82,7 @@ export default function Footer() {
                 <a href="#home" data-footer-scroll="home">
                   {t('footer.about')}
                 </a>{' '}
-                <a href="#contato" data-footer-scroll="contato">
+                <a href={exportWhatsappUrl()} target="_blank" rel="noopener noreferrer">
                   {t('nav.contact')}
                 </a>
               </div>

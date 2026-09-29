@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { t, IS_EXPORT } from '../../i18n';
+import { exportWhatsappUrl } from '../../data/exportContact';
 
 /** Hero com vídeo de fundo, headline animada e CTAs. */
 export default function Hero() {
@@ -42,13 +43,17 @@ export default function Hero() {
                 </h1>
                 <p className="hero-sub" id="heroSub" dangerouslySetInnerHTML={{ __html: t('hero.sub') }} />
                 <div className="hero-cta-row" id="heroCtaRow">
-                  <a href={IS_EXPORT ? '#produtos' : '#solucoes'} className="hero-cta hero-cta-primary">
+                  <a href="#solucoes" className="hero-cta hero-cta-primary">
                     {t('hero.ctaProducts')}
                   </a>{' '}
                   <a href="#manuais" className="hero-cta">
                     {t('hero.ctaManual')}
                   </a>{' '}
-                  <a href={IS_EXPORT ? '#contato' : '#loja'} className="hero-cta hero-cta-tertiary">
+                  <a
+                    href={IS_EXPORT ? exportWhatsappUrl() : '#loja'}
+                    className="hero-cta hero-cta-tertiary"
+                    {...(IS_EXPORT ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
                     {t('hero.ctaBuy')}{' '}
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path

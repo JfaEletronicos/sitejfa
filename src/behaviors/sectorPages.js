@@ -4,7 +4,7 @@ import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../da
 import { PRODUCT_DETAILS as PT_DETAILS } from '../data/productDetails';
 import { PRODUCT_QUICK_SPECS as PT_QUICK_SPECS } from '../data/productSpecs';
 import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../data/exportProducts';
-import { INTERNATIONAL_SALES } from '../data/representatives';
+import { EXPORT_PHONE } from '../data/exportContact';
 import { t, tf, pick, IS_EXPORT } from '../i18n';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
@@ -48,9 +48,7 @@ const SECTOR_CATALOGS = IS_EXPORT
     }
   : PT_CATALOGS;
 const PRODUCT_QUICK_SPECS = IS_EXPORT ? {} : PT_QUICK_SPECS;
-const WHATSAPP_PHONE = IS_EXPORT
-  ? INTERNATIONAL_SALES.contacts[INTERNATIONAL_SALES.contacts.length - 1].phone.replace(/\D/g, '')
-  : '553125336100';
+const WHATSAPP_PHONE = IS_EXPORT ? EXPORT_PHONE : '553125336100';
 const ARROW_SVG =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 const ARROW_OUT_SVG =

@@ -1,5 +1,122 @@
+import { t, pick, IS_EXPORT } from '../../i18n';
+import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../../data/exportProducts';
+import { exportWhatsappUrl } from '../../data/exportContact';
+
+const ArrowRight = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M5 12h13M13 6l6 6-6 6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const ExportCard = ({ p, clone }) => (
+  <div className="p-card card-export" data-line={p.group} aria-hidden={clone ? 'true' : undefined}>
+    <img
+      src={p.images[0]}
+      alt={clone ? '' : pick(p.name)}
+      loading="lazy"
+      decoding="async"
+      draggable="false"
+    />
+    <div className="p-card-info">
+      <h3 className="p-card-name">{pick(p.name)}</h3>
+      <p className="p-card-sub" />
+      <a className="p-card-cta" href={'#/setores/automotivo/' + p.id} tabIndex={clone ? -1 : undefined}>
+        {t('catalog.more')}
+      </a>
+    </div>
+  </div>
+);
+
+/** Exportação (EN/ES): "Descubra as soluções" só com os produtos de exportação. */
+function ExportProducts() {
+  return (
+    <section className="products" id="productsSection">
+      <span className="jfa-anchor" id="solucoes" aria-hidden="true" />{' '}
+      <canvas className="section-energy-canvas" id="productsEnergyCanvas" aria-hidden="true" />
+      <div className="products-section-bg" aria-hidden="true" />
+      <div className="products-section-texture" aria-hidden="true" />
+      <div className="products-bg">
+        <div className="products-atmosphere" aria-hidden="true" />
+        <div className="diag-shape diag-1" />
+      </div>
+      <div className="products-head" id="productsHead">
+        <div className="products-head-row">
+          <div className="products-head-copy">
+            <h2 className="products-title">
+              <span className="pt-line1">
+                {t('products.titleA')} <em>JFA</em>
+                {t('products.titleB')}
+              </span>
+            </h2>
+            <p className="products-sub">{t('products.sub')}</p>
+          </div>
+        </div>
+        <div className="products-toolbar">
+          <div
+            className="products-category-nav"
+            id="productsCategoryNav"
+            role="group"
+            aria-label={t('catalog.filter')}
+          >
+            <button
+              className="products-category-pill is-active"
+              type="button"
+              data-category="all"
+              aria-pressed="true"
+            >
+              {t('catalog.all')}
+            </button>
+            {EXPORT_GROUPS.map((g) => (
+              <button
+                key={g.key}
+                className="products-category-pill"
+                type="button"
+                data-category={g.key}
+                aria-pressed="false"
+              >
+                {pick(g.label)}
+              </button>
+            ))}
+          </div>
+          <div className="products-endcap">
+            <span className="products-endcap-text">{t('products.endcap')}</span>{' '}
+            <a
+              className="products-endcap-link"
+              href={exportWhatsappUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('products.endcapLink')} <ArrowRight />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="carousel-runway" id="carouselRunway">
+        <div className="carousel-viewport" id="carouselViewport">
+          {/* Produtos + uma cópia de cada para o loop infinito (data-unique = quantidade real). */}
+          <div className="carousel-track" id="carouselTrack" data-unique={EXPORT_PRODUCTS.length}>
+            {EXPORT_PRODUCTS.map((p) => (
+              <ExportCard key={p.id} p={p} />
+            ))}
+            {EXPORT_PRODUCTS.map((p) => (
+              <ExportCard key={p.id + '-clone'} p={p} clone />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /** Soluções JFA: certificações, filtro por linha e carrossel de produtos. */
 export default function Products() {
+  if (IS_EXPORT) return <ExportProducts />;
   return (
     <section className="products" id="productsSection">
       <span className="jfa-anchor" id="solucoes" aria-hidden="true" />{' '}

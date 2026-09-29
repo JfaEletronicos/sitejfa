@@ -1,4 +1,147 @@
 import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
+import { t, pick, IS_EXPORT } from '../../i18n';
+import { EXPORT_GROUPS } from '../../data/exportProducts';
+
+const Chevron = ({ d }) => (
+  <svg viewBox="0 0 24 24" fill="none">
+    <path d={d} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// Exportação (EN/ES): as áreas são as linhas de exportação, cada uma com um
+// produto de exportação; o botão filtra "Descubra as soluções" pela linha.
+const EXPORT_FRONTS = {
+  amplifiers: {
+    image: '/images/front_automotivo.webp',
+    headline: { en: 'Power and sound purity', es: 'Potencia y pureza sonora' },
+    desc: {
+      en: 'Class D amplifiers with DSP and Dynamic Bass Boost for demanding car audio projects.',
+      es: 'Amplificadores clase D con DSP y Bass Boost dinámico para proyectos de audio exigentes.',
+    },
+  },
+  power: {
+    image: '/images/produtos/fonte-xline-export-1.webp',
+    headline: { en: 'Energy for your sound system', es: 'Energía para su sistema de sonido' },
+    desc: {
+      en: 'Power supplies and chargers that power, charge and monitor automotive batteries.',
+      es: 'Fuentes y cargadores que alimentan, cargan y monitorean baterías automotrices.',
+    },
+  },
+  controls: {
+    image: '/images/produtos/controle-k1200-universal-1.webp',
+    headline: { en: 'Control from far away', es: 'Control a larga distancia' },
+    desc: {
+      en: 'Long-range remote controls for car sound events, with up to 1,200 meters of reach.',
+      es: 'Controles remotos de largo alcance para eventos de sonido, con hasta 1.200 metros.',
+    },
+  },
+  accessories: {
+    image: '/images/produtos/voltimetro-sequenciador-vs5hi-1.webp',
+    headline: { en: 'Every detail of the project', es: 'Cada detalle del proyecto' },
+    desc: {
+      en: 'Converters, filters and voltmeters that complete a clean and safe installation.',
+      es: 'Convertidores, filtros y voltímetros que completan una instalación limpia y segura.',
+    },
+  },
+};
+
+// A fonte dos títulos (Stretch Pro) não tem Á/Ú: essas letras usam a fonte de apoio.
+const fixAccents = (str) =>
+  String(str)
+    .split(/([ÁáÚú])/)
+    .map((part, i) =>
+      /^[ÁáÚú]$/.test(part) ? (
+        <span key={i} className="accent-fix">
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    );
+
+function ExportFronts() {
+  const groups = EXPORT_GROUPS.filter((g) => EXPORT_FRONTS[g.key]);
+  const n = groups.length;
+  return (
+    <section className="fronts" id="frontsSection" data-theme-keep>
+      <span className="jfa-anchor" id="frentes" aria-hidden="true" />{' '}
+      <canvas
+        className="section-energy-canvas section-fronts-mesh"
+        id="frontsEnergyCanvas"
+        aria-hidden="true"
+      />
+      <div className="fronts-top">
+        <span className="fronts-eyebrow">{'\u00a0' + t('fronts.eyebrow').replace(/\{n\}/g, n)}</span>
+        <h2 className="fronts-title">
+          {fixAccents(t('fronts.title'))} <em>JFA</em>.
+        </h2>
+        <p className="fronts-sub">{t('fronts.sub')}</p>
+      </div>
+      <div className="fronts-stage" id="frontsStage">
+        <button
+          className="fronts-arrow fronts-arrow-prev"
+          id="frontsPrev"
+          type="button"
+          aria-label={t('fronts.prev')}
+        >
+          <Chevron d="M15 6l-6 6 6 6" />
+        </button>
+        <div className="fronts-track" id="frontsTrack">
+          {groups.map((g, i) => {
+            const f = EXPORT_FRONTS[g.key];
+            return (
+              <article
+                key={g.key}
+                className={'front-panel' + (i === n - 1 ? ' is-active' : '')}
+                data-front={i}
+              >
+                <div className="front-info">
+                  <span className="front-index">{pad2(i + 1) + ' / ' + pad2(n)}</span>
+                  <h3 className="front-kicker">JFA {pick(g.label)}</h3>
+                  <p className="front-headline">{pick(f.headline)}</p>
+                </div>
+                <div className="front-visual">
+                  <img
+                    className="front-visual-img"
+                    src={f.image}
+                    alt={pick(g.label)}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <p className="front-desc">{pick(f.desc)}</p>
+                <a className="front-cta" href="#solucoes" data-goto-products-category={g.key}>
+                  {t('fronts.cta')} <Chevron d="M5 12h13M13 6l6 6-6 6" />
+                </a>
+              </article>
+            );
+          })}
+        </div>
+        <button
+          className="fronts-arrow fronts-arrow-next"
+          id="frontsNext"
+          type="button"
+          aria-label={t('fronts.next')}
+        >
+          <Chevron d="M9 6l6 6-6 6" />
+        </button>
+      </div>
+      <nav className="fronts-nav" id="frontsNav" aria-label={t('fronts.nav')}>
+        <div className="fronts-nav-line">
+          <div className="fronts-nav-fill" id="frontsNavFill" />
+        </div>
+        <div className="fronts-nav-items">
+          {groups.map((g, i) => (
+            <button key={g.key} className="fronts-nav-item" data-goto={i} type="button">
+              <span className="fronts-nav-num">{pad2(i + 1)}</span>
+              <span className="fronts-nav-name">{pick(g.label)}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+    </section>
+  );
+}
 
 // OCULTO: Moov/Parts — com as flags de data/visibility.js em false, as frentes
 // Parts e Moov saem do carrossel e a contagem ("4 frentes", "01 / 04") se ajusta.
@@ -8,6 +151,7 @@ const frontIndex = (n) => pad2(n) + ' / ' + pad2(FRONTS_COUNT);
 
 /** Frentes JFA (Moov, Energia, Parts, Automotivo). */
 export default function Fronts() {
+  if (IS_EXPORT) return <ExportFronts />;
   return (
     <section className="fronts" id="frontsSection" data-theme-keep>
       <span className="jfa-anchor" id="frentes" aria-hidden="true" />{' '}
