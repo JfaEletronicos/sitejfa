@@ -47,9 +47,8 @@
   visibility: hidden;
 }
 
-/* Palavras: Poppins pesada (ou Stretch Pro), maiúsculas, sem quebra. */
+/* Palavras: uma ou mais partes por linha, cada uma com a sua fonte. */
 .sk-word {
-  --c: #ffffff;
   --gx: 0px;
   --gy: 0px;
   --go: 0;
@@ -61,25 +60,49 @@
   line-height: 0.86;
   white-space: nowrap;
   text-transform: uppercase;
-  color: var(--c);
   visibility: hidden;
   will-change: transform, opacity;
   font-variant-ligatures: none;
 }
 
-.sk-word.is-wide {
-  font-family: 'Stretch Pro', 'Poppins', sans-serif;
-  line-height: 1;
+.sk-word.is-mask {
+  line-height: 1.12;
 }
 
-.sk-word.is-outline {
+.sk-part {
+  --c: #ffffff;
+  display: inline-block;
+  color: var(--c);
+}
+
+/* Máscara: a parte só aparece dentro da própria linha. */
+.sk-word.is-mask .sk-part {
+  /* topo aberto para os acentos (Ê, Ã); a base corta a entrada por baixo */
+  clip-path: inset(-40% -25% 0 -25%);
+}
+
+.sk-part.is-wide {
+  font-family: 'Stretch Pro', 'Poppins', sans-serif;
+}
+
+.sk-part.is-italic {
+  font-style: italic;
+}
+
+.sk-part.is-outline {
   color: transparent;
   -webkit-text-stroke: max(2px, 0.022em) var(--c);
 }
 
-/* Rastro de movimento: duas cópias da palavra atrás dela, na direção contrária ao movimento. */
-.sk-word::before,
-.sk-word::after {
+.sk-ink {
+  position: relative;
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Rastro de movimento: duas cópias da parte atrás dela, na direção contrária ao movimento. */
+.sk-ink::before,
+.sk-ink::after {
   content: attr(data-text);
   position: absolute;
   left: 0;
@@ -88,12 +111,12 @@
   pointer-events: none;
 }
 
-.sk-word::before {
+.sk-ink::before {
   transform: translate3d(var(--gx), var(--gy), 0);
   opacity: calc(var(--go) * 0.34);
 }
 
-.sk-word::after {
+.sk-ink::after {
   transform: translate3d(calc(var(--gx) * 2.1), calc(var(--gy) * 2.1), 0);
   opacity: calc(var(--go) * 0.15);
 }

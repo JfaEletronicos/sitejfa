@@ -37,45 +37,32 @@ const CHIP = [0.485, 0.012, -0.151];
 const CENTER = [0, 0, 0];
 
 export const SHOTS = [
-  // HOOK: a placa entra pelo canto inferior direito, cortada pelo quadro...
+  // CENA 1 · VOCÊ NÃO VÊ.: a placa é o centro do quadro desde o primeiro quadro.
+  // Um plano contínuo em duas fases (sem corte): ela sobe para o lugar e assenta...
   {
     t: [0, 1.0],
-    cam: [
-      pose([-0.25, 0, 0.02], -24, 50, 2.9, { roll: 32 }),
-      pose([-0.3, 0, 0.02], -18, 52, 2.5, { roll: 30 }),
-    ],
+    cam: [pose([0, 0, 0], -24, 43, 3.75, { roll: 35 }), pose([0, 0, 0], -18, 46, 3.4, { roll: 39 })],
     ease: 'expoOut',
-    board: [{ rot: [16, 0, 0] }, { rot: [7, 0, 0] }],
+    board: [{ rot: [8, 0, 0] }, { rot: [3, 0, 0] }],
     shift: [
-      [0.62, -0.62],
-      [0.28, -0.3],
+      [0, -0.27],
+      [0, -0.17],
     ],
-    pan: [
-      [0.04, 0],
-      [-0.01, 0],
-    ],
-    light: 'punch',
-    sweep: [60, 10],
+    light: 'feature',
+    sweep: [55, 15],
   },
-  // ...e na segunda batida (1,0 s) o corte aproxima: a placa avança sobre "VÊ.".
+  // ...e depois avança devagar em direção à câmera, encostando no "VÊ.".
   {
     t: [1.0, 1.95],
-    cam: [
-      pose([-0.2, 0, 0.0], -14, 54, 2.3, { roll: 24 }),
-      pose([-0.24, 0, 0.0], -10, 55, 2.1, { roll: 22 }),
-    ],
-    ease: 'soft',
-    board: [{ rot: [4, 0, 0] }, { rot: [-1, 0, 0] }],
+    cam: [pose([0, 0, 0], -18, 46, 3.4, { roll: 39 }), pose([0, 0, 0], -13, 48, 3.0, { roll: 41 })],
+    ease: 'glide',
+    board: [{ rot: [3, 0, 0] }, { rot: [0, 0, 0] }],
     shift: [
-      [0.33, -0.31],
-      [0.29, -0.28],
+      [0, -0.17],
+      [0, -0.14],
     ],
-    pan: [
-      [0.01, 0],
-      [-0.03, 0],
-    ],
-    light: 'punch',
-    sweep: [10, -50],
+    light: 'feature',
+    sweep: [15, -40],
   },
   // MAS: só tipografia (placa fora).
   { t: [1.95, 2.36], hidden: true },
@@ -359,47 +346,24 @@ function stack(text, t, rows, o = {}) {
 }
 
 export const WORDS = [
-  // 0–2 s · VOCÊ NÃO VÊ.
-  // Começa já em movimento: o primeiro quadro é um cartaz com a tipografia ocupando tudo.
-  word('VOCÊ', [-0.14, 1.95], {
-    x: -9,
-    y: 21,
-    align: 'left',
-    fit: 1.22,
-    in: { type: 'slideLeft', dur: 0.36 },
-    drift: [-12, 0],
-    fx: [{ preset: 'stretch', at: 0, dur: 0.42 }],
+  // 0–2 s · VOCÊ NÃO VÊ. — um bloco só, linhas coladas, três estilos:
+  // Poppins Light, Poppins ExtraBold Itálico (azul) e Stretch Pro.
+  word('VOCÊ NÃO', [-0.12, 1.88], {
+    parts: [
+      { text: 'VOCÊ', weight: 300, tracking: 1.5 },
+      { text: 'NÃO', weight: 800, italic: true, color: 'electricBlue', delay: 0.09, gap: 0.24 },
+    ],
+    size: 44,
+    y: 12.4,
+    in: { type: 'mask', dur: 0.46 },
+    out: { type: 'mask', dur: 0.2 },
   }),
-  word('NÃO', [-0.06, 1.95], {
-    x: 106,
-    y: 43.5,
-    align: 'right',
-    size: 'large',
-    fit: 0.92,
-    in: { type: 'slideRight', dur: 0.26 },
-    drift: [9, 0],
-  }),
-  word('VÊ.', [0.26, 1.0], {
-    x: 4,
-    y: 65,
-    align: 'left',
-    fit: 1.0,
-    sy: 1.25,
-    in: { type: 'stretch', dur: 0.24 },
-    grow: 0.05,
-    fx: [{ preset: 'impact', at: 0.02, dur: 0.4 }],
-  }),
-  // Na segunda batida "VÊ." vira só contorno: deixa de ser visto.
-  word('VÊ.', [1.0, 1.95], {
-    x: 4,
-    y: 65,
-    align: 'left',
-    fit: 1.0,
-    sy: 1.25,
-    outline: true,
-    grow: 0.07,
-    drift: [-4, 0],
-    fx: [{ preset: 'impact', at: 0, dur: 0.3, amount: 0.6 }],
+  word('VÊ.', [0.14, 1.95], {
+    font: 'wide',
+    size: 90,
+    y: 22.6,
+    in: { type: 'mask', dur: 0.5 },
+    out: { type: 'mask', dur: 0.2 },
   }),
 
   // 2–4,4 s · MAS / ELA / ESTÁ / EM TUDO.
@@ -642,7 +606,7 @@ export const WORDS = [
 // FUNDO (troca seca) e BLOCOS DE COR (retângulos em %: [x, y, largura, altura])
 // ---------------------------------------------------------------------------
 export const BACKGROUND = [
-  [0, 'black'],
+  [0, 'glow'],
   [1.95, 'white'],
   [2.36, 'jfaBlue'],
   [2.86, 'black'],
@@ -658,8 +622,6 @@ export const BACKGROUND = [
 ];
 
 export const BLOCKS = [
-  // Faixa azul que entra com o "NÃO".
-  { t: [-0.06, 1.95], color: 'jfaBlue', from: [100, 37.5, 0, 12], to: [22, 37.5, 78, 12], dur: 0.3 },
   // Coluna azul elétrica atrás de "CONTROLE." (corta a cena na vertical).
   { t: [4.5, 5.45], color: 'electricBlue', from: [70, 100, 14, 0], to: [70, 0, 14, 100], dur: 0.3 },
   // Barra azul sob "PRECISÃO." que abre da esquerda.
@@ -674,8 +636,7 @@ export const BLOCKS = [
 // TRANSIÇÕES (centradas no corte) e DISTORÇÕES GLOBAIS (sobre a composição inteira)
 // ---------------------------------------------------------------------------
 export const CUTS = [
-  { t: 1.0, type: 'hardCut', dur: 0.08 },
-  { t: 1.95, type: 'whipLeft', dur: 0.22 },
+  { t: 1.95, type: 'hardCut', dur: 0.08 },
   { t: 2.36, type: 'hardCut', dur: 0.08 },
   { t: 2.86, type: 'distortionCut', dur: 0.16 },
   { t: 3.36, type: 'scaleCut', dur: 0.14 },
@@ -697,8 +658,6 @@ export const CUTS = [
 ];
 
 export const FX = [
-  { t: 0.26, dur: 0.32, preset: 'shake', amount: 0.7 },
-  { t: 1.0, dur: 0.24, preset: 'shake', amount: 0.45 },
   { t: 3.36, dur: 0.42, preset: 'impact' },
   { t: 7.12, dur: 0.5, preset: 'impact' },
   { t: 7.14, dur: 0.3, preset: 'shake' },

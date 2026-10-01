@@ -81,6 +81,18 @@ const LIGHTS = {
     bloom: 0.02,
     exposure: 1.02,
   },
+  // Produto em destaque: recorte de estúdio, contraluz e reflexo controlado.
+  feature: {
+    keyLux: 8,
+    keyAngle: 32,
+    keyAz: -40,
+    keyEl: 54,
+    rimLux: 2.0,
+    fill: 0.12,
+    env: 0.38,
+    bloom: 0.04,
+    exposure: 1.02,
+  },
   // Hero: o estúdio do filme premium.
   hero: {
     keyLux: 7.6,
@@ -127,6 +139,23 @@ function keyedScale(keys, lt) {
   }
   return keys[keys.length - 1][1];
 }
+
+/** Partes da palavra (uma só, por padrão, com o texto e o estilo da própria palavra). */
+const partsOf = (w) =>
+  w.parts || [
+    {
+      text: w.text,
+      font: w.font,
+      weight: w.weight,
+      italic: w.italic,
+      color: w.color,
+      outline: w.outline,
+      tracking: w.tracking,
+    },
+  ];
+const isMask = (w) => w.in.type === 'mask' || w.out.type === 'mask';
+/** Tamanho de referência (px numa tela de 390 px): número ou huge/large/medium. */
+const sizeOf = (w) => (typeof w.size === 'number' ? w.size : TYPO[`${w.size}Size`]);
 
 /** Escala com pico (overshoot) e assentamento: from → peak → 1. */
 function popScale(k, from, peak) {
@@ -190,6 +219,9 @@ function wordPose(w, tb, m, frame) {
       opacity *= EASE.soft(ki);
       dy += (1 - EASE.enter(ki)) * 0.035 * H * ti;
       break;
+    case 'mask':
+      // Cada parte sobe de dentro da própria linha (calculado abaixo).
+      break;
     default:
       // Corte: já entra grande e assenta.
       scale *= lerp(peak, 1, CURVES.expoOut(ki));
@@ -206,6 +238,23 @@ function wordPose(w, tb, m, frame) {
     else if (w.out.type === 'slideUp') dy -= e * far * H;
     else if (w.out.type === 'slideDown') dy += e * far * H;
   }
+
+  // Máscara: cada parte sobe de dentro da linha (com o atraso dela) e sai descendo.
+  const partY = partsOf(w).map((part, i) => {
+    const h = (m.ph && m.ph[i]) || m.nh;
+    let y = 0;
+    if (w.in.type === 'mask') {
+      const k = clamp01((lt - (part.delay || 0)) / inDur);
+      y += (1 - CURVES.expoOut(k)) * h * 1.04;
+    }
+    if (w.out.type === 'mask') {
+      // Sai descendo para dentro da linha: a base some primeiro e os acentos por
+      // último (nunca aparece "NAO" sem o til).
+      const k = clamp01((tb - (t1 - outDur) + (part.delay || 0) * 0.5) / outDur);
+      y += CURVES.easeIn(k) * h * 1.04;
+    }
+    return y;
+  });
 
   // Deriva contínua (micro movimento) e crescimento ao longo da vida da palavra.
   dx += (w.drift[0] / 100) * W * pl * ti;
@@ -236,6 +285,7 @@ function wordPose(w, tb, m, frame) {
     disp: d.displacement,
     chroma: d.chromaticOffset,
     blur: d.blur,
+    partY,
   };
 }
 
@@ -280,28 +330,29 @@ export default {
 
     const blockEls = BLOCKS.map(() => el('sk-block', blocksLayer));
 
+    // Cada palavra (ou linha) tem uma ou mais partes, cada uma com a sua fonte, peso,
+    // estilo e cor, alinhadas na mesma linha de base.
     const words = WORDS.map((w) => {
-      const node = el(
-        `sk-word${w.outline ? ' is-outline' : ''}${w.font === 'wide' ? ' is-wide' : ''}`,
-        w.layer === 'front' ? front : back,
-      );
-      node.dataset.text = w.text;
-      if (w.split) {
-        [...w.text].forEach((ch) => {
-          const s = el('sk-letter', node, 'span');
-          s.textContent = ch;
-        });
-      } else {
-        node.textContent = w.text;
-      }
+      const node = el(`sk-word${isMask(w) ? ' is-mask' : ''}`, w.layer === 'front' ? front : back);
       node.setAttribute('aria-hidden', 'true');
-      return {
-        w,
-        node,
-        letters: w.split ? [...node.children] : null,
-        m: { sx: 1, sy: 1, nw: 1, nh: 1 },
-        shown: false,
-      };
+      const parts = partsOf(w).map((part) => {
+        const wrap = el(
+          `sk-part${part.outline ? ' is-outline' : ''}${part.font === 'wide' ? ' is-wide' : ''}${part.italic ? ' is-italic' : ''}`,
+          node,
+          'span',
+        );
+        const ink = el('sk-ink', wrap, 'span');
+        ink.dataset.text = part.text;
+        if (w.split) {
+          [...part.text].forEach((ch) => {
+            el('sk-letter', ink, 'span').textContent = ch;
+          });
+        } else {
+          ink.textContent = part.text;
+        }
+        return { part, wrap, ink, letters: w.split ? [...ink.children] : null };
+      });
+      return { w, node, parts, m: { sx: 1, sy: 1, nw: 1, nh: 1, ox: 0, oy: 0 }, shown: false };
     });
 
     const frame = { width: 1080, height: 1920 };
@@ -313,11 +364,15 @@ export default {
       const u = frame.width / REF_WIDTH;
       words.forEach((item) => {
         const { w, node } = item;
-        const size = TYPO[`${w.size}Size`] * u;
+        const size = sizeOf(w) * u;
         node.style.fontSize = `${size}px`;
-        node.style.fontWeight = w.font === 'wide' ? 400 : w.weight || TYPO.weight;
-        node.style.letterSpacing = `${(w.tracking ?? TYPO.tracking) * u}px`;
-        node.style.setProperty('--c', inkColor(w.color));
+        item.parts.forEach(({ part, wrap }, i) => {
+          wrap.style.fontSize = `${size * (part.scale || 1)}px`;
+          wrap.style.fontWeight = part.font === 'wide' ? 400 : part.weight || TYPO.weight;
+          wrap.style.letterSpacing = `${(part.tracking ?? TYPO.tracking) * u}px`;
+          wrap.style.marginLeft = i > 0 ? `${part.gap ?? 0.26}em` : '0';
+          wrap.style.setProperty('--c', inkColor(part.color || 'white'));
+        });
         const nw = node.offsetWidth || 1;
         const nh = node.offsetHeight || 1;
         let sx = 1;
@@ -336,7 +391,15 @@ export default {
         const ox = w.align === 'left' ? 0 : w.align === 'right' ? nw : nw / 2;
         const origin = w.origin ? [(w.origin[0] / 100) * nw, (w.origin[1] / 100) * nh] : [ox, nh / 2];
         node.style.transformOrigin = `${origin[0]}px ${origin[1]}px`;
-        item.m = { sx, sy, nw, nh, ox: origin[0], oy: origin[1], ax: ox };
+        item.m = {
+          sx,
+          sy,
+          nw,
+          nh,
+          ox: origin[0],
+          oy: origin[1],
+          ph: item.parts.map((pt) => pt.wrap.offsetHeight),
+        };
       });
       needsMeasure = false;
     }
@@ -464,8 +527,10 @@ export default {
 
       // Fundo.
       const bg = backgroundAt(tb);
-      if (bg === 'hero') {
-        base.style.background = `radial-gradient(120% 62% at 50% 44%, ${surfaceColor('deepBlue')} 0%, ${COLORS.black} 72%)`;
+      if (bg === 'hero' || bg === 'glow') {
+        // Radial azul profundo atrás da placa (no centro dela).
+        const at = bg === 'hero' ? '50% 44%' : '50% 60%';
+        base.style.background = `radial-gradient(120% 62% at ${at}, ${surfaceColor('deepBlue')} 0%, ${COLORS.black} 72%)`;
       } else {
         base.style.background = surfaceColor(bg);
       }
@@ -545,7 +610,7 @@ export default {
         // terço de letra), para borrar sem formar letras repetidas.
         const sxTot = pz.scale * pz.sx || 1;
         const syTot = pz.scale * pz.sy || 1;
-        const lim = 0.14 * TYPO[`${w.size}Size`] * (W / REF_WIDTH) * Math.max(sxTot, 0.3);
+        const lim = 0.14 * sizeOf(w) * (W / REF_WIDTH) * Math.max(sxTot, 0.3);
         gx = Math.max(-lim, Math.min(lim, gx));
         gy = Math.max(-lim, Math.min(lim, gy));
         const visible = Math.abs(gx) + Math.abs(gy) > 2;
@@ -553,12 +618,15 @@ export default {
         node.style.setProperty('--gy', `${(gy / syTot).toFixed(2)}px`);
         node.style.setProperty('--go', visible ? '1' : '0');
 
-        if (item.letters) {
-          item.letters.forEach((s, i) => {
-            const off = pz.disp * W * Math.sin(i * 1.9 + tb * 24);
-            s.style.transform = `translate3d(0, ${off.toFixed(2)}px, 0)`;
-          });
-        }
+        item.parts.forEach((pt, i) => {
+          pt.ink.style.transform = `translate3d(0, ${(pz.partY[i] || 0).toFixed(2)}px, 0)`;
+          if (pt.letters) {
+            pt.letters.forEach((s, j) => {
+              const off = pz.disp * W * Math.sin(j * 1.9 + tb * 24);
+              s.style.transform = `translate3d(0, ${off.toFixed(2)}px, 0)`;
+            });
+          }
+        });
       });
 
       // Painéis de transição.
@@ -630,11 +698,12 @@ export default {
       num(CAM, 'parallax', 'paralaxe', 0, 0.5, 0.01),
     ];
 
-    const fontsReady = Promise.all(
-      ['700', '800', '900'].map((wgt) => document.fonts?.load(`${wgt} 100px Poppins`, 'VOCÊ NÃO ÇÃ')),
-    )
-      .then(() => document.fonts?.load('100px "Stretch Pro"', 'ENERGIA. JFA PARTS'))
-      .catch(() => {});
+    const sample = 'VOCÊ NÃO VÊ. ÇÃ';
+    const fontsReady = Promise.all([
+      ...['300', '700', '800', '900'].map((wgt) => document.fonts?.load(`${wgt} 100px Poppins`, sample)),
+      ...['300', '800'].map((wgt) => document.fonts?.load(`italic ${wgt} 100px Poppins`, sample)),
+      document.fonts?.load('100px "Stretch Pro"', `${sample} ENERGIA JFA PARTS`),
+    ]).catch(() => {});
 
     return {
       get duration() {
