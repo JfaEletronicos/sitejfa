@@ -375,6 +375,10 @@ export async function createStage({ canvas, model, transparent = false }) {
   const size = { width: 1, height: 1 };
   const tmp = new THREE.Vector3();
   const tmpTarget = new THREE.Vector3();
+  const tmpUp = new THREE.Vector3();
+  const tmpRight = new THREE.Vector3();
+  const tmpQ = new THREE.Quaternion();
+  const tmpQ2 = new THREE.Quaternion();
   let frame = 0;
 
   function setSize(width, height, pixelRatio) {
@@ -409,7 +413,8 @@ export async function createStage({ canvas, model, transparent = false }) {
   /**
    * Atualiza câmera, luzes e composição para um estado da timeline e desenha.
    * @param {object} s Estado calculado pela variante (ver premium.js e social/kinetic.js).
-   *   Campos opcionais: `hidden` (quadro sem a placa), `boardPos`, `shiftX`, `cam.roll` (graus)
+   *   Campos opcionais: `hidden` (quadro sem a placa), `boardPos`, `shiftX`, `cam.roll` (graus),
+   *   `orbit` ({ yaw, pitch } em graus, eixos da tela)
    *   e `fx` ({ wave, waveFreq, wavePhase, chroma, blur: [x, y] }, em pixels do quadro).
    */
   function render(s) {
@@ -440,6 +445,19 @@ export async function createStage({ canvas, model, transparent = false }) {
     camera.lookAt(tmpTarget);
     const rollDeg = s.roll * 90 + (s.cam.roll || 0);
     if (rollDeg) camera.rotateZ(-rollDeg * DEG);
+    // Câmera móvel da variante social: órbita em torno do alvo nos eixos da TELA
+    // (mesma convenção do rotateY/rotateX do CSS nas camadas de texto), para placa
+    // e tipografia se moverem com uma câmera só.
+    if (s.orbit && (s.orbit.yaw || s.orbit.pitch)) {
+      tmpUp.set(0, 1, 0).applyQuaternion(camera.quaternion);
+      tmpRight.set(1, 0, 0).applyQuaternion(camera.quaternion);
+      tmpQ.setFromAxisAngle(tmpUp, -s.orbit.yaw * DEG);
+      tmpQ2.setFromAxisAngle(tmpRight, s.orbit.pitch * DEG);
+      tmpQ.premultiply(tmpQ2);
+      tmp.subVectors(camera.position, tmpTarget).applyQuaternion(tmpQ);
+      camera.position.copy(tmpTarget).add(tmp);
+      camera.quaternion.premultiply(tmpQ);
+    }
     const halfTan = screenHalfTan(s.cam.fov, aspect, s.fit, s.roll) * s.zoomOut;
     camera.fov = (2 * Math.atan(halfTan)) / DEG;
     camera.aspect = aspect;

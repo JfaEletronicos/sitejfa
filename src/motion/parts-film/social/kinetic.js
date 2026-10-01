@@ -11,7 +11,7 @@
  * distortion.js e transitions.js (sistemas).
  */
 import './kinetic.css';
-import { EASE } from '../tracks';
+import { EASE, spline } from '../tracks';
 import {
   SOCIAL_MOTION_CONFIG as CFG,
   TYPOGRAPHY as TYPO,
@@ -22,7 +22,7 @@ import {
 } from './config';
 import { addDistortion, emptyDistortion, evalPreset } from './distortion';
 import { TRANSITIONS, emptyFx } from './transitions';
-import { SCENES, SHOTS, WORDS, BACKGROUND, BLOCKS, CUTS, FX, CUES } from './score';
+import { SCENES, SHOTS, WORDS, BACKGROUND, BLOCKS, CUTS, FX, CUES, CAMERA_RIG } from './score';
 
 // Largura de referência dos tamanhos de TYPOGRAPHY (px).
 const REF_WIDTH = 390;
@@ -30,6 +30,14 @@ const REF_WIDTH = 390;
 const DEFAULTS = { ...CFG };
 
 const clamp01 = (x) => Math.min(Math.max(x, 0), 1);
+const DEG = Math.PI / 180;
+
+// Câmera virtual única: move a placa 3D e os planos de texto juntos.
+const rig = spline(CAMERA_RIG, ['yaw', 'pitch', 'dolly', 'truck']);
+// Profundidade de cada camada de texto (fração da altura do quadro; negativo = atrás
+// da placa). Multiplicada por CAMERA.parallax / 0,15 (0 = sem profundidade).
+const LAYER_DEPTH = { far: -0.9, back: -0.1, front: 0.1 };
+const BASE_PARALLAX = 0.15;
 const lerp = (a, b, k) => a + (b - a) * k;
 const lerpArr = (a, b, k) => a.map((v, i) => lerp(v, b[i], k));
 const CURVES = {
@@ -171,8 +179,9 @@ function popScale(k, from, peak) {
 function wordPose(w, tb, m, frame) {
   const [t0, t1] = w.t;
   if (tb < t0 || tb >= t1) return null;
-  // Troca de fonte: várias versões da mesma palavra no mesmo lugar, uma visível por vez.
-  if (w.visibleAt && !w.visibleAt(tb)) return null;
+  // Troca de fonte: várias versões da mesma palavra no mesmo lugar, em fusão rápida.
+  const alpha = w.alphaAt ? w.alphaAt(tb) : 1;
+  if (alpha <= 0.001) return null;
   const { width: W, height: H } = frame;
   const lt = tb - t0;
   const pl = lt / (t1 - t0);
@@ -185,7 +194,7 @@ function wordPose(w, tb, m, frame) {
   let scale = 1;
   let sx = m.sx;
   let sy = m.sy;
-  let opacity = 1;
+  let opacity = alpha * (w.opacity ?? 1);
 
   // Entrada.
   const inDur = w.in.dur ?? TYPO.entranceDuration;
@@ -262,10 +271,18 @@ function wordPose(w, tb, m, frame) {
     return y;
   });
 
-  // Deriva contínua (micro movimento) e crescimento ao longo da vida da palavra.
+  // Fusões no começo e no fim da vida da palavra (as cenas se sobrepõem em vez de
+  // uma esperar a outra acabar). Máscaras ganham fusão automática.
+  const fadeIn = w.fade?.[0] ?? (w.in.type === 'mask' ? inDur * 0.6 : 0);
+  const fadeOut = w.fade?.[1] ?? (w.out.type === 'mask' ? outDur : 0);
+  if (fadeIn > 0) opacity *= EASE.soft(clamp01(lt / fadeIn));
+  if (fadeOut > 0) opacity *= EASE.soft(clamp01((t1 - tb) / fadeOut));
+
+  // Deriva contínua (micro movimento), crescimento e estiramento ao longo da vida da palavra.
   dx += (w.drift[0] / 100) * W * pl * ti;
   dy += (w.drift[1] / 100) * H * pl * ti;
   scale *= 1 + Math.min(w.grow * pl * ti, TYPO.maxScale - 1);
+  if (w.stretch) sx *= 1 + w.stretch * pl * ti;
   if (w.scaleKeys) scale = keyedScale(w.scaleKeys, lt);
 
   // Distorção própria da palavra.
@@ -321,6 +338,7 @@ export default {
     comp.className = 'sk-comp';
     frameEl.insertBefore(comp, canvas);
     const blocksLayer = el('sk-blocks', comp);
+    const far = el('sk-type sk-far', comp);
     const back = el('sk-type sk-back', comp);
     comp.appendChild(canvas);
     const front = el('sk-type sk-front', comp);
@@ -339,7 +357,8 @@ export default {
     // Cada palavra (ou linha) tem uma ou mais partes, cada uma com a sua fonte, peso,
     // estilo e cor, alinhadas na mesma linha de base.
     const words = WORDS.map((w) => {
-      const node = el(`sk-word${isMask(w) ? ' is-mask' : ''}`, w.layer === 'front' ? front : back);
+      const layer = w.layer === 'front' ? front : w.layer === 'far' ? far : back;
+      const node = el(`sk-word${isMask(w) ? ' is-mask' : ''}`, layer);
       node.setAttribute('aria-hidden', 'true');
       const parts = partsOf(w).map((part) => {
         const wrap = el(
@@ -384,6 +403,8 @@ export default {
         const nh = node.offsetHeight || 1;
         let sx = 1;
         let sy = w.sy;
+        // fitY: altura alvo (fração do quadro), esticando só na vertical.
+        if (w.fitY) sy = (w.fitY * frame.height) / nh;
         if (w.fit) {
           const target = w.fit * (w.fitAxis === 'y' ? frame.height : frame.width);
           // "stretch": só a largura se ajusta (letras esticadas/comprimidas);
@@ -444,9 +465,21 @@ export default {
     const shotAt = (tb) => SHOTS.find((s) => tb >= s.t[0] && tb < s.t[1]) || SHOTS[SHOTS.length - 1];
 
     /** Estado do palco 3D (mesmo formato do filme premium, com os campos extras). */
-    function stageState(tb, fx) {
+    /** Câmera virtual no instante `tb` (intensidade pela câmera do config). */
+    function rigAt(tb) {
+      const r = rig(tb);
+      const k = K('cameraIntensity');
+      return {
+        yaw: r.yaw * k,
+        pitch: r.pitch * k,
+        dolly: r.dolly * k * CAM.zoomIntensity,
+        truck: [r.truck[0] * k, r.truck[1] * k],
+      };
+    }
+
+    function stageState(tb, fx, cam) {
       const shot = shotAt(tb);
-      if (shot.hidden) return { hidden: true };
+      if (shot.hidden) return { hidden: true, pan: [0, 0] };
       const [t0, t1] = shot.t;
       const p = clamp01((tb - t0) / (t1 - t0));
       const e = curve(shot.ease)(p);
@@ -455,7 +488,7 @@ export default {
       const kp = K('productIntensity') * e;
       const [a, b] = shot.cam;
       const target = lerpArr(a.target, b.target, kc);
-      const dist = Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), kz) + fx.camZoom);
+      const dist = Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), kz) + fx.camZoom) * (1 - cam.dolly);
       const light = LIGHTS[shot.light] || LIGHTS.punch;
       const boardA = shot.board ? shot.board[0] : { rot: [0, 0, 0] };
       const boardB = shot.board ? shot.board[1] : boardA;
@@ -479,8 +512,9 @@ export default {
         roll: 0,
         fit: 0,
         zoomOut: 1,
-        shiftX: shift[0] + pan[0] + jitter,
-        shift: shift[1] + pan[1],
+        shiftX: shift[0] + pan[0] + cam.truck[0] + jitter,
+        shift: shift[1] + pan[1] + cam.truck[1],
+        orbit: { yaw: cam.yaw, pitch: cam.pitch },
         fade: 1,
         aperture: shot.aperture || 0,
         keyLux: light.keyLux,
@@ -525,10 +559,11 @@ export default {
 
     function evaluate(tb) {
       const fx = effectsAt(tb);
-      return { tb, fx, stage: stageState(tb, fx) };
+      const cam = rigAt(tb);
+      return { tb, fx, cam, stage: stageState(tb, fx, cam) };
     }
 
-    function paint({ tb, fx, stage: st }) {
+    function paint({ tb, fx, cam, stage: st }) {
       if (needsMeasure) measure();
       const { width: W, height: H } = frame;
 
@@ -567,11 +602,27 @@ export default {
         node.style.height = `${r[3]}%`;
       });
 
-      // Paralaxe entre camadas (o movimento de câmera do plano).
+      // Câmera virtual nas camadas de texto: cada camada é um plano numa profundidade,
+      // visto pela mesma perspectiva da câmera 3D (CAMERA.fov). Deslocar, aproximar e
+      // girar a câmera dá paralaxe real entre fundo, texto e placa.
       const pan = st.pan || [0, 0];
-      const par = CAM.parallax;
-      back.style.transform = `translate3d(${(pan[0] * W * (1 - par)).toFixed(2)}px, ${(-pan[1] * H * (1 - par)).toFixed(2)}px, 0)`;
-      front.style.transform = `translate3d(${(pan[0] * W * (1 + par)).toFixed(2)}px, ${(-pan[1] * H * (1 + par)).toFixed(2)}px, 0)`;
+      const P = H / 2 / Math.tan((CAM.fov / 2) * DEG);
+      const depthK = CAM.parallax / BASE_PARALLAX;
+      const tx = (cam.truck[0] + pan[0]) * W;
+      const ty = -(cam.truck[1] + pan[1]) * H;
+      [
+        [far, LAYER_DEPTH.far],
+        [back, LAYER_DEPTH.back],
+        [front, LAYER_DEPTH.front],
+      ].forEach(([layer, depth]) => {
+        const z = depth * depthK * H;
+        // Escala que compensa a profundidade: em repouso, cada plano fica do tamanho desenhado.
+        const k = (P - z) / P;
+        layer.style.transform =
+          `perspective(${P.toFixed(1)}px) translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) ` +
+          `translateZ(${(cam.dolly * P).toFixed(2)}px) rotateX(${cam.pitch.toFixed(3)}deg) ` +
+          `rotateY(${cam.yaw.toFixed(3)}deg) translateZ(${z.toFixed(2)}px) scale(${k.toFixed(4)})`;
+      });
 
       // Palavras.
       const u = W / 1080;
@@ -758,7 +809,7 @@ export default {
         frame.width = frameEl.clientWidth || frame.width;
         frame.height = frameEl.clientHeight || frame.height;
         needsMeasure = true;
-        paint({ tb: 19, fx: emptyFx(), stage: { pan: [0, 0] } });
+        paint({ tb: 19, fx: emptyFx(), cam: rigAt(19), stage: { pan: [0, 0] } });
       },
     };
   },

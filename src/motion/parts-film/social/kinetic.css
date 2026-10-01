@@ -39,6 +39,8 @@
 }
 
 .sk-type {
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
   will-change: transform;
 }
 

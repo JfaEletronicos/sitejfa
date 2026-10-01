@@ -296,6 +296,19 @@ export const SHOTS = [
 ];
 
 // ---------------------------------------------------------------------------
+// CÂMERA MÓVEL (virtual): uma câmera só para a placa e para os planos de texto.
+// yaw/pitch = órbita em graus (eixos da tela), dolly = aproximação (fração da
+// distância), truck = deslocamento [x, y] (fração do quadro; +y sobe).
+// Spline contínua entre marcações: a câmera nunca para de repente.
+// ---------------------------------------------------------------------------
+export const CAMERA_RIG = [
+  // Cena 1: órbita da esquerda para a direita, descendo e aproximando.
+  { t: -0.2, yaw: -11, pitch: 6, dolly: 0, truck: [0.02, 0] },
+  { t: 1.0, yaw: -1.5, pitch: 1.5, dolly: 0.07, truck: [0, 0] },
+  { t: 2.0, yaw: 8, pitch: -3, dolly: 0.14, truck: [-0.02, 0], rest: true },
+];
+
+// ---------------------------------------------------------------------------
 // PALAVRAS
 // in/out: cut | slideLeft | slideRight | slideUp | slideDown | zoom | explode | stretch
 //         | squeeze | rise (calmo) · fit: largura alvo (fração do quadro; no eixo da palavra)
@@ -325,11 +338,11 @@ const word = (text, t, o = {}) => ({
 });
 
 /**
- * Troca de fonte: a mesma palavra em vários estilos, no mesmo lugar, um visível por vez.
- * Ritmo em ciclos (ex.: rápido, rápido, pausa) entre `from` e `lock`; antes e depois
+ * Troca de fonte: a mesma palavra em vários estilos, no mesmo lugar, em fusão rápida
+ * (`crossfade` s) a cada troca. Ritmo em ciclos entre `from` e `lock`; antes e depois
  * fica o primeiro estilo da lista.
  */
-function fontCycle(text, t, styles, { from, lock, rhythm, order }, o = {}) {
+function fontCycle(text, t, styles, { from, lock, rhythm, order, crossfade = 0.06 }, o = {}) {
   const switches = [[t[0], 0]];
   let at = from;
   let i = 0;
@@ -339,17 +352,29 @@ function fontCycle(text, t, styles, { from, lock, rhythm, order }, o = {}) {
     i++;
   }
   switches.push([lock, 0]);
-  const activeAt = (tb) => {
-    let idx = 0;
-    for (const [time, k] of switches) if (tb >= time) idx = k;
-    return idx;
+  const ramp = (x) => {
+    const c = Math.min(Math.max(x, 0), 1);
+    return c * c * (3 - 2 * c);
+  };
+  // Opacidade de um estilo: soma dos trechos em que ele é o ativo, com rampas
+  // centradas em cada troca (o estilo que sai e o que entra se cruzam).
+  const alphaOf = (k) => (tb) => {
+    let a = 0;
+    switches.forEach(([start, idx], i) => {
+      if (idx !== k) return;
+      const end = i + 1 < switches.length ? switches[i + 1][0] : Infinity;
+      const enter = i === 0 ? 1 : ramp((tb - start) / crossfade + 0.5);
+      const leave = end === Infinity ? 1 : ramp((end - tb) / crossfade + 0.5);
+      a = Math.max(a, enter * leave);
+    });
+    return a;
   };
   return styles.map((style, k) =>
     word(text, t, {
       ...o,
       ...style,
       in: k === 0 ? o.in : { type: 'none' },
-      visibleAt: (tb) => activeAt(tb) === k,
+      alphaAt: alphaOf(k),
     }),
   );
 }
@@ -376,9 +401,27 @@ function stack(text, t, rows, o = {}) {
 }
 
 export const WORDS = [
-  // 0–2 s · VOCÊ NÃO VÊ. — um bloco só, linhas coladas, três estilos:
-  // Poppins Light, Poppins ExtraBold Itálico (azul) e Stretch Pro.
-  word('VOCÊ NÃO', [-0.12, 1.88], {
+  // 0–2 s · VOCÊ NÃO VÊ
+  // Fundo: "INVISÍVEL" gigante, esticada na altura do quadro, passando devagar atrás de
+  // tudo em azul quase apagado (o que a placa é: invisível).
+  word('INVISÍVEL', [-0.4, 2.3], {
+    layer: 'far',
+    font: 'condensed',
+    size: 'huge',
+    color: 'jfaBlue',
+    opacity: 0.1,
+    x: -6,
+    y: 50,
+    align: 'left',
+    fit: 2.3,
+    fitY: 1.06,
+    drift: [-88, 0],
+    stretch: 0.18,
+    fade: [0.35, 0.4],
+  }),
+  // Um bloco só, linhas coladas, três estilos: Poppins Light, Poppins ExtraBold
+  // Itálico (azul) e, no "VÊ", a troca de fonte. As entradas se sobrepõem.
+  word('VOCÊ NÃO', [-0.12, 1.98], {
     parts: [
       { text: 'VOCÊ', weight: 300, tracking: 1.5 },
       { text: 'NÃO', weight: 800, italic: true, color: 'electricBlue', delay: 0.09, gap: 0.24 },
@@ -386,23 +429,29 @@ export const WORDS = [
     size: 44,
     y: 12.4,
     in: { type: 'mask', dur: 0.46 },
-    out: { type: 'mask', dur: 0.2 },
+    out: { type: 'mask', dur: 0.3 },
   }),
-  // "VÊ" não para quieto: troca de fonte em ritmo (rápido, rápido, pausa) e trava
-  // na Stretch Pro para a leitura final.
+  // "VÊ" não para quieto: troca de fonte em ritmo (rápido, rápido, médio) com fusão
+  // curta entre as fontes, já durante a entrada, e trava na Stretch Pro no fim.
   ...fontCycle(
     'VÊ',
-    [0.14, 1.95],
+    [0.02, 2.0],
     [
       { font: 'wide', size: 90 },
       { font: 'serif', italic: true, size: 124 },
-      { font: 'sans', weight: 900, size: 110 },
+      { font: 'sans', weight: 900, size: 102 },
       { font: 'condensed', size: 98 },
-      { font: 'sans', weight: 300, italic: true, size: 110 },
-      { font: 'sans', weight: 800, italic: true, outline: true, size: 110 },
+      { font: 'sans', weight: 300, italic: true, size: 104 },
+      { font: 'sans', weight: 800, italic: true, outline: true, size: 104 },
     ],
-    { from: 0.56, lock: 1.5, rhythm: [0.067, 0.067, 0.2], order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5, 3, 1] },
-    { y: 23.3, in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.2 } },
+    {
+      from: 0.3,
+      lock: 1.55,
+      rhythm: [0.067, 0.067, 0.133],
+      order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5, 3, 1, 2, 4, 5],
+      crossfade: 0.06,
+    },
+    { y: 23.3, in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.3 } },
   ),
 
   // 2–4,4 s · MAS / ELA / ESTÁ / EM TUDO.
