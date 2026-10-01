@@ -18,13 +18,13 @@
   display: none;
 }
 
-/* Entrada: tudo começa 300ms depois do carregamento, com fade (o fundo e o conteúdo). */
+/* Entrada: tudo começa 550ms depois do carregamento, com fade (o fundo e o conteúdo). */
 .parts-launch.is-open .parts-launch-backdrop {
-  animation: partsLaunchFadeIn 0.6s ease 0.3s both;
+  animation: partsLaunchFadeIn 0.6s ease 0.55s both;
 }
 
 .parts-launch.is-open .parts-launch-box {
-  animation: partsLaunchFadeIn 1.1s ease 0.3s both;
+  animation: partsLaunchFadeIn 1.1s ease 0.55s both;
 }
 
 .parts-launch.is-closing {
