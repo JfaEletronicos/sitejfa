@@ -133,11 +133,15 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Vídeo: o maior possível dentro da tela (16:9), sem moldura. */
+/* Vídeo: mais largo que 16:9 (quadro panorâmico, o vídeo preenche com um
+   leve recorte em cima e embaixo), o maior possível dentro da tela, com
+   cantos arredondados. */
 .parts-launch-media {
   flex: none;
-  width: min(100%, 1280px, calc((100svh - 190px) * 16 / 9));
-  aspect-ratio: 16 / 9;
+  width: min(100%, 1600px, calc((100svh - 190px) * 2.1));
+  aspect-ratio: 2.1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
   background: #000;
 }
 
@@ -189,11 +193,16 @@ html.has-parts-launch {
   }
 }
 
-/* Celular em pé: vídeo de ponta a ponta. */
+/* Celular em pé: vídeo quase de ponta a ponta, em 16:9 (no panorâmico ficaria baixo demais). */
 @media (max-width: 640px) and (orientation: portrait) {
   .parts-launch {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .parts-launch-media {
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
   }
 
   .parts-launch-title,
