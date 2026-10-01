@@ -81,8 +81,17 @@
   clip-path: inset(-40% -25% 0 -25%);
 }
 
+/* Famílias: Poppins (padrão), Stretch Pro (larga), Anton (condensada) e Instrument Serif. */
 .sk-part.is-wide {
   font-family: 'Stretch Pro', 'Poppins', sans-serif;
+}
+
+.sk-part.is-condensed {
+  font-family: 'Anton', 'Poppins', sans-serif;
+}
+
+.sk-part.is-serif {
+  font-family: 'Instrument Serif', Georgia, serif;
 }
 
 .sk-part.is-italic {

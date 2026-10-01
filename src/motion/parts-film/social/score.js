@@ -324,6 +324,36 @@ const word = (text, t, o = {}) => ({
   ...o,
 });
 
+/**
+ * Troca de fonte: a mesma palavra em vários estilos, no mesmo lugar, um visível por vez.
+ * Ritmo em ciclos (ex.: rápido, rápido, pausa) entre `from` e `lock`; antes e depois
+ * fica o primeiro estilo da lista.
+ */
+function fontCycle(text, t, styles, { from, lock, rhythm, order }, o = {}) {
+  const switches = [[t[0], 0]];
+  let at = from;
+  let i = 0;
+  while (at < lock) {
+    switches.push([at, order[i % order.length]]);
+    at += rhythm[i % rhythm.length];
+    i++;
+  }
+  switches.push([lock, 0]);
+  const activeAt = (tb) => {
+    let idx = 0;
+    for (const [time, k] of switches) if (tb >= time) idx = k;
+    return idx;
+  };
+  return styles.map((style, k) =>
+    word(text, t, {
+      ...o,
+      ...style,
+      in: k === 0 ? o.in : { type: 'none' },
+      visibleAt: (tb) => activeAt(tb) === k,
+    }),
+  );
+}
+
 /** Pilha de linhas repetidas que se abre a partir do centro (explosão tipográfica). */
 function stack(text, t, rows, o = {}) {
   const out = [];
@@ -358,13 +388,22 @@ export const WORDS = [
     in: { type: 'mask', dur: 0.46 },
     out: { type: 'mask', dur: 0.2 },
   }),
-  word('VÊ.', [0.14, 1.95], {
-    font: 'wide',
-    size: 90,
-    y: 22.6,
-    in: { type: 'mask', dur: 0.5 },
-    out: { type: 'mask', dur: 0.2 },
-  }),
+  // "VÊ" não para quieto: troca de fonte em ritmo (rápido, rápido, pausa) e trava
+  // na Stretch Pro para a leitura final.
+  ...fontCycle(
+    'VÊ',
+    [0.14, 1.95],
+    [
+      { font: 'wide', size: 90 },
+      { font: 'serif', italic: true, size: 124 },
+      { font: 'sans', weight: 900, size: 110 },
+      { font: 'condensed', size: 98 },
+      { font: 'sans', weight: 300, italic: true, size: 110 },
+      { font: 'sans', weight: 800, italic: true, outline: true, size: 110 },
+    ],
+    { from: 0.56, lock: 1.5, rhythm: [0.067, 0.067, 0.2], order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5, 3, 1] },
+    { y: 23.3, in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.2 } },
+  ),
 
   // 2–4,4 s · MAS / ELA / ESTÁ / EM TUDO.
   word('MAS', [1.95, 2.36], {
@@ -390,7 +429,7 @@ export const WORDS = [
     fx: [{ preset: 'warp', at: 0, dur: 0.5 }],
     drift: [-3, 0],
   }),
-  ...stack('EM TUDO.', [3.36, 4.42], 7, {
+  ...stack('EM TUDO', [3.36, 4.42], 7, {
     size: 'large',
     fit: 1.08,
     gap: 12.5,
@@ -400,7 +439,7 @@ export const WORDS = [
   }),
 
   // 4,4–6,5 s · CONTROLE. / ENERGIA.
-  word('CONTROLE.', [4.42, 5.45], {
+  word('CONTROLE', [4.42, 5.45], {
     x: -6,
     y: 31,
     align: 'left',
@@ -409,7 +448,7 @@ export const WORDS = [
     drift: [4, 0],
     fx: [{ preset: 'stretch', at: 0, dur: 0.34 }],
   }),
-  word('CONTROLE.', [4.6, 5.45], {
+  word('CONTROLE', [4.6, 5.45], {
     x: 50,
     y: 83,
     size: 'medium',
@@ -418,7 +457,7 @@ export const WORDS = [
     in: { type: 'slideLeft', dur: 0.24 },
     drift: [-6, 0],
   }),
-  word('ENERGIA.', [5.45, 6.45], {
+  word('ENERGIA', [5.45, 6.45], {
     font: 'wide',
     x: 25,
     y: 50,
@@ -432,7 +471,7 @@ export const WORDS = [
   }),
 
   // 7,1–10,8 s · PRECISÃO. / CON–EXÃO. / TECNOLO–GIA / TECNOLOGIA
-  word('PRECISÃO.', [7.12, 8.3], {
+  word('PRECISÃO', [7.12, 8.3], {
     y: 30,
     fit: 1.12,
     sy: 1.2,
@@ -447,7 +486,7 @@ export const WORDS = [
     in: { type: 'squeeze', dur: 0.2 },
     drift: [-3, 0],
   }),
-  word('EXÃO.', [8.5, 9.42], {
+  word('EXÃO', [8.5, 9.42], {
     y: 81,
     fit: 0.98,
     sy: 1.75,
@@ -462,7 +501,7 @@ export const WORDS = [
     in: { type: 'slideLeft', dur: 0.2 },
     drift: [-3, 0],
   }),
-  word('GIA.', [9.5, 10.14], {
+  word('GIA', [9.5, 10.14], {
     x: 103,
     y: 83,
     align: 'right',
@@ -486,7 +525,7 @@ export const WORDS = [
   }),
 
   // 10,8–12,75 s · CAOS
-  word('CONTROLE.', [10.78, 11.06], {
+  word('CONTROLE', [10.78, 11.06], {
     layer: 'front',
     color: 'black',
     x: 86,
@@ -496,7 +535,7 @@ export const WORDS = [
     fitAxis: 'y',
     in: { type: 'slideDown', dur: 0.16 },
   }),
-  word('ENERGIA.', [11.06, 11.33], {
+  word('ENERGIA', [11.06, 11.33], {
     layer: 'front',
     font: 'wide',
     x: -12,
@@ -506,7 +545,7 @@ export const WORDS = [
     fit: 1.25,
     fx: [{ preset: 'smear', at: 0, dur: 0.27 }],
   }),
-  word('PRECISÃO.', [11.33, 11.6], {
+  word('PRECISÃO', [11.33, 11.6], {
     layer: 'front',
     color: 'black',
     x: -18,
@@ -516,14 +555,14 @@ export const WORDS = [
     sy: 1.3,
     in: { type: 'zoom', dur: 0.14 },
   }),
-  word('CONEXÃO.', [11.6, 11.88], {
+  word('CONEXÃO', [11.6, 11.88], {
     layer: 'front',
     y: 50,
     fit: 1.0,
     sy: 2.1,
     fx: [{ preset: 'glitch', at: 0, dur: 0.28 }],
   }),
-  word('TECNOLOGIA.', [11.88, 12.16], {
+  word('TECNOLOGIA', [11.88, 12.16], {
     layer: 'front',
     color: 'electricBlue',
     x: 102,
@@ -554,7 +593,7 @@ export const WORDS = [
     out: { type: 'fade', dur: 0.3 },
     drift: [0, -1.2],
   }),
-  word('POR DENTRO.', [13.35, 15.3], {
+  word('POR DENTRO', [13.35, 15.3], {
     size: 'large',
     weight: 800,
     y: 90,
@@ -590,7 +629,7 @@ export const WORDS = [
     fitMode: 'uniform',
     in: { type: 'zoom', dur: 0.24 },
   }),
-  word('TECNOLOGIA QUE FAZ ACONTECER.', [17.55, 20], {
+  word('TECNOLOGIA QUE FAZ ACONTECER', [17.55, 20], {
     size: 'medium',
     weight: 700,
     y: 87.6,

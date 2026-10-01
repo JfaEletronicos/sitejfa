@@ -154,6 +154,7 @@ const partsOf = (w) =>
     },
   ];
 const isMask = (w) => w.in.type === 'mask' || w.out.type === 'mask';
+const SINGLE_WEIGHT = new Set(['wide', 'condensed', 'serif']);
 /** Tamanho de referência (px numa tela de 390 px): número ou huge/large/medium. */
 const sizeOf = (w) => (typeof w.size === 'number' ? w.size : TYPO[`${w.size}Size`]);
 
@@ -170,6 +171,8 @@ function popScale(k, from, peak) {
 function wordPose(w, tb, m, frame) {
   const [t0, t1] = w.t;
   if (tb < t0 || tb >= t1) return null;
+  // Troca de fonte: várias versões da mesma palavra no mesmo lugar, uma visível por vez.
+  if (w.visibleAt && !w.visibleAt(tb)) return null;
   const { width: W, height: H } = frame;
   const lt = tb - t0;
   const pl = lt / (t1 - t0);
@@ -221,6 +224,9 @@ function wordPose(w, tb, m, frame) {
       break;
     case 'mask':
       // Cada parte sobe de dentro da própria linha (calculado abaixo).
+      break;
+    case 'none':
+      // Aparece no lugar, sem animação (troca de fonte).
       break;
     default:
       // Corte: já entra grande e assenta.
@@ -337,7 +343,7 @@ export default {
       node.setAttribute('aria-hidden', 'true');
       const parts = partsOf(w).map((part) => {
         const wrap = el(
-          `sk-part${part.outline ? ' is-outline' : ''}${part.font === 'wide' ? ' is-wide' : ''}${part.italic ? ' is-italic' : ''}`,
+          `sk-part is-${part.font || 'sans'}${part.outline ? ' is-outline' : ''}${part.italic ? ' is-italic' : ''}`,
           node,
           'span',
         );
@@ -368,7 +374,8 @@ export default {
         node.style.fontSize = `${size}px`;
         item.parts.forEach(({ part, wrap }, i) => {
           wrap.style.fontSize = `${size * (part.scale || 1)}px`;
-          wrap.style.fontWeight = part.font === 'wide' ? 400 : part.weight || TYPO.weight;
+          // Stretch Pro, Anton e Instrument Serif têm um peso só.
+          wrap.style.fontWeight = SINGLE_WEIGHT.has(part.font) ? 400 : part.weight || TYPO.weight;
           wrap.style.letterSpacing = `${(part.tracking ?? TYPO.tracking) * u}px`;
           wrap.style.marginLeft = i > 0 ? `${part.gap ?? 0.26}em` : '0';
           wrap.style.setProperty('--c', inkColor(part.color || 'white'));
@@ -703,6 +710,9 @@ export default {
       ...['300', '700', '800', '900'].map((wgt) => document.fonts?.load(`${wgt} 100px Poppins`, sample)),
       ...['300', '800'].map((wgt) => document.fonts?.load(`italic ${wgt} 100px Poppins`, sample)),
       document.fonts?.load('100px "Stretch Pro"', `${sample} ENERGIA JFA PARTS`),
+      document.fonts?.load('100px Anton', sample),
+      document.fonts?.load('italic 100px "Instrument Serif"', sample),
+      document.fonts?.load('100px "Instrument Serif"', sample),
     ]).catch(() => {});
 
     return {
