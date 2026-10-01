@@ -109,6 +109,7 @@ Analytics: a tag do Google (GA4, `G-MHE0NRXPLR`) fica no `<head>` do `index.html
 
 - `dev`: integração e testes (preview na Vercel).
 - `master`: produção.
+- `parts`: versão de testes do lançamento da JFA Parts (igual à `dev`, com `SHOW_PARTS = true`). Preview: https://sitejfa-git-parts-jfa2.vercel.app. Não vai para a `master` até o lançamento; quando a `dev` mudar, ela é trazida para a `parts` com merge.
 
 ### Regra de deploy
 

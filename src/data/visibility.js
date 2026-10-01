@@ -8,4 +8,5 @@
  * "OCULTO: Moov/Parts"; com `true`, o site volta idêntico ao que era antes.
  */
 export const SHOW_MOOV = false;
-export const SHOW_PARTS = false;
+// Branch `parts`: versão de testes do lançamento da JFA Parts (o Parts aparece aqui).
+export const SHOW_PARTS = true;
