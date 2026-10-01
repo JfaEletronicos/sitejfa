@@ -1,5 +1,6 @@
-/* Pop-up de lançamento da JFA Parts: limpo e minimalista, em Montserrat.
-   Estrutura: headline, vídeo e botão; sempre inteiro na tela (sem rolagem). */
+/* Pop-up de lançamento da JFA Parts: tela preta, o vídeo como protagonista,
+   textos pequenos e leves em Montserrat e um botão discreto. Estrutura:
+   headline, vídeo e botão; sempre inteiro na tela (sem rolagem). */
 
 .parts-launch {
   position: fixed;
@@ -8,22 +9,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: clamp(14px, 3vh, 32px) clamp(12px, 3vw, 40px);
   font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  color: #fff;
 }
 
 .parts-launch[hidden] {
   display: none;
 }
 
-/* Entrada com fade da caixa; o fundo cobre a página desde o primeiro quadro.
-   Saída: tudo some com fade. */
+/* O preto cobre a página desde o primeiro quadro; o conteúdo entra com fade. */
 .parts-launch.is-open .parts-launch-box {
-  animation: partsLaunchFadeIn 0.6s ease 0.1s both;
+  animation: partsLaunchFadeIn 1.1s ease 0.15s both;
 }
 
 .parts-launch.is-closing {
-  animation: partsLaunchFadeOut 0.35s ease both;
+  animation: partsLaunchFadeOut 0.45s ease both;
 }
 
 @keyframes partsLaunchFadeIn {
@@ -47,7 +48,7 @@
 .parts-launch-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(3, 8, 20, 0.88);
+  background: #000;
 }
 
 .parts-launch-box {
@@ -55,13 +56,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(14px, 2.2vh, 22px);
-  width: min(100%, 720px);
-  max-height: calc(100svh - 32px);
-  padding: clamp(22px, 4vh, 36px) clamp(18px, 3vw, 36px);
-  border-radius: 16px;
-  background: #fff;
-  color: #0b1528;
+  gap: clamp(14px, 2.6vh, 26px);
+  width: 100%;
+  max-height: 100%;
   text-align: center;
 }
 
@@ -69,68 +66,74 @@
   outline: none;
 }
 
+/* Fechar: no canto da tela, fino. */
 .parts-launch-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  position: fixed;
+  top: clamp(10px, 2.2vh, 22px);
+  right: clamp(10px, 2.2vw, 26px);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   cursor: pointer;
-  color: #0b1528;
+  color: rgba(255, 255, 255, 0.6);
   background: transparent;
+  transition: color 0.25s ease;
 }
 
 .parts-launch-close:hover,
 .parts-launch-close:focus-visible {
-  background: #eef1f6;
+  color: #fff;
 }
 
 .parts-launch-close svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
+.parts-launch-close path {
+  stroke-width: 1.4;
+}
+
+/* Textos pequenos e leves. */
 .parts-launch-title {
   margin: 0;
-  padding: 0 28px;
+  padding: 0 44px;
   font-family: inherit;
-  font-weight: 600;
-  font-size: clamp(20px, 2.4vw, 28px);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: #0b1528;
+  font-weight: 300;
+  font-size: clamp(13px, 1.1vw, 16px);
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .parts-launch-title strong {
-  font-weight: 700;
-  color: #0068ff;
+  font-weight: 500;
+  color: #fff;
 }
 
 .parts-launch-text {
   display: block;
-  margin-top: 8px;
-  font-weight: 400;
-  font-size: clamp(14px, 1.2vw, 16px);
-  line-height: 1.5;
-  letter-spacing: 0;
-  color: #4a5568;
+  margin-top: 6px;
+  font-weight: 300;
+  font-size: clamp(11.5px, 0.85vw, 13px);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-/* Vídeo 16:9 limitado pela altura da tela, para o pop-up nunca precisar rolar. */
+/* Vídeo: o maior possível dentro da tela (16:9), sem moldura. */
 .parts-launch-media {
-  width: min(100%, calc((100svh - 300px) * 16 / 9));
-  aspect-ratio: 16 / 9;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #000;
   flex: none;
+  width: min(100%, 1280px, calc((100svh - 190px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  background: #000;
 }
 
 .parts-launch-video {
@@ -140,23 +143,32 @@
   object-fit: cover;
 }
 
+/* Botão discreto: só o contorno fino. */
 .parts-launch-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 13px 34px;
-  border-radius: 8px;
+  padding: 11px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
   font-family: inherit;
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: #fff;
-  background: #0068ff;
-  transition: background 0.2s ease;
+  background: transparent;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .parts-launch-cta:hover,
 .parts-launch-cta:focus-visible {
-  background: #0052cc;
+  background: #fff;
+  border-color: #fff;
+  color: #000;
 }
 
 /* Com o pop-up aberto, a página por trás não rola. */
@@ -168,5 +180,23 @@ html.has-parts-launch {
   .parts-launch.is-open .parts-launch-box,
   .parts-launch.is-closing {
     animation: none;
+  }
+}
+
+/* Celular em pé: vídeo de ponta a ponta. */
+@media (max-width: 640px) and (orientation: portrait) {
+  .parts-launch {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .parts-launch-title,
+  .parts-launch-text {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .parts-launch-title .parts-launch-text {
+    padding: 0;
   }
 }
