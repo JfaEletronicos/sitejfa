@@ -31,6 +31,20 @@ O botão **Categorias** do header (`behaviors/header.js`) abre um menu em leque 
 
 O `<StrictMode>` fica desligado de propósito, porque os comportamentos devem ser montados uma única vez.
 
+### Filme da JFA Parts
+
+`parts-filme.html` é uma segunda entrada do Vite (`vite.config.js`), independente do `App`: não monta React, header, rodapé nem os comportamentos do site. O módulo fica em `src/motion/parts-film/`:
+
+| Arquivo       | Papel                                                                                                                                                                                                                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `timeline.js` | A "partitura": duração, atos, textos, marcações de som, spline da câmera e trilhas de luz, reflexos, fundo, desfoque e rotação da placa                                                                                                                                                          |
+| `tracks.js`   | Curvas cubic-bezier, trilhas por marcação e spline de Hermite com nós no tempo (velocidade contínua, sem "freadas" nas marcações)                                                                                                                                                                |
+| `stage.js`    | three.js: carrega o GLB real (as malhas só são agrupadas por material, sem mudar geometria nem materiais), estúdio procedural para os reflexos (PMREM), spot com sombra, contraluz, preenchimento e um shader de composição (profundidade de campo, bloom discreto, fundo radial, vinheta, fade) |
+| `film.js`     | Estado de cada instante (função pura do tempo), relógio, play/pausa/seek, textos em DOM e eventos das marcações de som                                                                                                                                                                           |
+| `main.js`     | Página: baixa o modelo em paralelo com o three.js, proporção do quadro, controles, qualidade adaptativa, "reduzir movimento", fallback sem WebGL e régua `?debug`                                                                                                                                |
+
+O loop de `requestAnimationFrame` só roda enquanto o filme toca e para no último quadro. Como cada quadro depende só do tempo, pausar, voltar ou gravar quadro a quadro dá sempre a mesma imagem.
+
 ## Contexto compartilhado (`behaviors/context.js`)
 
 | Campo                    | Uso                                                                          |

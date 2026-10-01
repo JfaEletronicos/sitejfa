@@ -1,0 +1,330 @@
+/* Filme da JFA Parts: palco escuro, tipografia mínima (Poppins light) e nada mais. */
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-variant-ligatures: none;
+}
+
+.pf-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* Quadro do filme: ocupa a janela ou a proporção pedida em ?format= */
+.pf-frame {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #05070a;
+  container-type: size;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pf-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+}
+
+/* ---------- Textos ---------- */
+
+.pf-copy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pf-line {
+  --rise: 1;
+  --grow: 1;
+  --rise-dist: 1.5cqmin;
+  --grow-amt: 0;
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: var(--y);
+  margin: 0;
+  text-align: center;
+  color: #eef2f8;
+  opacity: 0;
+  visibility: hidden;
+  font-weight: 300;
+  line-height: 1.2;
+  transform: translate3d(0, calc(-50% + var(--rise) * var(--rise-dist)), 0)
+    scale(calc(1 - var(--grow) * var(--grow-amt)));
+  will-change: opacity, transform;
+}
+
+.pf-question {
+  --y: 25%;
+  font-size: max(14px, 2.5cqmin);
+  letter-spacing: 0.045em;
+  color: rgba(238, 242, 248, 0.86);
+}
+
+.pf-manifesto {
+  --y: 21%;
+  --rise-dist: 1.9cqmin;
+  font-size: max(26px, 5.6cqmin);
+  letter-spacing: 0.012em;
+  line-height: 1.1;
+  color: #f5f7fb;
+}
+
+.pf-caption {
+  --y: 80.5%;
+  font-size: max(13px, 2.2cqmin);
+  letter-spacing: 0.07em;
+  color: rgba(238, 242, 248, 0.7);
+}
+
+/* Assinatura: só fade + leve scale (sem deslocamento). */
+.pf-brand,
+.pf-brandSub {
+  --rise-dist: 0px;
+  --grow-amt: 0.035;
+}
+
+.pf-brand {
+  --y: 77.5%;
+  font-size: max(22px, 4.2cqmin);
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  /* compensa o espaçamento após a última letra para centralizar de verdade */
+  text-indent: 0.42em;
+  color: #f7f9fc;
+}
+
+.pf-brandSub {
+  --y: 83.6%;
+  font-size: max(12px, 1.95cqmin);
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: rgba(238, 242, 248, 0.7);
+}
+
+/* Vertical: placa alinhada à altura; textos nas faixas de cima e de baixo. */
+.pf-frame[data-orient='portrait'] .pf-manifesto {
+  --y: 12%;
+  font-size: max(24px, 6.6cqmin);
+}
+
+.pf-frame[data-orient='portrait'] .pf-question {
+  font-size: max(13px, 3cqmin);
+}
+
+.pf-frame[data-orient='portrait'] .pf-caption {
+  --y: 87%;
+  font-size: max(12px, 2.5cqmin);
+}
+
+.pf-frame[data-orient='portrait'] .pf-brand {
+  --y: 84%;
+  font-size: max(20px, 4.6cqmin);
+}
+
+.pf-frame[data-orient='portrait'] .pf-brandSub {
+  --y: 88.6%;
+  font-size: max(11px, 2.1cqmin);
+}
+
+.pf-frame[data-orient='square'] .pf-manifesto {
+  --y: 17%;
+}
+
+.pf-frame[data-orient='square'] .pf-caption,
+.pf-frame[data-orient='square'] .pf-brand {
+  --y: 82%;
+}
+
+.pf-frame[data-orient='square'] .pf-brandSub {
+  --y: 88%;
+}
+
+/* ---------- Carregamento, ações e fallback ---------- */
+
+.pf-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72px;
+  height: 1px;
+  margin-left: -36px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: opacity 0.6s ease;
+}
+
+.pf-loader-bar {
+  --p: 0;
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scaleX(var(--p));
+  transform-origin: left center;
+  transition: transform 0.25s ease;
+}
+
+.pf-loader.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pf-action {
+  position: absolute;
+  left: 50%;
+  bottom: 5.5%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: rgba(238, 242, 248, 0.78);
+  background: rgba(5, 7, 10, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.pf-action:hover,
+.pf-action:focus-visible {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.42);
+  outline: none;
+}
+
+.pf-action[hidden] {
+  display: none;
+}
+
+.pf-frame.is-fallback .pf-brand,
+.pf-frame.is-fallback .pf-brandSub {
+  transform: translate3d(0, -50%, 0);
+}
+
+.pf-frame.is-fallback .pf-brand {
+  --y: 47%;
+}
+
+.pf-frame.is-fallback .pf-brandSub {
+  --y: 54%;
+}
+
+.pf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Régua de tempo (?debug) ---------- */
+
+.pf-debug {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(10, 14, 22, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+}
+
+.pf-debug-play {
+  min-width: 56px;
+  padding: 6px 10px;
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pf-debug-track {
+  position: relative;
+  flex: 1;
+  padding-top: 16px;
+}
+
+.pf-debug-acts,
+.pf-debug-cues {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.pf-debug-acts {
+  top: 0;
+  height: 14px;
+}
+
+.pf-debug-act {
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+  padding-left: 4px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pf-debug-cues {
+  bottom: 2px;
+  height: 4px;
+}
+
+.pf-debug-cue {
+  position: absolute;
+  min-width: 2px;
+  height: 4px;
+  background: rgba(77, 149, 255, 0.85);
+  border-radius: 2px;
+}
+
+.pf-debug input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: #0068ff;
+}
+
+.pf-debug-time {
+  min-width: 52px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pf-debug-cue-label {
+  min-width: 200px;
+  color: rgba(143, 184, 255, 0.9);
+}
