@@ -137,6 +137,24 @@
   will-change: transform;
 }
 
+/* Gráficos em SVG (ex.: os olhos da cena 1). */
+.sk-graphic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.sk-graphic svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0.6em 1.2em rgba(0, 0, 0, 0.35));
+}
+
 .sk-wipe,
 .sk-mask,
 .sk-flash {

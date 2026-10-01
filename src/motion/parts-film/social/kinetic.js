@@ -22,7 +22,11 @@ import {
 } from './config';
 import { addDistortion, emptyDistortion, evalPreset } from './distortion';
 import { TRANSITIONS, emptyFx } from './transitions';
-import { SCENES, SHOTS, WORDS, BACKGROUND, BLOCKS, CUTS, FX, CUES, CAMERA_RIG } from './score';
+import { SCENES, SHOTS, WORDS, GRAPHICS, BACKGROUND, BLOCKS, CUTS, FX, CUES, CAMERA_RIG } from './score';
+import { createEyes } from './eyes';
+
+// Elementos gráficos desenhados em SVG (ver score.js → GRAPHICS).
+const GRAPHIC_TYPES = { eyes: createEyes };
 
 // Largura de referência dos tamanhos de TYPOGRAPHY (px).
 const REF_WIDTH = 390;
@@ -146,6 +150,31 @@ function keyedScale(keys, lt) {
     }
   }
   return keys[keys.length - 1][1];
+}
+
+/** Olhar: sacadas rápidas entre as marcações [tempo, -1 a 1] (tempo local do gráfico). */
+function gazeAt(g, lt) {
+  const keys = g.look;
+  let prev = 0;
+  let value = 0;
+  for (let i = 0; i < keys.length; i++) {
+    const [t, v] = keys[i];
+    if (lt < t) break;
+    prev = i > 0 ? keys[i - 1][1] : 0;
+    value = lerp(prev, v, CURVES.expoOut(clamp01((lt - t) / (g.saccade || 0.09))));
+  }
+  return value;
+}
+
+/** Abertura dos olhos: piscadas rápidas e o fechamento final (permanece fechado). */
+function openAt(g, lt) {
+  let open = 1;
+  (g.blinks || []).forEach((b) => {
+    const k = (lt - b) / 0.14;
+    if (k > 0 && k < 1) open = Math.min(open, Math.abs(k * 2 - 1));
+  });
+  if (g.closeAt != null) open = Math.min(open, 1 - EASE.soft(clamp01((lt - g.closeAt) / 0.16)));
+  return open;
 }
 
 /** Partes da palavra (uma só, por padrão, com o texto e o estilo da própria palavra). */
@@ -378,6 +407,15 @@ export default {
         return { part, wrap, ink, letters: w.split ? [...ink.children] : null };
       });
       return { w, node, parts, m: { sx: 1, sy: 1, nw: 1, nh: 1, ox: 0, oy: 0 }, shown: false };
+    });
+
+    // Gráficos (SVG) na camada indicada, por cima das palavras dela.
+    const graphics = GRAPHICS.map((g) => {
+      const layer = g.layer === 'front' ? front : g.layer === 'far' ? far : back;
+      const wrap = el('sk-graphic', layer);
+      const inst = GRAPHIC_TYPES[g.type]();
+      wrap.appendChild(inst.node);
+      return { g, wrap, inst, shown: false };
     });
 
     const frame = { width: 1080, height: 1920 };
@@ -685,6 +723,41 @@ export default {
             });
           }
         });
+      });
+
+      // Gráficos: entram com um pequeno salto, saem em fusão.
+      graphics.forEach((item) => {
+        const { g, wrap, inst } = item;
+        const on = tb >= g.t[0] && tb < g.t[1];
+        if (!on) {
+          if (item.shown) {
+            wrap.style.visibility = 'hidden';
+            item.shown = false;
+          }
+          return;
+        }
+        if (!item.shown) {
+          wrap.style.visibility = 'visible';
+          item.shown = true;
+        }
+        const lt = tb - g.t[0];
+        const ti = K('typographyIntensity');
+        const kIn = clamp01(lt / g.in.dur);
+        const kOut = clamp01((tb - (g.t[1] - g.out.dur)) / g.out.dur);
+        const scale = popScale(
+          kIn,
+          1 - 0.45 * Math.min(ti, 1),
+          Math.min(1 + (TYPO.overshoot - 1) * ti, TYPO.maxScale),
+        );
+        const opacity = EASE.soft(clamp01(lt / (g.in.dur * 0.5))) * (1 - EASE.soft(kOut));
+        const w = (g.width / 100) * W;
+        const h = w * g.aspect;
+        wrap.style.width = `${w.toFixed(1)}px`;
+        wrap.style.opacity = opacity.toFixed(3);
+        wrap.style.transform =
+          `translate3d(${((g.x / 100) * W - w / 2).toFixed(2)}px, ${((g.y / 100) * H - h / 2 + CURVES.easeIn(kOut) * 0.02 * H).toFixed(2)}px, 0) ` +
+          `rotate(${g.rotate}deg) scale(${scale.toFixed(4)})`;
+        inst.update(gazeAt(g, lt), openAt(g, lt));
       });
 
       // Painéis de transição.

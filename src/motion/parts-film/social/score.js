@@ -305,7 +305,7 @@ export const CAMERA_RIG = [
   // Cena 1: órbita da esquerda para a direita, descendo e aproximando.
   { t: -0.2, yaw: -11, pitch: 6, dolly: 0, truck: [0.02, 0] },
   { t: 1.0, yaw: -1.5, pitch: 1.5, dolly: 0.07, truck: [0, 0] },
-  { t: 2.0, yaw: 8, pitch: -3, dolly: 0.14, truck: [-0.02, 0], rest: true },
+  { t: 2.0, yaw: 8, pitch: -3, dolly: 0.11, truck: [0, 0], rest: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -427,7 +427,9 @@ export const WORDS = [
       { text: 'NÃO', weight: 800, italic: true, color: 'electricBlue', delay: 0.09, gap: 0.24 },
     ],
     size: 44,
-    y: 12.4,
+    x: 9,
+    y: 19.2,
+    align: 'left',
     in: { type: 'mask', dur: 0.46 },
     out: { type: 'mask', dur: 0.3 },
   }),
@@ -451,7 +453,7 @@ export const WORDS = [
       order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5, 3, 1, 2, 4, 5],
       crossfade: 0.06,
     },
-    { y: 23.3, in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.3 } },
+    { x: 9, y: 30.1, align: 'left', in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.3 } },
   ),
 
   // 2–4,4 s · MAS / ELA / ESTÁ / EM TUDO.
@@ -688,6 +690,35 @@ export const WORDS = [
     color: 'electricBlue',
     in: { type: 'rise', dur: 0.4 },
   }),
+];
+
+// ---------------------------------------------------------------------------
+// GRÁFICOS (SVG, sem imagem). Posição = centro, em % do quadro; largura em % da largura.
+// ---------------------------------------------------------------------------
+export const GRAPHICS = [
+  // Cena 1: olhos depois do "VÊ", entre as duas linhas, inclinados e cobrindo um
+  // pouco do texto. Olham para os lados, piscam e se fecham no fim.
+  {
+    type: 'eyes',
+    t: [0.36, 1.98],
+    layer: 'back',
+    x: 51,
+    y: 26.2,
+    width: 26,
+    aspect: 170 / 200,
+    rotate: -12,
+    in: { dur: 0.3 },
+    out: { dur: 0.3 },
+    // [tempo local (s), olhar: -1 esquerda, 1 direita]
+    look: [
+      [0.16, -1],
+      [0.46, 1],
+      [0.82, -0.75],
+      [0.98, 0.15],
+    ],
+    blinks: [0.66],
+    closeAt: 1.14,
+  },
 ];
 
 // ---------------------------------------------------------------------------
