@@ -152,16 +152,18 @@ function keyedScale(keys, lt) {
   return keys[keys.length - 1][1];
 }
 
-/** Olhar: sacadas rápidas entre as marcações [tempo, -1 a 1] (tempo local do gráfico). */
+/**
+ * Olhar entre as marcações [tempo, -1 a 1, duração (s), curva] (tempo local do gráfico).
+ * Sem duração: sacada rápida (0,09 s).
+ */
 function gazeAt(g, lt) {
   const keys = g.look;
-  let prev = 0;
   let value = 0;
   for (let i = 0; i < keys.length; i++) {
-    const [t, v] = keys[i];
+    const [t, v, dur = 0.09, ease = 'expoOut'] = keys[i];
     if (lt < t) break;
-    prev = i > 0 ? keys[i - 1][1] : 0;
-    value = lerp(prev, v, CURVES.expoOut(clamp01((lt - t) / (g.saccade || 0.09))));
+    const prev = i > 0 ? keys[i - 1][1] : 0;
+    value = dur > 0 ? lerp(prev, v, curve(ease)(clamp01((lt - t) / dur))) : v;
   }
   return value;
 }

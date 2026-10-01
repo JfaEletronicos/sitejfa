@@ -433,7 +433,7 @@ export const WORDS = [
     in: { type: 'mask', dur: 0.46 },
     out: { type: 'mask', dur: 0.3 },
   }),
-  // "VÊ" não para quieto: troca de fonte em ritmo (rápido, rápido, médio) com fusão
+  // "VÊ" não para quieto: troca de fonte em ritmo (curto, curto, longo) com fusão
   // curta entre as fontes, já durante a entrada, e trava na Stretch Pro no fim.
   ...fontCycle(
     'VÊ',
@@ -449,9 +449,9 @@ export const WORDS = [
     {
       from: 0.3,
       lock: 1.55,
-      rhythm: [0.067, 0.067, 0.133],
-      order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5, 3, 1, 2, 4, 5],
-      crossfade: 0.06,
+      rhythm: [0.1, 0.1, 0.2],
+      order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5],
+      crossfade: 0.07,
     },
     { x: 9, y: 30.1, align: 'left', in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.3 } },
   ),
@@ -697,7 +697,7 @@ export const WORDS = [
 // ---------------------------------------------------------------------------
 export const GRAPHICS = [
   // Cena 1: olhos depois do "VÊ", entre as duas linhas, inclinados e cobrindo um
-  // pouco do texto. Olham para os lados, piscam e se fecham no fim.
+  // pouco do texto. As pupilas trocam de lado uma vez, devagar, e os olhos se fecham no fim.
   {
     type: 'eyes',
     t: [0.36, 1.98],
@@ -709,15 +709,13 @@ export const GRAPHICS = [
     rotate: -12,
     in: { dur: 0.3 },
     out: { dur: 0.3 },
-    // [tempo local (s), olhar: -1 esquerda, 1 direita]
+    // [tempo local (s), olhar: -1 esquerda a 1 direita, duração (s), curva]
+    // Entra olhando para a esquerda e troca de lado uma vez só, devagar.
     look: [
-      [0.16, -1],
-      [0.46, 1],
-      [0.82, -0.75],
-      [0.98, 0.15],
+      [0, -1, 0],
+      [0.34, 1, 0.62, 'glide'],
     ],
-    blinks: [0.66],
-    closeAt: 1.14,
+    closeAt: 1.12,
   },
 ];
 

@@ -8,6 +8,7 @@
  *   ?format=16x9 | 9x16 | 1x1 | 4x5  quadro com proporção fixa (padrão: a da variante ou a janela)
  *   ?debug                          régua de tempo, marcações de som e controles da variante
  *   ?t=8.5                          começa nesse instante
+ *   ?range=0-2                      repete só esse trecho (s), para revisar uma cena
  *   ?capture                        não toca sozinho (para gravar quadro a quadro via window.partsFilm)
  */
 import './parts-film.css';
@@ -89,7 +90,15 @@ async function boot() {
   });
   window.partsFilm = film;
   const clampTime = (t) => Math.min(Math.max(t, 0), v.duration);
-  const startAt = clampTime(parseFloat(params.get('t')) || 0);
+  // ?range=a-b: revisão de um trecho, que se repete enquanto toca.
+  const range = (params.get('range') || '').split('-').map(parseFloat);
+  const hasRange = range.length === 2 && range.every(Number.isFinite) && range[1] > range[0];
+  const startAt = clampTime(parseFloat(params.get('t')) || (hasRange ? range[0] : 0));
+  if (hasRange) {
+    film.events.addEventListener('time', (e) => {
+      if (film.playing && e.detail >= range[1]) film.seek(range[0]);
+    });
+  }
 
   function layout() {
     const vw = window.innerWidth;
