@@ -1,0 +1,176 @@
+/* Pop-up de lançamento da JFA Parts */
+
+.parts-launch {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+}
+
+.parts-launch[hidden] {
+  display: none;
+}
+
+.parts-launch-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(1, 5, 16, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.parts-launch-box {
+  position: relative;
+  width: min(100%, 760px);
+  max-height: calc(100svh - 32px);
+  overflow: auto;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #071a3d 0%, #030c22 100%);
+  border: 1px solid rgba(120, 170, 255, 0.24);
+  box-shadow:
+    0 40px 90px -30px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(47, 125, 255, 0.08);
+  opacity: 0;
+  transform: translate3d(0, 18px, 0) scale(0.97);
+  transition:
+    opacity 0.3s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.parts-launch.is-open .parts-launch-backdrop,
+.parts-launch.is-open .parts-launch-box {
+  opacity: 1;
+}
+
+.parts-launch.is-open .parts-launch-box {
+  transform: none;
+}
+
+.parts-launch-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(1, 5, 16, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: background 0.2s ease;
+}
+
+.parts-launch-close:hover,
+.parts-launch-close:focus-visible {
+  background: rgba(0, 104, 255, 0.5);
+}
+
+.parts-launch-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.parts-launch-media {
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.parts-launch-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.parts-launch-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(20px, 3vw, 30px) clamp(20px, 4vw, 40px) clamp(24px, 3.4vw, 34px);
+  text-align: center;
+}
+
+.parts-launch-eyebrow {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--jfa-blue, #0068ff);
+}
+
+.parts-launch-title {
+  margin: 0;
+  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(22px, 2.6vw, 32px);
+  line-height: 1.12;
+  text-wrap: balance;
+  color: #fff;
+}
+
+.parts-launch-title em {
+  font-style: italic;
+  color: var(--jfa-blue, #0068ff);
+}
+
+.parts-launch-text {
+  margin: 0;
+  max-width: 480px;
+  font-weight: 500;
+  font-size: clamp(14.5px, 1.1vw, 16.5px);
+  line-height: 1.55;
+  color: rgba(230, 238, 255, 0.75);
+}
+
+.parts-launch-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 8px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--jfa-blue, #0068ff);
+  box-shadow: 0 12px 30px -10px rgba(0, 104, 255, 0.8);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.parts-launch-cta:hover,
+.parts-launch-cta:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -10px rgba(0, 104, 255, 0.95);
+}
+
+.parts-launch-cta svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Com o pop-up aberto, a página por trás não rola. */
+html.has-parts-launch {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parts-launch-backdrop,
+  .parts-launch-box {
+    transition: none;
+  }
+}

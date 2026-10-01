@@ -17,6 +17,7 @@ import { SectorCatalogPage, SectorProductPage } from './components/pages/SectorP
 import { SupportPage, RepresentativesPage, ManualsPage } from './components/pages/SectionPages';
 import MoovPage from './components/pages/MoovPage';
 import PartsPage from './components/pages/PartsPage';
+import PartsLaunchPopup from './components/layout/PartsLaunchPopup';
 import { initPageBehaviors } from './behaviors';
 import { SHOW_MOOV, SHOW_PARTS } from './data/visibility';
 import { IS_EXPORT } from './i18n';
@@ -81,6 +82,8 @@ export default function App() {
       <ManualsPage />
       <Footer />
       <WhatsAppFloat />
+      {/* Lançamento da JFA Parts: pop-up com o filme (só no site em português). */}
+      {SHOW_PARTS && <PartsLaunchPopup />}
     </div>
   );
 }

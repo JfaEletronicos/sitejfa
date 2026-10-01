@@ -16,6 +16,7 @@ import { initFooter } from './footer';
 import { initCampaignCarousel } from './campaignCarousel';
 import { initSectorPages } from './sectorPages';
 import { initPartsPage } from './partsPage';
+import { initPartsLaunchPopup } from './partsLaunchPopup';
 import { initRouter } from './router';
 import { initAssemble } from './assemble';
 
@@ -49,6 +50,7 @@ export function initPageBehaviors() {
   initCampaignCarousel(ctx);
   initSectorPages(ctx);
   initPartsPage(ctx);
+  initPartsLaunchPopup(ctx);
   initRouter(ctx);
   initAssemble(ctx);
 
