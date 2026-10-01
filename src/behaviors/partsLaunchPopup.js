@@ -1,47 +1,36 @@
 import { trackEvent } from '../lib/analytics';
 
 /**
- * Pop-up de lançamento da JFA Parts: abre logo depois que a página carrega
- * (uma vez por visita), toca o filme sem som e fecha pelo X, pelo fundo, pela
- * tecla Esc ou pelo "Saiba mais" (que abre a página da Parts).
+ * Pop-up de lançamento da JFA Parts. Já vem aberto no HTML (ver
+ * PartsLaunchPopup.jsx) e entra com fade; aqui ficam o vídeo, o foco e o
+ * fechamento (X, fundo, Esc ou "Saiba mais"). Uma vez por visita.
  * @param {import('./context').BehaviorContext} ctx
  */
 function initPartsLaunchPopup(ctx) {
-  const { root, on, cleanups } = ctx;
+  const { root, on } = ctx;
   const popup = root.getElementById('partsLaunch');
   if (!popup) return;
   const video = root.getElementById('partsLaunchVideo');
   const cta = root.getElementById('partsLaunchCta');
   const KEY = 'jfa-parts-launch-seen';
-  let lastFocus = null;
 
-  const open = () => {
-    lastFocus = document.activeElement;
-    popup.hidden = false;
-    document.documentElement.classList.add('has-parts-launch');
-    requestAnimationFrame(() => popup.classList.add('is-open'));
-    if (video) {
-      video.preload = 'auto';
-      if (!ctx.reduceMotion) {
-        const p = video.play();
-        if (p && p.catch) p.catch(() => {});
-      }
-    }
-    if (cta) cta.focus({ preventScroll: true });
-    trackEvent('parts_launch_popup_view');
-  };
   const close = (reason) => {
-    if (popup.hidden) return;
-    popup.classList.remove('is-open');
+    if (popup.hidden || popup.classList.contains('is-closing')) return;
+    popup.classList.add('is-closing');
     document.documentElement.classList.remove('has-parts-launch');
     if (video) video.pause();
     try {
       sessionStorage.setItem(KEY, '1');
     } catch {
-      /* sem armazenamento: o pop-up pode voltar na próxima página aberta */
+      /* sem armazenamento: pode voltar na próxima página aberta */
     }
-    setTimeout(() => (popup.hidden = true), ctx.reduceMotion ? 0 : 320);
-    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    setTimeout(
+      () => {
+        popup.hidden = true;
+        popup.classList.remove('is-open', 'is-closing');
+      },
+      ctx.reduceMotion ? 0 : 350,
+    );
     trackEvent('parts_launch_popup_close', { reason });
   };
 
@@ -54,7 +43,6 @@ function initPartsLaunchPopup(ctx) {
   on(document, 'keydown', (e) => {
     if (popup.hidden) return;
     if (e.key === 'Escape') close('esc');
-    // Mantém o foco dentro do pop-up.
     if (e.key === 'Tab') {
       const items = Array.from(popup.querySelectorAll('button, a[href]'));
       const first = items[0];
@@ -69,16 +57,18 @@ function initPartsLaunchPopup(ctx) {
     }
   });
 
-  let seen = false;
-  try {
-    seen = sessionStorage.getItem(KEY) === '1';
-  } catch {
-    /* sem armazenamento: mostra */
-  }
-  // Quem já chega pela página da Parts não precisa do convite.
-  if (!seen && !/^#\/setores\/parts/.test(location.hash)) {
-    const t = setTimeout(open, 600);
-    cleanups.push(() => clearTimeout(t));
+  if (!popup.hidden) {
+    document.documentElement.classList.add('has-parts-launch');
+    const box = root.getElementById('partsLaunchBox');
+    if (box) box.focus({ preventScroll: true });
+    if (video) {
+      if (ctx.reduceMotion) video.pause();
+      else {
+        const p = video.play();
+        if (p && p.catch) p.catch(() => {});
+      }
+    }
+    trackEvent('parts_launch_popup_view');
   }
 }
 export { initPartsLaunchPopup };

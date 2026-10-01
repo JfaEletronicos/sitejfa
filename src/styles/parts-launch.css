@@ -1,4 +1,5 @@
-/* Pop-up de lançamento da JFA Parts */
+/* Pop-up de lançamento da JFA Parts: limpo e minimalista, em Montserrat.
+   Estrutura: headline, vídeo e botão; sempre inteiro na tela (sem rolagem). */
 
 .parts-launch {
   position: fixed;
@@ -7,71 +8,87 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(16px, 4vw, 40px);
+  padding: 16px;
+  font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
 }
 
 .parts-launch[hidden] {
   display: none;
 }
 
+/* Entrada com fade da caixa; o fundo cobre a página desde o primeiro quadro.
+   Saída: tudo some com fade. */
+.parts-launch.is-open .parts-launch-box {
+  animation: partsLaunchFadeIn 0.6s ease 0.1s both;
+}
+
+.parts-launch.is-closing {
+  animation: partsLaunchFadeOut 0.35s ease both;
+}
+
+@keyframes partsLaunchFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes partsLaunchFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .parts-launch-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(1, 5, 16, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: rgba(3, 8, 20, 0.88);
 }
 
 .parts-launch-box {
   position: relative;
-  width: min(100%, 760px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.2vh, 22px);
+  width: min(100%, 720px);
   max-height: calc(100svh - 32px);
-  overflow: auto;
-  border-radius: 22px;
-  background: linear-gradient(180deg, #071a3d 0%, #030c22 100%);
-  border: 1px solid rgba(120, 170, 255, 0.24);
-  box-shadow:
-    0 40px 90px -30px rgba(0, 0, 0, 0.8),
-    0 0 0 1px rgba(47, 125, 255, 0.08);
-  opacity: 0;
-  transform: translate3d(0, 18px, 0) scale(0.97);
-  transition:
-    opacity 0.3s ease,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: clamp(22px, 4vh, 36px) clamp(18px, 3vw, 36px);
+  border-radius: 16px;
+  background: #fff;
+  color: #0b1528;
+  text-align: center;
 }
 
-.parts-launch.is-open .parts-launch-backdrop,
-.parts-launch.is-open .parts-launch-box {
-  opacity: 1;
-}
-
-.parts-launch.is-open .parts-launch-box {
-  transform: none;
+.parts-launch-box:focus {
+  outline: none;
 }
 
 .parts-launch-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
+  top: 10px;
+  right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   cursor: pointer;
-  color: #fff;
-  background: rgba(1, 5, 16, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  transition: background 0.2s ease;
+  color: #0b1528;
+  background: transparent;
 }
 
 .parts-launch-close:hover,
 .parts-launch-close:focus-visible {
-  background: rgba(0, 104, 255, 0.5);
+  background: #eef1f6;
 }
 
 .parts-launch-close svg {
@@ -79,9 +96,41 @@
   height: 18px;
 }
 
+.parts-launch-title {
+  margin: 0;
+  padding: 0 28px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: #0b1528;
+}
+
+.parts-launch-title strong {
+  font-weight: 700;
+  color: #0068ff;
+}
+
+.parts-launch-text {
+  display: block;
+  margin-top: 8px;
+  font-weight: 400;
+  font-size: clamp(14px, 1.2vw, 16px);
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: #4a5568;
+}
+
+/* Vídeo 16:9 limitado pela altura da tela, para o pop-up nunca precisar rolar. */
 .parts-launch-media {
+  width: min(100%, calc((100svh - 300px) * 16 / 9));
   aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
   background: #000;
+  flex: none;
 }
 
 .parts-launch-video {
@@ -91,76 +140,23 @@
   object-fit: cover;
 }
 
-.parts-launch-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: clamp(20px, 3vw, 30px) clamp(20px, 4vw, 40px) clamp(24px, 3.4vw, 34px);
-  text-align: center;
-}
-
-.parts-launch-eyebrow {
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--jfa-blue, #0068ff);
-}
-
-.parts-launch-title {
-  margin: 0;
-  font-family: 'Stretch Pro', 'Poppins', 'Segoe UI', system-ui, sans-serif;
-  font-weight: 400;
-  text-transform: uppercase;
-  font-size: clamp(22px, 2.6vw, 32px);
-  line-height: 1.12;
-  text-wrap: balance;
-  color: #fff;
-}
-
-.parts-launch-title em {
-  font-style: italic;
-  color: var(--jfa-blue, #0068ff);
-}
-
-.parts-launch-text {
-  margin: 0;
-  max-width: 480px;
-  font-weight: 500;
-  font-size: clamp(14.5px, 1.1vw, 16.5px);
-  line-height: 1.55;
-  color: rgba(230, 238, 255, 0.75);
-}
-
 .parts-launch-cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.5em;
-  margin-top: 8px;
-  padding: 14px 30px;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  justify-content: center;
+  padding: 13px 34px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
   color: #fff;
-  background: var(--jfa-blue, #0068ff);
-  box-shadow: 0 12px 30px -10px rgba(0, 104, 255, 0.8);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  background: #0068ff;
+  transition: background 0.2s ease;
 }
 
 .parts-launch-cta:hover,
 .parts-launch-cta:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 36px -10px rgba(0, 104, 255, 0.95);
-}
-
-.parts-launch-cta svg {
-  width: 16px;
-  height: 16px;
+  background: #0052cc;
 }
 
 /* Com o pop-up aberto, a página por trás não rola. */
@@ -169,8 +165,8 @@ html.has-parts-launch {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .parts-launch-backdrop,
-  .parts-launch-box {
-    transition: none;
+  .parts-launch.is-open .parts-launch-box,
+  .parts-launch.is-closing {
+    animation: none;
   }
 }
