@@ -2,6 +2,10 @@
  * Palco 3D do filme: carrega o modelo REAL da placa LB1004 (GLB), monta um estúdio
  * escuro com luzes nativas do three.js e faz a composição final num único shader
  * (profundidade de campo, bloom discreto, fundo radial, vinheta e fade).
+ * Com `transparent`, o fundo fica transparente (a variante social põe tipografia
+ * atrás e na frente da placa) e o shader aplica as distorções de tela da variante
+ * (onda, separação de cor e desfoque direcional), sempre sobre a imagem: o modelo
+ * em si nunca é deformado.
  *
  * A geometria e os materiais do modelo não são alterados: as malhas só são agrupadas
  * por material (mesmas posições, normais e UVs) para desenhar em poucas chamadas.
@@ -19,6 +23,8 @@ const REF_ASPECT = 16 / 9;
 // Paleta (sRGB): preto do briefing e variações muito escuras do azul JFA (#0068ff).
 const BG_BASE = new THREE.Vector3(5 / 255, 7 / 255, 10 / 255);
 const BG_GLOW = new THREE.Vector3(0.0, 0.052, 0.155);
+const ZERO3 = [0, 0, 0];
+const NO_FX = { wave: 0, waveFreq: 0, wavePhase: 0, chroma: 0, blur: [0, 0] };
 
 /**
  * Junta as malhas do glTF por material, já com a transformação de cada nó aplicada,
@@ -137,6 +143,12 @@ const COMPOSITE_FRAG = /* glsl */ `
   uniform vec3 uBgBase;
   uniform vec3 uBgGlow;
   uniform float uFrame;
+  uniform float uTransparent;
+  uniform float uWave;
+  uniform float uWaveFreq;
+  uniform float uWavePhase;
+  uniform float uChroma;
+  uniform vec2 uBlur;
   varying vec2 vUv;
 
   float viewDist(float d) { return -perspectiveDepthToViewZ(d, uNear, uFar); }
@@ -184,6 +196,26 @@ const COMPOSITE_FRAG = /* glsl */ `
     return max(b - 0.04, 0.0);
   }
 
+  // Separação de cor e desfoque direcional (só durante impactos e transições).
+  vec4 motionFx(vec2 uv) {
+    vec2 px = 1.0 / uResolution;
+    int taps = length(uBlur) > 0.5 ? 9 : 1;
+    vec4 acc = vec4(0.0);
+    for (int i = 0; i < 9; i++) {
+      if (i >= taps) break;
+      float k = taps == 1 ? 0.0 : float(i) / 8.0 - 0.5;
+      vec2 tc = uv + uBlur * px * k;
+      vec4 c = textureLod(tColor, tc, 0.0);
+      if (uChroma > 0.0) {
+        vec4 r = textureLod(tColor, tc + vec2(uChroma, 0.0) * px, 0.0);
+        vec4 b = textureLod(tColor, tc - vec2(uChroma, 0.0) * px, 0.0);
+        c = vec4(r.r, c.g, b.b, max(c.a, max(r.a, b.a)));
+      }
+      acc += c;
+    }
+    return acc / float(taps);
+  }
+
   // Khronos PBR Neutral: preserva a cor real do produto (feito para e-commerce).
   vec3 neutralToneMap(vec3 color) {
     const float startCompression = 0.8 - 0.04;
@@ -212,8 +244,23 @@ const COMPOSITE_FRAG = /* glsl */ `
   }
 
   void main() {
-    vec4 scene = depthOfField(vUv);
-    vec3 lin = scene.rgb * uExposure + glow(vUv) * uBloom;
+    vec2 uv = vUv;
+    if (uWave != 0.0) uv.x += uWave * sin(uv.y * uWaveFreq + uWavePhase);
+    bool fx = uChroma > 0.0 || length(uBlur) > 0.5;
+    vec4 scene = fx ? motionFx(uv) : depthOfField(uv);
+
+    if (uTransparent > 0.5) {
+      // Saída pré-multiplicada: a placa sobre o que estiver atrás do canvas, e o
+      // brilho em volta somado à luz do fundo.
+      float a = scene.a;
+      vec3 body = a > 0.0001 ? toSRGB(neutralToneMap(scene.rgb / a * uExposure)) * a : vec3(0.0);
+      vec3 halo = toSRGB(glow(uv) * uBloom) * (1.0 - a);
+      vec3 c = (body + halo) * uFade + (hash(gl_FragCoord.xy + uFrame * 17.0) - 0.5) / 255.0 * a;
+      gl_FragColor = vec4(max(c, 0.0), a * uFade);
+      return;
+    }
+
+    vec3 lin = scene.rgb * uExposure + glow(uv) * uBloom;
     vec3 product = toSRGB(neutralToneMap(lin));
 
     float aspect = uResolution.x / uResolution.y;
@@ -232,13 +279,14 @@ const COMPOSITE_FRAG = /* glsl */ `
 `;
 
 /**
- * @param {{ canvas: HTMLCanvasElement, model: ArrayBuffer }} opts `model` = conteúdo do GLB da placa.
+ * @param {{ canvas: HTMLCanvasElement, model: ArrayBuffer, transparent?: boolean }} opts
+ *   `model` = conteúdo do GLB da placa; `transparent` = fundo transparente (variante social).
  */
-export async function createStage({ canvas, model }) {
+export async function createStage({ canvas, model, transparent = false }) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: false,
-    alpha: false,
+    alpha: transparent,
     depth: false,
     stencil: false,
     powerPreference: 'high-performance',
@@ -312,6 +360,12 @@ export async function createStage({ canvas, model }) {
       uBgBase: { value: BG_BASE },
       uBgGlow: { value: BG_GLOW },
       uFrame: { value: 0 },
+      uTransparent: { value: transparent ? 1 : 0 },
+      uWave: { value: 0 },
+      uWaveFreq: { value: 0 },
+      uWavePhase: { value: 0 },
+      uChroma: { value: 0 },
+      uBlur: { value: new THREE.Vector2(0, 0) },
     },
   });
   const postScene = new THREE.Scene();
@@ -354,14 +408,23 @@ export async function createStage({ canvas, model }) {
 
   /**
    * Atualiza câmera, luzes e composição para um estado da timeline e desenha.
-   * @param {object} s Estado calculado pelo filme (ver film.js).
+   * @param {object} s Estado calculado pela variante (ver premium.js e social/kinetic.js).
+   *   Campos opcionais: `hidden` (quadro sem a placa), `boardPos`, `shiftX`, `cam.roll` (graus)
+   *   e `fx` ({ wave, waveFreq, wavePhase, chroma, blur: [x, y] }, em pixels do quadro).
    */
   function render(s) {
     const aspect = size.width / size.height;
 
-    // Produto: rotação mínima e flutuação.
+    if (s.hidden) {
+      renderer.setRenderTarget(null);
+      renderer.clear();
+      return;
+    }
+
+    // Produto: rotação e posição (a geometria nunca muda).
     pivot.rotation.set(s.boardPitch * DEG, s.boardYaw * DEG, s.boardRoll * DEG, 'YXZ');
-    pivot.position.y = s.floatY;
+    const bp = s.boardPos || ZERO3;
+    pivot.position.set(bp[0], bp[1] + s.floatY, bp[2]);
 
     // Câmera em órbita do alvo.
     const az = s.cam.az * DEG;
@@ -375,14 +438,16 @@ export async function createStage({ canvas, model }) {
     );
     camera.up.set(0, 1, 0);
     camera.lookAt(tmpTarget);
-    if (s.roll) camera.rotateZ(-s.roll * 90 * DEG);
+    const rollDeg = s.roll * 90 + (s.cam.roll || 0);
+    if (rollDeg) camera.rotateZ(-rollDeg * DEG);
     const halfTan = screenHalfTan(s.cam.fov, aspect, s.fit, s.roll) * s.zoomOut;
     camera.fov = (2 * Math.atan(halfTan)) / DEG;
     camera.aspect = aspect;
     camera.near = Math.max(0.004, dist * 0.015);
     camera.far = dist * 4 + 12;
     camera.updateProjectionMatrix();
-    // Deslocamento ótico vertical (sobe a composição sem mudar a perspectiva).
+    // Deslocamento ótico (move a composição sem mudar a perspectiva).
+    camera.projectionMatrix.elements[8] = -2 * (s.shiftX || 0);
     camera.projectionMatrix.elements[9] = -2 * s.shift;
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
 
@@ -414,7 +479,7 @@ export async function createStage({ canvas, model }) {
     renderer.render(scene, camera);
 
     // Centro do radial de fundo = centro da placa na tela.
-    tmp.set(0, s.floatY, 0).project(camera);
+    tmp.copy(pivot.position).project(camera);
     const u = composite.uniforms;
     u.uGlowCenter.value.set(tmp.x * 0.5 + 0.5, tmp.y * 0.5 + 0.5);
     u.uGlowRadius.value = 0.62;
@@ -427,6 +492,14 @@ export async function createStage({ canvas, model }) {
     u.uFade.value = s.fade;
     u.uGlow.value = s.bgGlow;
     u.uFrame.value = frame++ % 64;
+    const fx = s.fx || NO_FX;
+    u.uWave.value = fx.wave;
+    u.uWaveFreq.value = fx.waveFreq;
+    u.uWavePhase.value = fx.wavePhase;
+    // Valores do quadro em pixels de 1080 px de largura, convertidos para a resolução real.
+    const pxScale = u.uResolution.value.x / 1080;
+    u.uChroma.value = fx.chroma * pxScale;
+    u.uBlur.value.set(fx.blur[0] * pxScale, fx.blur[1] * pxScale);
 
     renderer.setRenderTarget(null);
     renderer.render(postScene, postCamera);

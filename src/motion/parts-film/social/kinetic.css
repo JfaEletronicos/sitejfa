@@ -1,0 +1,115 @@
+/* Variante social-kinetic: camadas de tipografia, blocos de cor e transições. */
+
+@font-face {
+  font-family: 'Stretch Pro';
+  src: url('/fonts/StretchPro.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+.pf-frame[data-variant='social-kinetic'] {
+  background: #05070a;
+}
+
+.sk-base,
+.sk-comp,
+.sk-blocks,
+.sk-type,
+.sk-overlay,
+.sk-wipe,
+.sk-mask,
+.sk-flash {
+  position: absolute;
+  inset: 0;
+}
+
+.sk-base {
+  background: #05070a;
+}
+
+.sk-comp {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.sk-type,
+.sk-overlay {
+  pointer-events: none;
+}
+
+.sk-type {
+  will-change: transform;
+}
+
+.sk-block {
+  position: absolute;
+  visibility: hidden;
+}
+
+/* Palavras: Poppins pesada (ou Stretch Pro), maiúsculas, sem quebra. */
+.sk-word {
+  --c: #ffffff;
+  --gx: 0px;
+  --gy: 0px;
+  --go: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  line-height: 0.86;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--c);
+  visibility: hidden;
+  will-change: transform, opacity;
+  font-variant-ligatures: none;
+}
+
+.sk-word.is-wide {
+  font-family: 'Stretch Pro', 'Poppins', sans-serif;
+  line-height: 1;
+}
+
+.sk-word.is-outline {
+  color: transparent;
+  -webkit-text-stroke: max(2px, 0.022em) var(--c);
+}
+
+/* Rastro de movimento: duas cópias da palavra atrás dela, na direção contrária ao movimento. */
+.sk-word::before,
+.sk-word::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-shadow: none;
+  pointer-events: none;
+}
+
+.sk-word::before {
+  transform: translate3d(var(--gx), var(--gy), 0);
+  opacity: calc(var(--go) * 0.34);
+}
+
+.sk-word::after {
+  transform: translate3d(calc(var(--gx) * 2.1), calc(var(--gy) * 2.1), 0);
+  opacity: calc(var(--go) * 0.15);
+}
+
+.sk-letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+.sk-wipe,
+.sk-mask,
+.sk-flash {
+  visibility: hidden;
+}
+
+/* Sem WebGL: só a assinatura final. */
+.pf-frame.sk-fallback .sk-comp {
+  transform: none !important;
+}

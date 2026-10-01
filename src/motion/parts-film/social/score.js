@@ -1,0 +1,730 @@
+/**
+ * ROTEIRO DA VARIANTE "social-kinetic" (9:16, base de 20 s).
+ *
+ * Tudo em segundos sobre a base de 20 s (SOCIAL_MOTION_CONFIG.duration estica ou comprime).
+ * Posições em % do quadro (x da esquerda, y de cima; valores fora de 0–100 cortam a
+ * palavra pela borda de propósito). Tamanhos de letra em TYPOGRAPHY.
+ *
+ * Ritmo: RÁPIDO · RÁPIDO · RÁPIDO · PAUSA · EXPLOSÃO · RÁPIDO · PAUSA · HERO
+ *
+ * Pontos do modelo real (cena em unidades de 10 cm, placa deitada, componentes para cima):
+ *   encoder com eixo em (-0,01; 0 a 0,27; -0,11) · CI principal em (0,49; 0,02; -0,15)
+ *   botões táteis em z≈0,05, x = 0,61 / 0,89 / 1,16 / 1,42 · placa: x ±1,55, z ±0,39
+ */
+
+/** Cenas (régua do modo debug). */
+export const SCENES = [
+  { id: 'hook', label: 'Você não vê', start: 0, end: 1.95 },
+  { id: 'em-tudo', label: 'Mas ela está em tudo', start: 1.95, end: 4.42 },
+  { id: 'palavras', label: 'Controle · Energia', start: 4.42, end: 6.45 },
+  { id: 'pausa-1', label: 'Pausa', start: 6.45, end: 7.12 },
+  { id: 'explosao', label: 'Precisão · Conexão · Tecnologia', start: 7.12, end: 10.78 },
+  { id: 'caos', label: 'Caos', start: 10.78, end: 12.75 },
+  { id: 'pausa-2', label: 'Tudo começa por dentro', start: 12.75, end: 15.3 },
+  { id: 'final', label: 'JFA Parts', start: 15.3, end: 20 },
+];
+
+// ---------------------------------------------------------------------------
+// PLANOS 3D
+// pose: alvo, azimute/elevação (graus), distância, `lens` (× CAMERA.fov), `roll` (giro do quadro, graus)
+// board: rotação [yaw, pitch, roll] (graus) e posição; shift: posição da placa no quadro
+// (fração; +x direita, +y cima); pan: movimento de câmera que também desloca as camadas
+// de texto (com paralaxe); light: preset de luz (kinetic.js).
+// ---------------------------------------------------------------------------
+const pose = (target, az, el, dist, extra = {}) => ({ target, az, el, dist, lens: 1, roll: 0, ...extra });
+const ENCODER = [-0.012, 0.13, -0.11];
+const CHIP = [0.485, 0.012, -0.151];
+const CENTER = [0, 0, 0];
+
+export const SHOTS = [
+  // HOOK: a placa entra pelo canto inferior direito, cortada pelo quadro...
+  {
+    t: [0, 1.0],
+    cam: [
+      pose([-0.25, 0, 0.02], -24, 50, 2.9, { roll: 32 }),
+      pose([-0.3, 0, 0.02], -18, 52, 2.5, { roll: 30 }),
+    ],
+    ease: 'expoOut',
+    board: [{ rot: [16, 0, 0] }, { rot: [7, 0, 0] }],
+    shift: [
+      [0.62, -0.62],
+      [0.28, -0.3],
+    ],
+    pan: [
+      [0.04, 0],
+      [-0.01, 0],
+    ],
+    light: 'punch',
+    sweep: [60, 10],
+  },
+  // ...e na segunda batida (1,0 s) o corte aproxima: a placa avança sobre "VÊ.".
+  {
+    t: [1.0, 1.95],
+    cam: [
+      pose([-0.2, 0, 0.0], -14, 54, 2.3, { roll: 24 }),
+      pose([-0.24, 0, 0.0], -10, 55, 2.1, { roll: 22 }),
+    ],
+    ease: 'soft',
+    board: [{ rot: [4, 0, 0] }, { rot: [-1, 0, 0] }],
+    shift: [
+      [0.33, -0.31],
+      [0.29, -0.28],
+    ],
+    pan: [
+      [0.01, 0],
+      [-0.03, 0],
+    ],
+    light: 'punch',
+    sweep: [10, -50],
+  },
+  // MAS: só tipografia (placa fora).
+  { t: [1.95, 2.36], hidden: true },
+  // ELA: placa inteira atravessando o quadro azul na diagonal.
+  {
+    t: [2.36, 2.86],
+    cam: [pose([0.25, 0, 0], 0, 68, 5.2, { roll: -28 }), pose([0.1, 0, 0], 4, 70, 4.6, { roll: -24 })],
+    ease: 'expoOut',
+    board: [{ rot: [-8, 0, 0] }, { rot: [-2, 0, 0] }],
+    shift: [
+      [0.02, -0.16],
+      [-0.02, -0.18],
+    ],
+    light: 'onColor',
+    sweep: [40, -30],
+  },
+  // ESTÁ: macro nos terminais do CI, atrás da palavra.
+  {
+    t: [2.86, 3.36],
+    cam: [pose(CHIP, 24, 26, 0.46, { lens: 0.9 }), pose(CHIP, 32, 24, 0.38, { lens: 0.9 })],
+    ease: 'linear',
+    shift: [
+      [0, -0.05],
+      [0, -0.05],
+    ],
+    light: 'macro',
+    aperture: 0.5,
+    sweep: [30, -20],
+  },
+  // EM TUDO.: placa inteira em pé no centro, girando rápido (sem volta completa).
+  {
+    t: [3.36, 4.42],
+    cam: [pose(CENTER, 0, 72, 9.5, { roll: 90 }), pose(CENTER, 0, 66, 6.6, { roll: 90 })],
+    ease: 'expoOut',
+    board: [{ rot: [-26, 0, 0] }, { rot: [12, 0, 0] }],
+    shift: [
+      [0, 0],
+      [0, 0],
+    ],
+    light: 'punch',
+    sweep: [50, -50],
+  },
+  // CONTROLE.: macro em órbita do encoder (o eixo atravessa a palavra).
+  {
+    t: [4.42, 5.45],
+    cam: [pose(ENCODER, 18, 16, 1.0), pose(ENCODER, 68, 22, 0.82)],
+    ease: 'soft',
+    shift: [
+      [0.1, -0.1],
+      [0.06, -0.1],
+    ],
+    pan: [
+      [0.02, 0],
+      [-0.02, 0],
+    ],
+    light: 'macro',
+    aperture: 0.32,
+    sweep: [40, -40],
+  },
+  // ENERGIA.: placa em pé à direita, cortada em cima e embaixo.
+  {
+    t: [5.45, 6.45],
+    cam: [pose([0.1, 0, 0], 0, 80, 3.5, { roll: 90 }), pose([-0.15, 0, 0], 0, 80, 3.2, { roll: 90 })],
+    ease: 'expoOut',
+    board: [{ rot: [10, 0, 0] }, { rot: [4, 0, 0] }],
+    shift: [
+      [0.3, 0.04],
+      [0.2, 0.08],
+    ],
+    light: 'onColor',
+    sweep: [45, -35],
+  },
+  // PAUSA: macro quase parado na fileira de botões.
+  {
+    t: [6.45, 7.12],
+    cam: [
+      pose([1.0, 0.03, 0.05], 80, 9, 0.33, { lens: 0.9 }),
+      pose([0.99, 0.03, 0.05], 80, 9.3, 0.325, { lens: 0.9 }),
+    ],
+    ease: 'linear',
+    light: 'macro',
+    aperture: 0.75,
+    sweep: [10, -12],
+  },
+  // PRECISÃO.: placa enorme; a borda dela corta a palavra.
+  {
+    t: [7.12, 8.3],
+    cam: [pose([0.42, 0, 0.06], -8, 60, 2.05), pose([0.5, 0, 0.06], -4, 62, 1.75)],
+    ease: 'expoOut',
+    shift: [
+      [0, -0.13],
+      [0, -0.11],
+    ],
+    pan: [
+      [0, 0.02],
+      [0, 0],
+    ],
+    light: 'punch',
+    sweep: [55, -20],
+  },
+  // CONEXÃO.: a placa passa rápido (transição) e vira uma faixa entre "CON" e "EXÃO.".
+  {
+    t: [8.3, 8.54],
+    cam: [pose([3.6, 0, 0], 0, 88, 4.1), pose([1.05, 0, 0], 0, 88, 4.1)],
+    ease: 'expoOut',
+    light: 'punch',
+    blur: [-120, 0],
+    sweep: [30, 20],
+  },
+  {
+    t: [8.54, 9.42],
+    cam: [pose([1.05, 0, 0], 0, 88, 4.1), pose([-0.35, 0, 0], 0, 88, 3.9)],
+    ease: 'linear',
+    light: 'punch',
+    sweep: [20, -40],
+  },
+  // TECNOLO [placa] GIA.
+  {
+    t: [9.42, 10.06],
+    cam: [pose(CENTER, 14, 68, 5.6, { roll: -34 }), pose(CENTER, 8, 70, 5.0, { roll: -30 })],
+    ease: 'expoOut',
+    board: [{ rot: [9, 0, 0] }, { rot: [-5, 0, 0] }],
+    light: 'punch',
+    sweep: [45, -30],
+  },
+  // A placa sai por cima e a palavra toma o quadro.
+  {
+    t: [10.06, 10.22],
+    cam: [pose(CENTER, 8, 70, 5.0, { roll: -30 }), pose(CENTER, 8, 70, 5.0, { roll: -30 })],
+    ease: 'linear',
+    board: [{ rot: [-5, 0, 0] }, { rot: [-14, 0, 0] }],
+    shift: [
+      [0, 0],
+      [0.12, 1.05],
+    ],
+    light: 'punch',
+    blur: [0, -140],
+  },
+  { t: [10.22, 10.78], hidden: true },
+  // CAOS: planos de ~0,28 s, cada um numa escala e num ângulo.
+  {
+    t: [10.78, 11.06],
+    cam: [
+      pose([-0.012, 0.16, -0.11], -40, 10, 0.72, { roll: 8 }),
+      pose([-0.012, 0.16, -0.11], -52, 12, 0.66, { roll: 8 }),
+    ],
+    ease: 'linear',
+    shift: [
+      [-0.12, -0.05],
+      [-0.12, -0.05],
+    ],
+    light: 'onColor',
+    aperture: 0.3,
+  },
+  {
+    t: [11.06, 11.33],
+    cam: [pose([-0.8, 0, 0], 20, 55, 1.9, { roll: 45 }), pose([-0.6, 0, 0], 26, 55, 1.7, { roll: 45 })],
+    ease: 'linear',
+    shift: [
+      [0.12, 0.06],
+      [0.12, 0.06],
+    ],
+    light: 'punch',
+  },
+  {
+    t: [11.33, 11.6],
+    cam: [pose(CHIP, 0, 80, 0.62), pose(CHIP, 6, 80, 0.55)],
+    ease: 'linear',
+    shift: [
+      [0.06, -0.3],
+      [0.06, -0.3],
+    ],
+    light: 'onColor',
+  },
+  {
+    t: [11.6, 11.88],
+    cam: [pose([1.5, 0, 0], 0, 86, 4.0), pose([-0.7, 0, 0], 0, 86, 4.0)],
+    ease: 'soft',
+    light: 'onColor',
+    blur: [-70, 0],
+  },
+  {
+    t: [11.88, 12.16],
+    cam: [pose(CENTER, -20, 60, 3.3, { roll: 90 }), pose(CENTER, 8, 60, 3.0, { roll: 90 })],
+    ease: 'linear',
+    shift: [
+      [0.24, -0.12],
+      [0.24, -0.12],
+    ],
+    light: 'punch',
+  },
+  {
+    t: [12.16, 12.46],
+    cam: [pose(CENTER, 0, 68, 8.4, { roll: 90 }), pose(CENTER, 0, 68, 7.6, { roll: 90 })],
+    ease: 'expoOut',
+    board: [{ rot: [28, 0, 0] }, { rot: [0, 0, 0] }],
+    light: 'punch',
+  },
+  { t: [12.46, 12.75], hidden: true },
+  // PAUSA: tela escura, placa inteira em pé, movimento lento.
+  {
+    t: [12.75, 15.3],
+    cam: [pose(CENTER, 3, 64, 7.2, { roll: 90 }), pose(CENTER, 0, 66, 6.7, { roll: 90 })],
+    ease: 'soft',
+    board: [{ rot: [5, 0, 0] }, { rot: [0, 0, 0] }],
+    light: 'hero',
+    sweep: [55, -45],
+  },
+  // FINAL: "JFA / PARTS" gigante atrás da placa...
+  {
+    t: [15.3, 16.95],
+    cam: [pose(CENTER, 0, 64, 5.2, { roll: 90 }), pose(CENTER, 0, 65, 5.0, { roll: 90 })],
+    ease: 'expoOut',
+    board: [{ rot: [-10, 0, 0] }, { rot: [-1.5, 0, 0] }],
+    light: 'hero',
+    sweep: [-50, 40],
+  },
+  // ...e o hero limpo com a assinatura.
+  {
+    t: [16.95, 20],
+    cam: [pose(CENTER, 0, 65, 7.6, { roll: 90 }), pose(CENTER, 0, 66, 7.4, { roll: 90 })],
+    ease: 'settle',
+    board: [{ rot: [2.5, 0, 0] }, { rot: [0, 0, 0] }],
+    shift: [
+      [0, 0.08],
+      [0, 0.08],
+    ],
+    light: 'hero',
+    sweep: [45, -40],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// PALAVRAS
+// in/out: cut | slideLeft | slideRight | slideUp | slideDown | zoom | explode | stretch
+//         | squeeze | rise (calmo) · fit: largura alvo (fração do quadro; no eixo da palavra)
+// ---------------------------------------------------------------------------
+const word = (text, t, o = {}) => ({
+  text,
+  t,
+  layer: 'back',
+  size: 'huge',
+  font: 'sans',
+  weight: null,
+  color: 'white',
+  outline: false,
+  x: 50,
+  y: 50,
+  align: 'center',
+  rotate: 0,
+  fit: null,
+  sy: 1,
+  in: { type: 'cut' },
+  out: { type: 'cut' },
+  drift: [0, 0],
+  grow: 0,
+  fx: [],
+  split: false,
+  ...o,
+});
+
+/** Pilha de linhas repetidas que se abre a partir do centro (explosão tipográfica). */
+function stack(text, t, rows, o = {}) {
+  const out = [];
+  const mid = (rows - 1) / 2;
+  for (let i = 0; i < rows; i++) {
+    const k = i - mid;
+    const ring = Math.abs(k);
+    out.push(
+      word(text, [t[0] + ring * (o.stagger ?? 0.05), t[1]], {
+        ...o,
+        y: (o.y ?? 50) + k * (o.gap ?? 11),
+        outline: o.solidCenter ? ring > 0 : ring % 2 === 1,
+        color: o.accentRing === ring ? 'electricBlue' : o.color || 'white',
+        drift: [0, k * (o.spread ?? 0)],
+        in: { type: 'explode', dur: 0.22 },
+      }),
+    );
+  }
+  return out;
+}
+
+export const WORDS = [
+  // 0–2 s · VOCÊ NÃO VÊ.
+  // Começa já em movimento: o primeiro quadro é um cartaz com a tipografia ocupando tudo.
+  word('VOCÊ', [-0.14, 1.95], {
+    x: -9,
+    y: 21,
+    align: 'left',
+    fit: 1.22,
+    in: { type: 'slideLeft', dur: 0.36 },
+    drift: [-12, 0],
+    fx: [{ preset: 'stretch', at: 0, dur: 0.42 }],
+  }),
+  word('NÃO', [-0.06, 1.95], {
+    x: 106,
+    y: 43.5,
+    align: 'right',
+    size: 'large',
+    fit: 0.92,
+    in: { type: 'slideRight', dur: 0.26 },
+    drift: [9, 0],
+  }),
+  word('VÊ.', [0.26, 1.0], {
+    x: 4,
+    y: 65,
+    align: 'left',
+    fit: 1.0,
+    sy: 1.25,
+    in: { type: 'stretch', dur: 0.24 },
+    grow: 0.05,
+    fx: [{ preset: 'impact', at: 0.02, dur: 0.4 }],
+  }),
+  // Na segunda batida "VÊ." vira só contorno: deixa de ser visto.
+  word('VÊ.', [1.0, 1.95], {
+    x: 4,
+    y: 65,
+    align: 'left',
+    fit: 1.0,
+    sy: 1.25,
+    outline: true,
+    grow: 0.07,
+    drift: [-4, 0],
+    fx: [{ preset: 'impact', at: 0, dur: 0.3, amount: 0.6 }],
+  }),
+
+  // 2–4,4 s · MAS / ELA / ESTÁ / EM TUDO.
+  word('MAS', [1.95, 2.36], {
+    color: 'black',
+    y: 50,
+    fit: 1.34,
+    rotate: -4,
+    grow: 0.08,
+  }),
+  word('ELA', [2.36, 2.86], {
+    y: 33,
+    fit: 1.04,
+    sy: 1.1,
+    in: { type: 'zoom', dur: 0.2 },
+    grow: 0.06,
+  }),
+  word('ESTÁ', [2.86, 3.36], {
+    layer: 'front',
+    y: 47,
+    fit: 1.16,
+    sy: 1.45,
+    split: true,
+    fx: [{ preset: 'warp', at: 0, dur: 0.5 }],
+    drift: [-3, 0],
+  }),
+  ...stack('EM TUDO.', [3.36, 4.42], 7, {
+    size: 'large',
+    fit: 1.08,
+    gap: 12.5,
+    spread: 4,
+    grow: 0.12,
+    accentRing: 2,
+  }),
+
+  // 4,4–6,5 s · CONTROLE. / ENERGIA.
+  word('CONTROLE.', [4.42, 5.45], {
+    x: -6,
+    y: 31,
+    align: 'left',
+    fit: 1.3,
+    in: { type: 'slideRight', dur: 0.24 },
+    drift: [4, 0],
+    fx: [{ preset: 'stretch', at: 0, dur: 0.34 }],
+  }),
+  word('CONTROLE.', [4.6, 5.45], {
+    x: 50,
+    y: 83,
+    size: 'medium',
+    outline: true,
+    fit: 0.86,
+    in: { type: 'slideLeft', dur: 0.24 },
+    drift: [-6, 0],
+  }),
+  word('ENERGIA.', [5.45, 6.45], {
+    font: 'wide',
+    x: 25,
+    y: 50,
+    rotate: -90,
+    fit: 0.98,
+    fitAxis: 'y',
+    size: 'large',
+    in: { type: 'slideUp', dur: 0.28 },
+    drift: [0, -4],
+    fx: [{ preset: 'stretch', at: 0, dur: 0.36 }],
+  }),
+
+  // 7,1–10,8 s · PRECISÃO. / CON–EXÃO. / TECNOLO–GIA / TECNOLOGIA
+  word('PRECISÃO.', [7.12, 8.3], {
+    y: 30,
+    fit: 1.12,
+    sy: 1.2,
+    in: { type: 'explode', dur: 0.26 },
+    grow: 0.04,
+    fx: [{ preset: 'impact', at: 0, dur: 0.45 }],
+  }),
+  word('CON', [8.42, 9.42], {
+    y: 20,
+    fit: 0.98,
+    sy: 1.75,
+    in: { type: 'squeeze', dur: 0.2 },
+    drift: [-3, 0],
+  }),
+  word('EXÃO.', [8.5, 9.42], {
+    y: 81,
+    fit: 0.98,
+    sy: 1.75,
+    in: { type: 'squeeze', dur: 0.2 },
+    drift: [3, 0],
+  }),
+  word('TECNOLO', [9.42, 10.14], {
+    x: -3,
+    y: 17,
+    align: 'left',
+    fit: 1.08,
+    in: { type: 'slideLeft', dur: 0.2 },
+    drift: [-3, 0],
+  }),
+  word('GIA.', [9.5, 10.14], {
+    x: 103,
+    y: 83,
+    align: 'right',
+    fit: 0.66,
+    in: { type: 'slideRight', dur: 0.2 },
+    drift: [3, 0],
+  }),
+  // A palavra nasce pequena e cresce até cobrir a tela (transição textWipe às 10,78).
+  word('TECNOLOGIA', [10.18, 10.78], {
+    y: 50,
+    size: 'medium',
+    fit: 0.5,
+    scaleKeys: [
+      [0, 0.25],
+      [0.16, 1.0, 'enter'],
+      [0.36, 1.08, 'linear'],
+      [0.6, 70, 'expoIn'],
+    ],
+    // Ponto de crescimento dentro da haste do "T" (a tela fica toda branca).
+    origin: [4.6, 56],
+  }),
+
+  // 10,8–12,75 s · CAOS
+  word('CONTROLE.', [10.78, 11.06], {
+    layer: 'front',
+    color: 'black',
+    x: 86,
+    y: 50,
+    rotate: 90,
+    fit: 1.02,
+    fitAxis: 'y',
+    in: { type: 'slideDown', dur: 0.16 },
+  }),
+  word('ENERGIA.', [11.06, 11.33], {
+    layer: 'front',
+    font: 'wide',
+    x: -12,
+    y: 72,
+    align: 'left',
+    size: 'large',
+    fit: 1.25,
+    fx: [{ preset: 'smear', at: 0, dur: 0.27 }],
+  }),
+  word('PRECISÃO.', [11.33, 11.6], {
+    layer: 'front',
+    color: 'black',
+    x: -18,
+    y: 26,
+    align: 'left',
+    fit: 1.45,
+    sy: 1.3,
+    in: { type: 'zoom', dur: 0.14 },
+  }),
+  word('CONEXÃO.', [11.6, 11.88], {
+    layer: 'front',
+    y: 50,
+    fit: 1.0,
+    sy: 2.1,
+    fx: [{ preset: 'glitch', at: 0, dur: 0.28 }],
+  }),
+  word('TECNOLOGIA.', [11.88, 12.16], {
+    layer: 'front',
+    color: 'electricBlue',
+    x: 102,
+    y: 24,
+    align: 'right',
+    fit: 1.5,
+    sy: 1.15,
+    in: { type: 'slideLeft', dur: 0.14 },
+  }),
+  ...stack('TECNOLOGIA', [12.16, 12.46], 5, {
+    size: 'large',
+    fit: 1.0,
+    gap: 9,
+    stagger: 0.03,
+    spread: 6,
+    grow: 0.06,
+    solidCenter: true,
+  }),
+
+  // 12,75–15,3 s · PAUSA
+  word('TUDO COMEÇA', [12.95, 15.3], {
+    size: 'large',
+    weight: 800,
+    y: 10,
+    fit: 0.84,
+    fitMode: 'uniform',
+    in: { type: 'rise', dur: 0.6 },
+    out: { type: 'fade', dur: 0.3 },
+    drift: [0, -1.2],
+  }),
+  word('POR DENTRO.', [13.35, 15.3], {
+    size: 'large',
+    weight: 800,
+    y: 90,
+    fit: 0.84,
+    fitMode: 'uniform',
+    in: { type: 'rise', dur: 0.6 },
+    out: { type: 'fade', dur: 0.3 },
+    drift: [0, -1.2],
+  }),
+
+  // 15,3–20 s · FINAL
+  word('JFA', [15.3, 16.95], {
+    font: 'wide',
+    y: 31,
+    fit: 1.1,
+    sy: 1.25,
+    in: { type: 'explode', dur: 0.26 },
+    grow: 0.05,
+  }),
+  word('PARTS', [15.38, 16.95], {
+    font: 'wide',
+    y: 69,
+    fit: 1.1,
+    sy: 1.25,
+    in: { type: 'explode', dur: 0.26 },
+    grow: 0.05,
+  }),
+  word('JFA PARTS', [17.05, 20], {
+    font: 'wide',
+    size: 'medium',
+    y: 82,
+    fit: 0.7,
+    fitMode: 'uniform',
+    in: { type: 'zoom', dur: 0.24 },
+  }),
+  word('TECNOLOGIA QUE FAZ ACONTECER.', [17.55, 20], {
+    size: 'medium',
+    weight: 700,
+    y: 87.6,
+    fit: 0.7,
+    fitMode: 'uniform',
+    tracking: 1.5,
+    color: 'electricBlue',
+    in: { type: 'rise', dur: 0.4 },
+  }),
+];
+
+// ---------------------------------------------------------------------------
+// FUNDO (troca seca) e BLOCOS DE COR (retângulos em %: [x, y, largura, altura])
+// ---------------------------------------------------------------------------
+export const BACKGROUND = [
+  [0, 'black'],
+  [1.95, 'white'],
+  [2.36, 'jfaBlue'],
+  [2.86, 'black'],
+  [4.42, 'deepBlue'],
+  [5.45, 'jfaBlue'],
+  [6.45, 'black'],
+  [10.78, 'jfaBlue'],
+  [11.06, 'black'],
+  [11.33, 'white'],
+  [11.6, 'electricBlue'],
+  [11.88, 'black'],
+  [15.3, 'hero'],
+];
+
+export const BLOCKS = [
+  // Faixa azul que entra com o "NÃO".
+  { t: [-0.06, 1.95], color: 'jfaBlue', from: [100, 37.5, 0, 12], to: [22, 37.5, 78, 12], dur: 0.3 },
+  // Coluna azul elétrica atrás de "CONTROLE." (corta a cena na vertical).
+  { t: [4.5, 5.45], color: 'electricBlue', from: [70, 100, 14, 0], to: [70, 0, 14, 100], dur: 0.3 },
+  // Barra azul sob "PRECISÃO." que abre da esquerda.
+  { t: [7.2, 8.3], color: 'jfaBlue', from: [0, 41, 0, 3], to: [0, 41, 100, 3], dur: 0.35 },
+  // Bloco que cobre metade da tela no caos.
+  { t: [11.88, 12.16], color: 'jfaBlue', from: [0, 58, 100, 0], to: [0, 58, 100, 42], dur: 0.16 },
+  // Linha fina azul na assinatura final.
+  { t: [17.2, 20], color: 'jfaBlue', from: [50, 77.2, 0, 0.3], to: [42, 77.2, 16, 0.3], dur: 0.45 },
+];
+
+// ---------------------------------------------------------------------------
+// TRANSIÇÕES (centradas no corte) e DISTORÇÕES GLOBAIS (sobre a composição inteira)
+// ---------------------------------------------------------------------------
+export const CUTS = [
+  { t: 1.0, type: 'hardCut', dur: 0.08 },
+  { t: 1.95, type: 'whipLeft', dur: 0.22 },
+  { t: 2.36, type: 'hardCut', dur: 0.08 },
+  { t: 2.86, type: 'distortionCut', dur: 0.16 },
+  { t: 3.36, type: 'scaleCut', dur: 0.14 },
+  { t: 4.42, type: 'zoomIn', dur: 0.24 },
+  { t: 5.45, type: 'verticalWipe', dur: 0.26, color: 'jfaBlue' },
+  { t: 6.45, type: 'hardCut', dur: 0.08 },
+  { t: 7.12, type: 'colorFlash', dur: 0.26, colors: ['white', 'jfaBlue', 'black'] },
+  { t: 8.3, type: 'productPass', dur: 0.24, dir: -1 },
+  { t: 9.42, type: 'whipRight', dur: 0.2 },
+  { t: 10.78, type: 'textWipe', dur: 0.3, color: 'white' },
+  { t: 11.06, type: 'hardCut', dur: 0.08 },
+  { t: 11.33, type: 'horizontalWipe', dur: 0.14, color: 'white' },
+  { t: 11.6, type: 'distortionCut', dur: 0.12, dir: -1 },
+  { t: 11.88, type: 'whipLeft', dur: 0.14 },
+  { t: 12.16, type: 'zoomOut', dur: 0.14 },
+  { t: 12.6, type: 'colorFlash', dur: 0.3, colors: ['white', 'jfaBlue', 'black'] },
+  { t: 15.3, type: 'scaleCut', dur: 0.2 },
+  { t: 16.95, type: 'maskReveal', dur: 0.34, color: 'black', x: 50, y: 50 },
+];
+
+export const FX = [
+  { t: 0.26, dur: 0.32, preset: 'shake', amount: 0.7 },
+  { t: 1.0, dur: 0.24, preset: 'shake', amount: 0.45 },
+  { t: 3.36, dur: 0.42, preset: 'impact' },
+  { t: 7.12, dur: 0.5, preset: 'impact' },
+  { t: 7.14, dur: 0.3, preset: 'shake' },
+  { t: 10.78, dur: 0.24, preset: 'impact', amount: 0.8 },
+  { t: 11.6, dur: 0.2, preset: 'glitch', amount: 0.6 },
+  { t: 15.3, dur: 0.4, preset: 'impact', amount: 0.7 },
+];
+
+/** Pontos de sincronização para o sound design (o filme funciona sem áudio). */
+const CUE_LABEL = {
+  hardCut: 'Corte seco',
+  whipLeft: 'Whoosh',
+  whipRight: 'Whoosh',
+  zoomIn: 'Impacto + sub',
+  zoomOut: 'Impacto curto',
+  verticalWipe: 'Swipe',
+  horizontalWipe: 'Swipe',
+  textWipe: 'Riser + corte',
+  maskReveal: 'Respiro + abertura',
+  scaleCut: 'Impacto',
+  distortionCut: 'Glitch curto',
+  productPass: 'Passagem (whoosh grave)',
+  colorFlash: 'Impacto + flash',
+};
+export const CUES = [
+  { t: 0, id: 'abertura', label: 'Batida de abertura' },
+  ...CUTS.map((c) => ({ t: c.t, id: `${c.type}-${c.t}`, label: CUE_LABEL[c.type] })),
+  { t: 12.75, id: 'pausa', label: 'Silêncio (pausa)', until: 15.3 },
+].sort((a, b) => a.t - b.t);

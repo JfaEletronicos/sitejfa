@@ -1,81 +1,22 @@
 /**
- * Controle do filme: relógio, estado de cada quadro (a partir da timeline),
- * textos em DOM, marcações de som e reprodução (play/pausa/seek).
+ * Relógio do filme, comum às variantes: reprodução (play/pausa/seek/loop),
+ * marcações de som e eventos. Cada quadro é desenhado pela variante como função
+ * pura do tempo, então pausar, voltar ou gravar quadro a quadro dá sempre a mesma imagem.
  */
-import { DURATION, COPY, SOUND_CUES, camera, tracks } from './timeline';
-import { cueState } from './tracks';
 
 /**
- * Estado completo de um instante do filme (função pura do tempo).
- * @param {number} t Tempo em segundos.
- * @param {boolean} portrait Quadro vertical (gira a câmera para alinhar a placa).
+ * @param {{ draw: (t: number) => void, duration: () => number,
+ *   cues: Array<{ t: number, id: string, label: string }>, loop?: () => boolean }} opts
  */
-export function frameState(t, portrait) {
-  return {
-    t,
-    cam: camera(t),
-    roll: portrait ? tracks.portraitRoll(t) : 0,
-    fit: tracks.fit(t),
-    zoomOut: portrait ? tracks.portraitZoom(t) : 1,
-    shift: tracks.frameShift(t) + (portrait ? tracks.portraitShift(t) : 0),
-    fade: tracks.fade(t),
-    aperture: tracks.aperture(t),
-    keyLux: tracks.keyLux(t),
-    keyAngle: tracks.keyAngle(t),
-    keyLead: tracks.keyLead(t),
-    keyDist: tracks.keyDist(t),
-    keyAz: tracks.keyAz(t),
-    keyEl: tracks.keyEl(t),
-    rimLux: tracks.rimLux(t),
-    fill: tracks.fill(t),
-    env: tracks.env(t),
-    sweep: tracks.sweep(t),
-    bgGlow: tracks.bgGlow(t),
-    bloom: tracks.bloom(t),
-    exposure: tracks.exposure(t),
-    boardYaw: tracks.boardYaw(t),
-    boardPitch: tracks.boardPitch(t),
-    boardRoll: tracks.boardRoll(t),
-    // Flutuação lenta, só no fim (amplitude vem da timeline).
-    floatY: tracks.float(t) * Math.sin(((t - 12) / 5.4) * Math.PI * 2),
-  };
-}
-
-/**
- * @param {{ stage: { render: (state: object) => void }, copyRoot: HTMLElement, isPortrait: () => boolean }} opts
- */
-export function createFilm({ stage, copyRoot, isPortrait }) {
+export function createFilm({ draw, duration, cues, loop = () => false }) {
   const events = new EventTarget();
-  const copyEls = new Map();
-  COPY.forEach((cue) => {
-    const el = copyRoot.querySelector(`[data-copy="${cue.id}"]`);
-    if (el) copyEls.set(cue.id, { el, cue });
-  });
-
   let time = 0;
   let playing = false;
   let raf = 0;
   let last = 0;
 
-  function applyCopy(t) {
-    const fade = tracks.fade(t);
-    copyEls.forEach(({ el, cue }) => {
-      const s = cueState(t, cue);
-      const opacity = s.opacity * (cue.out == null ? fade : 1);
-      el.style.opacity = opacity.toFixed(4);
-      el.style.visibility = opacity > 0.001 ? 'visible' : 'hidden';
-      el.style.setProperty('--rise', s.rise.toFixed(4));
-      el.style.setProperty('--grow', s.scale.toFixed(4));
-    });
-  }
-
-  function draw(t) {
-    stage.render(frameState(t, isPortrait()));
-    applyCopy(t);
-  }
-
   function fireCues(from, to) {
-    SOUND_CUES.forEach((cue) => {
+    cues.forEach((cue) => {
       if (cue.t >= from && cue.t < to) {
         const detail = { ...cue, time: to };
         events.dispatchEvent(new CustomEvent('cue', { detail }));
@@ -85,15 +26,21 @@ export function createFilm({ stage, copyRoot, isPortrait }) {
   }
 
   function tick(now) {
+    const end = duration();
     // Passo limitado: se a aba engasgar, o filme não salta.
     const dt = Math.min((now - last) / 1000, 1 / 20);
     last = now;
     const prev = time;
-    time = Math.min(time + dt, DURATION);
-    fireCues(prev === 0 ? -1 : prev, time === DURATION ? DURATION + 1 : time);
+    time = Math.min(time + dt, end);
+    fireCues(prev === 0 ? -1 : prev, time === end ? end + 1 : time);
     draw(time);
     events.dispatchEvent(new CustomEvent('time', { detail: time }));
-    if (time >= DURATION) {
+    if (time >= end) {
+      if (loop()) {
+        time = 0;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       playing = false;
       raf = 0;
       events.dispatchEvent(new Event('ended'));
@@ -104,7 +51,7 @@ export function createFilm({ stage, copyRoot, isPortrait }) {
 
   function play() {
     if (playing) return;
-    if (time >= DURATION) time = 0;
+    if (time >= duration()) time = 0;
     playing = true;
     last = performance.now();
     events.dispatchEvent(new Event('play'));
@@ -120,7 +67,7 @@ export function createFilm({ stage, copyRoot, isPortrait }) {
   }
 
   function seek(t) {
-    time = Math.min(Math.max(t, 0), DURATION);
+    time = Math.min(Math.max(t, 0), duration());
     if (!playing) draw(time);
     events.dispatchEvent(new CustomEvent('time', { detail: time }));
   }
@@ -138,6 +85,8 @@ export function createFilm({ stage, copyRoot, isPortrait }) {
     get playing() {
       return playing;
     },
-    duration: DURATION,
+    get duration() {
+      return duration();
+    },
   };
 }

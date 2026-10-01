@@ -1,46 +1,36 @@
 /**
- * Página do filme da JFA Parts (parts-filme.html).
+ * Página dos filmes da JFA Parts (parts-filme.html). O mesmo palco 3D (modelo real da
+ * placa) e o mesmo relógio servem às duas variantes:
+ *   premium (padrão)          filme de produto "Tudo começa por dentro." (~18 s)
+ *   ?variant=social-kinetic   peça vertical 9:16 de tipografia cinética (~20 s)
  *
  * Parâmetros de URL:
- *   ?format=16x9 | 9x16 | 1x1 | 4x5  quadro com proporção fixa (padrão: ocupa a janela)
- *   ?debug                          régua de tempo com atos e marcações de som
+ *   ?format=16x9 | 9x16 | 1x1 | 4x5  quadro com proporção fixa (padrão: a da variante ou a janela)
+ *   ?debug                          régua de tempo, marcações de som e controles da variante
  *   ?t=8.5                          começa nesse instante
  *   ?capture                        não toca sozinho (para gravar quadro a quadro via window.partsFilm)
  */
 import './parts-film.css';
-import { DURATION, ACTS, COPY, SOUND_CUES } from './timeline';
-import { createFilm, frameState } from './film';
+import { createFilm } from './film';
 
 const MODEL_URL = '/models/placa_lb1004.glb';
 const FORMATS = { '16x9': 16 / 9, '9x16': 9 / 16, '1x1': 1, '4x5': 4 / 5 };
-// Quadro estático usado com "reduzir movimento" (hero + assinatura).
-const STILL_TIME = 16.6;
 // Limite de pixels renderizados (mantém o filme leve em telas de alta densidade).
 const MAX_PIXELS = 3.2e6;
+const VARIANTS = {
+  premium: () => import('./premium'),
+  'social-kinetic': () => import('./social/kinetic'),
+};
 
 const params = new URLSearchParams(window.location.search);
-const formatRatio = FORMATS[params.get('format')] || null;
-const debug = params.has('debug');
+const variantId = VARIANTS[params.get('variant')] ? params.get('variant') : 'premium';
 const captureMode = params.has('capture');
-const startAt = Math.min(Math.max(parseFloat(params.get('t')) || 0, 0), DURATION);
 
 const frameEl = document.querySelector('.pf-frame');
 const canvas = frameEl.querySelector('.pf-canvas');
-const copyRoot = frameEl.querySelector('.pf-copy');
 const loader = frameEl.querySelector('.pf-loader');
 const loaderBar = frameEl.querySelector('.pf-loader-bar');
 const action = frameEl.querySelector('.pf-action');
-
-// Textos vêm da timeline (uma única fonte para conteúdo e tempos).
-COPY.forEach((cue) => {
-  const el = document.createElement(cue.id === 'manifesto' ? 'h1' : 'p');
-  el.className = `pf-line pf-${cue.id}`;
-  el.dataset.copy = cue.id;
-  el.textContent = cue.text;
-  copyRoot.appendChild(el);
-});
-
-const isPortrait = () => frameEl.clientWidth / frameEl.clientHeight < 0.95;
 
 /** Baixa o modelo acompanhando o progresso (em paralelo com o código do three.js). */
 async function fetchModel(onProgress) {
@@ -62,31 +52,44 @@ async function fetchModel(onProgress) {
   return out.buffer;
 }
 
-function showFailure() {
-  frameEl.classList.add('is-fallback');
-  loader.hidden = true;
-  // Sem WebGL: fica só a assinatura tipográfica.
-  copyRoot.querySelectorAll('[data-copy="brand"], [data-copy="brandSub"]').forEach((el) => {
-    el.style.opacity = '1';
-    el.style.visibility = 'visible';
-  });
-}
-
 async function boot() {
   const setProgress = (p) => loaderBar.style.setProperty('--p', Math.min(p, 1).toFixed(3));
+  const modelPromise = fetchModel(setProgress);
+  modelPromise.catch(() => {});
+
+  const variantModule = (await VARIANTS[variantId]()).default;
+  frameEl.dataset.variant = variantModule.id;
+  const formatRatio = FORMATS[params.get('format')] || FORMATS[variantModule.format] || null;
+  const v = variantModule.mount({ frameEl, params });
+
+  function showFailure() {
+    frameEl.classList.add('is-fallback');
+    loader.hidden = true;
+    v.fallback();
+  }
+
   let stage;
   try {
-    const [buffer, { createStage }] = await Promise.all([fetchModel(setProgress), import('./stage')]);
-    stage = await createStage({ canvas, model: buffer });
+    const [buffer, { createStage }] = await Promise.all([modelPromise, import('./stage')]);
+    stage = await createStage({ canvas, model: buffer, transparent: variantModule.transparent });
   } catch (err) {
     console.error('[JFA Parts] filme indisponível:', err);
     showFailure();
     return;
   }
   if (document.fonts?.ready) await document.fonts.ready;
+  if (v.ready) await v.ready;
+  v.bind(stage);
 
-  const film = createFilm({ stage, copyRoot, isPortrait });
+  const film = createFilm({
+    draw: (t) => v.draw(t),
+    duration: () => v.duration,
+    cues: v.cues,
+    loop: () => v.loop,
+  });
   window.partsFilm = film;
+  const clampTime = (t) => Math.min(Math.max(t, 0), v.duration);
+  const startAt = clampTime(parseFloat(params.get('t')) || 0);
 
   function layout() {
     const vw = window.innerWidth;
@@ -102,6 +105,7 @@ async function boot() {
     frameEl.dataset.orient = w / h < 0.95 ? 'portrait' : w / h < 1.4 ? 'square' : 'landscape';
     const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(MAX_PIXELS / (w * h)));
     stage.setSize(w, h, dpr * quality);
+    if (v.resize) v.resize(w, h);
     film.redraw();
   }
   // Qualidade adaptativa: se a máquina não sustentar ~40 fps, reduz a resolução
@@ -131,7 +135,7 @@ async function boot() {
   });
 
   film.seek(startAt);
-  await stage.warmUp(frameState(startAt, isPortrait()));
+  await stage.warmUp(v.state(startAt));
   film.seek(startAt);
   loader.classList.add('is-done');
 
@@ -144,13 +148,17 @@ async function boot() {
   film.events.addEventListener('ended', () => setAction('Assistir novamente'));
   film.events.addEventListener('play', () => setAction(''));
   film.events.addEventListener('pause', () => {
-    if (film.time < DURATION) setAction('Continuar');
+    if (film.time < film.duration) setAction('Continuar');
   });
   action.addEventListener('click', () => {
-    if (film.time >= DURATION || reduceMotion.matches) film.seek(0);
+    if (film.time >= film.duration || reduceMotion.matches || !film.time) film.seek(0);
     film.play();
   });
-  canvas.addEventListener('click', () => (film.playing ? film.pause() : film.play()));
+  frameEl.addEventListener('click', (e) => {
+    if (e.target === action) return;
+    if (film.playing) film.pause();
+    else film.play();
+  });
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement) return;
     if (e.code === 'Space' || e.code === 'KeyK') {
@@ -175,48 +183,94 @@ async function boot() {
     }
   });
 
-  if (debug) mountDebug(film);
+  if (params.has('debug') || v.debug) mountDebug(film, v);
   if (captureMode) {
     // Gravação quadro a quadro / ajustes: acesso direto ao palco e ao estado de cada instante.
-    window.partsFilmDev = { stage, frameState: (t) => frameState(t, isPortrait()) };
+    window.partsFilmDev = { stage, frameState: v.state };
     return;
   }
 
   if (reduceMotion.matches && !params.has('t')) {
     // Reduzir movimento: mostra o quadro final parado; o filme só toca se a pessoa pedir.
-    film.seek(STILL_TIME);
+    film.seek(v.stillTime);
     setAction('Assistir ao filme');
     return;
   }
-  setTimeout(() => film.play(), 450);
+  if (v.autoplay) setTimeout(() => film.play(), 450);
+  else setAction('Assistir');
 }
 
-/** Régua de tempo para ajuste fino (?debug). Não aparece no filme. */
-function mountDebug(film) {
+/** Régua de tempo (e controles da variante, quando houver). Não aparece no filme. */
+function mountDebug(film, v) {
   const bar = document.createElement('div');
   bar.className = 'pf-debug';
-  const acts = ACTS.map(
-    (a) =>
-      `<span class="pf-debug-act" style="left:${(a.start / DURATION) * 100}%;width:${((a.end - a.start) / DURATION) * 100}%">${a.label}</span>`,
-  ).join('');
-  const cues = SOUND_CUES.map(
-    (c) =>
-      `<span class="pf-debug-cue" style="left:${(c.t / DURATION) * 100}%${c.until ? `;width:${((c.until - c.t) / DURATION) * 100}%` : ''}" title="${c.t}s · ${c.label}"></span>`,
-  ).join('');
   bar.innerHTML = `
-    <button type="button" class="pf-debug-play">Play</button>
-    <div class="pf-debug-track">
-      <div class="pf-debug-acts">${acts}</div>
-      <div class="pf-debug-cues">${cues}</div>
-      <input type="range" min="0" max="${DURATION}" step="0.01" value="0" aria-label="Tempo do filme" />
-    </div>
-    <output class="pf-debug-time">0.00 s</output>
-    <output class="pf-debug-cue-label"></output>`;
+    <div class="pf-debug-row">
+      <button type="button" class="pf-debug-play">Play</button>
+      <div class="pf-debug-track">
+        <div class="pf-debug-acts"></div>
+        <div class="pf-debug-cues"></div>
+        <input type="range" min="0" step="0.01" value="0" aria-label="Tempo do filme" />
+      </div>
+      <output class="pf-debug-time">0.00 s</output>
+      <output class="pf-debug-cue-label"></output>
+    </div>`;
   document.body.appendChild(bar);
   const range = bar.querySelector('input');
   const out = bar.querySelector('.pf-debug-time');
   const cueOut = bar.querySelector('.pf-debug-cue-label');
   const btn = bar.querySelector('.pf-debug-play');
+
+  // Atos e marcações acompanham a duração (que a variante social permite mudar).
+  function paintRuler() {
+    const d = film.duration;
+    range.max = d;
+    bar.querySelector('.pf-debug-acts').innerHTML = v.acts
+      .map(
+        (a) =>
+          `<span class="pf-debug-act" style="left:${(a.start / d) * 100}%;width:${((a.end - a.start) / d) * 100}%">${a.label}</span>`,
+      )
+      .join('');
+    bar.querySelector('.pf-debug-cues').innerHTML = v.cues
+      .map(
+        (c) =>
+          `<span class="pf-debug-cue" style="left:${(c.t / d) * 100}%${c.until ? `;width:${((c.until - c.t) / d) * 100}%` : ''}" title="${c.t.toFixed(2)}s · ${c.label}"></span>`,
+      )
+      .join('');
+  }
+  paintRuler();
+
+  if (v.controls) {
+    const panel = document.createElement('div');
+    panel.className = 'pf-debug-controls';
+    v.controls.forEach((c) => {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      const value = document.createElement('output');
+      if (c.type === 'boolean') {
+        input.type = 'checkbox';
+        input.checked = c.get();
+        value.textContent = '';
+      } else {
+        input.type = 'range';
+        input.min = c.min;
+        input.max = c.max;
+        input.step = c.step;
+        input.value = c.get();
+        value.textContent = c.get();
+      }
+      input.addEventListener('input', () => {
+        c.set(c.type === 'boolean' ? input.checked : parseFloat(input.value));
+        if (c.type !== 'boolean') value.textContent = input.value;
+        paintRuler();
+        film.redraw();
+      });
+      label.append(`${c.label} `, input, value);
+      panel.appendChild(label);
+    });
+    bar.appendChild(panel);
+  }
+
   range.addEventListener('input', () => {
     film.pause();
     film.seek(parseFloat(range.value));
@@ -229,7 +283,10 @@ function mountDebug(film) {
   film.events.addEventListener('play', () => (btn.textContent = 'Pausa'));
   film.events.addEventListener('pause', () => (btn.textContent = 'Play'));
   film.events.addEventListener('ended', () => (btn.textContent = 'Play'));
-  film.events.addEventListener('cue', (e) => (cueOut.textContent = `♪ ${e.detail.t}s · ${e.detail.label}`));
+  film.events.addEventListener(
+    'cue',
+    (e) => (cueOut.textContent = `♪ ${e.detail.t.toFixed(2)}s · ${e.detail.label}`),
+  );
 }
 
 boot();
