@@ -1192,15 +1192,6 @@ export const SUPPORT_CENTERS = [
     email: 'eletr.tvsom@gmail.com',
   },
   {
-    id: 'a332',
-    name: 'ELETRÔNICA WALKER',
-    city: 'Passo Fundo',
-    uf: 'RS',
-    phones: ['(54) 3632-6786', '(54) 99990-8866'],
-    address: 'Rua General Daltro Filho, 771 - Lucas Araújo – Passo Fundo - RS - CEP 99.074-020',
-    email: 'walker@eletronicawalker.com.br',
-  },
-  {
     id: 'a333',
     name: 'IASCAR AUTOSOM',
     city: 'Porto Alegre',
