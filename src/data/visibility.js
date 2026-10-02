@@ -21,3 +21,13 @@ export const SHOW_PARTS = false;
  * com o comentário "OCULTO: baterias Automotivo".
  */
 export const SHOW_BATERIAS_AUTOMOTIVO = false;
+
+/**
+ * OCULTO TEMPORARIAMENTE: amplificadores (AP400X4 e AP800X4). Com `false`, saem
+ * do catálogo #/setores/automotivo e as páginas deles voltam para a Home; os
+ * manuais continuam na seção Manuais e na busca. A versão de exportação
+ * (EN/ES) não muda.
+ *
+ * PARA VOLTAR: troque para `true` (pontos marcados com "OCULTO: amplificadores").
+ */
+export const SHOW_AMPLIFICADORES = false;

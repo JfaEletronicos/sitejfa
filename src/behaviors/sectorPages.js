@@ -1,6 +1,6 @@
 import { trackEvent } from '../lib/analytics';
 import { PRODUCTS as PT_PRODUCTS } from '../data/products';
-import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../data/sectors';
+import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU, HIDDEN_PRODUCT_IDS } from '../data/sectors';
 import { PRODUCT_DETAILS as PT_DETAILS } from '../data/productDetails';
 import { PRODUCT_QUICK_SPECS as PT_QUICK_SPECS } from '../data/productSpecs';
 import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../data/exportProducts';
@@ -303,6 +303,8 @@ function initSectorPages(ctx) {
     const p = productsById[id];
     const detail = PRODUCT_DETAILS[id];
     if (!cfg || !p || !detail || !prod.view) return null;
+    // OCULTO: amplificadores — sem página enquanto a flag estiver desligada (só no site em português).
+    if (!IS_EXPORT && HIDDEN_PRODUCT_IDS.includes(id)) return null;
     const group = cfg.groups.find((g) => g.ids.includes(id));
     const pname = nameOf(p);
     const sectorTitle = SECTOR_TITLES[slug] || slug;

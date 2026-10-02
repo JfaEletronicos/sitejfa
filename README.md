@@ -79,7 +79,9 @@ O botão **Categorias** do header abre um menu com Automotivo, Telecom, Motorhom
 
 **Moov e JFA Parts estão ocultas até segunda ordem**: as flags `SHOW_MOOV` e `SHOW_PARTS` de `src/data/visibility.js` controlam todos os pontos (menu, Frentes, seção da Home, abas de Manuais, busca, rodapé e rotas). Para voltar, basta trocá-las para `true`; os trechos estão marcados com o comentário `OCULTO: Moov/Parts`.
 
-**Baterias fora do Automotivo (temporário)**: a flag `SHOW_BATERIAS_AUTOMOTIVO` de `src/data/visibility.js` tira as baterias da categoria Automotivo (catálogo, aba Automotivo dos Manuais, filtro Automotivo do carrossel da Home e botões de aplicação das páginas das baterias). Nada foi apagado: para voltar, troque para `true`; os trechos estão marcados com `OCULTO: baterias Automotivo`.
+**Baterias fora do Automotivo (temporário)**: a flag `SHOW_BATERIAS_AUTOMOTIVO` de `src/data/visibility.js` tira as baterias da categoria Automotivo (catálogo, aba Automotivo dos Manuais, filtro Automotivo do carrossel da Home e botões de aplicação das páginas das baterias). Nada foi apagado: para voltar, troque para `true`; enquanto isso, a E-Lítio Pro 48V 50Ah (que só era Automotivo) aparece em Telecom. os trechos estão marcados com `OCULTO: baterias Automotivo`.
+
+**Amplificadores ocultos (temporário)**: a flag `SHOW_AMPLIFICADORES` de `src/data/visibility.js` tira o AP400X4 e o AP800X4 do catálogo Automotivo e das páginas de produto; os manuais continuam na seção Manuais. A exportação (EN/ES) não muda. Para voltar, troque para `true` (trechos marcados com `OCULTO: amplificadores`).
 
 Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
 

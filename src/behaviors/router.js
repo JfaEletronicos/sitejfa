@@ -222,6 +222,8 @@ function initRouter(ctx) {
         capacity: '50Ah',
         technology: 'LiFePO4',
         sectors: ['automotivo'],
+        // OCULTO: baterias Automotivo — enquanto a flag estiver desligada, fica em Telecom.
+        sectorsSemAutomotivo: ['telecom'],
         features: ['BMS'],
         shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
         marketingHeadline: 'Alta tens\xE3o, energia sob controle.',
@@ -337,6 +339,7 @@ function initRouter(ctx) {
     if (!SHOW_BATERIAS_AUTOMOTIVO) {
       BATTERY_CATALOG.forEach((b) => {
         b.sectors = b.sectors.filter((s) => s !== 'automotivo');
+        if (!b.sectors.length && b.sectorsSemAutomotivo) b.sectors = b.sectorsSemAutomotivo;
       });
     }
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
