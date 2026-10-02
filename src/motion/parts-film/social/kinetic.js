@@ -672,7 +672,75 @@ export function createKineticVariant(score) {
        * contínuas (`keys`, spline com velocidade contínua, para planos que atravessam cenas).
        * Intensidades valem sobre o quanto cada valor se afasta do início do plano.
        */
+      /**
+       * Câmera em voo livre (shot.flight): posição e ponto de olhar com trajetórias próprias
+       * (6DoF), inclinação de curva pela aceleração lateral do voo (como um drone ou um
+       * pássaro) e uma micro-oscilação orgânica. Convertida para alvo + órbita do palco.
+       */
+      const flightNoise = (t, seed, amp) =>
+        [0, 1, 2].map(
+          (i) =>
+            (Math.sin(t * 1.93 + seed + i * 2.1) * 0.5 +
+              Math.sin(t * 3.37 + seed * 1.7 + i * 4.3) * 0.3 +
+              Math.sin(t * 0.71 + seed * 0.6 + i) * 0.2) *
+            amp,
+        );
+      function flightPose(shot, tb) {
+        if (!shot.spline) {
+          shot.spline = spline(
+            shot.keys.map((k) => ({
+              t: k.t,
+              rest: k.rest,
+              pos: k.pos,
+              look: k.look,
+              roll: k.roll ?? 0,
+              lens: k.lens ?? 1,
+              shift: k.shift || [0, 0],
+              wobble: k.wobble ?? 1,
+            })),
+            ['pos', 'look', 'roll', 'lens', 'shift', 'wobble'],
+            { monotone: true },
+          );
+        }
+        const at = (t) => shot.spline(Math.min(Math.max(t, shot.t[0]), shot.t[1]));
+        const v = at(tb);
+        const amp = v.wobble * (shot.wobble ?? 0.05);
+        const nPos = flightNoise(tb, 1.3, amp);
+        const nLook = flightNoise(tb, 7.9, amp * 0.6);
+        const pos = v.pos.map((x, i) => x + nPos[i]);
+        const look = v.look.map((x, i) => x + nLook[i]);
+        // Curva: aceleração lateral (no eixo "direita" da câmera) vira inclinação.
+        const h = 0.14;
+        const pa = at(tb - h).pos;
+        const pb = at(tb + h).pos;
+        const acc = v.pos.map((x, i) => (pa[i] - 2 * x + pb[i]) / (h * h));
+        const f = look.map((x, i) => x - pos[i]);
+        const fl = Math.hypot(...f) || 1;
+        const right = [-f[2] / fl, 0, f[0] / fl];
+        const rl = Math.hypot(...right) || 1;
+        const lateral = (acc[0] * right[0] + acc[2] * right[2]) / rl;
+        const bank = Math.max(
+          -(shot.maxBank ?? 12),
+          Math.min(shot.maxBank ?? 12, lateral * (shot.bankK ?? 0.9)),
+        );
+        const d = pos.map((x, i) => x - look[i]);
+        const dist = Math.hypot(...d) || 1e-3;
+        return {
+          p: clamp01((tb - shot.t[0]) / (shot.t[1] - shot.t[0])),
+          target: look,
+          az: Math.atan2(d[0], d[2]) / DEG,
+          el: Math.asin(Math.max(-1, Math.min(1, d[1] / dist))) / DEG,
+          logDist: Math.log(dist),
+          lens: v.lens,
+          roll: v.roll + bank,
+          shift: v.shift,
+          rot: [0, 0, 0],
+          pan: [0, 0],
+        };
+      }
+
       function shotPose(shot, tb) {
+        if (shot.flight) return flightPose(shot, tb);
         const [t0, t1] = shot.t;
         const p = clamp01((tb - t0) / (t1 - t0));
         const kc = K('cameraIntensity');
