@@ -111,3 +111,7 @@ está em [referencia.md](referencia.md).
 - A placa começa preta e a luz a revela aos poucos.
 - Fundo de cena cobrindo a tela inteira; na cena 2, um texto só que estica de cima para baixo.
 - Linha tecnológica (trilha de circuito) abaixo do texto, gerada por máscara lateral, atrás da placa.
+- Produto vem do CAD original quando houver (bateria E-LÍTIO PRO: `assets/elitio-pro`), com
+  materiais reais (caixa em plástico rígido black piano) e os adesivos do arquivo de impressão.
+- Quando o briefing de um filme contradiz este checklist (ex.: cena sem texto, fundo preto
+  vazio, "se pode ser visual, não entra texto"), vale o briefing; anote no roteiro.

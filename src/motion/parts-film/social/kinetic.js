@@ -171,12 +171,17 @@ function surfaceRgb(key) {
 
 /**
  * Fundo como radial [centro, borda, posição]: "glow"/"hero" = azul profundo atrás da
- * placa caindo para o preto; "white" = branco com a borda levemente fria; cores = chapado.
+ * placa caindo para o preto; "white" = branco com a borda levemente fria; "void" = preto
+ * absoluto; "smoke" = halo grafite tênue sobre o preto; cores = chapado.
  */
 function backdrop(key) {
   if (key === 'glow') return { c: surfaceRgb('deepBlue'), e: hex(COLORS.black), y: 60 };
   if (key === 'hero') return { c: surfaceRgb('deepBlue'), e: hex(COLORS.black), y: 44 };
   if (key === 'white') return { c: hex(COLORS.white), e: [233, 238, 245], y: 50 };
+  // "void": preto absoluto (produto preto some por completo).
+  if (key === 'void') return { c: [0, 0, 0], e: [0, 0, 0], y: 50 };
+  // "smoke": halo grafite muito tênue atrás do produto (silhueta legível sobre o preto).
+  if (key === 'smoke') return { c: [26, 30, 36], e: hex(COLORS.black), y: 52 };
   const c = surfaceRgb(key);
   return { c, e: c, y: 50 };
 }

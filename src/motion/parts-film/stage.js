@@ -28,14 +28,14 @@ const NO_FX = { wave: 0, waveFreq: 0, wavePhase: 0, chroma: 0, blur: [0, 0] };
 
 /**
  * Junta as malhas do glTF por material, já com a transformação de cada nó aplicada,
- * e deita a placa no plano XZ (componentes para +Y).
+ * e deita a placa no plano XZ (componentes para +Y). Modelos que já vêm em pé (`upAxis`
+ * 'y', como a bateria) só ganham a escala.
  */
-function buildBoard(gltf, maxAnisotropy) {
+function buildBoard(gltf, maxAnisotropy, upAxis = 'z') {
   const root = gltf.scene;
   root.updateMatrixWorld(true);
-  const place = new THREE.Matrix4()
-    .makeScale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE)
-    .multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+  const place = new THREE.Matrix4().makeScale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
+  if (upAxis !== 'y') place.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 
   const groups = new Map();
   root.traverse((o) => {
@@ -279,10 +279,11 @@ const COMPOSITE_FRAG = /* glsl */ `
 `;
 
 /**
- * @param {{ canvas: HTMLCanvasElement, model: ArrayBuffer, transparent?: boolean }} opts
- *   `model` = conteúdo do GLB da placa; `transparent` = fundo transparente (variante social).
+ * @param {{ canvas: HTMLCanvasElement, model: ArrayBuffer, transparent?: boolean, upAxis?: string }} opts
+ *   `model` = conteúdo do GLB; `transparent` = fundo transparente (variante social);
+ *   `upAxis` = 'y' para modelos que já vêm em pé (bateria), 'z' (padrão) para a placa.
  */
-export async function createStage({ canvas, model, transparent = false }) {
+export async function createStage({ canvas, model, transparent = false, upAxis = 'z' }) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: false,
@@ -302,7 +303,7 @@ export async function createStage({ canvas, model, transparent = false }) {
   scene.environment = envTarget.texture;
 
   const pivot = new THREE.Group();
-  const board = buildBoard(gltf, renderer.capabilities.getMaxAnisotropy());
+  const board = buildBoard(gltf, renderer.capabilities.getMaxAnisotropy(), upAxis);
   pivot.add(board);
   scene.add(pivot);
 

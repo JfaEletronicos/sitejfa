@@ -78,7 +78,9 @@ aproxima (fração), `truck` desloca. Spline contínua: confira que a velocidade
 
 ### BACKGROUND
 
-`[[início, cor | 'glow' | 'hero' | 'white', fusão (s)]]` — cor de fundo atrás de tudo.
+`[[início, cor | 'glow' | 'hero' | 'white' | 'void' | 'smoke', fusão (s)]]` — cor de fundo atrás de
+tudo. `void` = preto absoluto (produto preto some por completo); `smoke` = halo grafite tênue
+atrás do produto (silhueta sobre o preto).
 
 ### BLOCKS
 
@@ -111,5 +113,9 @@ Qualquer chave vale pela URL (`&cameraIntensity=0.5`). Parâmetros da página: `
 ## Outro produto (outro modelo 3D)
 
 GLB em `public/models/`, entrada em `VARIANTS` com `model: '/models/<arquivo>.glb'` e pontos de
-interesse próprios no roteiro (o `PLACA` do kit é desta placa). Não substitua nem "redesenhe" o
+interesse próprios no roteiro (o `PLACA` do kit é desta placa). Modelo que já vem em pé (eixo Y
+para cima, como a bateria) leva `upAxis: 'y'` na entrada. A bateria E-LÍTIO PRO
+(`?variant=elitio-pro`) é montada por `tools/motion/build-elitio-pro.mjs` a partir do CAD
+original (`assets/elitio-pro/caixa-cad.glb`) e dos recortes dos adesivos; rode de novo se
+mudar algo nela. Não substitua nem "redesenhe" o
 modelo: use o arquivo enviado.

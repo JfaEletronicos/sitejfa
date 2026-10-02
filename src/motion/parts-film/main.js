@@ -4,6 +4,7 @@
  *   premium (padrão)          filme de produto "Tudo começa por dentro." (~18 s)
  *   ?variant=social-kinetic   peça vertical 9:16 de tipografia cinética (~20 s)
  *   ?variant=modelo           roteiro-modelo para motions novos do mesmo estilo
+ *   ?variant=elitio-pro       bateria E-LÍTIO PRO 12V 280Ah (modelo do CAD, em pé)
  * Motion novo de tipografia cinética = um roteiro em social/scores/ + uma linha em VARIANTS
  * (ver .claude/skills/motion/SKILL.md).
  *
@@ -18,6 +19,7 @@ import './parts-film.css';
 import { createFilm } from './film';
 
 const PLACA = '/models/placa_lb1004.glb';
+const ELITIO_PRO = '/models/elitio-pro.glb';
 const FORMATS = { '16x9': 16 / 9, '9x16': 9 / 16, '1x1': 1, '4x5': 4 / 5 };
 // Limite de pixels renderizados (mantém o filme leve em telas de alta densidade).
 const MAX_PIXELS = 3.2e6;
@@ -26,11 +28,13 @@ const kinetic = (loadScore) => () =>
   Promise.all([import('./social/kinetic'), loadScore()]).then(([engine, score]) =>
     engine.createKineticVariant(score.default),
   );
-// Cada variante: como carregar e qual modelo 3D (GLB em public/models) usar.
+// Cada variante: como carregar e qual modelo 3D (GLB em public/models) usar; `upAxis: 'y'`
+// para modelos que já vêm em pé.
 const VARIANTS = {
   premium: { load: () => import('./premium').then((m) => m.default), model: PLACA },
   'social-kinetic': { load: kinetic(() => import('./social/scores/em-tudo')), model: PLACA },
   modelo: { load: kinetic(() => import('./social/scores/modelo')), model: PLACA },
+  'elitio-pro': { load: kinetic(() => import('./social/scores/elitio-pro')), model: ELITIO_PRO, upAxis: 'y' },
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -83,7 +87,12 @@ async function boot() {
   let stage;
   try {
     const [buffer, { createStage }] = await Promise.all([modelPromise, import('./stage')]);
-    stage = await createStage({ canvas, model: buffer, transparent: variantModule.transparent });
+    stage = await createStage({
+      canvas,
+      model: buffer,
+      transparent: variantModule.transparent,
+      upAxis: entry.upAxis,
+    });
   } catch (err) {
     console.error('[JFA Parts] filme indisponível:', err);
     showFailure();
