@@ -14,11 +14,11 @@
  *   ?t=8.5                          começa nesse instante
  *   ?range=0-2                      repete só esse trecho (s), para revisar uma cena
  *   ?capture                        não toca sozinho (para gravar quadro a quadro via window.partsFilm)
+ *   ?quality=max                    resolução cheia (sem teto de pixels nem redução automática; 4K)
  */
 import './parts-film.css';
 import { createFilm } from './film';
 import { ELITIO_PRO_DETAIL } from './surface-detail';
-import { ELITIO_PRO_SCREENS } from './lcd-screen';
 
 const PLACA = '/models/placa_lb1004.glb';
 const ELITIO_PRO = '/models/elitio-pro.glb';
@@ -32,8 +32,7 @@ const kinetic = (loadScore) => () =>
   );
 // Cada variante: como carregar e qual modelo 3D (GLB em public/models) usar; `upAxis: 'y'`
 // para modelos que já vêm em pé; `studio: 'white'` para o estúdio branco com chão e luz presa
-// ao mundo; `detail` para o acabamento fino da superfície (surface-detail.js); `screens` para
-// telas acesas desenhadas no shader (lcd-screen.js).
+// ao mundo; `detail` para o acabamento fino da superfície (surface-detail.js).
 const VARIANTS = {
   premium: { load: () => import('./premium').then((m) => m.default), model: PLACA },
   'social-kinetic': { load: kinetic(() => import('./social/scores/em-tudo')), model: PLACA },
@@ -44,13 +43,14 @@ const VARIANTS = {
     upAxis: 'y',
     studio: 'white',
     detail: ELITIO_PRO_DETAIL,
-    screens: ELITIO_PRO_SCREENS,
   },
 };
 
 const params = new URLSearchParams(window.location.search);
 const variantId = VARIANTS[params.get('variant')] ? params.get('variant') : 'premium';
 const captureMode = params.has('capture');
+// ?quality=max: resolução cheia (exportação em 4K), sem teto de pixels nem redução automática.
+const fullQuality = params.get('quality') === 'max';
 
 const frameEl = document.querySelector('.pf-frame');
 const canvas = frameEl.querySelector('.pf-canvas');
@@ -105,7 +105,6 @@ async function boot() {
       upAxis: entry.upAxis,
       studio: entry.studio,
       detail: entry.detail,
-      screens: entry.screens,
     });
   } catch (err) {
     console.error('[JFA Parts] filme indisponível:', err);
@@ -146,7 +145,8 @@ async function boot() {
     frameEl.style.width = `${w}px`;
     frameEl.style.height = `${h}px`;
     frameEl.dataset.orient = w / h < 0.95 ? 'portrait' : w / h < 1.4 ? 'square' : 'landscape';
-    const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(MAX_PIXELS / (w * h)));
+    const maxPixels = fullQuality ? Infinity : MAX_PIXELS;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(maxPixels / (w * h)));
     stage.setSize(w, h, dpr * quality);
     if (v.resize) v.resize(w, h);
     film.redraw();
@@ -160,7 +160,7 @@ async function boot() {
     const now = performance.now();
     const dt = now - lastStamp;
     lastStamp = now;
-    if (!film.playing || dt > 250 || quality <= 0.57) return;
+    if (fullQuality || !film.playing || dt > 250 || quality <= 0.57) return;
     slowFrames = dt > 25 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
     if (slowFrames > 45) {
       slowFrames = 0;

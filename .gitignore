@@ -4,3 +4,4 @@ dist
 *.log
 .vercel
 .motion-frames
+.motion-render

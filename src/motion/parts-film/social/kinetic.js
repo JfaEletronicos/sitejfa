@@ -680,18 +680,23 @@ export function createKineticVariant(score) {
        */
       function flightPose(shot, tb) {
         if (!shot.spline) {
-          shot.spline = smoothSpline(
-            shot.keys.map((k) => ({
-              t: k.t,
-              rest: k.rest,
-              pos: k.pos,
-              look: k.look,
-              roll: k.roll ?? 0,
-              lens: k.lens ?? 1,
-              shift: k.shift || [0, 0],
-            })),
-            ['pos', 'look', 'roll', 'lens', 'shift'],
-          );
+          const keys = shot.keys.map((k) => ({
+            t: k.t,
+            rest: k.rest,
+            pos: k.pos,
+            look: k.look,
+            roll: k.roll ?? 0,
+            lens: k.lens ?? 1,
+            shift: k.shift || [0, 0],
+          }));
+          // Posição em curva de curvatura contínua (voo sem trancos); olhar, lente e
+          // enquadramento sem ultrapassagem (entre marcações iguais o olhar fica parado).
+          const path = smoothSpline(keys, ['pos', 'roll']);
+          const aim = spline(keys, ['look', 'lens', 'shift'], { monotone: true });
+          shot.spline = (t) => {
+            const tt = Math.min(Math.max(t, shot.t[0]), shot.t[1]);
+            return { ...path(tt), ...aim(tt) };
+          };
         }
         const at = (t) => shot.spline(t);
         const v = at(tb);

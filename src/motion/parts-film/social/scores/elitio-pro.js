@@ -1,5 +1,5 @@
 /**
- * E-LÍTIO PRO 12V 280Ah (?variant=elitio-pro · 9:16 · 28,4 s): base 3D cinematográfica do
+ * E-LÍTIO PRO 12V 280Ah (?variant=elitio-pro · 9:16 · 29,45 s): base 3D cinematográfica do
  * lançamento, com linguagem de comercial de carro, em UM plano contínuo (sem cortes e sem
  * paradas: a câmera só para no último quadro), em voo livre como um pássaro (6DoF: posição
  * e olhar independentes, curvas suaves e inclinadas), alternando trechos lentos e rápidos e
@@ -16,21 +16,22 @@
  *
  *   01 silhueta (0–4,2): estúdio apagado; a luz de fundo acende o chão e a parede atrás
  *      (silhueta), depois contraluz e luz de cima; termina todo claro. Deriva lenta.
- *   02 revelação (4,2–14,35): voo livre em volta do produto, sempre para o mesmo lado:
- *      fly-by no logotipo, painel (display e botões, de cima), borne positivo, mergulho na
- *      ponta, traseira (ficha), outra ponta e quina da tampa (lento); recua rápido.
- *   03 cards (14,35–16,9): 3/4 alto e controlado, deriva lenta.
- *   04 vista explodida (16,9–21,7): a tampa sobe inteira e BMS, barramentos, suporte e
+ *   02 revelação (4,2–15,35): voo livre em volta do produto, sempre para o mesmo lado:
+ *      fly-by no logotipo, borne positivo (macro, devagar), mergulho na ponta, traseira
+ *      (ficha), outra ponta e o painel com o display aceso, de cima (no fim da volta);
+ *      fecha a volta recuando rápido.
+ *   03 cards (15,35–17,95): 3/4 alto e controlado, deriva lenta.
+ *   04 vista explodida (17,95–22,75): a tampa sobe inteira e BMS, barramentos, suporte e
  *      células se separam na vertical; a câmera fica em 3/4 lento, de fora, e a bateria se
- *      recompõe (clique em ~21,6).
- *   05 hero (21,7–24,4): aproximação lenta e baixa em 3/4, espaço acima para a mensagem.
- *   06 final (24,4–28,4): afastamento lento, muito espaço negativo.
+ *      recompõe (clique em ~22,65).
+ *   05 hero (22,75–25,45): aproximação lenta e baixa em 3/4, espaço acima para a mensagem.
+ *   06 final (25,45–29,45): afastamento lento, muito espaço negativo.
  */
 export const META = {
   id: 'elitio-pro',
   title: 'E-LÍTIO PRO 12V 280Ah',
-  duration: 28.4,
-  stillTime: 28.3,
+  duration: 29.45,
+  stillTime: 29.35,
   format: '9x16',
   // Obturador de 1/30 s: motion blur forte só quando a imagem anda rápido.
   shutter: 1 / 30,
@@ -38,11 +39,11 @@ export const META = {
 
 export const SCENES = [
   { id: 'cena-01', label: '01 Silhueta', start: 0, end: 4.2 },
-  { id: 'cena-02', label: '02 Revelação', start: 4.2, end: 14.35 },
-  { id: 'cena-03', label: '03 Cards', start: 14.35, end: 16.9 },
-  { id: 'cena-04', label: '04 Explodida', start: 16.9, end: 21.7 },
-  { id: 'cena-05', label: '05 Hero', start: 21.7, end: 24.4 },
-  { id: 'cena-06', label: '06 Final', start: 24.4, end: 28.4 },
+  { id: 'cena-02', label: '02 Revelação', start: 4.2, end: 15.35 },
+  { id: 'cena-03', label: '03 Cards', start: 15.35, end: 17.95 },
+  { id: 'cena-04', label: '04 Explodida', start: 17.95, end: 22.75 },
+  { id: 'cena-05', label: '05 Hero', start: 22.75, end: 25.45 },
+  { id: 'cena-06', label: '06 Final', start: 25.45, end: 29.45 },
 ];
 
 // Pontos do modelo (unidades de 10 cm; base no chão, frente para +z, positivo em +x).
@@ -89,7 +90,7 @@ const WIDE = { aperture: STUDIO.aperture };
 // ângulo em volta da bateria só cresce (nunca vai e volta). Unidades de 10 cm.
 export const SHOTS = [
   {
-    t: [0, 28.4],
+    t: [0, 29.45],
     flight: true,
     keys: [
       // 01 · silhueta: deriva lenta, baixa, bateria levemente fora do centro.
@@ -102,40 +103,39 @@ export const SHOTS = [
       // ...quase parada para ler...
       { t: 6.0, pos: [1.6, 1.4, 3.6], look: [0.0, 1.32, 0.86], lens: 0.95 },
       { t: 6.4, pos: [1.9, 1.6, 3.7], look: [0.2, 1.35, 0.86], lens: 0.95 },
-      // ...sobe pela quina da frente e quase para sobre a tampa: o painel (display aceso e
-      // os três botões), de cima, com o foco nele (a parede sai do quadro)...
-      { t: 7.0, pos: [1.0, 4.42, 0.62], look: [-0.08, 2.44, -0.36], lens: 0.92 },
-      { t: 7.55, pos: [1.25, 4.38, 0.3], look: [-0.06, 2.44, -0.36], lens: 0.92 },
-      // ...segue de lado até o borne positivo (macro)...
-      { t: 7.85, pos: [2.6, 3.7, 0.2], look: [0.6, 2.4, -0.35] },
-      { t: 8.3, pos: [2.6, 3.5, -0.2], look: [1.85, 2.45, -0.55] },
-      { t: 8.8, pos: [2.95, 3.25, -0.95], look: [1.85, 2.42, -0.55] },
+      // ...sobe pela quina da frente até o borne positivo e fica nele, devagar (macro)...
+      { t: 7.15, pos: [2.7, 3.6, 1.7], look: [1.6, 2.3, -0.3] },
+      { t: 7.85, pos: [2.6, 3.5, -0.2], look: [1.85, 2.45, -0.55], lens: 0.95 },
+      { t: 8.85, pos: [2.95, 3.25, -0.95], look: [1.85, 2.42, -0.55], lens: 0.95 },
       // ...mergulha na ponta (orelha e alça)...
-      { t: 9.3, pos: [4.3, 1.6, -1.6], look: [2.3, 1.0, 0] },
-      { t: 9.8, pos: [4.1, 1.2, -2.3], look: [2.3, 1.0, 0] },
+      { t: 9.45, pos: [4.3, 1.6, -1.6], look: [2.3, 1.0, 0] },
+      { t: 9.95, pos: [4.1, 1.2, -2.3], look: [2.3, 1.0, 0] },
       // ...fly-by pela traseira (ficha técnica), olhando para trás enquanto avança...
-      { t: 10.45, pos: [2.4, 1.25, -3.4], look: [1.7, 1.0, -0.86] },
-      { t: 10.95, pos: [0.6, 1.3, -3.7], look: [1.3, 1.0, -0.86] },
-      // ...contorna a outra ponta e chega devagar à quina da tampa (acabamento)...
-      { t: 11.6, pos: [-3.7, 1.9, -2.7], look: [-2.3, 1.2, 0] },
-      { t: 12.25, pos: [-3.4, 2.8, 2.0], look: [-1.6, 1.95, 0.86], lens: 0.9 },
-      { t: 12.95, pos: [-2.5, 2.65, 2.7], look: [-0.9, 1.95, 0.86], lens: 0.9 },
-      // ...e recua rápido, subindo: proporções.
-      { t: 13.55, pos: [-1.0, 3.0, 7.6], look: [0, 1.3, 0] },
-      { t: 14.35, pos: [2.0, 4.0, 15.0], look: [0, 1.3, 0] },
+      { t: 10.6, pos: [2.4, 1.25, -3.4], look: [1.7, 1.0, -0.86] },
+      { t: 11.1, pos: [0.6, 1.3, -3.7], look: [1.3, 1.0, -0.86] },
+      // ...contorna a outra ponta, sobe pela frente-esquerda e paira sobre o painel
+      // (display aceso), de cima, com o foco nele...
+      { t: 11.75, pos: [-3.7, 1.9, -2.7], look: [-2.3, 1.2, 0] },
+      { t: 12.45, pos: [-2.25, 4.8, 0.83], look: [-0.4, 2.3, -0.3], lens: 0.6 },
+      { t: 12.9, pos: [-2.0, 5.3, 1.45], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 13.4, pos: [-1.8, 5.28, 1.65], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 13.9, pos: [-1.6, 5.25, 1.85], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      // ...e fecha a volta recuando rápido, subindo: proporções.
+      { t: 14.55, pos: [-1.0, 3.0, 7.6], look: [0, 1.3, 0] },
+      { t: 15.35, pos: [2.0, 4.0, 15.0], look: [0, 1.3, 0] },
       // 03 · cards: 3/4 alto e controlado, deriva lenta.
-      { t: 16.5, pos: [9.0, 5.6, 17.5], look: [0, 1.35, 0] },
+      { t: 17.55, pos: [9.0, 5.6, 17.5], look: [0, 1.35, 0] },
       // 04 · explodida: 3/4 lento, de fora; o olhar sobe com a estrutura aberta, fica na
       // leitura e desce quando ela se fecha.
-      { t: 16.9, pos: [9.4, 5.9, 16.2], look: [0, 2.4, 0] },
-      { t: 18.7, pos: [10.2, 6.4, 14.0], look: [0, 4.0, 0] },
-      { t: 20.4, pos: [10.6, 6.2, 12.6], look: [0, 3.8, 0] },
-      { t: 21.7, pos: [9.8, 4.2, 11.0], look: [0, 1.6, 0] },
+      { t: 17.95, pos: [9.4, 5.9, 16.2], look: [0, 2.4, 0] },
+      { t: 19.75, pos: [10.2, 6.4, 14.0], look: [0, 4.0, 0] },
+      { t: 21.45, pos: [10.6, 6.2, 12.6], look: [0, 3.8, 0] },
+      { t: 22.75, pos: [9.8, 4.2, 11.0], look: [0, 1.6, 0] },
       // 05 · hero: aproximação lenta e baixa em 3/4 (espaço acima para a mensagem).
-      { t: 23.1, pos: [8.6, 1.2, 9.4], look: [0.2, 1.3, 0], shift: [0, -0.12] },
-      { t: 24.4, pos: [7.1, 0.95, 7.4], look: [0.1, 1.25, 0], shift: [0, -0.08] },
+      { t: 24.15, pos: [8.6, 1.2, 9.4], look: [0.2, 1.3, 0], shift: [0, -0.12] },
+      { t: 25.45, pos: [7.1, 0.95, 7.4], look: [0.1, 1.25, 0], shift: [0, -0.08] },
       // 06 · final: afastamento lento, subindo, muito espaço negativo.
-      { t: 28.4, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
+      { t: 29.45, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
     ],
     // Luz presa ao set: primeiro a luz de fundo (silhueta), depois contraluz e luz de cima,
     // e o estúdio inteiro aceso a partir de 4,2 s. Profundidade de campo nos closes.
@@ -149,17 +149,14 @@ export const SHOTS = [
         [4.2, { ...STUDIO }],
         [5.3, WIDE],
         [6.0, MACRO],
-        [6.5, WIDE],
-        [7.0, MACRO],
-        [7.6, MACRO],
-        [7.95, WIDE],
-        [8.25, MACRO],
-        [8.85, MACRO],
-        [9.35, WIDE],
-        [12.15, WIDE],
-        [12.55, MACRO],
-        [13.05, MACRO],
-        [13.55, WIDE],
+        [6.6, WIDE],
+        [7.8, MACRO],
+        [8.9, MACRO],
+        [9.4, WIDE],
+        [12.3, WIDE],
+        [12.85, MACRO],
+        [13.95, MACRO],
+        [14.45, WIDE],
       ],
     },
   },
@@ -168,9 +165,9 @@ export const SHOTS = [
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
 // vertical, alinhados. Abre de cima para baixo; fecha de baixo para cima depois que a
-// câmera fica em 3/4 de fora, e a tampa assenta por último (clique em ~21,6).
-const OPEN = 16.9;
-const CLOSE = 20.4;
+// câmera fica em 3/4 de fora, e a tampa assenta por último (clique em ~22,65).
+const OPEN = 17.95;
+const CLOSE = 21.45;
 const layer = (lift, k) => [
   [OPEN + (4 - k) * 0.12, 0],
   [OPEN + 1.3 + (4 - k) * 0.12, lift, 'soft'],
@@ -195,7 +192,7 @@ export const EXPLODE = {
 // Câmera virtual (move os planos de texto, que ainda não existem): parada.
 export const CAMERA_RIG = [
   { t: 0, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0] },
-  { t: 28.4, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0], rest: true },
+  { t: 29.45, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0], rest: true },
 ];
 
 export const WORDS = [];
@@ -210,12 +207,13 @@ export const CUES = [
   { t: 0, id: 'escuro', label: 'Escuro / ambiente grave', until: 1.8 },
   { t: 1.8, id: 'silhueta', label: 'Luz de fundo: silhueta', until: 3.0 },
   { t: 3.0, id: 'luz', label: 'Estúdio acende', until: 4.2 },
-  { t: 4.2, id: 'revelacao', label: 'Voo em volta (whooshes)', until: 14.35 },
-  { t: 7.0, id: 'display', label: 'Painel (display)', until: 7.55 },
-  { t: 13.55, id: 'recuo', label: 'Recuo rápido (proporções)' },
-  { t: 16.9, id: 'explodida', label: 'Peças se separam', until: 18.7 },
-  { t: 21.6, id: 'clique', label: 'Clique (bateria fecha)' },
-  { t: 24.4, id: 'final', label: 'Afastamento final', until: 28.4 },
+  { t: 4.2, id: 'revelacao', label: 'Voo em volta (whooshes)', until: 15.35 },
+  { t: 7.85, id: 'borne', label: 'Borne positivo (macro)', until: 8.85 },
+  { t: 12.9, id: 'display', label: 'Painel (display aceso)', until: 13.9 },
+  { t: 14.55, id: 'recuo', label: 'Recuo rápido (proporções)' },
+  { t: 17.95, id: 'explodida', label: 'Peças se separam', until: 19.75 },
+  { t: 22.65, id: 'clique', label: 'Clique (bateria fecha)' },
+  { t: 25.45, id: 'final', label: 'Afastamento final', until: 29.45 },
 ];
 
 export default {

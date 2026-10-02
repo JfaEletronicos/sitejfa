@@ -45,7 +45,13 @@ function cachedFetch(url, userAgent) {
  * Abre o motion e espera o filme ficar pronto.
  * @returns {{ browser, page, seek(t: number): Promise<void> }}
  */
-export async function openFilm({ variant, width = 432, height = 768, base = 'http://localhost:5173' }) {
+export async function openFilm({
+  variant,
+  width = 432,
+  height = 768,
+  base = 'http://localhost:5173',
+  query: extra = '',
+}) {
   const { chromium } = await loadPlaywright();
   const browser = await chromium.launch({
     args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
@@ -63,7 +69,7 @@ export async function openFilm({ variant, width = 432, height = 768, base = 'htt
     }
   });
   page.on('pageerror', (e) => console.error('[página]', e.message));
-  const query = `capture${variant ? `&variant=${encodeURIComponent(variant)}` : ''}`;
+  const query = `capture${variant ? `&variant=${encodeURIComponent(variant)}` : ''}${extra ? `&${extra}` : ''}`;
   try {
     await page.goto(`${base}/parts-filme.html?${query}`);
   } catch {

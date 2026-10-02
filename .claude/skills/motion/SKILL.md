@@ -125,6 +125,9 @@ está em [referencia.md](referencia.md).
   órbita perfeita; curvas suaves (spline de curvatura contínua) e inclinadas; nada de tremida
   ou oscilação de mão; bateria às vezes fora do centro; contraste forte entre lento e rápido.
 - Vista explodida: só movimento 3/4 lento, de fora (sem passar entre as peças).
+- Filme da bateria: o display usa a arte original do cliente (`assets/elitio-pro/display`: face
+  "Painel superior" e tela "DISPLAY", acesa); o take do display fica no fim da volta de 360°,
+  pairando devagar sobre o painel. Takes de detalhe (display, borne) sem pressa.
 - Vista explodida: a tampa sobe inteira (display, parafusos e botão juntos); separam-se só as
   peças internas; antes de remontar, a câmera passa entre elas.
 - Quando o briefing de um filme contradiz este checklist (ex.: cena sem texto, fundo preto

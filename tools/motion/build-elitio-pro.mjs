@@ -3,7 +3,8 @@
  * Monta o modelo do motion da E-LÍTIO PRO (public/models/elitio-pro.glb) a partir do CAD
  * original da caixa (SolidWorks → glTF, em assets/elitio-pro/caixa-cad.glb):
  *   - materiais reais no lugar das cores de exibição do CAD (caixa black piano, moldura do
- *     display, botão liga/desliga em aço; a tela acesa é desenhada no shader do palco);
+ *     display, botão liga/desliga em aço);
+ *   - painel do display com a arte original (assets/elitio-pro/display: face e tela acesa);
  *   - adesivos do arquivo de impressão (recortes do PDF, tamanho real) nas faces da caixa;
  *   - arruela e parafuso sextavado nos bornes, anel vermelho no positivo e alças de corda
  *     trançada (geometria, sem textura), conforme a foto do produto;
@@ -60,11 +61,11 @@ const mm = 0.001; // o CAD está em metros
 const piano = new THREE.MeshPhysicalMaterial({ name: 'Caixa black piano', color: 0x030304, roughness: 0.12,
   ior: 1.5, clearcoat: 1, clearcoatRoughness: 0.015 });
 const M = {
-  frame: new THREE.MeshPhysicalMaterial({ name: 'Display moldura', color: 0x8e9197, roughness: 0.35, metalness: 0.1,
+  frame: new THREE.MeshPhysicalMaterial({ name: 'Display moldura', color: 0xaeb2b8, roughness: 0.35, metalness: 0.1,
     clearcoat: 0.6, clearcoatRoughness: 0.15 }),
   face: new THREE.MeshPhysicalMaterial({ name: 'Display face', color: 0x060607, roughness: 0.1, clearcoat: 1,
     clearcoatRoughness: 0.02 }),
-  screen: new THREE.MeshPhysicalMaterial({ name: 'Display tela', color: 0x0a0b12, roughness: 0.06,
+  screen: new THREE.MeshPhysicalMaterial({ name: 'Display tela (CAD)', color: 0x0a0b12, roughness: 0.06,
     clearcoat: 1, clearcoatRoughness: 0.01 }),
   dark: new THREE.MeshStandardMaterial({ name: 'Display peças escuras', color: 0x111215, roughness: 0.4 }),
   light: new THREE.MeshStandardMaterial({ name: 'Display ícones', color: 0xdfe2e6, roughness: 0.45 }),
@@ -79,6 +80,16 @@ const M = {
 };
 // Índice do material no CAD → material real (conjunto do display)
 const DISPLAY = { 0: 'frame', 1: 'dark', 2: 'light', 3: 'dark', 4: 'screen', 5: 'key', 6: 'light', 7: 'face', 8: 'dark' };
+// Teclas e ícones genéricos do CAD saem: a face real do painel (arte "Painel superior")
+// traz as teclas ▲ ⚙ ▼, a barra branca e o "PAINEL DE CONTROLE".
+const dropped = [];
+cad.traverse((o) => {
+  if (!o.isMesh) return;
+  const idx = gltf.parser.associations.get(o.material)?.materials;
+  const inDisp = o.parent?.name?.includes('DISPLAY') || o.name.startsWith('mesh_1');
+  if (inDisp && [2, 5, 6, 8].includes(idx)) dropped.push(o);
+});
+dropped.forEach((o) => o.parent.remove(o));
 cad.traverse((o) => {
   if (!o.isMesh) return;
   const idx = gltf.parser.associations.get(o.material)?.materials;
@@ -183,6 +194,33 @@ for (const side of [1, -1]) {
       new THREE.Vector3(gx, 52, z + zs * 9), new THREE.Vector3(gx, 36, z + zs * 9),
     ]), 'Corda ' + tag);
   }
+}
+
+// Painel do display com a arte original: face preta brilhante (arquivo "Painel superior") e a
+// tela acesa (arquivo "DISPLAY" sobre o azul do LCD), como no produto real.
+{
+  const tex = async (file) => {
+    const t = await new THREE.TextureLoader().loadAsync('/src/display/' + file);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.userData.mimeType = 'image/webp';
+    return t;
+  };
+  // Face preta por cima da face do CAD (243,9 mm), dentro da borda cinza; janela da tela vazada.
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(96.4, 46.9), new THREE.MeshPhysicalMaterial({
+    name: 'Painel adesivo', map: await tex('painel.webp'), alphaTest: 0.5, roughness: 0.12, clearcoat: 1,
+    clearcoatRoughness: 0.03 }));
+  face.rotation.x = -Math.PI / 2;
+  face.position.set(-8.4, 243.96, -36.3);
+  face.name = 'Painel adesivo';
+  parts.add(face);
+  const screenTex = await tex('tela.webp');
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(42.4, 22.1), new THREE.MeshPhysicalMaterial({
+    name: 'Display tela', color: 0x000000, emissive: 0xffffff, emissiveMap: screenTex, emissiveIntensity: 1.3,
+    roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02 }));
+  screen.rotation.x = -Math.PI / 2;
+  screen.position.set(-12.8, 242.9, -39.55);
+  screen.name = 'Tela do display';
+  parts.add(screen);
 }
 
 // Adesivos (BOPP com laminação fosca)

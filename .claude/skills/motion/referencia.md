@@ -39,6 +39,15 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 - `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
   na vertical (unidades de cena).
 
+### Exportar em vídeo (4K)
+
+`npm run motion:render -- --variant <id>` (com o `npm run dev` rodando e ffmpeg instalado) grava o
+filme quadro a quadro em 2160×3840 (4K vertical) com o motion blur real e gera
+`.motion-render/<id>-2160x3840.mp4`. Opções: `--size 3840x2160 --format 16x9`, `--fps 30`,
+`--range a-b`, `--out arquivo.mp4`. A página aceita `?quality=max` (resolução cheia, sem teto de
+pixels). Numa máquina com placa de vídeo leva minutos; no ambiente de nuvem (sem GPU) cerca de 7
+min por quadro, então rode localmente.
+
 ### SPACES
 
 `{ <id>: { yaw } }` — ângulo (graus) dos planos de texto de cada cena em volta da placa. A
