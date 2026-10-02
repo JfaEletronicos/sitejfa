@@ -398,27 +398,23 @@ function stack(text, t, rows, o = {}) {
 
 export const WORDS = [
   // 0–2 s · VOCÊ NÃO VÊ, mas...
-  // Fundo: "INVISSÍVEL" gigante na Stretch Pro, cobrindo a tela de cima a baixo, com o S
-  // esticado (o "SS" vira uma letra só, mais larga), passando devagar atrás de tudo em
-  // azul quase apagado. A altura vem do estiramento da própria fonte (as hastes crescem,
-  // as barras ficam finas), não de escalar as letras.
-  word('INVISSÍVEL', [-0.4, 2.8], {
+  // Fundo: "INVISSÍVEL" gigante na Stretch Pro, com o S esticado (o "SS" vira uma letra
+  // só, mais larga), passando devagar atrás de tudo em azul quase apagado. Sai junto com
+  // a cena 1 (esticado até a altura da tela, virava blocos que entravam na cena 2).
+  word('INVISSÍVEL', [-0.4, 2.45], {
     layer: 'far',
     font: 'wide',
     liga: true,
     size: 'huge',
     color: 'jfaBlue',
     opacity: 0.11,
-    x: -6,
-    y: -2,
-    originY: 'cap',
+    x: -150,
+    y: 54,
     align: 'left',
-    fit: 2.3,
-    fitMode: 'uniform',
-    stretchY: { at: [0.265, 0.7], keys: [[0, 1.04]] },
-    drift: [-88, 0],
-    // Fica até o meio da passagem: os planos giram com a câmera e o quadro não esvazia.
-    fade: [0.35, 0.6],
+    fitMode: 'uniformY',
+    fitY: 0.24,
+    drift: [-95, 0],
+    fade: [0.35, 0.45],
   }),
   // Um bloco só, linhas coladas, três estilos: Poppins Light, Poppins ExtraBold
   // Itálico (azul) e, no "VÊ", a troca de fonte. As entradas se sobrepõem e a saída é
