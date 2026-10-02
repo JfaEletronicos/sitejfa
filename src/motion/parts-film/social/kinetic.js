@@ -40,9 +40,14 @@ import {
 } from './score';
 import { createEyes } from './eyes';
 import { createSlices } from './slices';
+import { createTrace } from './trace';
 
 // Elementos gráficos desenhados em SVG (ver score.js → GRAPHICS).
-const GRAPHIC_TYPES = { eyes: createEyes };
+// Gráficos em SVG: como criar e como atualizar a cada quadro (tempo local `lt`).
+const GRAPHIC_TYPES = {
+  eyes: { create: createEyes, update: (inst, g, lt) => inst.update(gazeAt(g, lt), openAt(g, lt)) },
+  trace: { create: createTrace, update: (inst, g, lt) => inst.update(revealAt(g, lt)) },
+};
 
 // Largura de referência dos tamanhos de TYPOGRAPHY (px).
 const REF_WIDTH = 390;
@@ -230,6 +235,12 @@ function sliceExtra(pt, pz, lt, H) {
       lt,
     ) * ti
   );
+}
+
+/** Quanto da trilha já apareceu: reveal = [início (tempo local), duração, curva]. */
+function revealAt(g, lt) {
+  const [t0, dur, c] = g.reveal;
+  return curve(c)(clamp01((lt - t0) / dur));
 }
 
 /**
@@ -516,7 +527,7 @@ export default {
     // Gráficos (SVG) na camada indicada, por cima das palavras dela.
     const graphics = GRAPHICS.map((g) => {
       const wrap = el('sk-graphic', layerOf(g));
-      const inst = GRAPHIC_TYPES[g.type]();
+      const inst = GRAPHIC_TYPES[g.type].create();
       wrap.appendChild(inst.node);
       return { g, wrap, inst, shown: false };
     });
@@ -850,7 +861,9 @@ export default {
           return;
         }
         if (!item.shown) {
-          node.style.visibility = 'visible';
+          // "inherit", não "visible": um filho visível aparece mesmo com o pai escondido
+          // (o plano de costas para a câmera, ou as fatias de uma palavra fora de cena).
+          node.style.visibility = 'inherit';
           item.shown = true;
         }
         node.style.opacity = pz.opacity.toFixed(3);
@@ -912,19 +925,20 @@ export default {
           return;
         }
         if (!item.shown) {
-          wrap.style.visibility = 'visible';
+          wrap.style.visibility = 'inherit';
           item.shown = true;
         }
         const lt = tb - g.t[0];
         const ti = K('typographyIntensity');
-        const kIn = clamp01(lt / g.in.dur);
         const kOut = clamp01((tb - (g.t[1] - g.out.dur)) / g.out.dur);
-        const scale = popScale(
-          kIn,
-          1 - 0.45 * Math.min(ti, 1),
-          Math.min(1 + (TYPO.overshoot - 1) * ti, TYPO.maxScale),
-        );
-        const opacity = EASE.soft(clamp01(lt / (g.in.dur * 0.5))) * (1 - EASE.soft(kOut));
+        // in.type "none": sem salto nem fusão de entrada (o próprio gráfico se revela).
+        const still = g.in.type === 'none';
+        const kIn = still ? 1 : clamp01(lt / g.in.dur);
+        const scale = still
+          ? 1
+          : popScale(kIn, 1 - 0.45 * Math.min(ti, 1), Math.min(1 + (TYPO.overshoot - 1) * ti, TYPO.maxScale));
+        const fadeIn = still ? 1 : EASE.soft(clamp01(lt / (g.in.dur * 0.5)));
+        const opacity = fadeIn * (1 - EASE.soft(kOut));
         const w = (g.width / 100) * W;
         const h = w * g.aspect;
         wrap.style.width = `${w.toFixed(1)}px`;
@@ -932,7 +946,7 @@ export default {
         wrap.style.transform =
           `translate3d(${((g.x / 100) * W - w / 2).toFixed(2)}px, ${((g.y / 100) * H - h / 2 + CURVES.easeIn(kOut) * 0.02 * H).toFixed(2)}px, 0) ` +
           `rotate(${g.rotate}deg) scale(${scale.toFixed(4)})`;
-        inst.update(gazeAt(g, lt), openAt(g, lt));
+        GRAPHIC_TYPES[g.type].update(inst, g, lt);
       });
 
       // Painéis de transição.

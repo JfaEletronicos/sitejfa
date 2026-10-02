@@ -102,7 +102,8 @@ export function createSlices(parent, text, axis, at = 0.5) {
     // do corte, ampliada só na direção do estiramento.
     const f = ((per + 2 * OVERLAP) / SLICE).toFixed(4);
     wins.forEach(({ win, ink }, k) => {
-      win.style.visibility = on ? 'visible' : 'hidden';
+      // "inherit": se a palavra estiver escondida, a janela some junto.
+      win.style.visibility = on ? 'inherit' : 'hidden';
       if (!on) return;
       const from = cuts[k] + k * per - OVERLAP;
       const to = cuts[k] + (k + 1) * per + OVERLAP;
