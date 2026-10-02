@@ -6,8 +6,8 @@
 export const STRINGS = {
   'meta.description': {
     pt: '',
-    en: 'JFA Eletrônicos: car audio amplifiers, power supplies, chargers and remote controls made in Brazil, available for export.',
-    es: 'JFA Eletrônicos: amplificadores, fuentes, cargadores y controles remotos de audio automotriz fabricados en Brasil, disponibles para exportación.',
+    en: 'JFA Eletrônicos: car audio power supplies, chargers, remote controls and accessories made in Brazil, available for export.',
+    es: 'JFA Eletrônicos: fuentes, cargadores, controles remotos y accesorios de audio automotriz fabricados en Brasil, disponibles para exportación.',
   },
   // Header
   'nav.home': { pt: 'JFA -- voltar ao início', en: 'JFA -- back to top', es: 'JFA -- volver al inicio' },
@@ -96,8 +96,8 @@ export const STRINGS = {
   'products.titleB': { pt: '', en: ' solutions', es: '' },
   'products.sub': {
     pt: '',
-    en: 'Amplifiers, power supplies, remote controls and accessories developed by JFA for car audio projects around the world.',
-    es: 'Amplificadores, fuentes, controles remotos y accesorios desarrollados por JFA para proyectos de audio automotriz en todo el mundo.',
+    en: 'Power supplies, chargers, remote controls and accessories developed by JFA for car audio projects around the world.',
+    es: 'Fuentes, cargadores, controles remotos y accesorios desarrollados por JFA para proyectos de audio automotriz en todo el mundo.',
   },
   'products.endcap': {
     pt: 'Encontrou o que procura?',

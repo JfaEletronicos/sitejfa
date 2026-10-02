@@ -8,7 +8,8 @@
  *
  * Cada produto: `id` (usado na URL #/setores/automotivo/:id), `group` (aba do
  * filtro), `images`, `manualUrl` e, por idioma, `name`, `summary` e `blocks`
- * (mesmo formato de productDetails.js: p / h / ul).
+ * (mesmo formato de productDetails.js: p / h / ul). Itens com `manualOnly` aparecem
+ * só nos Manuais (sem card no catálogo nem página de produto).
  */
 
 const P = (en, es) => ({ en, es });
@@ -25,96 +26,22 @@ export const EXPORT_PRODUCTS = [
   {
     id: 'ap400x4',
     group: 'amplifiers',
-    images: ['/images/produtos/ap400wx4-1.webp', '/images/produtos/ap400wx4-2.webp'],
+    // Só manual: sem card no catálogo nem página de produto.
+    manualOnly: true,
     manualUrl:
       'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/08/Amplificador-de-audio-da-JFA-DSP400-e-DSP800-Exportacao-Ingles-e-Espanhol-2111-1.pdf',
     name: P('AP400Wx4', 'AP400Wx4'),
     category: P('Amplifier', 'Amplificador'),
-    summary: P(
-      'Designed to elevate the sound experience to an unprecedented level, with innovation and technology.',
-      'Diseñado para llevar la experiencia sonora a un nivel sin precedentes, con innovación y tecnología.',
-    ),
-    blocks: P(
-      [
-        {
-          t: 'p',
-          h: 'The AP400Wx4 is designed to elevate the sound experience to an unprecedented level, bringing innovation and technology with its unparalleled features.',
-        },
-        { t: 'h', h: 'Key features of the AP400Wx4' },
-        {
-          t: 'ul',
-          items: [
-            '<strong>Unmatched power and sound purity,</strong> with 400W distributed across 4 channels, delivering impeccable volume and sound quality.',
-            '<strong>Dynamic Bass Boost</strong>, a technology that redefines low frequencies, providing power and depth even at low volumes.',
-            '<strong>Advanced crossover with DSP</strong>, offering precise frequency adjustments from 20Hz to 20kHz, ensuring the ideal listening experience.',
-            '<strong>Optional liquid cooling</strong>, allowing installation even in the most challenging environments without compromising performance.',
-          ],
-        },
-      ],
-      [
-        {
-          t: 'p',
-          h: 'El AP400Wx4 fue diseñado para llevar la experiencia sonora a un nivel sin precedentes, con la innovación y la tecnología de sus características incomparables.',
-        },
-        { t: 'h', h: 'Características principales del AP400Wx4' },
-        {
-          t: 'ul',
-          items: [
-            '<strong>Potencia incomparable y pureza sonora,</strong> con 400W distribuidos en 4 canales, que ofrecen volumen y calidad de sonido impecables.',
-            '<strong>Bass Boost dinámico</strong>, tecnología que redefine las frecuencias graves y aporta potencia y profundidad incluso a bajo volumen.',
-            '<strong>Crossover avanzado con DSP</strong>, con ajustes de frecuencia precisos de 20Hz a 20kHz para una experiencia auditiva ideal.',
-            '<strong>Refrigeración líquida opcional</strong>, que permite la instalación incluso en los ambientes más exigentes sin comprometer el rendimiento.',
-          ],
-        },
-      ],
-    ),
   },
   {
     id: 'ap800x4',
     group: 'amplifiers',
-    images: ['/images/produtos/ap800wx4-1.webp'],
+    // Só manual: sem card no catálogo nem página de produto.
+    manualOnly: true,
     manualUrl:
       'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/08/Amplificador-de-audio-da-JFA-DSP400-e-DSP800-Exportacao-Ingles-e-Espanhol-2111-1.pdf',
     name: P('AP800Wx4', 'AP800Wx4'),
     category: P('Amplifier', 'Amplificador'),
-    summary: P(
-      'Twice the power of the AP line: 800W across 4 channels with DSP and Dynamic Bass Boost.',
-      'El doble de potencia de la línea AP: 800W en 4 canales, con DSP y Bass Boost dinámico.',
-    ),
-    blocks: P(
-      [
-        {
-          t: 'p',
-          h: 'The AP800Wx4 takes the AP line to its highest power, with the same innovation, technology and sound purity of the AP400Wx4.',
-        },
-        { t: 'h', h: 'Key features of the AP800Wx4' },
-        {
-          t: 'ul',
-          items: [
-            '<strong>800W distributed across 4 channels,</strong> delivering volume and sound quality for demanding projects.',
-            '<strong>Dynamic Bass Boost</strong>, providing power and depth in the low frequencies even at low volumes.',
-            '<strong>Advanced crossover with DSP</strong>, with precise frequency adjustments from 20Hz to 20kHz.',
-            '<strong>Optional liquid cooling</strong>, for installation in challenging environments without losing performance.',
-          ],
-        },
-      ],
-      [
-        {
-          t: 'p',
-          h: 'El AP800Wx4 lleva la línea AP a su mayor potencia, con la misma innovación, tecnología y pureza sonora del AP400Wx4.',
-        },
-        { t: 'h', h: 'Características principales del AP800Wx4' },
-        {
-          t: 'ul',
-          items: [
-            '<strong>800W distribuidos en 4 canales,</strong> con volumen y calidad de sonido para proyectos exigentes.',
-            '<strong>Bass Boost dinámico</strong>, que aporta potencia y profundidad a los graves incluso a bajo volumen.',
-            '<strong>Crossover avanzado con DSP</strong>, con ajustes de frecuencia precisos de 20Hz a 20kHz.',
-            '<strong>Refrigeración líquida opcional</strong>, para instalar en ambientes exigentes sin perder rendimiento.',
-          ],
-        },
-      ],
-    ),
   },
   {
     id: 'fonte-carregador-storm',
@@ -532,3 +459,11 @@ export const EXPORT_PRODUCTS = [
     ),
   },
 ];
+
+/** Produtos com card no catálogo e página própria (sem os que são só manual). */
+export const EXPORT_CATALOG_PRODUCTS = EXPORT_PRODUCTS.filter((p) => !p.manualOnly);
+
+/** Abas do catálogo que têm produtos (as abas dos Manuais usam EXPORT_GROUPS). */
+export const EXPORT_CATALOG_GROUPS = EXPORT_GROUPS.filter((g) =>
+  EXPORT_CATALOG_PRODUCTS.some((p) => p.group === g.key),
+);

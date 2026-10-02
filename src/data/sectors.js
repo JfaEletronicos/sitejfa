@@ -1,4 +1,4 @@
-import { SHOW_MOOV, SHOW_PARTS, SHOW_BATERIAS_AUTOMOTIVO, SHOW_AMPLIFICADORES } from './visibility';
+import { SHOW_MOOV, SHOW_PARTS, SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
 
 /**
  * Categorias do menu "Categorias" do header (as baterias não têm mais um lugar à
@@ -49,9 +49,6 @@ export const SECTOR_MENU = [
  * Fotos e página de cada produto vêm de `productDetails.js` (sem detalhes, o card
  * mostra o ícone do setor e abre o manual).
  */
-// OCULTO: amplificadores — produtos fora do catálogo e sem página (os manuais continuam).
-export const HIDDEN_PRODUCT_IDS = SHOW_AMPLIFICADORES ? [] : ['ap400x4', 'ap800x4'];
-
 export const SECTOR_CATALOGS = {
   automotivo: {
     title: 'Tecnologia para o seu projeto automotivo.',
@@ -63,9 +60,6 @@ export const SECTOR_CATALOGS = {
         key: 'audio',
         label: 'Áudio',
         ids: [
-          'ap400x4',
-          'ap800x4',
-          'processador-audio-j4-redline',
           'conversor-rca-slim',
           'filtro-rca-antirruido',
         ],
@@ -91,16 +85,12 @@ export const SECTOR_CATALOGS = {
           'fonte-carregador-bob-storm',
           'fonte-storm-220a',
           'fonte-storm-truck',
-          'fonte-carregador-redline',
-          'carregador-portatil-redline',
-          'fontes-carregadores-sci',
-          'fonte-m120a',
         ],
       },
       {
         key: 'acessorios',
         label: 'Acessórios',
-        ids: ['pbs-protetor-baterias-serie', 'voltimetro-sequenciador-vs5hi', 'sr5-evolution'],
+        ids: ['pbs-protetor-baterias-serie', 'voltimetro-sequenciador-vs5hi'],
       },
     ],
   },
@@ -160,9 +150,3 @@ export const SECTOR_CATALOGS = {
   },
 };
 
-// OCULTO: amplificadores — tira os produtos escondidos das abas de cada catálogo.
-Object.values(SECTOR_CATALOGS).forEach((cfg) => {
-  cfg.groups.forEach((g) => {
-    g.ids = g.ids.filter((id) => !HIDDEN_PRODUCT_IDS.includes(id));
-  });
-});

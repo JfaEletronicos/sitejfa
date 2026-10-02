@@ -1,9 +1,9 @@
 import { trackEvent } from '../lib/analytics';
 import { PRODUCTS as PT_PRODUCTS } from '../data/products';
-import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU, HIDDEN_PRODUCT_IDS } from '../data/sectors';
+import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../data/sectors';
 import { PRODUCT_DETAILS as PT_DETAILS } from '../data/productDetails';
 import { PRODUCT_QUICK_SPECS as PT_QUICK_SPECS } from '../data/productSpecs';
-import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../data/exportProducts';
+import { EXPORT_CATALOG_GROUPS, EXPORT_CATALOG_PRODUCTS } from '../data/exportProducts';
 import { EXPORT_PHONE } from '../data/exportContact';
 import { t, tf, pick, IS_EXPORT } from '../i18n';
 import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
@@ -13,7 +13,7 @@ import { renderHowTo } from './howTo';
 // Em inglês/espanhol (exportação), o catálogo, os textos e o contato são os de
 // exportação: produtos de data/exportProducts.js numa categoria só (automotivo).
 const PRODUCTS = IS_EXPORT
-  ? EXPORT_PRODUCTS.map((p) => ({
+  ? EXPORT_CATALOG_PRODUCTS.map((p) => ({
       id: p.id,
       name: pick(p.name),
       category: pick(p.category),
@@ -23,7 +23,7 @@ const PRODUCTS = IS_EXPORT
   : PT_PRODUCTS;
 const PRODUCT_DETAILS = IS_EXPORT
   ? Object.fromEntries(
-      EXPORT_PRODUCTS.map((p) => [
+      EXPORT_CATALOG_PRODUCTS.map((p) => [
         p.id,
         {
           images: p.images,
@@ -39,10 +39,10 @@ const SECTOR_CATALOGS = IS_EXPORT
   ? {
       automotivo: {
         title: t('export.catalogTitle'),
-        groups: EXPORT_GROUPS.map((g) => ({
+        groups: EXPORT_CATALOG_GROUPS.map((g) => ({
           key: g.key,
           label: pick(g.label),
-          ids: EXPORT_PRODUCTS.filter((p) => p.group === g.key).map((p) => p.id),
+          ids: EXPORT_CATALOG_PRODUCTS.filter((p) => p.group === g.key).map((p) => p.id),
         })),
       },
     }
@@ -303,8 +303,6 @@ function initSectorPages(ctx) {
     const p = productsById[id];
     const detail = PRODUCT_DETAILS[id];
     if (!cfg || !p || !detail || !prod.view) return null;
-    // OCULTO: amplificadores — sem página enquanto a flag estiver desligada (só no site em português).
-    if (!IS_EXPORT && HIDDEN_PRODUCT_IDS.includes(id)) return null;
     const group = cfg.groups.find((g) => g.ids.includes(id));
     const pname = nameOf(p);
     const sectorTitle = SECTOR_TITLES[slug] || slug;

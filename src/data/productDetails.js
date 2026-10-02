@@ -152,105 +152,6 @@ export const PRODUCT_DETAILS = {
       },
     ],
   },
-  'sr5-evolution': {
-    images: [
-      '/images/produtos/sr5-evolution-1.webp',
-      '/images/produtos/sr5-evolution-2.webp',
-      '/images/produtos/sr5-evolution-3.webp',
-    ],
-    summary:
-      'O SR5 Evolution da JFA foi projetado para proporcionar segurança, praticidade e desempenho, redefinindo o padrão de qualidade em gerenciamento de áudio com suas seis…',
-    blocks: [
-      {
-        t: 'p',
-        h: 'O SR5 Evolution da JFA foi projetado para proporcionar segurança, praticidade e desempenho, redefinindo o padrão de qualidade em gerenciamento de áudio com suas seis saídas de comando remoto e funcionalidades avançadas. Com tecnologia de ponta e a confiança da JFA Eletrônicos, o SR5 é a escolha perfeita para quem busca qualidade e inovação em sistemas de som.',
-      },
-      {
-        t: 'h',
-        h: 'Diferenciais do SR5 Evolution',
-      },
-      {
-        t: 'ul',
-        items: [
-          'Ativação sequencial de equipamentos, liga amplificadores e outros dispositivos de forma progressiva, eliminando os “estalos” de áudio e prevenindo danos ao sistema.',
-          'Proteção contra baixa tensão, desliga automaticamente o sistema quando a tensão do banco de baterias está abaixo de 10V, preservando a vida útil dos componentes.',
-          'Monitoramento em tempo real, o voltímetro integrado exibe a tensão da bateria diretamente no display, permitindo o acompanhamento preciso do desempenho.',
-          'Personalização avançada, possibilidade de exibir mensagens personalizadas no display de matriz de pontos, com até 40 caracteres.',
-          'Modos de exibição versáteis, alternância entre voltímetro, bargraph, texto e modos combinados, adaptando-se a diferentes preferências de uso.',
-        ],
-      },
-      {
-        t: 'p',
-        h: 'O SR5 Evolution combina tecnologia de ponta com a confiança da JFA Eletrônicos, sendo ideal para entusiastas que exigem qualidade e inovação no gerenciamento de seus sistemas de som.',
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/12/Manual-SR5-Evolution-03_compressed.pdf',
-      },
-    ],
-  },
-  ap800x4: {
-    images: ['/images/produtos/ap800wx4-1.webp'],
-    summary:
-      'O AP800Wx4 foi projetado para elevar a experiência sonora a um nível nunca antes alcançado, garantindo uma posição de destaque no mercado brasileiro e trazendo inovação…',
-    blocks: [
-      {
-        t: 'p',
-        h: 'O AP800Wx4 foi projetado para elevar a experiência sonora a um nível nunca antes alcançado, garantindo uma posição de destaque no mercado brasileiro e trazendo inovação e tecnologia com suas características incomparáveis.',
-      },
-      {
-        t: 'h',
-        h: 'Diferenciais do AP800Wx4',
-      },
-      {
-        t: 'ul',
-        items: [
-          '<strong>Potência incomparável e pureza sonora,</strong> com 800W distribuídos por 4 canais, oferecendo volume e qualidade sonora impecáveis.',
-          '<strong>Bass Boost Dinâmico</strong>, tecnologia que redefine frequências graves, proporcionando poder e profundidade mesmo em volumes baixos.',
-          '<strong>Crossover avançado com DSP</strong>, ajustes precisos de frequência de 20Hz a 20kHz, garantindo a experiência auditiva ideal.',
-          '<strong>Refrigeração líquida opcional</strong>, que permite a instalação mesmo nos ambientes mais desafiadores, sem comprometer a performance. O calor é eficientemente dissipado, garantindo operação em capacidade máxima sem risco de superaquecimento.',
-        ],
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/11/Amplificador-de-audio-da-JFA-DSP400-e-DSP800-2111.pdf',
-      },
-    ],
-  },
-  ap400x4: {
-    images: ['/images/produtos/ap400wx4-1.webp', '/images/produtos/ap400wx4-2.webp'],
-    summary:
-      'O AP400Wx4 foi projetado para elevar a experiência sonora a um nível nunca antes alcançado, garantindo uma posição de destaque no mercado brasileiro e trazendo inovação…',
-    blocks: [
-      {
-        t: 'p',
-        h: 'O AP400Wx4 foi projetado para elevar a experiência sonora a um nível nunca antes alcançado, garantindo uma posição de destaque no mercado brasileiro e trazendo inovação e tecnologia com suas características incomparáveis.',
-      },
-      {
-        t: 'h',
-        h: 'Diferenciais do AP400Wx4',
-      },
-      {
-        t: 'ul',
-        items: [
-          '<strong>Potência incomparável e pureza sonora,</strong> com 400W distribuídos por 4 canais, oferecendo volume e qualidade sonora impecáveis.',
-          '<strong>Bass Boost Dinâmico</strong>, tecnologia que redefine frequências graves, proporcionando poder e profundidade mesmo em volumes baixos.',
-          '<strong>Crossover avançado com DSP</strong>, ajustes precisos de frequência de 20Hz a 20kHz, garantindo a experiência auditiva ideal.',
-          '<strong>Refrigeração líquida opcional</strong>, que permite a instalação mesmo nos ambientes mais desafiadores, sem comprometer a performance. O calor é eficientemente dissipado, garantindo operação em capacidade máxima sem risco de superaquecimento.',
-        ],
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/11/Amplificador-de-audio-da-JFA-DSP400-e-DSP800-2111.pdf',
-      },
-    ],
-  },
   'controle-k600-universal': {
     images: ['/images/produtos/controle-k600-universal-1.webp'],
     summary:
@@ -320,76 +221,6 @@ export const PRODUCT_DETAILS = {
       {
         label: 'Manual do produto',
         url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2023/01/Fontes-STORM-Lite-Manual.pdf',
-      },
-    ],
-  },
-  'fonte-carregador-redline': {
-    images: ['/images/produtos/fonte-redline-1.webp'],
-    summary:
-      'A Fonte e Carregador Redline é uma fonte de alimentação de alta potência que pode ser usada para alimentar e carregar baterias automotivas.',
-    blocks: [
-      {
-        t: 'p',
-        h: 'A <strong>Fonte e Carregador Redline</strong> é uma fonte de alimentação de alta potência que pode ser usada para alimentar e carregar baterias automotivas. Faz parte de uma linha que leva a inovação e o desempenho a sério, operando em 3 modos:',
-      },
-      {
-        t: 'ul',
-        items: [
-          'Modo Carga Lenta: carrega as baterias em fases graduais: elevação, absorção e equalização. O Modo Carga Lenta da Fonte Redline é ideal para recarregar baterias com pouca energia, obtendo assim a máxima eficiência no carregamento, sem gerar desgastes e aumentando a vida útil das baterias',
-          'Modo Auto SCI: use-o quando o sistema estiver ligado ou quando precisar dar uma carga rápida na bateria. O Modo Auto SCI da Fonte Redline consegue manter a máxima potência na saída (14,4V) e entrar no sistema pulsado SCI somente com a bateria carregada, permanecendo em flutuação',
-          'Modo Tensão de Saída: Possibilita escolher digitalmente entre 8 valores de tensão na saída da Fonte Redline: 12,6V / 12,8V / 13V / 13,2V / 13,8V / 14V / 14,2V e 14,4V',
-        ],
-      },
-      {
-        t: 'p',
-        h: 'As fontes Redline podem ser encontradas nas amperagens: 60A, 120A e 200A.',
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2021/07/jfa-manual-fontes-redline-RV01.pdf',
-      },
-    ],
-  },
-  'fontes-carregadores-sci': {
-    images: ['/images/produtos/fonte-carregador-sci-1.webp'],
-    summary:
-      'A Fonte e Carregador SCI é uma fonte de alimentação de alta potência, que possibilita alimentar e carregar baterias automotivas com 14,4 volts ou Auto SCI.',
-    blocks: [
-      {
-        t: 'p',
-        h: 'A <strong>Fonte e Carregador SCI</strong> é uma fonte de alimentação de alta potência, que possibilita alimentar e carregar baterias automotivas com 14,4 volts ou Auto SCI.',
-      },
-      {
-        t: 'p',
-        h: 'Desenvolvida para proporcionar máxima eficiência na alimentação e carga das baterias no sistema de 12 volts, sem danificá-las, possui o exclusivo Sistema de Carga Inteligente (SCI) da JFA, que aumenta a eficiência na capacidade de acúmulo de carga da bateria e também sua vida útil, impedindo o aquecimento de suas placas, além de obter assim o máximo rendimento dos amplificadores do som automotivo.',
-      },
-      {
-        t: 'p',
-        h: 'Com a tecnologia PWM a Fonte e Carregador SCI dispõe de:',
-      },
-      {
-        t: 'ul',
-        items: [
-          'Display e leds para monitorar tensão e corrente de saída',
-          'Indicador de bateria carregada',
-          'Bi-volt automático 110/220Vac',
-        ],
-      },
-      {
-        t: 'p',
-        h: 'Elas estão disponíveis nas amperagens: 10A, 36A, 50A, 60A, 70A, 100A, 120A 150A, 200A e 200A monovolt.',
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2021/07/jfa-manual-fontes-SCI-36-a-200-mono.pdf',
-      },
-      {
-        label: 'Manual da versão 10A',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2021/07/jfa-manual-fontes-10A-manual.pdf',
       },
     ],
   },
@@ -593,40 +424,6 @@ export const PRODUCT_DETAILS = {
       },
     ],
   },
-  'processador-audio-j4-redline': {
-    images: ['/images/produtos/processador-j4-redline-1.webp'],
-    summary:
-      'A principal inovação do Processador J4 RedLine é a leitura dos níveis de áudio de entrada e saída no display gráfico, possibilitando o ajuste dos ganhos dos amplificadores.',
-    blocks: [
-      {
-        t: 'p',
-        h: 'A principal inovação do <strong>Processador J4 RedLine</strong> é a leitura dos níveis de áudio de entrada e saída no display gráfico, possibilitando o ajuste dos ganhos dos amplificadores. Além disso, simula o uso de um osciloscópio.',
-      },
-      {
-        t: 'ul',
-        items: [
-          'Atualização de tela simultânea à variação do áudio',
-          'Armazenamento dos picos (picos hold)',
-          'Facilidade para ajustar a função limiter',
-          'Telas interativas',
-          'Equalizador master semiparamétrico de 15 bandas',
-          'Equalizador paramétrico individual em cada via',
-          'Função Osciloscópio',
-          'Voltímetro na tela gráfica',
-          'Texto customizável pelo cliente',
-          'Ajuste do limite máximo do áudio de entrada',
-          'Indicação de excesso de nível de entrada',
-          '15 Vpp de saída',
-        ],
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2023/01/manual-jfa-processador-redline-j4-trilingue.pdf',
-      },
-    ],
-  },
   'controle-k1200-universal': {
     images: ['/images/produtos/controle-k1200-universal-1.webp'],
     summary:
@@ -720,51 +517,6 @@ export const PRODUCT_DETAILS = {
       {
         label: 'Manual do produto',
         url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/08/CONTROLE-REDLINE-WR-SWC-Manual-RV09.pdf',
-      },
-    ],
-  },
-  'carregador-portatil-redline': {
-    images: ['/images/produtos/carregador-portatil-redline-1.webp'],
-    summary:
-      'O Carregador Portátil Redline F60 é versátil e possui características inéditas de funcionalidade e performance, além de poder ser usado como fonte de alimentação ou…',
-    blocks: [
-      {
-        t: 'p',
-        h: 'O <strong>Carregador Portátil Redline F60</strong> é versátil e possui características inéditas de funcionalidade e performance, além de poder ser usado como fonte de alimentação ou carregador de sua(s) bateria(s). Confira alguns exemplos de aplicações:',
-      },
-      {
-        t: 'ul',
-        items: [
-          'Alimentar equipamentos com tomadas 12V (calibradores de pneu, aspirador de pó, carregador de celular e outros)',
-          'Dar partidas em carros',
-          'Carregar e recuperar baterias desgastadas',
-        ],
-      },
-      {
-        t: 'p',
-        h: 'Possui <strong>painel multifuncional</strong>, através do qual consegue executar todas as funções do <strong>Carregador Portátil Redline F60 JFA</strong>',
-      },
-      {
-        t: 'h',
-        h: 'Modos e aplicação',
-      },
-      {
-        t: 'p',
-        h: '<strong>Carga lenta:</strong> Recuperar baterias; Aumentar a vida útil das baterias.',
-      },
-      {
-        t: 'p',
-        h: '<strong>Auto SCI:</strong> Dar partida rápida no carro; Fazer uma carga rápida.',
-      },
-      {
-        t: 'p',
-        h: '<strong>Tensão de saída:</strong> Operar como fonte com a opção de escolher digitalmente 8 níveis de tensão na saída de 12,6 a 14,4VLigar dispositivos em tomadas 12V.',
-      },
-    ],
-    docs: [
-      {
-        label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2021/07/jfa-manual-carregador-60A-portatil-redline-manual-rv01.pdf',
       },
     ],
   },

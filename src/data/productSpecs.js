@@ -39,39 +39,7 @@ export const PRODUCT_QUICK_SPECS = {
     ['Uso', 'Sem bateria'],
     ['Amperagens', '60A a 200A'],
   ],
-  'fonte-carregador-redline': [
-    ['Modos', '3'],
-    ['Tensões de saída', '8 níveis'],
-    ['Amperagens', '60A | 120A | 200A'],
-  ],
-  'fontes-carregadores-sci': [
-    ['Saída', '14,4V ou Auto SCI'],
-    ['Alimentação', 'Bivolt 110/220Vac'],
-    ['Amperagens', '10A a 200A'],
-  ],
-  'carregador-portatil-redline': [
-    ['Modos', '3'],
-    ['Tensão de saída', '12,6V a 14,4V'],
-    ['Saída', 'Tomada 12V'],
-  ],
   // Automotivo · Áudio
-  ap800x4: [
-    ['Potência', '800W'],
-    ['Canais', '4'],
-    ['Crossover DSP', '20Hz a 20kHz'],
-    ['Refrigeração', 'Líquida opcional'],
-  ],
-  ap400x4: [
-    ['Potência', '400W'],
-    ['Canais', '4'],
-    ['Crossover DSP', '20Hz a 20kHz'],
-    ['Refrigeração', 'Líquida opcional'],
-  ],
-  'processador-audio-j4-redline': [
-    ['Equalizador master', '15 bandas'],
-    ['Saída', '15 Vpp'],
-    ['Display', 'Gráfico'],
-  ],
   'conversor-rca-slim': [
     ['Entrada', 'Alto-falante'],
     ['Saída', 'RCA'],
@@ -109,11 +77,6 @@ export const PRODUCT_QUICK_SPECS = {
     ['Memória', '+220 aparelhos'],
   ],
   // Automotivo · Acessórios
-  'sr5-evolution': [
-    ['Saídas remotas', '6'],
-    ['Corte por baixa tensão', '10V'],
-    ['Mensagens', 'até 40 caracteres'],
-  ],
   'voltimetro-sequenciador-vs5hi': [
     ['Funções', '3 em 1'],
     ['Corte por baixa tensão', '9,5V'],

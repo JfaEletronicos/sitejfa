@@ -1,6 +1,6 @@
 import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
 import { t, pick, IS_EXPORT } from '../../i18n';
-import { EXPORT_GROUPS } from '../../data/exportProducts';
+import { EXPORT_CATALOG_GROUPS } from '../../data/exportProducts';
 
 const Chevron = ({ d }) => (
   <svg viewBox="0 0 24 24" fill="none">
@@ -11,14 +11,6 @@ const Chevron = ({ d }) => (
 // Exportação (EN/ES): as áreas são as linhas de exportação, cada uma com um
 // produto de exportação; o botão filtra "Descubra as soluções" pela linha.
 const EXPORT_FRONTS = {
-  amplifiers: {
-    image: '/images/front_automotivo.webp',
-    headline: { en: 'Power and sound purity', es: 'Potencia y pureza sonora' },
-    desc: {
-      en: 'Class D amplifiers with DSP and Dynamic Bass Boost for demanding car audio projects.',
-      es: 'Amplificadores clase D con DSP y Bass Boost dinámico para proyectos de audio exigentes.',
-    },
-  },
   power: {
     image: '/images/produtos/fonte-xline-export-1.webp',
     headline: { en: 'Energy for your sound system', es: 'Energía para su sistema de sonido' },
@@ -60,7 +52,7 @@ const fixAccents = (str) =>
     );
 
 function ExportFronts() {
-  const groups = EXPORT_GROUPS.filter((g) => EXPORT_FRONTS[g.key]);
+  const groups = EXPORT_CATALOG_GROUPS.filter((g) => EXPORT_FRONTS[g.key]);
   const n = groups.length;
   return (
     <section className="fronts" id="frontsSection" data-theme-keep>

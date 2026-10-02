@@ -1,5 +1,5 @@
 import { t, pick, IS_EXPORT } from '../../i18n';
-import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../../data/exportProducts';
+import { EXPORT_CATALOG_GROUPS, EXPORT_CATALOG_PRODUCTS } from '../../data/exportProducts';
 import { exportWhatsappUrl } from '../../data/exportContact';
 import { SHOW_BATERIAS_AUTOMOTIVO } from '../../data/visibility';
 
@@ -85,7 +85,7 @@ function ExportProducts() {
             >
               {t('catalog.all')}
             </button>
-            {EXPORT_GROUPS.map((g) => (
+            {EXPORT_CATALOG_GROUPS.map((g) => (
               <button
                 key={g.key}
                 className="products-category-pill"
@@ -113,11 +113,11 @@ function ExportProducts() {
       <div className="carousel-runway" id="carouselRunway">
         <div className="carousel-viewport" id="carouselViewport">
           {/* Produtos + uma cópia de cada para o loop infinito (data-unique = quantidade real). */}
-          <div className="carousel-track" id="carouselTrack" data-unique={EXPORT_PRODUCTS.length}>
-            {EXPORT_PRODUCTS.map((p) => (
+          <div className="carousel-track" id="carouselTrack" data-unique={EXPORT_CATALOG_PRODUCTS.length}>
+            {EXPORT_CATALOG_PRODUCTS.map((p) => (
               <ExportCard key={p.id} p={p} />
             ))}
-            {EXPORT_PRODUCTS.map((p) => (
+            {EXPORT_CATALOG_PRODUCTS.map((p) => (
               <ExportCard key={p.id + '-clone'} p={p} clone />
             ))}
           </div>
