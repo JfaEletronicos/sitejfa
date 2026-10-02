@@ -1,12 +1,14 @@
 /**
- * CONTROLES DA VARIANTE "social-kinetic" (9:16, tipografia cinética).
+ * CONTROLES DO MOTOR DE TIPOGRAFIA CINÉTICA (variante "social-kinetic" e os motions do
+ * mesmo modelo, em scores/).
  *
  * Todos valem de verdade: mude aqui, pela URL (ex.: ?variant=social-kinetic&distortionIntensity=0.4)
  * ou nos controles do modo debug (?debug). Intensidades: 0 desliga, 1 é o desenho original.
  */
 
 export const SOCIAL_MOTION_CONFIG = {
-  // Duração total em segundos: o roteiro (desenhado em 20 s) estica ou comprime por inteiro.
+  // Duração total em segundos: o roteiro (desenhado em meta.duration) estica ou comprime
+  // por inteiro. Cada motion começa na duração do próprio roteiro.
   duration: 20,
 
   // Deslocamentos, overshoot e deriva das palavras.
@@ -82,9 +84,6 @@ export const COLORS = {
   electricBlue: '#1683FF',
   white: '#FFFFFF',
 };
-
-/** Roteiro desenhado em 20 s; `duration` estica ou comprime o tempo por inteiro. */
-export const BASE_DURATION = 20;
 
 /** Lê sobrescritas da URL (?chave=valor) para as chaves que existem nos objetos acima. */
 export function readOverrides(params) {

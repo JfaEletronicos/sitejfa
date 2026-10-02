@@ -1,5 +1,7 @@
 /**
- * ROTEIRO DA VARIANTE "social-kinetic" (9:16, base de 20 s).
+ * ROTEIRO "Você não vê, mas ela está em tudo" (?variant=social-kinetic · 9:16 · 20 s).
+ * Roda no motor de tipografia cinética (social/kinetic.js); o modelo de um roteiro novo
+ * está em scores/modelo.js.
  *
  * Tudo em segundos sobre a base de 20 s (SOCIAL_MOTION_CONFIG.duration estica ou comprime).
  * Posições em % do quadro (x da esquerda, y de cima; valores fora de 0–100 cortam a
@@ -11,6 +13,17 @@
  *   encoder com eixo em (-0,01; 0 a 0,27; -0,11) · CI principal em (0,49; 0,02; -0,15)
  *   botões táteis em z≈0,05, x = 0,61 / 0,89 / 1,16 / 1,42 · placa: x ±1,55, z ±0,39
  */
+import { word, fontCycle, stack, pose, PLACA, cutCues } from '../kit';
+
+/** Identidade do motion: id na URL (?variant=), título acessível, duração base (s),
+ * quadro mostrado parado com "reduzir movimento" e proporção. */
+export const META = {
+  id: 'social-kinetic',
+  title: 'JFA Parts: você não vê, mas ela está em tudo. Tudo começa por dentro.',
+  duration: 20,
+  stillTime: 19,
+  format: '9x16',
+};
 
 /** Cenas (régua do modo debug). */
 export const SCENES = [
@@ -44,10 +57,7 @@ export const SPACES = {
 // de texto (com paralaxe); light: preset de luz ou preset com marcações (kinetic.js).
 // Planos com `keys` usam marcações contínuas (sem corte entre cenas).
 // ---------------------------------------------------------------------------
-const pose = (target, az, el, dist, extra = {}) => ({ target, az, el, dist, lens: 1, roll: 0, ...extra });
-const ENCODER = [-0.012, 0.13, -0.11];
-const CHIP = [0.485, 0.012, -0.151];
-const CENTER = [0, 0, 0];
+const { ENCODER, CHIP, CENTER } = PLACA;
 
 export const SHOTS = [
   // CENAS 1 E 2 num plano só (a passagem entre elas é a câmera andando, sem corte).
@@ -305,97 +315,8 @@ export const CAMERA_RIG = [
 ];
 
 // ---------------------------------------------------------------------------
-// PALAVRAS
-// in/out: cut | slideLeft | slideRight | slideUp | slideDown | zoom | explode | stretch
-//         | squeeze | rise (calmo) · fit: largura alvo (fração do quadro; no eixo da palavra)
+// PALAVRAS (word, fontCycle e stack em ../kit.js; tipos de entrada/saída lá também)
 // ---------------------------------------------------------------------------
-const word = (text, t, o = {}) => ({
-  text,
-  t,
-  layer: 'back',
-  size: 'huge',
-  font: 'sans',
-  weight: null,
-  color: 'white',
-  outline: false,
-  x: 50,
-  y: 50,
-  align: 'center',
-  rotate: 0,
-  fit: null,
-  sy: 1,
-  in: { type: 'cut' },
-  out: { type: 'cut' },
-  drift: [0, 0],
-  grow: 0,
-  fx: [],
-  split: false,
-  ...o,
-});
-
-/**
- * Troca de fonte: a mesma palavra em vários estilos, no mesmo lugar, em fusão rápida
- * (`crossfade` s) a cada troca. Ritmo em ciclos entre `from` e `lock`; antes e depois
- * fica o primeiro estilo da lista.
- */
-function fontCycle(text, t, styles, { from, lock, rhythm, order, crossfade = 0.06 }, o = {}) {
-  const switches = [[t[0], 0]];
-  let at = from;
-  let i = 0;
-  while (at < lock) {
-    switches.push([at, order[i % order.length]]);
-    at += rhythm[i % rhythm.length];
-    i++;
-  }
-  switches.push([lock, 0]);
-  const ramp = (x) => {
-    const c = Math.min(Math.max(x, 0), 1);
-    return c * c * (3 - 2 * c);
-  };
-  // Opacidade de um estilo: soma dos trechos em que ele é o ativo, com rampas
-  // centradas em cada troca (o estilo que sai e o que entra se cruzam).
-  const alphaOf = (k) => (tb) => {
-    let a = 0;
-    switches.forEach(([start, idx], i) => {
-      if (idx !== k) return;
-      const end = i + 1 < switches.length ? switches[i + 1][0] : Infinity;
-      const enter = i === 0 ? 1 : ramp((tb - start) / crossfade + 0.5);
-      const leave = end === Infinity ? 1 : ramp((end - tb) / crossfade + 0.5);
-      a = Math.max(a, enter * leave);
-    });
-    return a;
-  };
-  return styles.map((style, k) =>
-    word(text, t, {
-      ...o,
-      ...style,
-      in: k === 0 ? o.in : { type: 'none' },
-      alphaAt: alphaOf(k),
-    }),
-  );
-}
-
-/** Pilha de linhas repetidas que se abre a partir do centro (explosão tipográfica). */
-function stack(text, t, rows, o = {}) {
-  const out = [];
-  const mid = (rows - 1) / 2;
-  for (let i = 0; i < rows; i++) {
-    const k = i - mid;
-    const ring = Math.abs(k);
-    out.push(
-      word(text, [t[0] + ring * (o.stagger ?? 0.05), t[1]], {
-        ...o,
-        y: (o.y ?? 50) + k * (o.gap ?? 11),
-        outline: o.solidCenter ? ring > 0 : ring % 2 === 1,
-        color: o.accentRing === ring ? 'electricBlue' : o.color || 'white',
-        drift: [0, k * (o.spread ?? 0)],
-        in: { type: 'explode', dur: 0.22 },
-      }),
-    );
-  }
-  return out;
-}
-
 export const WORDS = [
   // 0–2 s · VOCÊ NÃO VÊ, mas...
   // Fundo: "INVISSÍVEL" gigante na Stretch Pro, cobrindo a tela de cima a baixo, com o S
@@ -847,25 +768,25 @@ export const FX = [
 ];
 
 /** Pontos de sincronização para o sound design (o filme funciona sem áudio). */
-const CUE_LABEL = {
-  hardCut: 'Corte seco',
-  whipLeft: 'Whoosh',
-  whipRight: 'Whoosh',
-  zoomIn: 'Impacto + sub',
-  zoomOut: 'Impacto curto',
-  verticalWipe: 'Swipe',
-  horizontalWipe: 'Swipe',
-  textWipe: 'Riser + corte',
-  maskReveal: 'Respiro + abertura',
-  scaleCut: 'Impacto',
-  distortionCut: 'Glitch curto',
-  productPass: 'Passagem (whoosh grave)',
-  colorFlash: 'Impacto + flash',
-};
 export const CUES = [
   { t: 0, id: 'abertura', label: 'Batida de abertura' },
   { t: 1.75, id: 'passagem', label: 'Passagem lateral (whoosh suave)', until: 2.65 },
   { t: 2.15, id: 'fundo-claro', label: 'Fundo clareando (swell)', until: 3.0 },
-  ...CUTS.map((c) => ({ t: c.t, id: `${c.type}-${c.t}`, label: CUE_LABEL[c.type] })),
+  ...cutCues(CUTS),
   { t: 12.75, id: 'pausa', label: 'Silêncio (pausa)', until: 15.3 },
 ].sort((a, b) => a.t - b.t);
+
+export default {
+  meta: META,
+  scenes: SCENES,
+  spaces: SPACES,
+  shots: SHOTS,
+  cameraRig: CAMERA_RIG,
+  words: WORDS,
+  graphics: GRAPHICS,
+  background: BACKGROUND,
+  blocks: BLOCKS,
+  cuts: CUTS,
+  fx: FX,
+  cues: CUES,
+};

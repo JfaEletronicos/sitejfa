@@ -46,9 +46,11 @@ src/
   behaviors/               # interatividade de cada seção (um módulo por seção)
   data/                    # catálogo de produtos/manuais, campanhas e setores
   lib/                     # busca (search.js) e analytics (analytics.js)
-  motion/parts-film/       # filme da JFA Parts (timeline, palco 3D, textos)
+  motion/parts-film/       # filmes/motions da JFA Parts (palco 3D, variantes, roteiros)
   styles/                  # CSS por seção + index.css (ordem de import)
 docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
+tools/motion/              # captura de quadros e análise de letras para os motions
+.claude/skills/motion/     # padrão dos motions (regras, fluxo e referência do roteiro)
 ```
 
 ## Seções e funcionalidades
@@ -106,6 +108,15 @@ Roteiro (atos): **Intriga** 0–3 s (macro rente à superfície, quase preto; "O
 - **Gravar em vídeo**: `?capture` não toca sozinho e expõe `window.partsFilm.seek(t)`, que desenha qualquer instante de forma idêntica (dá para gravar quadro a quadro).
 - **Acessibilidade e desempenho**: com "reduzir movimento" a página mostra o quadro final parado e o filme só toca se a pessoa pedir; sem WebGL fica só a assinatura. A resolução interna é limitada e cai sozinha se a máquina não sustentar o movimento.
 - A página tem `noindex` enquanto a JFA Parts estiver oculta (`src/data/visibility.js`).
+
+### Motions de tipografia cinética (`?variant=social-kinetic` e novos)
+
+Peças verticais 9:16 para redes sociais com a mesma placa 3D real: texto em planos 3D em volta da placa, câmera virtual que move tudo, letras esticadas à moda da Stretch Pro, fundos e trilhas em SVG. O motor é um só (`src/motion/parts-film/social/kinetic.js`); cada motion é um roteiro em `social/scores/`:
+
+- `?variant=social-kinetic` — "Você não vê, mas ela está em tudo" (`scores/em-tudo.js`).
+- `?variant=modelo` — roteiro-modelo de duas cenas, ponto de partida de motions novos.
+
+Motion novo: copie `scores/modelo.js` para `scores/<nome>.js`, troque o `META` e registre em `VARIANTS` (`main.js`). O padrão visual, o fluxo (uma cena por vez, revisão antes de enviar) e a referência de cada campo estão em `.claude/skills/motion/`. Para revisar: `?range=a-b` repete um trecho e `?debug` mostra a régua e os controles; com `npm run dev` rodando, `node tools/motion/frames.mjs --variant <id> --times 0.5,2 --sheet` captura quadros e `--repeat` confere a segunda rodagem. A prévia de cada branch sai na Vercel pelo push (ver Regra de deploy).
 
 ## Tarefas comuns
 

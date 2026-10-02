@@ -1,8 +1,11 @@
 /**
- * Página dos filmes da JFA Parts (parts-filme.html). O mesmo palco 3D (modelo real da
- * placa) e o mesmo relógio servem às duas variantes:
+ * Página dos filmes da JFA Parts (parts-filme.html). O mesmo palco 3D (modelo real) e o
+ * mesmo relógio servem a todas as variantes:
  *   premium (padrão)          filme de produto "Tudo começa por dentro." (~18 s)
  *   ?variant=social-kinetic   peça vertical 9:16 de tipografia cinética (~20 s)
+ *   ?variant=modelo           roteiro-modelo para motions novos do mesmo estilo
+ * Motion novo de tipografia cinética = um roteiro em social/scores/ + uma linha em VARIANTS
+ * (ver .claude/skills/motion/SKILL.md).
  *
  * Parâmetros de URL:
  *   ?format=16x9 | 9x16 | 1x1 | 4x5  quadro com proporção fixa (padrão: a da variante ou a janela)
@@ -14,13 +17,20 @@
 import './parts-film.css';
 import { createFilm } from './film';
 
-const MODEL_URL = '/models/placa_lb1004.glb';
+const PLACA = '/models/placa_lb1004.glb';
 const FORMATS = { '16x9': 16 / 9, '9x16': 9 / 16, '1x1': 1, '4x5': 4 / 5 };
 // Limite de pixels renderizados (mantém o filme leve em telas de alta densidade).
 const MAX_PIXELS = 3.2e6;
+// Tipografia cinética: o motor (social/kinetic.js) rodando um roteiro (social/scores/).
+const kinetic = (loadScore) => () =>
+  Promise.all([import('./social/kinetic'), loadScore()]).then(([engine, score]) =>
+    engine.createKineticVariant(score.default),
+  );
+// Cada variante: como carregar e qual modelo 3D (GLB em public/models) usar.
 const VARIANTS = {
-  premium: () => import('./premium'),
-  'social-kinetic': () => import('./social/kinetic'),
+  premium: { load: () => import('./premium').then((m) => m.default), model: PLACA },
+  'social-kinetic': { load: kinetic(() => import('./social/scores/em-tudo')), model: PLACA },
+  modelo: { load: kinetic(() => import('./social/scores/modelo')), model: PLACA },
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -34,8 +44,8 @@ const loaderBar = frameEl.querySelector('.pf-loader-bar');
 const action = frameEl.querySelector('.pf-action');
 
 /** Baixa o modelo acompanhando o progresso (em paralelo com o código do three.js). */
-async function fetchModel(onProgress) {
-  const res = await fetch(MODEL_URL);
+async function fetchModel(url, onProgress) {
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`Modelo indisponível (${res.status})`);
   const total = Number(res.headers.get('content-length')) || 0;
   if (!res.body || !total) return res.arrayBuffer();
@@ -55,10 +65,11 @@ async function fetchModel(onProgress) {
 
 async function boot() {
   const setProgress = (p) => loaderBar.style.setProperty('--p', Math.min(p, 1).toFixed(3));
-  const modelPromise = fetchModel(setProgress);
+  const entry = VARIANTS[variantId];
+  const modelPromise = fetchModel(entry.model, setProgress);
   modelPromise.catch(() => {});
 
-  const variantModule = (await VARIANTS[variantId]()).default;
+  const variantModule = await entry.load();
   frameEl.dataset.variant = variantModule.id;
   const formatRatio = FORMATS[params.get('format')] || FORMATS[variantModule.format] || null;
   const v = variantModule.mount({ frameEl, params });
