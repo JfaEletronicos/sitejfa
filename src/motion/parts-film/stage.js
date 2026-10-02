@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { surfaceDetail } from './surface-detail';
 
 const DEG = Math.PI / 180;
 // 1 mm da placa = 0,01 unidade de cena (placa com 3,1 de comprimento).
@@ -113,6 +114,83 @@ function buildStudioEnvironment(renderer) {
     }
   });
   return target;
+}
+
+/**
+ * Estúdio branco (variante da bateria): sala cinza-média, chão claro que rebate luz e
+ * softboxes grandes de bordas suaves (teto, faixas laterais e um anel de painéis verticais)
+ * com recortes pretos entre elas, como num set de produto. Os reflexos no black piano ficam
+ * desenhados (forma de softbox) sem lavar a caixa de cinza. Nenhuma imagem é usada.
+ */
+function buildWhiteStudioEnvironment(renderer) {
+  const env = new THREE.Scene();
+  const basic = (v) =>
+    new THREE.MeshBasicMaterial({ color: new THREE.Color(v, v, v), side: THREE.DoubleSide });
+  env.add(
+    new THREE.Mesh(
+      new THREE.BoxGeometry(10, 10, 10),
+      new THREE.MeshBasicMaterial({ color: 0x2a2d32, side: THREE.BackSide }),
+    ),
+  );
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), basic(0.24));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -4.9;
+  env.add(floor);
+  const box = (w, h, v, pos) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic(v));
+    m.position.set(...pos);
+    m.lookAt(0, 0, 0);
+    env.add(m);
+  };
+  box(5, 3.2, 1.3, [0, 4.8, 0.4]);
+  for (let k = 0; k < 8; k++) {
+    const a = (k / 8) * Math.PI * 2 + 0.2;
+    box(2.2, 4.2, k % 2 ? 1.6 : 1.0, [Math.cos(a) * 4.9, 0.4, Math.sin(a) * 4.9]);
+  }
+  box(1.1, 6, 1.5, [-4.8, 1.2, 1.6]);
+  box(1.1, 6, 1.2, [4.8, 1.0, -1.2]);
+  box(6, 1.2, 1.1, [0, 1.6, 4.8]);
+  box(5, 1.0, 0.8, [0, 1.2, -4.8]);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const target = pmrem.fromScene(env, 0.035, 0.1, 100);
+  pmrem.dispose();
+  env.traverse((o) => {
+    if (o.isMesh) {
+      o.geometry.dispose();
+      o.material.dispose();
+    }
+  });
+  return target;
+}
+
+/** Sombra de contato: escurecimento suave em volta da pegada do produto no chão (shader). */
+function buildContactShadow(halfX, halfZ) {
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: { uOpacity: { value: 0 }, uHalf: { value: new THREE.Vector2(halfX, halfZ) } },
+    vertexShader: /* glsl */ `
+      varying vec2 vP;
+      void main() {
+        vP = position.xy;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform float uOpacity;
+      uniform vec2 uHalf;
+      varying vec2 vP;
+      void main() {
+        vec2 q = abs(vP) - uHalf + 0.05;
+        float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - 0.05;
+        float a = d < 0.0 ? 1.0 : exp(-d * 9.0) * 0.75 + exp(-d * 2.2) * 0.25;
+        gl_FragColor = vec4(0.0, 0.0, 0.0, a * uOpacity);
+      }`,
+  });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry((halfX + 1.6) * 2, (halfZ + 1.6) * 2), mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.002;
+  mesh.renderOrder = -1;
+  return mesh;
 }
 
 const COMPOSITE_VERT = /* glsl */ `
@@ -279,11 +357,21 @@ const COMPOSITE_FRAG = /* glsl */ `
 `;
 
 /**
- * @param {{ canvas: HTMLCanvasElement, model: ArrayBuffer, transparent?: boolean, upAxis?: string }} opts
- *   `model` = conteúdo do GLB; `transparent` = fundo transparente (variante social);
- *   `upAxis` = 'y' para modelos que já vêm em pé (bateria), 'z' (padrão) para a placa.
+ * @param {object} opts
+ *   `canvas`; `model` = conteúdo do GLB; `transparent` = fundo transparente (variante social);
+ *   `upAxis` = 'y' para modelos que já vêm em pé (bateria), 'z' (padrão) para a placa;
+ *   `studio` = 'white' para o estúdio branco com chão (sombra e sombra de contato) e luzes e
+ *   reflexos presos ao mundo, como num set de verdade (a câmera anda, a luz não);
+ *   `detail` = [[/nome do material/, { wear, scratch, peel }]] acabamento fino no shader.
  */
-export async function createStage({ canvas, model, transparent = false, upAxis = 'z' }) {
+export async function createStage({
+  canvas,
+  model,
+  transparent = false,
+  upAxis = 'z',
+  studio = 'dark',
+  detail = [],
+}) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: false,
@@ -299,13 +387,37 @@ export async function createStage({ canvas, model, transparent = false, upAxis =
   const gltf = await new GLTFLoader().parseAsync(model, '');
 
   const scene = new THREE.Scene();
-  const envTarget = buildStudioEnvironment(renderer);
+  const white = studio === 'white';
+  const envTarget = white ? buildWhiteStudioEnvironment(renderer) : buildStudioEnvironment(renderer);
   scene.environment = envTarget.texture;
 
   const pivot = new THREE.Group();
   const board = buildBoard(gltf, renderer.capabilities.getMaxAnisotropy(), upAxis);
   pivot.add(board);
   scene.add(pivot);
+  // Acabamento fino (casca de laranja, riscos, desgaste) por nome de material; o ruído
+  // usa milímetros (1 unidade de cena = 1000 / MODEL_SCALE mm).
+  if (detail.length) {
+    board.traverse((o) => {
+      if (!o.isMesh) return;
+      const rule = detail.find(([re]) => re.test(o.material.name || ''));
+      if (rule) surfaceDetail(o.material, { ...rule[1], unit: 1000 / MODEL_SCALE });
+    });
+  }
+
+  // Estúdio branco: chão que recebe a sombra da luz principal e sombra de contato.
+  let floor = null;
+  let contact = null;
+  if (white) {
+    const box = new THREE.Box3().setFromObject(board);
+    floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.ShadowMaterial({ opacity: 0 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = box.min.y + 0.001;
+    floor.receiveShadow = true;
+    contact = buildContactShadow((box.max.x - box.min.x) / 2 - 0.15, (box.max.z - box.min.z) / 2 - 0.05);
+    contact.position.y = box.min.y + 0.002;
+    scene.add(floor, contact);
+  }
 
   // Luz principal: spot suave com sombra (recorte de luz de estúdio).
   const key = new THREE.SpotLight(0xfff4ea, 0, 0, 10 * DEG, 1, 2);
@@ -321,8 +433,11 @@ export async function createStage({ canvas, model, transparent = false, upAxis =
   const rim = new THREE.DirectionalLight(0xd4e2ff, 0);
   scene.add(rim, rim.target);
 
-  // Preenchimento quase nulo (azul profundo por cima, preto por baixo).
-  const fill = new THREE.HemisphereLight(0x3a64c8, 0x05070a, 0);
+  // Preenchimento quase nulo (azul profundo por cima, preto por baixo); no estúdio branco,
+  // o rebatimento neutro das paredes e do chão.
+  const fill = white
+    ? new THREE.HemisphereLight(0xffffff, 0x9a9da3, 0)
+    : new THREE.HemisphereLight(0x3a64c8, 0x05070a, 0);
   scene.add(fill);
 
   const camera = new THREE.PerspectiveCamera(30, REF_ASPECT, 0.01, 100);
@@ -470,28 +585,51 @@ export async function createStage({ canvas, model, transparent = false, upAxis =
     camera.projectionMatrix.elements[9] = -2 * s.shift;
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
 
-    // Luz principal: segue o alvo da câmera, um pouco à frente do caminho.
-    key.target.position.set(tmpTarget.x + s.keyLead, 0, tmpTarget.z);
     const kaz = s.keyAz * DEG;
     const kel = s.keyEl * DEG;
-    key.position.set(
-      key.target.position.x + s.keyDist * Math.sin(kaz) * Math.cos(kel),
-      s.keyDist * Math.sin(kel),
-      key.target.position.z + s.keyDist * Math.cos(kaz) * Math.cos(kel),
-    );
-    key.angle = s.keyAngle * DEG;
-    key.intensity = s.keyLux * s.keyDist * s.keyDist;
+    if (white) {
+      // Set de verdade: luz principal, contraluz e reflexos presos ao mundo (a câmera anda,
+      // a luz e as sombras ficam onde estão).
+      const kd = 14;
+      key.target.position.set(0, 0.9, 0);
+      key.position.set(
+        kd * Math.sin(kaz) * Math.cos(kel),
+        kd * Math.sin(kel),
+        kd * Math.cos(kaz) * Math.cos(kel),
+      );
+      key.angle = s.keyAngle * DEG;
+      key.intensity = s.keyLux * kd * kd;
+      const raz = (s.rimAz ?? 200) * DEG;
+      rim.position.set(Math.sin(raz) * 6, 4.5, Math.cos(raz) * 6);
+      rim.target.position.set(0, 1, 0);
+      rim.intensity = s.rimLux;
+      fill.intensity = s.fill;
+      scene.environmentIntensity = s.env;
+      scene.environmentRotation.set(0, s.sweep * DEG, 0);
+      floor.material.opacity = s.floor ?? 0;
+      contact.material.uniforms.uOpacity.value = s.contact ?? 0;
+    } else {
+      // Luz principal: segue o alvo da câmera, um pouco à frente do caminho.
+      key.target.position.set(tmpTarget.x + s.keyLead, 0, tmpTarget.z);
+      key.position.set(
+        key.target.position.x + s.keyDist * Math.sin(kaz) * Math.cos(kel),
+        s.keyDist * Math.sin(kel),
+        key.target.position.z + s.keyDist * Math.cos(kaz) * Math.cos(kel),
+      );
+      key.angle = s.keyAngle * DEG;
+      key.intensity = s.keyLux * s.keyDist * s.keyDist;
 
-    // Contraluz atrás do produto em relação à câmera.
-    const raz = az + Math.PI + 24 * DEG;
-    rim.position.set(Math.sin(raz) * 4, 2.6, Math.cos(raz) * 4);
-    rim.target.position.set(0, 0, 0);
-    rim.intensity = s.rimLux;
-    fill.intensity = s.fill;
+      // Contraluz atrás do produto em relação à câmera.
+      const raz = az + Math.PI + 24 * DEG;
+      rim.position.set(Math.sin(raz) * 4, 2.6, Math.cos(raz) * 4);
+      rim.target.position.set(0, 0, 0);
+      rim.intensity = s.rimLux;
+      fill.intensity = s.fill;
 
-    // Reflexos: a softbox vertical corre em torno do reflexo especular da câmera.
-    scene.environmentIntensity = s.env;
-    scene.environmentRotation.set(0, (s.cam.az + s.sweep) * DEG, 0);
+      // Reflexos: a softbox vertical corre em torno do reflexo especular da câmera.
+      scene.environmentIntensity = s.env;
+      scene.environmentRotation.set(0, (s.cam.az + s.sweep) * DEG, 0);
+    }
 
     renderer.setRenderTarget(sceneTarget);
     renderer.clear();

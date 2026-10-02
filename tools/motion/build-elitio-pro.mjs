@@ -6,7 +6,10 @@
  *     display, botão liga/desliga em aço, tela apagada);
  *   - adesivos do arquivo de impressão (recortes do PDF, tamanho real) nas faces da caixa;
  *   - arruela e parafuso sextavado nos bornes, anel vermelho no positivo e alças de corda
- *     trançada (geometria, sem textura), conforme a foto do produto.
+ *     trançada (geometria, sem textura), conforme a foto do produto;
+ *   - rebarba da injeção na linha de molde entre corpo e tampa e marca do ponto de injeção.
+ * O acabamento fino da superfície (casca de laranja, riscos, desgaste) é feito no shader do
+ * palco (surface-detail.js), sem textura.
  * A geometria do CAD não é alterada. Roda no Chromium (o exportador do three precisa de canvas):
  *
  *   node tools/motion/build-elitio-pro.mjs
@@ -98,6 +101,58 @@ function terminal(x, ring, tag) {
 }
 terminal(TERM.x, M.red, 'positivo');
 terminal(-TERM.x, null, 'negativo');
+
+// Rebarba da injeção: filete fino e irregular de plástico na linha de molde entre corpo e
+// tampa (y ≈ 194,6 mm) contornando a caixa, e a marca do ponto de injeção nas pontas.
+{
+  const hx = 222.5, hz = 85, r = 6, y = 194.6, path = [];
+  const corner = (cx, cz, a0) => {
+    for (let k = 0; k <= 8; k++) {
+      const a = a0 + (k / 8) * (Math.PI / 2);
+      path.push([cx + Math.cos(a) * r, cz + Math.sin(a) * r, Math.cos(a), Math.sin(a)]);
+    }
+  };
+  const side = (x0, z0, x1, z1, nx, nz) => {
+    const n = Math.ceil(Math.hypot(x1 - x0, z1 - z0) / 1.5);
+    for (let k = 1; k < n; k++) path.push([x0 + ((x1 - x0) * k) / n, z0 + ((z1 - z0) * k) / n, nx, nz]);
+  };
+  corner(hx - r, hz - r, 0); side(hx - r, hz, -hx + r, hz, 0, 1);
+  corner(-hx + r, hz - r, Math.PI / 2); side(-hx, hz - r, -hx, -hz + r, -1, 0);
+  corner(-hx + r, -hz + r, Math.PI); side(-hx + r, -hz, hx - r, -hz, 0, -1);
+  corner(hx - r, -hz + r, (3 * Math.PI) / 2); side(hx, -hz + r, hx, hz - r, 1, 0);
+  // Saliência de 0,1 a 1,1 mm: trechos quase lisos e alguns picos (sementes fixas).
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const lumps = Array.from({ length: 40 }, () => [rnd() * path.length, 2 + rnd() * 14, rnd()]);
+  const out = path.map((_, i) => {
+    let o = 0.1;
+    lumps.forEach(([c, w, a]) => {
+      const d = Math.min(Math.abs(i - c), path.length - Math.abs(i - c));
+      o += a * Math.exp(-(d * d) / (w * w)) * 0.9;
+    });
+    return Math.min(o, 1.1);
+  });
+  const pos = [], idx = [], t = 0.18;
+  path.forEach(([x, z, nx, nz], i) => {
+    const o = out[i];
+    pos.push(x, y - t, z, x + nx * o, y - t * 0.4, z + nz * o, x + nx * o, y + t * 0.4, z + nz * o, x, y + t, z);
+  });
+  for (let i = 0; i < path.length; i++) {
+    const a = i * 4, b = ((i + 1) % path.length) * 4;
+    for (let k = 0; k < 3; k++) idx.push(a + k, b + k, b + k + 1, a + k, b + k + 1, a + k + 1);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  add(new THREE.Mesh(geo, piano), 0, 0, 0, 'Rebarba da linha de molde');
+  const gate = new THREE.MeshPhysicalMaterial({ name: 'Ponto de injeção', color: 0x060607, roughness: 0.55,
+    clearcoat: 0.3, clearcoatRoughness: 0.5 });
+  for (const sx of [1, -1]) {
+    add(new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.8, 0.5, 32), gate), sx * (hx + 0.2), 26, 0,
+      'Ponto de injeção').rotation.z = Math.PI / 2;
+  }
+}
 
 // Corda trançada: três fios em hélice em volta do caminho
 function rope(curve, name) {

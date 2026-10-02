@@ -171,13 +171,21 @@ function surfaceRgb(key) {
 
 /**
  * Fundo como radial [centro, borda, posição]: "glow"/"hero" = azul profundo atrás da
- * placa caindo para o preto; "white" = branco com a borda levemente fria; "void" = preto
+ * placa caindo para o preto; "white" = branco com a borda levemente fria; "studio" = estúdio
+ * branco iluminado; "#rrggbb" = o radial do estúdio nessa cor (luz acendendo); "void" = preto
  * absoluto; "smoke" = halo grafite tênue sobre o preto; cores = chapado.
  */
 function backdrop(key) {
   if (key === 'glow') return { c: surfaceRgb('deepBlue'), e: hex(COLORS.black), y: 60 };
   if (key === 'hero') return { c: surfaceRgb('deepBlue'), e: hex(COLORS.black), y: 44 };
   if (key === 'white') return { c: hex(COLORS.white), e: [233, 238, 245], y: 50 };
+  // "studio": estúdio branco iluminado (centro claro, cantos levemente mais escuros).
+  if (key === 'studio') return { c: [247, 248, 250], e: [206, 209, 214], y: 44 };
+  // Cor direta ("#rrggbb"): o mesmo radial do estúdio, para acender/apagar a luz aos poucos.
+  if (key[0] === '#') {
+    const c = hex(key);
+    return { c, e: c.map((v) => v * 0.8), y: 44 };
+  }
   // "void": preto absoluto (produto preto some por completo).
   if (key === 'void') return { c: [0, 0, 0], e: [0, 0, 0], y: 50 };
   // "smoke": halo grafite muito tênue atrás do produto (silhueta legível sobre o preto).
@@ -761,6 +769,9 @@ export function createKineticVariant(score) {
           keyAz: light.keyAz,
           keyEl: light.keyEl,
           rimLux: light.rimLux,
+          rimAz: light.rimAz,
+          floor: light.floor,
+          contact: light.contact,
           fill: light.fill,
           env: light.env,
           sweep,

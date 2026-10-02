@@ -17,6 +17,7 @@
  */
 import './parts-film.css';
 import { createFilm } from './film';
+import { ELITIO_PRO_DETAIL } from './surface-detail';
 
 const PLACA = '/models/placa_lb1004.glb';
 const ELITIO_PRO = '/models/elitio-pro.glb';
@@ -29,12 +30,19 @@ const kinetic = (loadScore) => () =>
     engine.createKineticVariant(score.default),
   );
 // Cada variante: como carregar e qual modelo 3D (GLB em public/models) usar; `upAxis: 'y'`
-// para modelos que já vêm em pé.
+// para modelos que já vêm em pé; `studio: 'white'` para o estúdio branco com chão e luz presa
+// ao mundo; `detail` para o acabamento fino da superfície (surface-detail.js).
 const VARIANTS = {
   premium: { load: () => import('./premium').then((m) => m.default), model: PLACA },
   'social-kinetic': { load: kinetic(() => import('./social/scores/em-tudo')), model: PLACA },
   modelo: { load: kinetic(() => import('./social/scores/modelo')), model: PLACA },
-  'elitio-pro': { load: kinetic(() => import('./social/scores/elitio-pro')), model: ELITIO_PRO, upAxis: 'y' },
+  'elitio-pro': {
+    load: kinetic(() => import('./social/scores/elitio-pro')),
+    model: ELITIO_PRO,
+    upAxis: 'y',
+    studio: 'white',
+    detail: ELITIO_PRO_DETAIL,
+  },
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -92,6 +100,8 @@ async function boot() {
       model: buffer,
       transparent: variantModule.transparent,
       upAxis: entry.upAxis,
+      studio: entry.studio,
+      detail: entry.detail,
     });
   } catch (err) {
     console.error('[JFA Parts] filme indisponível:', err);
