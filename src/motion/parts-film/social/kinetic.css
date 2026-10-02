@@ -1,0 +1,208 @@
+/* Variante social-kinetic: camadas de tipografia, blocos de cor e transições. */
+
+@font-face {
+  font-family: 'Stretch Pro';
+  src: url('/fonts/StretchPro.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+.pf-frame[data-variant='social-kinetic'] {
+  background: #05070a;
+}
+
+.sk-base,
+.sk-comp,
+.sk-blocks,
+.sk-type,
+.sk-overlay,
+.sk-wipe,
+.sk-mask,
+.sk-flash {
+  position: absolute;
+  inset: 0;
+}
+
+.sk-base {
+  background: #05070a;
+}
+
+.sk-comp {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.sk-type,
+.sk-overlay {
+  pointer-events: none;
+}
+
+.sk-type {
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.sk-block {
+  position: absolute;
+  visibility: hidden;
+}
+
+/* Palavras: uma ou mais partes por linha, cada uma com a sua fonte. */
+.sk-word {
+  --gx: 0px;
+  --gy: 0px;
+  --go: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  line-height: 0.86;
+  white-space: nowrap;
+  text-transform: uppercase;
+  visibility: hidden;
+  will-change: transform, opacity;
+  font-variant-ligatures: none;
+}
+
+.sk-word.is-mask {
+  line-height: 1.12;
+}
+
+.sk-part {
+  --c: #ffffff;
+  display: inline-block;
+  color: var(--c);
+}
+
+/* Máscara: a parte só aparece dentro da própria linha. */
+.sk-word.is-mask .sk-part {
+  /* topo aberto para os acentos (Ê, Ã); a base corta a entrada por baixo */
+  clip-path: inset(-40% -25% 0 -25%);
+}
+
+/* Famílias: Poppins (padrão), Stretch Pro (larga), Anton (condensada) e Instrument Serif. */
+.sk-part.is-wide {
+  font-family: 'Stretch Pro', 'Poppins', sans-serif;
+}
+
+.sk-part.is-condensed {
+  font-family: 'Anton', 'Poppins', sans-serif;
+}
+
+.sk-part.is-serif {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+
+.sk-part.is-italic {
+  font-style: italic;
+}
+
+/* Letra esticada da Stretch Pro (letras repetidas viram uma só, mais larga): só em
+   elementos decorativos. */
+.sk-part.is-liga {
+  font-variant-ligatures: common-ligatures;
+  font-feature-settings: 'liga' 1;
+}
+
+.sk-part.is-lower {
+  text-transform: none;
+}
+
+.sk-part.is-outline {
+  color: transparent;
+  -webkit-text-stroke: max(2px, 0.022em) var(--c);
+}
+
+.sk-ink {
+  position: relative;
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Rastro de movimento: duas cópias da parte atrás dela, na direção contrária ao movimento. */
+.sk-ink::before,
+.sk-ink::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-shadow: none;
+  pointer-events: none;
+}
+
+.sk-ink::before {
+  transform: translate3d(var(--gx), var(--gy), 0);
+  opacity: calc(var(--go) * 0.34);
+}
+
+.sk-ink::after {
+  transform: translate3d(calc(var(--gx) * 2.1), calc(var(--gy) * 2.1), 0);
+  opacity: calc(var(--go) * 0.15);
+}
+
+.sk-letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Estiramento à moda da Stretch Pro (slices.js): cópias recortadas do mesmo texto. */
+.sk-slices {
+  position: relative;
+  display: inline-block;
+}
+
+.sk-slice {
+  display: block;
+}
+
+.sk-slice.is-abs {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.sk-slice-win {
+  position: absolute;
+  inset: 0;
+}
+
+.sk-probe {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
+/* Gráficos em SVG (ex.: os olhos da cena 1). */
+.sk-graphic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.sk-graphic svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.sk-graphic .sk-eyes {
+  filter: drop-shadow(0 0.6em 1.2em rgba(0, 0, 0, 0.35));
+}
+
+.sk-wipe,
+.sk-mask,
+.sk-flash {
+  visibility: hidden;
+}
+
+/* Sem WebGL: só a assinatura final. */
+.pf-frame.sk-fallback .sk-comp {
+  transform: none !important;
+}

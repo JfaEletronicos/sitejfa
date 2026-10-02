@@ -9,6 +9,7 @@ Site institucional da **JFA Eletrônicos**, migrado de uma página HTML única (
 | UI               | React 18 (componentes funcionais)                          |
 | Build/dev server | Vite 5                                                     |
 | Estilos          | CSS puro, dividido por seção (ordem da cascata preservada) |
+| 3D               | three.js (só na página do filme da JFA Parts)              |
 | Qualidade        | ESLint 9 + Prettier 3                                      |
 | Hospedagem       | Vercel                                                     |
 
@@ -28,9 +29,11 @@ Requer Node.js 18 ou superior.
 
 ```
 index.html                 # HTML base (fontes, meta tags, #root)
+parts-filme.html           # página do filme da JFA Parts (entrada própria do Vite)
 public/
   images/                  # fotos de produtos, frentes, selos e logo (.webp)
   media/hero-bateria.mp4   # vídeo de fundo da Hero (loop, sem áudio)
+  models/placa_lb1004.glb  # modelo 3D real da placa LB1004 (usado no filme)
   fonts/StretchPro.woff    # fonte display dos títulos
   favicon.ico
 src/
@@ -43,8 +46,11 @@ src/
   behaviors/               # interatividade de cada seção (um módulo por seção)
   data/                    # catálogo de produtos/manuais, campanhas e setores
   lib/                     # busca (search.js) e analytics (analytics.js)
+  motion/parts-film/       # filmes/motions da JFA Parts (palco 3D, variantes, roteiros)
   styles/                  # CSS por seção + index.css (ordem de import)
 docs/ARQUITETURA.md        # detalhes de arquitetura e funcionalidades
+tools/motion/              # captura de quadros e análise de letras para os motions
+.claude/skills/motion/     # padrão dos motions (regras, fluxo e referência do roteiro)
 ```
 
 ## Seções e funcionalidades
@@ -90,6 +96,29 @@ Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no 
 Modo claro/escuro: botão de sol/lua no header. O escuro é o padrão e a escolha fica salva no navegador do visitante. As cores do modo claro são geradas no build por `tools/postcss-light-theme.js` a partir do CSS escuro; ajustes manuais ficam em `src/styles/theme-light.css`, e áreas com `data-theme-keep` mantêm as cores originais.
 Acessibilidade: todas as animações respeitam `prefers-reduced-motion`, inclusive se a preferência mudar com a página aberta.
 Analytics: a tag do Google (GA4, `G-MHE0NRXPLR`) fica no `<head>` do `index.html`, uma vez só, e vale para todas as páginas. Os eventos de conversão passam por `src/lib/analytics.js`, que envia para o `gtag`.
+
+## Filme da JFA Parts (`/parts-filme.html`)
+
+Filme de lançamento de ~18 s, "Tudo começa por dentro.", feito com o **modelo 3D real da placa LB1004** (`public/models/placa_lb1004.glb`) renderizado em tempo real com three.js. Nada de imagem, vídeo ou render pronto: luz de estúdio, reflexos, fundo, profundidade de campo e textos são gerados no navegador. É uma página independente (não carrega o site), e o three.js só é baixado nela.
+
+Roteiro (atos): **Intriga** 0–3 s (macro rente à superfície, quase preto; "O que faz tudo funcionar?") → **Descoberta** 3–7 s (a câmera atravessa a superfície e começa a afastar) → **Precisão** 7–11 s ("Tudo começa por dentro.", passagem de luz pela placa) → **Hero** 11–15 s (placa inteira, ~70% do quadro; "Tecnologia que faz acontecer.") → **Assinatura** 15–18 s (JFA PARTS / Placas eletrônicas e fade para preto).
+
+- **Tempos e movimentos**: tudo fica em `src/motion/parts-film/timeline.js` (câmera, luzes, reflexos, fundo, desfoque, rotação da placa, textos e marcações de som). Mude os números e o filme inteiro acompanha.
+- **Parâmetros**: `?debug` mostra uma régua com os atos e as marcações de som para arrastar o tempo; `?t=8.5` começa nesse instante; `?format=16x9`, `9x16`, `1x1` ou `4x5` fixa a proporção do quadro (padrão: ocupa a janela). Teclas: espaço pausa/continua, R recomeça, ←/→ avançam/voltam 1 s.
+- **Formatos**: pensado em 16:9; em telas verticais a câmera gira devagar até alinhar o comprimento da placa com a altura do quadro, e os textos mudam de lugar.
+- **Som**: não há áudio. As marcações (0 s silêncio, 2 s whoosh, 4–7 s atmosfera, 9 s impacto, 11–15 s crescimento, 15 s impacto da marca) disparam o evento `partsfilm:cue` em `window`, para sincronizar uma trilha no futuro.
+- **Gravar em vídeo**: `?capture` não toca sozinho e expõe `window.partsFilm.seek(t)`, que desenha qualquer instante de forma idêntica (dá para gravar quadro a quadro).
+- **Acessibilidade e desempenho**: com "reduzir movimento" a página mostra o quadro final parado e o filme só toca se a pessoa pedir; sem WebGL fica só a assinatura. A resolução interna é limitada e cai sozinha se a máquina não sustentar o movimento.
+- A página tem `noindex` enquanto a JFA Parts estiver oculta (`src/data/visibility.js`).
+
+### Motions de tipografia cinética (`?variant=social-kinetic` e novos)
+
+Peças verticais 9:16 para redes sociais com a mesma placa 3D real: texto em planos 3D em volta da placa, câmera virtual que move tudo, letras esticadas à moda da Stretch Pro, fundos e trilhas em SVG. O motor é um só (`src/motion/parts-film/social/kinetic.js`); cada motion é um roteiro em `social/scores/`:
+
+- `?variant=social-kinetic` — "Você não vê, mas ela está em tudo" (`scores/em-tudo.js`).
+- `?variant=modelo` — roteiro-modelo de duas cenas, ponto de partida de motions novos.
+
+Motion novo: copie `scores/modelo.js` para `scores/<nome>.js`, troque o `META` e registre em `VARIANTS` (`main.js`). O padrão visual, o fluxo (uma cena por vez, revisão antes de enviar) e a referência de cada campo estão em `.claude/skills/motion/`. Para revisar: `?range=a-b` repete um trecho e `?debug` mostra a régua e os controles; com `npm run dev` rodando, `node tools/motion/frames.mjs --variant <id> --times 0.5,2 --sheet` captura quadros e `--repeat` confere a segunda rodagem. A prévia de cada branch sai na Vercel pelo push (ver Regra de deploy).
 
 ## Tarefas comuns
 
