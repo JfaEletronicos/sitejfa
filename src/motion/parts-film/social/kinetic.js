@@ -39,6 +39,7 @@ import {
   CAMERA_RIG,
 } from './score';
 import { createEyes } from './eyes';
+import { createSlices } from './slices';
 
 // Elementos gráficos desenhados em SVG (ver score.js → GRAPHICS).
 const GRAPHIC_TYPES = { eyes: createEyes };
@@ -211,6 +212,27 @@ function keyedScale(keys, lt) {
 }
 
 /**
+ * Quanto esticar as fatias de uma parte (px no espaço da palavra, antes da escala):
+ *   stretchLetter.keys [tempo local, em, curva]: largura extra da letra, em "em"
+ *   stretchY.keys [tempo local, altura, curva]: altura das maiúsculas na tela, em fração
+ *     do quadro (0 = altura natural)
+ */
+function sliceExtra(pt, pz, lt, H) {
+  const ti = K('typographyIntensity');
+  const { stretchLetter, stretchY } = pt.part;
+  if (stretchLetter) return keyedScale(stretchLetter.keys, lt) * pt.fontPx * ti;
+  const S = pz.scale * pz.sy || 1;
+  const { capH } = pt.slices.metrics;
+  const extra = (v) => (v > 0 ? Math.max(0, (v * H) / S - capH) : 0);
+  return (
+    keyedScale(
+      stretchY.keys.map(([t, v, c]) => [t, extra(v), c]),
+      lt,
+    ) * ti
+  );
+}
+
+/**
  * Olhar entre as marcações [tempo, -1 a 1, duração (s), curva] (tempo local do gráfico).
  * Sem duração: sacada rápida (0,09 s).
  */
@@ -250,6 +272,8 @@ const partsOf = (w) =>
       tracking: w.tracking,
       liga: w.liga,
       lower: w.lower,
+      stretchY: w.stretchY,
+      stretchLetter: w.stretchLetter,
     },
   ];
 const isMask = (w) => w.in.type === 'mask' || w.out.type === 'mask';
@@ -375,8 +399,6 @@ function wordPose(w, tb, m, frame) {
   scale *= 1 + Math.min(w.grow * pl * ti, TYPO.maxScale - 1);
   if (w.stretch) sx *= 1 + w.stretch * pl * ti;
   if (w.scaleKeys) scale = keyedScale(w.scaleKeys, lt);
-  // Estiramento marcado: só a largura, em [tempo local, largura, curva].
-  if (w.stretchKeys) sx *= 1 + (keyedScale(w.stretchKeys, lt) - 1) * ti;
 
   // Distorção própria da palavra.
   const d = emptyDistortion();
@@ -466,15 +488,27 @@ export default {
           'span',
         );
         const ink = el('sk-ink', wrap, 'span');
-        ink.dataset.text = part.text;
-        if (w.split) {
-          [...part.text].forEach((ch) => {
-            el('sk-letter', ink, 'span').textContent = ch;
-          });
+        // Estiramento à moda da Stretch Pro: o texto todo na altura (stretchY) ou uma
+        // letra na largura (stretchLetter). Sem rastro de movimento (as cópias já bastam).
+        let slices = null;
+        if (part.stretchY) {
+          slices = createSlices(ink, part.text, 'y', part.stretchY.at);
+        } else if (part.stretchLetter) {
+          const { index, at } = part.stretchLetter;
+          ink.append(part.text.slice(0, index));
+          slices = createSlices(ink, part.text[index], 'x', at);
+          ink.append(part.text.slice(index + 1));
         } else {
-          ink.textContent = part.text;
+          ink.dataset.text = part.text;
+          if (w.split) {
+            [...part.text].forEach((ch) => {
+              el('sk-letter', ink, 'span').textContent = ch;
+            });
+          } else {
+            ink.textContent = part.text;
+          }
         }
-        return { part, wrap, ink, letters: w.split ? [...ink.children] : null };
+        return { part, wrap, ink, slices, letters: w.split ? [...ink.children] : null };
       });
       return { w, node, parts, m: { sx: 1, sy: 1, nw: 1, nh: 1, ox: 0, oy: 0 }, shown: false };
     });
@@ -506,6 +540,14 @@ export default {
           wrap.style.marginLeft = i > 0 ? `${part.gap ?? 0.26}em` : '0';
           wrap.style.setProperty('--c', inkColor(part.color || 'white'));
         });
+        // Fatias medidas sem esticar (a largura natural vale para alinhar e ajustar).
+        let capTop = null;
+        item.parts.forEach((pt) => {
+          if (!pt.slices) return;
+          pt.fontPx = parseFloat(pt.wrap.style.fontSize);
+          const mt = pt.slices.measure();
+          if (capTop == null) capTop = pt.ink.offsetTop + pt.slices.box.offsetTop + mt.capTop;
+        });
         const nw = node.offsetWidth || 1;
         const nh = node.offsetHeight || 1;
         let sx = 1;
@@ -529,6 +571,8 @@ export default {
         }
         const ox = w.align === 'left' ? 0 : w.align === 'right' ? nw : nw / 2;
         const origin = w.origin ? [(w.origin[0] / 100) * nw, (w.origin[1] / 100) * nh] : [ox, nh / 2];
+        // originY "cap": o y da palavra marca o topo das maiúsculas (texto que estica para baixo).
+        if (w.originY === 'cap' && capTop != null) origin[1] = capTop;
         node.style.transformOrigin = `${origin[0]}px ${origin[1]}px`;
         item.m = {
           sx,
@@ -846,6 +890,7 @@ export default {
 
         item.parts.forEach((pt, i) => {
           pt.ink.style.transform = `translate3d(0, ${(pz.partY[i] || 0).toFixed(2)}px, 0)`;
+          if (pt.slices) pt.slices.set(sliceExtra(pt, pz, tb - w.t[0], H));
           if (pt.letters) {
             pt.letters.forEach((s, j) => {
               const off = pz.disp * W * Math.sin(j * 1.9 + tb * 24);

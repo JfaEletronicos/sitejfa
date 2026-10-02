@@ -398,22 +398,27 @@ function stack(text, t, rows, o = {}) {
 
 export const WORDS = [
   // 0–2 s · VOCÊ NÃO VÊ, mas...
-  // Fundo: "INVISSÍVEL" gigante na Stretch Pro, com o S esticado (o "SS" vira uma letra
-  // só, mais larga), passando devagar atrás de tudo em azul quase apagado.
-  word('INVISSÍVEL', [-0.4, 2.45], {
+  // Fundo: "INVISSÍVEL" gigante na Stretch Pro, cobrindo a tela de cima a baixo, com o S
+  // esticado (o "SS" vira uma letra só, mais larga), passando devagar atrás de tudo em
+  // azul quase apagado. A altura vem do estiramento da própria fonte (as hastes crescem,
+  // as barras ficam finas), não de escalar as letras.
+  word('INVISSÍVEL', [-0.4, 2.8], {
     layer: 'far',
     font: 'wide',
     liga: true,
     size: 'huge',
     color: 'jfaBlue',
     opacity: 0.11,
-    x: -150,
-    y: 54,
+    x: -6,
+    y: -2,
+    originY: 'cap',
     align: 'left',
-    fitMode: 'uniformY',
-    fitY: 0.24,
-    drift: [-95, 0],
-    fade: [0.35, 0.45],
+    fit: 2.3,
+    fitMode: 'uniform',
+    stretchY: { at: [0.265, 0.7], keys: [[0, 1.04]] },
+    drift: [-88, 0],
+    // Fica até o meio da passagem: os planos giram com a câmera e o quadro não esvazia.
+    fade: [0.35, 0.6],
   }),
   // Um bloco só, linhas coladas, três estilos: Poppins Light, Poppins ExtraBold
   // Itálico (azul) e, no "VÊ", a troca de fonte. As entradas se sobrepõem e a saída é
@@ -453,7 +458,7 @@ export const WORDS = [
     { x: 9, y: 30.1, align: 'left', in: { type: 'mask', dur: 0.5 }, out: { type: 'fade', dur: 0.45 } },
   ),
   // "mas..." embaixo do "VÊ": a ponta que leva para a cena 2 (serifada, itálica, minúscula).
-  word('mas...', [1.3, 2.4], {
+  word('mas...', [1.0, 2.4], {
     font: 'serif',
     italic: true,
     lower: true,
@@ -466,33 +471,33 @@ export const WORDS = [
   }),
 
   // 2,2–4,4 s · ELA ESTÁ EM TUDO (espaço 2, fundo claro)
-  // Fundo: faixas com as linhas onde a placa está (e "EM TUDO"), na Stretch Pro com uma
-  // letra esticada em cada uma, correndo em sentidos alternados atrás da placa.
-  ...[
-    ['EM TUUDO   EM TUUDO   EM TUUDO', 9, 18],
-    ['GELAADEIRA   GELAADEIRA', 27.5, -22],
-    ['LAAVADORA   LAAVADORA', 46, 20],
-    ['AR-CONDICIONAADO   AR-CONDICIONAADO', 64.5, -18],
-    ['EM TUUDO   EM TUUDO   EM TUUDO', 83, 22],
-  ].map(([text, y, drift], i) =>
-    word(text, [2.0 + i * 0.05, 4.65], {
-      space: 2,
-      layer: 'far',
-      font: 'wide',
-      liga: true,
-      size: 'medium',
-      color: 'jfaBlue',
-      opacity: 0.1,
-      x: drift > 0 ? -60 : 160,
-      y,
-      align: drift > 0 ? 'left' : 'right',
-      drift: [drift, 0],
-      fade: [0.55, 0.35],
-    }),
-  ),
+  // Fundo: um texto só, "TUUDO" (U esticado da Stretch Pro) na largura toda, que vai
+  // esticando de cima para baixo durante a cena inteira até cobrir a tela.
+  word('TUUDO', [2.0, 4.65], {
+    space: 2,
+    layer: 'far',
+    font: 'wide',
+    liga: true,
+    size: 'huge',
+    color: 'jfaBlue',
+    opacity: 0.12,
+    x: 50,
+    y: 2,
+    originY: 'cap',
+    fit: 1.1,
+    fitMode: 'uniform',
+    stretchY: {
+      at: 0.47,
+      keys: [
+        [0.15, 0],
+        [2.5, 1.0, 'glide'],
+      ],
+    },
+    fade: [0.55, 0.35],
+  }),
   // Um bloco só, colado, alinhado à esquerda: Instrument Serif itálica + Poppins Black
   // azul na primeira linha e Anton (condensada) na segunda. Entradas sobrepostas.
-  word('ELA ESTÁ', [2.3, 4.6], {
+  word('ELA ESTÁ', [2.2, 4.6], {
     space: 2,
     parts: [
       { text: 'ELA', font: 'serif', italic: true, color: 'black' },
@@ -506,9 +511,10 @@ export const WORDS = [
     out: { type: 'fade', dur: 0.3 },
   }),
   // Na frente da placa: se a ponta dela encostar, passa por trás da palavra.
-  // Animação da cena: depois de assentar, "EM TUDO" se estica devagar para a direita
-  // (ocupa mais espaço, como a placa ocupa tudo), sem voltar.
-  word('EM TUDO', [2.48, 4.6], {
+  // Animação da cena: depois de assentar, o T de "TUDO" se estica devagar como as letras
+  // da Stretch Pro: só a barra de cima cresce, para os dois lados, e a haste fica no
+  // meio, com a espessura desenhada. (No U e no O as curvas finas da Anton se separavam.)
+  word('EM TUDO', [2.4, 4.6], {
     space: 2,
     layer: 'front',
     font: 'condensed',
@@ -519,10 +525,14 @@ export const WORDS = [
     align: 'left',
     in: { type: 'mask', dur: 0.5 },
     out: { type: 'fade', dur: 0.3 },
-    stretchKeys: [
-      [0.45, 1],
-      [1.75, 1.2, 'soft'],
-    ],
+    stretchLetter: {
+      index: 3,
+      at: [0.16, 0.85],
+      keys: [
+        [0.5, 0],
+        [2.0, 0.6, 'soft'],
+      ],
+    },
   }),
 
   // 4,4–6,5 s · CONTROLE. / ENERGIA.

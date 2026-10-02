@@ -148,6 +148,33 @@
   will-change: transform;
 }
 
+/* Estiramento à moda da Stretch Pro (slices.js): cópias recortadas do mesmo texto. */
+.sk-slices {
+  position: relative;
+  display: inline-block;
+}
+
+.sk-slice {
+  display: block;
+}
+
+.sk-slice.is-abs {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.sk-slice-win {
+  position: absolute;
+  inset: 0;
+}
+
+.sk-probe {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
 /* Gráficos em SVG (ex.: os olhos da cena 1). */
 .sk-graphic {
   position: absolute;
