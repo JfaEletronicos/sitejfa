@@ -19,10 +19,10 @@
  *      sempre para o mesmo lado: logotipo, borne positivo, ponta com alça, traseira (ficha
  *      técnica), outra ponta e quina da tampa (lento); recua rápido para as proporções.
  *   03 cards (13,5–16): 3/4 controlado com espaço em volta, órbita suave.
- *   04 vista explodida (16–22,1): a tampa sobe inteira e BMS, barramentos, suporte e
- *      células se separam na vertical; a câmera contorna, atravessa o vão entre corpo e
- *      células e, do outro lado, vira para ver tudo voltar ao lugar (clique em ~22,1).
- *   05 hero (22,1–24,9): aproximação lenta e baixa, espaço acima para a mensagem.
+ *   04 vista explodida (16–20,6): a tampa sobe inteira e BMS, barramentos, suporte e
+ *      células se separam na vertical; logo em seguida a câmera atravessa o vão entre as
+ *      células e o suporte e, do outro lado, se afasta vendo tudo voltar (clique em ~19,9).
+ *   05 hero (20,6–24,9): aproximação lenta e baixa, espaço acima para a mensagem.
  *   06 final (24,9–28,5): ainda perto, a câmera se afasta devagar; muito espaço negativo.
  */
 export const META = {
@@ -39,8 +39,8 @@ export const SCENES = [
   { id: 'cena-01', label: '01 Silhueta', start: 0, end: 4.2 },
   { id: 'cena-02', label: '02 Revelação 360', start: 4.2, end: 13.5 },
   { id: 'cena-03', label: '03 Cards', start: 13.5, end: 16 },
-  { id: 'cena-04', label: '04 Explodida', start: 16, end: 22.1 },
-  { id: 'cena-05', label: '05 Hero', start: 22.1, end: 24.9 },
+  { id: 'cena-04', label: '04 Explodida', start: 16, end: 20.6 },
+  { id: 'cena-05', label: '05 Hero', start: 20.6, end: 24.9 },
   { id: 'cena-06', label: '06 Final', start: 24.9, end: 28.5 },
 ];
 
@@ -82,9 +82,9 @@ const STUDIO = {
 const MACRO = { aperture: 2.6 };
 const WIDE = { aperture: STUDIO.aperture };
 
-// Vão da vista explodida por onde a câmera passa: entre a boca do corpo (1,95) e o fundo
-// das células erguidas (2,96).
-const VAO_Y = 2.45;
+// Vão da vista explodida por onde a câmera passa: entre o topo das células erguidas (4,48)
+// e o suporte das células (5,39), com componentes em cima e embaixo.
+const VAO_Y = 4.93;
 
 // UM plano contínuo (spline sem ultrapassagem). O azimute (az) só cresce: a câmera gira
 // sempre para o mesmo lado em volta da bateria (mais de duas voltas no filme), nunca volta.
@@ -120,16 +120,17 @@ export const SHOTS = [
       { t: 13.5, target: [0, 1.3, 0], az: 372, el: 13, dist: 16.5 },
       // 03 · cards: 3/4 controlado, órbita suave.
       { t: 15.6, target: [0, 1.35, 0], az: 392, el: 16, dist: 21.5 },
-      // 04 · explodida: a câmera contorna a estrutura aberta (o alvo sobe com ela)...
-      { t: 17.4, target: [0, 2.9, 0], az: 430, el: 14, dist: 19 },
-      { t: 19.0, target: [0, 3.6, 0], az: 520, el: 14, dist: 19 },
-      // ...desce e, sem parar de girar, fecha o raio até passar POR DENTRO do vão (sob as
-      // células, acima da boca do corpo), olhando para o centro da estrutura aberta...
-      { t: 19.8, target: [0, VAO_Y, 0], az: 600, el: 0, dist: 2.4 },
-      { t: 20.5, target: [0, VAO_Y, 0], az: 630, el: 0, dist: 1.4 },
-      { t: 21.2, target: [0, VAO_Y, 0], az: 660, el: 0, dist: 2.4 },
-      // ...e sai pela frente, se afastando para ver tudo voltar ao lugar.
-      { t: 22.0, target: [0, 1.6, 0.5], az: 690, el: 8, dist: 8 },
+      // 04 · explodida: a câmera contorna enquanto a estrutura abre (o alvo sobe com ela)...
+      { t: 16.6, target: [0, 3.6, 0], az: 415, el: 12, dist: 15 },
+      // ...e, logo que as peças se separam, desce ao vão entre as células e o suporte e o
+      // atravessa pela ponta do positivo, olhando para o centro, sem parar de girar...
+      { t: 17.4, target: [0, VAO_Y, 0], az: 425, el: 3, dist: 3.2 },
+      { t: 17.9, target: [0, VAO_Y, 0], az: 450, el: 0, dist: 1.2 },
+      { t: 18.4, target: [0, VAO_Y, 0], az: 475, el: 0, dist: 3.2 },
+      // ...sai por trás e se afasta, contornando enquanto tudo volta ao lugar.
+      { t: 19.4, target: [0, 2.8, 0], az: 545, el: 12, dist: 14 },
+      { t: 20.6, target: [0, 1.5, 0], az: 625, el: 12, dist: 15 },
+      { t: 22.0, target: [0, 1.4, 0.3], az: 690, el: 8, dist: 13 },
       // 05 · hero: aproximação lenta, frontal e baixa (espaço acima para a mensagem).
       { t: 23.6, target: BATERIA.CENTER, az: 702, el: 5, dist: 12.5, shift: [0, -0.12] },
       // 06 · final: chega perto e se afasta devagar até sobrar espaço negativo.
@@ -158,9 +159,9 @@ export const SHOTS = [
         [11.6, MACRO],
         [12.4, MACRO],
         [13.0, WIDE],
-        [19.6, WIDE],
-        [20.5, { aperture: 1.6 }],
-        [21.3, WIDE],
+        [17.3, WIDE],
+        [17.9, { aperture: 1.6 }],
+        [18.5, WIDE],
       ],
     },
   },
@@ -169,21 +170,22 @@ export const SHOTS = [
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
 // vertical, alinhados. Abre de cima para baixo; fecha de baixo para cima depois que a
-// câmera atravessa o vão, e a tampa assenta por último (clique em ~22,1).
+// câmera atravessa o vão, e a tampa assenta por último (clique em ~19,9).
 const OPEN = 16.0;
-const CLOSE = 21.0;
+const CLOSE = 18.7;
 const layer = (lift, k) => [
   [OPEN + (4 - k) * 0.12, 0],
   [OPEN + 1.3 + (4 - k) * 0.12, lift, 'soft'],
   [CLOSE + k * 0.07, lift],
   [CLOSE + 0.9 + k * 0.07, 0, 'easeIn'],
 ];
-const LID = layer(4.85, 4);
+// Uns 9 cm entre uma camada e outra (a câmera passa entre células e suporte).
+const LID = layer(6.33, 4);
 export const EXPLODE = {
-  cells: layer(2.9, 0),
-  holder: layer(3.45, 1),
-  bus: layer(3.85, 2),
-  bms: layer(4.25, 3),
+  cells: layer(2.54, 0),
+  holder: layer(3.5, 1),
+  bus: layer(4.36, 2),
+  bms: layer(5.27, 3),
   lid: LID,
   rings: LID,
   button: LID,
@@ -213,8 +215,8 @@ export const CUES = [
   { t: 4.2, id: 'revelacao', label: 'Câmera acelera e dá a volta (whoosh)', until: 13.5 },
   { t: 12.3, id: 'recuo', label: 'Recuo rápido (proporções)' },
   { t: 16.0, id: 'explodida', label: 'Peças se separam', until: 17.4 },
-  { t: 19.7, id: 'vao', label: 'Câmera atravessa o vão', until: 21.2 },
-  { t: 22.1, id: 'clique', label: 'Clique (bateria fecha)' },
+  { t: 17.4, id: 'vao', label: 'Câmera atravessa entre os componentes', until: 18.4 },
+  { t: 19.9, id: 'clique', label: 'Clique (bateria fecha)' },
   { t: 24.9, id: 'final', label: 'Afastamento final', until: 28.5 },
 ];
 
