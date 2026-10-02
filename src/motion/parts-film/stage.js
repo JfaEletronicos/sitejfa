@@ -14,6 +14,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { surfaceDetail } from './surface-detail';
+import { lcdScreen } from './lcd-screen';
 
 const DEG = Math.PI / 180;
 // 1 mm da placa = 0,01 unidade de cena (placa com 3,1 de comprimento).
@@ -384,7 +385,8 @@ const COMPOSITE_FRAG = /* glsl */ `
  *   `upAxis` = 'y' para modelos que já vêm em pé (bateria), 'z' (padrão) para a placa;
  *   `studio` = 'white' para o estúdio branco em 3D (ciclorama iluminado, sombra de contato,
  *   luz de fundo) com luzes e reflexos presos ao mundo, como num set de verdade;
- *   `detail` = [[/nome do material/, { wear, scratch, peel }]] acabamento fino no shader.
+ *   `detail` = [[/nome do material/, { wear, scratch, peel }]] acabamento fino no shader;
+ *   `screens` = [[/nome do material/, { rect, glow }]] telas acesas desenhadas no shader.
  */
 export async function createStage({
   canvas,
@@ -393,6 +395,7 @@ export async function createStage({
   upAxis = 'z',
   studio = 'dark',
   detail = [],
+  screens = [],
 }) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -424,6 +427,13 @@ export async function createStage({
       if (!o.isMesh) return;
       const rule = detail.find(([re]) => re.test(o.material.name || ''));
       if (rule) surfaceDetail(o.material, { ...rule[1], unit: 1000 / MODEL_SCALE });
+    });
+  }
+  if (screens.length) {
+    board.traverse((o) => {
+      if (!o.isMesh) return;
+      const rule = screens.find(([re]) => re.test(o.material.name || ''));
+      if (rule) lcdScreen(o.material, { ...rule[1], unit: 1000 / MODEL_SCALE });
     });
   }
 

@@ -3,7 +3,7 @@
  * Monta o modelo do motion da E-LÍTIO PRO (public/models/elitio-pro.glb) a partir do CAD
  * original da caixa (SolidWorks → glTF, em assets/elitio-pro/caixa-cad.glb):
  *   - materiais reais no lugar das cores de exibição do CAD (caixa black piano, moldura do
- *     display, botão liga/desliga em aço, tela apagada);
+ *     display, botão liga/desliga em aço; a tela acesa é desenhada no shader do palco);
  *   - adesivos do arquivo de impressão (recortes do PDF, tamanho real) nas faces da caixa;
  *   - arruela e parafuso sextavado nos bornes, anel vermelho no positivo e alças de corda
  *     trançada (geometria, sem textura), conforme a foto do produto;
@@ -64,7 +64,7 @@ const M = {
     clearcoat: 0.6, clearcoatRoughness: 0.15 }),
   face: new THREE.MeshPhysicalMaterial({ name: 'Display face', color: 0x060607, roughness: 0.1, clearcoat: 1,
     clearcoatRoughness: 0.02 }),
-  screen: new THREE.MeshPhysicalMaterial({ name: 'Display tela (apagada)', color: 0x0a0b12, roughness: 0.06,
+  screen: new THREE.MeshPhysicalMaterial({ name: 'Display tela', color: 0x0a0b12, roughness: 0.06,
     clearcoat: 1, clearcoatRoughness: 0.01 }),
   dark: new THREE.MeshStandardMaterial({ name: 'Display peças escuras', color: 0x111215, roughness: 0.4 }),
   light: new THREE.MeshStandardMaterial({ name: 'Display ícones', color: 0xdfe2e6, roughness: 0.45 }),

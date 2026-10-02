@@ -102,12 +102,12 @@ export const SHOTS = [
       // ...quase parada para ler...
       { t: 6.0, pos: [1.6, 1.4, 3.6], look: [0.0, 1.32, 0.86], lens: 0.95 },
       { t: 6.4, pos: [1.9, 1.6, 3.7], look: [0.2, 1.35, 0.86], lens: 0.95 },
-      // ...sobe pela quina da frente e quase para sobre a tampa: o painel (display e os
-      // três botões), de cima e em 3/4...
-      { t: 7.0, pos: [1.6, 3.7, 1.75], look: [-0.08, 2.44, -0.36], lens: 0.92 },
-      { t: 7.55, pos: [1.5, 3.6, 1.15], look: [-0.06, 2.44, -0.36], lens: 0.92 },
+      // ...sobe pela quina da frente e quase para sobre a tampa: o painel (display aceso e
+      // os três botões), de cima, com o foco nele (a parede sai do quadro)...
+      { t: 7.0, pos: [1.0, 4.42, 0.62], look: [-0.08, 2.44, -0.36], lens: 0.92 },
+      { t: 7.55, pos: [1.25, 4.38, 0.3], look: [-0.06, 2.44, -0.36], lens: 0.92 },
       // ...segue de lado até o borne positivo (macro)...
-      { t: 7.85, pos: [2.7, 3.6, 1.7], look: [0.6, 2.4, -0.35] },
+      { t: 7.85, pos: [2.6, 3.7, 0.2], look: [0.6, 2.4, -0.35] },
       { t: 8.3, pos: [2.6, 3.5, -0.2], look: [1.85, 2.45, -0.55] },
       { t: 8.8, pos: [2.95, 3.25, -0.95], look: [1.85, 2.42, -0.55] },
       // ...mergulha na ponta (orelha e alça)...
