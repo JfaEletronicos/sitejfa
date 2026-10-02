@@ -118,5 +118,10 @@ está em [referencia.md](referencia.md).
 - Filme da bateria: base 3D primeiro (cenário, luz, produto e câmera, sem texto); a luz tem
   de parecer luz no espaço (manchas no chão, queda nas paredes, sombras), nunca a imagem
   clareando por igual.
+- Filme da bateria: um plano contínuo, sem cortes e sem paradas (só o último quadro assenta;
+  `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
+  nunca vai e volta. Motion blur só quando a imagem anda rápido.
+- Vista explodida: a tampa sobe inteira (display, parafusos e botão juntos); separam-se só as
+  peças internas; antes de remontar, a câmera passa entre elas.
 - Quando o briefing de um filme contradiz este checklist (ex.: cena sem texto, fundo preto
   vazio, "se pode ser visual, não entra texto"), vale o briefing; anote no roteiro.
