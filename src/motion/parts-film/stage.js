@@ -38,26 +38,47 @@ function buildBoard(gltf, maxAnisotropy, upAxis = 'z') {
   const place = new THREE.Matrix4().makeScale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
   if (upAxis !== 'y') place.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 
+  // Camadas da vista explodida: nós "EXPLODE_<nome>" do modelo viram grupos que o estado
+  // da timeline pode afastar na vertical (explode: { <nome>: deslocamento }).
+  const layerOf = (o) => {
+    for (let n = o; n; n = n.parent) {
+      const m = /^EXPLODE_(\w+)/.exec(n.name || '');
+      if (m) return m[1];
+    }
+    return '';
+  };
   const groups = new Map();
   root.traverse((o) => {
     if (!o.isMesh) return;
     const geo = o.geometry.clone();
     geo.applyMatrix4(new THREE.Matrix4().multiplyMatrices(place, o.matrixWorld));
     const attrs = Object.keys(geo.attributes).sort().join(',');
-    const key = `${o.material.uuid}|${attrs}|${geo.index ? 'i' : 'n'}`;
-    if (!groups.has(key)) groups.set(key, { material: o.material, geos: [] });
+    const layer = layerOf(o);
+    const key = `${layer}|${o.material.uuid}|${attrs}|${geo.index ? 'i' : 'n'}`;
+    if (!groups.has(key)) groups.set(key, { layer, material: o.material, geos: [] });
     groups.get(key).geos.push(geo);
   });
 
   const board = new THREE.Group();
   board.name = 'Placa LB1004';
-  groups.forEach(({ material, geos }) => {
+  board.userData.layers = new Map();
+  groups.forEach(({ layer, material, geos }) => {
     const geo = geos.length > 1 ? mergeGeometries(geos, false) : geos[0];
     geos.forEach((g) => g !== geo && g.dispose());
     const mesh = new THREE.Mesh(geo, material);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
-    board.add(mesh);
+    let parent = board;
+    if (layer) {
+      if (!board.userData.layers.has(layer)) {
+        const g = new THREE.Group();
+        g.name = layer;
+        board.add(g);
+        board.userData.layers.set(layer, g);
+      }
+      parent = board.userData.layers.get(layer);
+    }
+    parent.add(mesh);
     ['map', 'normalMap', 'roughnessMap', 'metalnessMap'].forEach((slot) => {
       if (material[slot]) material[slot].anisotropy = maxAnisotropy;
     });
@@ -360,8 +381,8 @@ const COMPOSITE_FRAG = /* glsl */ `
  * @param {object} opts
  *   `canvas`; `model` = conteúdo do GLB; `transparent` = fundo transparente (variante social);
  *   `upAxis` = 'y' para modelos que já vêm em pé (bateria), 'z' (padrão) para a placa;
- *   `studio` = 'white' para o estúdio branco com chão (sombra e sombra de contato) e luzes e
- *   reflexos presos ao mundo, como num set de verdade (a câmera anda, a luz não);
+ *   `studio` = 'white' para o estúdio branco em 3D (ciclorama iluminado, sombra de contato,
+ *   luz de fundo) com luzes e reflexos presos ao mundo, como num set de verdade;
  *   `detail` = [[/nome do material/, { wear, scratch, peel }]] acabamento fino no shader.
  */
 export async function createStage({
@@ -405,18 +426,32 @@ export async function createStage({
     });
   }
 
-  // Estúdio branco: chão que recebe a sombra da luz principal e sombra de contato.
-  let floor = null;
+  // Estúdio branco de verdade: chão e parede infinita (ciclorama com curva no rodapé) em
+  // 3D, iluminados pelas mesmas luzes do produto, mais a sombra de contato. A luz desenha o
+  // espaço (manchas no chão, queda nas paredes, sombra), em vez de clarear a imagem.
   let contact = null;
+  let wash = null;
   if (white) {
     const box = new THREE.Box3().setFromObject(board);
-    floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.ShadowMaterial({ opacity: 0 }));
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = box.min.y + 0.001;
-    floor.receiveShadow = true;
+    const profile = [new THREE.Vector2(0, 0), new THREE.Vector2(36, 0)];
+    for (let k = 1; k <= 12; k++) {
+      const a = -Math.PI / 2 + (k / 12) * (Math.PI / 2);
+      profile.push(new THREE.Vector2(36 + Math.cos(a) * 9, 9 + Math.sin(a) * 9));
+    }
+    profile.push(new THREE.Vector2(45, 60));
+    const cyc = new THREE.Mesh(
+      new THREE.LatheGeometry(profile, 96),
+      new THREE.MeshStandardMaterial({ color: 0xf1f2f4, roughness: 0.92, side: THREE.DoubleSide }),
+    );
+    cyc.position.y = box.min.y;
+    cyc.receiveShadow = true;
     contact = buildContactShadow((box.max.x - box.min.x) / 2 - 0.15, (box.max.z - box.min.z) / 2 - 0.05);
     contact.position.y = box.min.y + 0.002;
-    scene.add(floor, contact);
+    // Luz de fundo: mancha larga no chão e na parede atrás do produto (silhueta).
+    wash = new THREE.SpotLight(0xffffff, 0, 0, 34 * DEG, 1, 0);
+    wash.position.set(0, 16, 16);
+    wash.target.position.set(1.5, 0, -14);
+    scene.add(cyc, contact, wash, wash.target);
   }
 
   // Luz principal: spot suave com sombra (recorte de luz de estúdio).
@@ -451,6 +486,33 @@ export async function createStage({
     magFilter: THREE.LinearFilter,
     generateMipmaps: true,
   });
+
+  // Motion blur de câmera de verdade: vários instantes dentro do tempo de obturador
+  // somados aqui (a câmera anda entre eles; o produto, parado, fica nítido onde deve).
+  const accumTarget = new THREE.WebGLRenderTarget(1, 1, {
+    type: THREE.HalfFloatType,
+    minFilter: THREE.LinearMipmapLinearFilter,
+    magFilter: THREE.LinearFilter,
+    generateMipmaps: true,
+  });
+  const blendMat = new THREE.ShaderMaterial({
+    vertexShader: COMPOSITE_VERT,
+    fragmentShader: /* glsl */ `
+      uniform sampler2D tSrc;
+      uniform float uWeight;
+      varying vec2 vUv;
+      void main() { gl_FragColor = texture2D(tSrc, vUv) * uWeight; }`,
+    uniforms: { tSrc: { value: sceneTarget.texture }, uWeight: { value: 1 } },
+    depthTest: false,
+    depthWrite: false,
+    blending: THREE.CustomBlending,
+    blendSrc: THREE.OneFactor,
+    blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.OneFactor,
+    blendDstAlpha: THREE.OneFactor,
+  });
+  const blendScene = new THREE.Scene();
+  blendScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), blendMat));
 
   const composite = new THREE.ShaderMaterial({
     vertexShader: COMPOSITE_VERT,
@@ -505,6 +567,7 @@ export async function createStage({
     const w = Math.max(1, Math.round(width * pixelRatio));
     const h = Math.max(1, Math.round(height * pixelRatio));
     sceneTarget.setSize(w, h);
+    accumTarget.setSize(w, h);
     const u = composite.uniforms;
     u.uResolution.value.set(w, h);
     // Desfoque máximo proporcional ao quadro (sutil: <1% do menor lado).
@@ -533,14 +596,14 @@ export async function createStage({
    *   `orbit` ({ yaw, pitch } em graus, eixos da tela)
    *   e `fx` ({ wave, waveFreq, wavePhase, chroma, blur: [x, y] }, em pixels do quadro).
    */
-  function render(s) {
+  /** Posiciona produto, camadas, câmera e luzes para um estado; devolve a distância da câmera. */
+  function place(s) {
     const aspect = size.width / size.height;
 
-    if (s.hidden) {
-      renderer.setRenderTarget(null);
-      renderer.clear();
-      return;
-    }
+    // Camadas da vista explodida (só se afastam na vertical).
+    board.userData.layers.forEach((g, name) => {
+      g.position.y = s.explode?.[name] || 0;
+    });
 
     // Produto: rotação e posição (a geometria nunca muda).
     pivot.rotation.set(s.boardPitch * DEG, s.boardYaw * DEG, s.boardRoll * DEG, 'YXZ');
@@ -578,7 +641,8 @@ export async function createStage({
     camera.fov = (2 * Math.atan(halfTan)) / DEG;
     camera.aspect = aspect;
     camera.near = Math.max(0.004, dist * 0.015);
-    camera.far = dist * 4 + 12;
+    // No estúdio branco a parede fica longe (até 45 unidades): o plano de fundo vai além.
+    camera.far = white ? Math.max(dist * 4 + 12, 140) : dist * 4 + 12;
     camera.updateProjectionMatrix();
     // Deslocamento ótico (move a composição sem mudar a perspectiva).
     camera.projectionMatrix.elements[8] = -2 * (s.shiftX || 0);
@@ -606,7 +670,7 @@ export async function createStage({
       fill.intensity = s.fill;
       scene.environmentIntensity = s.env;
       scene.environmentRotation.set(0, s.sweep * DEG, 0);
-      floor.material.opacity = s.floor ?? 0;
+      wash.intensity = s.wash ?? 0;
       contact.material.uniforms.uOpacity.value = s.contact ?? 0;
     } else {
       // Luz principal: segue o alvo da câmera, um pouco à frente do caminho.
@@ -631,9 +695,45 @@ export async function createStage({
       scene.environmentRotation.set(0, (s.cam.az + s.sweep) * DEG, 0);
     }
 
-    renderer.setRenderTarget(sceneTarget);
-    renderer.clear();
-    renderer.render(scene, camera);
+    return dist;
+  }
+
+  /**
+   * Desenha um estado da timeline. Com `s.samples` (estados em instantes dentro do tempo de
+   * obturador), soma todos: motion blur real da câmera.
+   */
+  function render(s) {
+    if (s.hidden) {
+      renderer.setRenderTarget(null);
+      renderer.clear();
+      return;
+    }
+    let dist;
+    const samples = s.samples;
+    if (samples && samples.length > 1) {
+      const autoClear = renderer.autoClear;
+      renderer.autoClear = false;
+      renderer.setRenderTarget(accumTarget);
+      renderer.clear();
+      blendMat.uniforms.uWeight.value = 1 / samples.length;
+      samples.forEach((ss) => {
+        place(ss);
+        renderer.setRenderTarget(sceneTarget);
+        renderer.clear();
+        renderer.render(scene, camera);
+        renderer.setRenderTarget(accumTarget);
+        renderer.render(blendScene, postCamera);
+      });
+      renderer.autoClear = autoClear;
+      dist = place(s);
+      composite.uniforms.tColor.value = accumTarget.texture;
+    } else {
+      dist = place(s);
+      renderer.setRenderTarget(sceneTarget);
+      renderer.clear();
+      renderer.render(scene, camera);
+      composite.uniforms.tColor.value = sceneTarget.texture;
+    }
 
     // Centro do radial de fundo = centro da placa na tela.
     tmp.copy(pivot.position).project(camera);

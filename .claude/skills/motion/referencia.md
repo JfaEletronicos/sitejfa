@@ -22,6 +22,18 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 
 `[{ id, label, start, end }]` — régua do modo `?debug`.
 
+### Estúdio branco, vista explodida e motion blur (filme da bateria)
+
+- Entrada em `VARIANTS` com `studio: 'white'`: ciclorama 3D iluminado pelas luzes do set, luz
+  e reflexos presos ao mundo (a câmera anda, a luz não). Campos de luz extras: `wash` (luz de
+  fundo no chão e na parede atrás), `contact` (sombra de contato), `rimAz` (direção do
+  contraluz, em graus no mundo); `keyAz`/`keyEl` também ficam no mundo.
+- `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
+- `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador),
+  só quando a imagem anda rápido; nunca atravessa um corte. Máximo em `CAMERA.blurSamples`.
+- `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
+  na vertical (unidades de cena).
+
 ### SPACES
 
 `{ <id>: { yaw } }` — ângulo (graus) dos planos de texto de cada cena em volta da placa. A

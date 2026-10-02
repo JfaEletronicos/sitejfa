@@ -113,5 +113,10 @@ está em [referencia.md](referencia.md).
 - Linha tecnológica (trilha de circuito) abaixo do texto, gerada por máscara lateral, atrás da placa.
 - Produto vem do CAD original quando houver (bateria E-LÍTIO PRO: `assets/elitio-pro`), com
   materiais reais (caixa em plástico rígido black piano) e os adesivos do arquivo de impressão.
+- Não usar revisão independente (agentes/workflows) e economizar tokens: poucas capturas,
+  uma folha de quadros cobrindo o trecho, sem rodadas repetidas.
+- Filme da bateria: base 3D primeiro (cenário, luz, produto e câmera, sem texto); a luz tem
+  de parecer luz no espaço (manchas no chão, queda nas paredes, sombras), nunca a imagem
+  clareando por igual.
 - Quando o briefing de um filme contradiz este checklist (ex.: cena sem texto, fundo preto
   vazio, "se pode ser visual, não entra texto"), vale o briefing; anote no roteiro.

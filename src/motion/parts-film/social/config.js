@@ -75,6 +75,9 @@ export const CAMERA = {
 
   // Profundidade entre camadas: texto de trás anda menos, texto da frente anda mais.
   parallax: 0.15,
+
+  // Motion blur de câmera (roteiros com meta.shutter): máximo de instantes somados por quadro.
+  blurSamples: 12,
 };
 
 export const COLORS = {

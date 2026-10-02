@@ -459,6 +459,7 @@ export function createKineticVariant(score) {
     cuts: CUTS,
     fx: FX,
     cues: CUES,
+    explode: EXPLODE = {},
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -728,6 +729,55 @@ export function createKineticVariant(score) {
         };
       }
 
+      /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
+      function explodeAt(tb) {
+        const out = {};
+        Object.entries(EXPLODE).forEach(([name, keys]) => {
+          out[name] = keyedScale(keys, tb);
+        });
+        return out;
+      }
+
+      /**
+       * Motion blur de câmera (roteiros com meta.shutter, em s): quando a câmera anda rápido,
+       * o palco soma vários instantes dentro do tempo de obturador. O número de amostras acompanha o
+       * quanto a imagem se desloca na tela; parada ou lenta, uma amostra só (nítido).
+       * As amostras nunca atravessam um corte (ficam dentro do plano atual).
+       */
+      function blurSamples(tb) {
+        const shutter = meta.shutter || 0;
+        if (!CFG.motionBlur || !shutter) return null;
+        const shot = shotAt(tb);
+        const t0 = Math.max(shot.t[0], tb - shutter / 2);
+        const t1 = Math.min(shot.t[1] - 1e-4, tb + shutter / 2);
+        if (t1 <= t0) return null;
+        const pose = (t) => {
+          const st = evaluate(t).stage;
+          if (st.hidden) return null;
+          const { az, el, logDist, target } = st.cam;
+          const d = Math.exp(logDist);
+          const a = az * DEG;
+          const e = el * DEG;
+          const dir = [Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e)];
+          return { st, d, pos: target.map((v, i) => v + dir[i] * d), dir, shift: [st.shiftX, st.shift] };
+        };
+        const a = pose(t0);
+        const b = pose(t1);
+        if (!a || !b) return null;
+        const turn = Math.acos(
+          Math.min(
+            1,
+            a.dir.reduce((acc, v, i) => acc + v * b.dir[i], 0),
+          ),
+        );
+        const move = Math.hypot(...a.pos.map((v, i) => v - b.pos[i])) / Math.min(a.d, b.d);
+        const shiftMove = Math.hypot(a.shift[0] - b.shift[0], a.shift[1] - b.shift[1]) * 2;
+        const px = ((turn + move + shiftMove) / (CAM.fov * DEG)) * frame.height;
+        const n = Math.min(CAM.blurSamples, Math.ceil(px / 5));
+        if (n < 2) return null;
+        return Array.from({ length: n }, (_, i) => evaluate(t0 + ((t1 - t0) * i) / (n - 1)).stage);
+      }
+
       function stageState(tb, fx, cam) {
         const shot = shotAt(tb);
         if (shot.hidden) return { hidden: true, pan: [0, 0] };
@@ -770,8 +820,9 @@ export function createKineticVariant(score) {
           keyEl: light.keyEl,
           rimLux: light.rimLux,
           rimAz: light.rimAz,
-          floor: light.floor,
+          wash: light.wash,
           contact: light.contact,
+          explode: explodeAt(tb),
           fill: light.fill,
           env: light.env,
           sweep,
@@ -1101,6 +1152,7 @@ export function createKineticVariant(score) {
         state: (t) => evaluate(t / durationScale()).stage,
         draw(t) {
           const ev = evaluate(t / durationScale());
+          ev.stage.samples = blurSamples(ev.tb);
           stage.render(ev.stage);
           paint(ev);
         },

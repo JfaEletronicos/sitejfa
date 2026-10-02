@@ -7,7 +7,9 @@
  *   - adesivos do arquivo de impressão (recortes do PDF, tamanho real) nas faces da caixa;
  *   - arruela e parafuso sextavado nos bornes, anel vermelho no positivo e alças de corda
  *     trançada (geometria, sem textura), conforme a foto do produto;
- *   - rebarba da injeção na linha de molde entre corpo e tampa e marca do ponto de injeção.
+ *   - rebarba da injeção na linha de molde entre corpo e tampa e marca do ponto de injeção;
+ *   - camadas da vista explodida (grupos EXPLODE_body/cells/bms/lid), com células,
+ *     barramentos e BMS conceituais (formas limpas, sem componentes inventados).
  * O acabamento fino da superfície (casca de laranja, riscos, desgaste) é feito no shader do
  * palco (surface-detail.js), sem textura.
  * A geometria do CAD não é alterada. Roda no Chromium (o exportador do three precisa de canvas):
@@ -200,6 +202,113 @@ const LABEL_Y = 97.5, CASE_D = 170;
 { const m = await label('superior.webp', 235, 58.1, 'superior'); m.rotation.x = -Math.PI / 2; m.position.set(-8, TOP + 0.2, 39); }
 { const m = await label('aviso-recomendado.webp', 58.1, 25, 'RECOMENDADO'); m.rotation.x = -Math.PI / 2; m.position.set(TERM.x - 5, TOP + 0.2, -14); }
 { const m = await label('aviso-atencao.webp', 58.1, 25, 'ATENÇÃO'); m.rotation.x = -Math.PI / 2; m.position.set(-TERM.x + 5, TOP + 0.2, -14); }
+
+// ---- Vista explodida: a caixa vira camadas que o palco afasta na vertical ----
+// Grupos EXPLODE_<nome> (corpo, células, bms, tampa). A caixa do CAD é dividida na linha de
+// molde (y = 194,6 mm): o que está acima vai com a tampa (com display, botão, bornes, alças e
+// adesivos de cima); o corpo leva os adesivos da frente e de trás, a rebarba e as marcas.
+root.updateMatrixWorld(true);
+const L = {};
+for (const name of ['body', 'cells', 'bms', 'lid']) {
+  L[name] = new THREE.Group();
+  L[name].name = 'EXPLODE_' + name;
+  root.add(L[name]);
+}
+const SEAM = 0.1946;
+let caseMesh = null;
+cad.traverse((o) => {
+  if (o.isMesh && o.material === piano) caseMesh = o;
+});
+{
+  const g = caseMesh.geometry.index ? caseMesh.geometry.toNonIndexed() : caseMesh.geometry.clone();
+  g.applyMatrix4(caseMesh.matrixWorld);
+  const P = g.attributes.position, N = g.attributes.normal;
+  const parts2 = { lid: [[], []], body: [[], []] };
+  for (let i = 0; i < P.count; i += 3) {
+    const cy = (P.getY(i) + P.getY(i + 1) + P.getY(i + 2)) / 3;
+    const dst = parts2[cy > SEAM ? 'lid' : 'body'];
+    for (let k = 0; k < 3; k++) {
+      dst[0].push(P.getX(i + k), P.getY(i + k), P.getZ(i + k));
+      dst[1].push(N.getX(i + k), N.getY(i + k), N.getZ(i + k));
+    }
+  }
+  for (const name of ['lid', 'body']) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(parts2[name][0], 3));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(parts2[name][1], 3));
+    const m = new THREE.Mesh(geo, piano);
+    m.name = name === 'lid' ? 'Tampa (CAD)' : 'Corpo (CAD)';
+    L[name].add(m);
+  }
+  caseMesh.parent.remove(caseMesh);
+}
+piano.side = THREE.DoubleSide;
+// Display e botão (CAD) vão com a tampa; peças acrescentadas, por nome.
+for (const o of [...cad.children]) L.lid.attach(o);
+for (const o of [...parts.children]) {
+  // As alças ficam com o corpo na vista explodida (penduradas na tampa, viram ruído).
+  const body = /frontal|ficha|Rebarba|Ponto de injeção|Pegador|Corda/.test(o.name);
+  (body ? L.body : L.lid).attach(o);
+}
+// Borda do corte: anel na boca do corpo (parede de 3 mm). A tampa fica aberta por baixo
+// (o BMS mora dentro dela quando a bateria está fechada).
+function roundRect(hx, hz, r) {
+  const sh = new THREE.Shape();
+  sh.moveTo(-hx + r, -hz);
+  sh.lineTo(hx - r, -hz); sh.absarc(hx - r, -hz + r, r, -Math.PI / 2, 0, false);
+  sh.lineTo(hx, hz - r); sh.absarc(hx - r, hz - r, r, 0, Math.PI / 2, false);
+  sh.lineTo(-hx + r, hz); sh.absarc(-hx + r, hz - r, r, Math.PI / 2, Math.PI, false);
+  sh.lineTo(-hx, -hz + r); sh.absarc(-hx + r, -hz + r, r, Math.PI, Math.PI * 1.5, false);
+  return sh;
+}
+const mmGroup = (layer, name) => {
+  const g = new THREE.Group();
+  g.name = name;
+  g.scale.setScalar(mm);
+  L[layer].add(g);
+  return g;
+};
+{
+  const ring = roundRect(222.5, 85, 6);
+  ring.holes.push(roundRect(219.5, 82, 4));
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(ring, 12), piano);
+  m.rotation.x = -Math.PI / 2; m.position.y = 194.6; m.name = 'Boca do corpo';
+  mmGroup('body', 'Corte do corpo').add(m);
+}
+// Células prismáticas (conceituais): alumínio acetinado, tampa isolante e dois terminais.
+{
+  const g = mmGroup('cells', 'Células');
+  const alu = new THREE.MeshPhysicalMaterial({ name: 'Célula alumínio', color: 0xaeb4bc, metalness: 1, roughness: 0.32 });
+  const cap = new THREE.MeshPhysicalMaterial({ name: 'Célula tampa', color: 0x1a1c20, roughness: 0.6 });
+  const stud = new THREE.MeshStandardMaterial({ name: 'Célula terminal', color: 0xc9cdd3, metalness: 1, roughness: 0.25 });
+  for (const x of [-117, -39, 39, 117]) {
+    const body = new THREE.Mesh(new RoundedBoxGeometry(72, 180, 160, 3, 3), alu);
+    body.position.set(x, 96, 0); g.add(body);
+    const top = new THREE.Mesh(new RoundedBoxGeometry(70, 2, 156, 2, 0.8), cap);
+    top.position.set(x, 187, 0); g.add(top);
+    for (const z of [-52, 52]) {
+      const t = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 6, 32), stud);
+      t.position.set(x, 191, z); g.add(t);
+    }
+  }
+}
+// Barramentos de cobre (ligação em série) e módulo BMS com dissipador (conceituais).
+{
+  const g = mmGroup('bms', 'Barramentos e BMS');
+  const cu = new THREE.MeshPhysicalMaterial({ name: 'Barramento cobre', color: 0xc8814f, metalness: 1, roughness: 0.28 });
+  for (const [x, z] of [[-78, 52], [0, -52], [78, 52]]) {
+    const b = new THREE.Mesh(new RoundedBoxGeometry(84, 3, 22, 2, 1), cu);
+    b.position.set(x, 196, z); g.add(b);
+  }
+  const anod = new THREE.MeshPhysicalMaterial({ name: 'BMS anodizado', color: 0x23262b, metalness: 0.5, roughness: 0.38 });
+  const fin = new THREE.MeshStandardMaterial({ name: 'BMS dissipador', color: 0x9da3ab, metalness: 1, roughness: 0.4 });
+  const plate = new THREE.Mesh(new RoundedBoxGeometry(170, 6, 70, 2, 1.5), anod);
+  plate.position.set(0, 200, 0); g.add(plate);
+  for (let k = 0; k < 14; k++) {
+    const f = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 60), fin);
+    f.position.set(-71.5 + k * 11, 207, 0); g.add(f);
+  }
+}
 
 const glb = await new GLTFExporter().parseAsync(root, { binary: true });
 const bytes = new Uint8Array(glb);
