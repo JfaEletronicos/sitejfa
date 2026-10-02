@@ -4,6 +4,7 @@ import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
 import { renderHowTo } from './howTo';
+import { SHOW_BATERIAS_AUTOMOTIVO } from '../data/visibility';
 
 /**
  * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/setores/:slug/:produto, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
@@ -331,6 +332,13 @@ function initRouter(ctx) {
       if (dupe && import.meta.env.DEV) console.warn('[baterias] item duplicado ignorado:', b.id);
       return !dupe;
     });
+    // OCULTO: baterias Automotivo. Tira o setor "automotivo" das baterias (catálogo da
+    // categoria e botões de aplicação da página); os dados acima ficam intactos.
+    if (!SHOW_BATERIAS_AUTOMOTIVO) {
+      BATTERY_CATALOG.forEach((b) => {
+        b.sectors = b.sectors.filter((s) => s !== 'automotivo');
+      });
+    }
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
     // Links antigos das baterias que viraram variantes de uma página só.
     const SLUG_ALIASES = {
@@ -1488,7 +1496,12 @@ function initRouter(ctx) {
         const trigger = e.target.closest(
           'a[href^="#"]:not([href^="#/"]):not([data-page-anchor]), [data-header-scroll], [data-goto-products-category], [data-goto-manuals-tab], [data-header-goto], [data-header-goto-buy], [data-footer-goto], #navHome',
         );
-        if (trigger) showView('home');
+        if (!trigger) return;
+        // O endereço volta para a Home junto com a tela: sem isso, trocar de idioma ou
+        // recarregar reabria a página anterior (o #/... ficava na URL). O "voltar" do
+        // navegador continua levando para a página que estava aberta.
+        if (location.hash.startsWith('#/')) history.pushState(null, '', location.pathname + location.search);
+        showView('home');
       },
       true,
     );

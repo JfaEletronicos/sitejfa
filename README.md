@@ -79,6 +79,8 @@ O botão **Categorias** do header abre um menu com Automotivo, Telecom, Motorhom
 
 **Moov e JFA Parts estão ocultas até segunda ordem**: as flags `SHOW_MOOV` e `SHOW_PARTS` de `src/data/visibility.js` controlam todos os pontos (menu, Frentes, seção da Home, abas de Manuais, busca, rodapé e rotas). Para voltar, basta trocá-las para `true`; os trechos estão marcados com o comentário `OCULTO: Moov/Parts`.
 
+**Baterias fora do Automotivo (temporário)**: a flag `SHOW_BATERIAS_AUTOMOTIVO` de `src/data/visibility.js` tira as baterias da categoria Automotivo (catálogo, aba Automotivo dos Manuais, filtro Automotivo do carrossel da Home e botões de aplicação das páginas das baterias). Nada foi apagado: para voltar, troque para `true`; os trechos estão marcados com `OCULTO: baterias Automotivo`.
+
 Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no servidor.
 
 - **Rodapé**: categorias, links internos, "Siga as nossas redes" (JFA Instagram e JFA YouTube, com os ícones nas cores de cada rede) e "voltar ao topo".

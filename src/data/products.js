@@ -3,13 +3,17 @@
  * seção Manuais. `lines` indica as linhas (automotivo/energia) do produto,
  * `aliases` alimenta a busca e `status: 'discontinued'` marca itens fora de linha.
  */
+import { SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
+
 const A = 'automotivo';
 const E = 'energia';
+// OCULTO: baterias Automotivo. Linhas das baterias (sem a flag, saem da aba Automotivo dos Manuais).
+const BAT = SHOW_BATERIAS_AUTOMOTIVO ? [A, E] : [E];
 export const PRODUCTS = [
   {
     id: 'bateria-litio-12v-50a',
     name: 'Bateria de Lítio 12.8V 50A',
-    lines: [A, E],
+    lines: BAT,
     category: 'Baterias',
     aliases: ['E-Lítio Pro 12V 50A', 'E-Lítio Pro 12.8V 50A', 'Bateria 50A', 'LiFePO4 50A'],
     status: 'current',
@@ -19,7 +23,7 @@ export const PRODUCTS = [
   {
     id: 'bateria-litio-12v-100a',
     name: 'Bateria de Lítio 12.8V 100A',
-    lines: [A, E],
+    lines: BAT,
     category: 'Baterias',
     aliases: ['E-Lítio Pro 12V 100A', 'E-Lítio Pro 12.8V 100A', 'Bateria 100A', 'LiFePO4 100A'],
     status: 'current',

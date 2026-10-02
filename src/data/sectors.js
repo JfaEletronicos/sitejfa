@@ -1,4 +1,4 @@
-import { SHOW_MOOV, SHOW_PARTS } from './visibility';
+import { SHOW_MOOV, SHOW_PARTS, SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
 
 /**
  * Categorias do menu "Categorias" do header (as baterias não têm mais um lugar à
@@ -28,7 +28,12 @@ export const SECTOR_ICONS = {
 
 /** Itens do menu "Categorias", na ordem em que aparecem. */
 export const SECTOR_MENU = [
-  { slug: 'automotivo', title: 'Automotivo', line: 'Áudio, controles, fontes e baterias.' },
+  // OCULTO: baterias Automotivo — "e baterias" volta junto com a flag.
+  {
+    slug: 'automotivo',
+    title: 'Automotivo',
+    line: SHOW_BATERIAS_AUTOMOTIVO ? 'Áudio, controles, fontes e baterias.' : 'Áudio, controles e fontes.',
+  },
   { slug: 'telecom', title: 'Telecom', line: 'Energia, distribuição e inversores.' },
   { slug: 'motorhome', title: 'Motorhome', line: 'Baterias e inversor para a estrada.' },
   { slug: 'solar', title: 'Solar', line: 'Baterias para armazenar energia.' },

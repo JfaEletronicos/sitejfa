@@ -9,3 +9,15 @@
  */
 export const SHOW_MOOV = false;
 export const SHOW_PARTS = false;
+
+/**
+ * OCULTO TEMPORARIAMENTE: baterias na categoria Automotivo. Com `false`, as
+ * baterias saem do catálogo #/setores/automotivo, da aba Automotivo dos Manuais,
+ * do filtro "Automotivo" do carrossel da Home e dos botões de aplicação
+ * (Automotivo / Solar / ...) das páginas das baterias. As páginas e os textos
+ * continuam no código, só ficam escondidos.
+ *
+ * PARA VOLTAR: troque para `true`. Os pontos que leem esta flag estão marcados
+ * com o comentário "OCULTO: baterias Automotivo".
+ */
+export const SHOW_BATERIAS_AUTOMOTIVO = false;

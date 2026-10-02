@@ -199,8 +199,8 @@ export default function Fronts() {
             <div className="front-visual">
               <img
                 className="front-visual-img"
-                src="/images/front_automotivo.webp"
-                alt="Amplificador JFA AP800X4"
+                src="/images/produtos/fonte-storm-lithium-1.webp"
+                alt="Fonte e carregador JFA Storm Lithium 12V 70A"
                 loading="lazy"
                 decoding="async"
               />

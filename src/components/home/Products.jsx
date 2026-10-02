@@ -1,6 +1,19 @@
 import { t, pick, IS_EXPORT } from '../../i18n';
 import { EXPORT_GROUPS, EXPORT_PRODUCTS } from '../../data/exportProducts';
 import { exportWhatsappUrl } from '../../data/exportContact';
+import { SHOW_BATERIAS_AUTOMOTIVO } from '../../data/visibility';
+
+// OCULTO: baterias Automotivo — sem a flag, as baterias saem do filtro "Automotivo".
+const BAT_LINE = SHOW_BATERIAS_AUTOMOTIVO ? 'automotivo energia' : 'energia';
+
+// "Conhecer produto" de cada card do carrossel: página do produto no site.
+const CARD_HREF = {
+  storm: '#/setores/automotivo/fonte-storm-lithium',
+  nautica: '#/baterias/e-litio-nautica-12-8v-100ah',
+  elitio50: '#/baterias/e-litio-pro-12-8v/50ah',
+  panel: '#/baterias/e-litio-pro-12-8v',
+  redline: '#/setores/automotivo/controle-redline',
+};
 
 const ArrowRight = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -146,7 +159,7 @@ export default function Products() {
               <span className="products-cert-item">
                 <img
                   className="products-cert-seal"
-                  src="/images/seal_inmetro.webp"
+                  src="/images/seal_inmetro_white.webp"
                   alt="Selo Inmetro"
                   loading="lazy"
                   decoding="async"
@@ -156,7 +169,7 @@ export default function Products() {
               <span className="products-cert-item">
                 <img
                   className="products-cert-seal"
-                  src="/images/seal_anatel.webp"
+                  src="/images/seal_anatel_white.webp"
                   alt="Selo Anatel"
                   loading="lazy"
                   decoding="async"
@@ -232,7 +245,7 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">Storm Lithium 12V.70A</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#">
+                <a className="p-card-cta" href={CARD_HREF.storm}>
                   Conhecer produto
                 </a>
               </div>
@@ -248,12 +261,12 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">e-Lítio Náutica</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#">
+                <a className="p-card-cta" href={CARD_HREF.nautica}>
                   Conhecer produto
                 </a>
               </div>
             </div>
-            <div className="p-card card-elitio50" data-line="automotivo energia">
+            <div className="p-card card-elitio50" data-line={BAT_LINE}>
               <img
                 src="/images/card_elitio50.webp"
                 alt="Bateria JFA e-Lítio PRO 12,8V 50A 640W"
@@ -264,12 +277,12 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">e-Lítio PRO 50A</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#">
+                <a className="p-card-cta" href={CARD_HREF.elitio50}>
                   Conhecer produto
                 </a>
               </div>
             </div>
-            <div className="p-card card-panel" data-line="automotivo energia">
+            <div className="p-card card-panel" data-line={BAT_LINE}>
               <img
                 src="/images/card_panel.webp"
                 alt="Painel de controle JFA e-Lítio PRO LiFePO4"
@@ -280,7 +293,7 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">e-Lítio</h3>
                 <p className="p-card-sub">Mais capacidade para ir além e menos preocupação durante o uso.</p>
-                <a className="p-card-cta" href="#">
+                <a className="p-card-cta" href={CARD_HREF.panel}>
                   Conhecer produto
                 </a>
               </div>
@@ -296,7 +309,7 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">Redline</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#">
+                <a className="p-card-cta" href={CARD_HREF.redline}>
                   Conhecer produto
                 </a>
               </div>
@@ -306,7 +319,7 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">Storm Lithium 12V.70A</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#" tabIndex={-1}>
+                <a className="p-card-cta" href={CARD_HREF.storm} tabIndex={-1}>
                   Conhecer produto
                 </a>
               </div>
@@ -316,12 +329,12 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">e-Lítio Náutica</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#" tabIndex={-1}>
+                <a className="p-card-cta" href={CARD_HREF.nautica} tabIndex={-1}>
                   Conhecer produto
                 </a>
               </div>
             </div>
-            <div className="p-card card-elitio50" data-line="automotivo energia" aria-hidden="true">
+            <div className="p-card card-elitio50" data-line={BAT_LINE} aria-hidden="true">
               <img
                 src="/images/card_elitio50.webp"
                 alt=""
@@ -332,17 +345,17 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">e-Lítio PRO 50A</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#" tabIndex={-1}>
+                <a className="p-card-cta" href={CARD_HREF.elitio50} tabIndex={-1}>
                   Conhecer produto
                 </a>
               </div>
             </div>
-            <div className="p-card card-panel" data-line="automotivo energia" aria-hidden="true">
+            <div className="p-card card-panel" data-line={BAT_LINE} aria-hidden="true">
               <img src="/images/card_panel.webp" alt="" loading="lazy" decoding="async" draggable="false" />
               <div className="p-card-info">
                 <h3 className="p-card-name">e-Lítio</h3>
                 <p className="p-card-sub">Mais capacidade para ir além e menos preocupação durante o uso.</p>
-                <a className="p-card-cta" href="#" tabIndex={-1}>
+                <a className="p-card-cta" href={CARD_HREF.panel} tabIndex={-1}>
                   Conhecer produto
                 </a>
               </div>
@@ -352,7 +365,7 @@ export default function Products() {
               <div className="p-card-info">
                 <h3 className="p-card-name">Redline</h3>
                 <p className="p-card-sub" />
-                <a className="p-card-cta" href="#" tabIndex={-1}>
+                <a className="p-card-cta" href={CARD_HREF.redline} tabIndex={-1}>
                   Conhecer produto
                 </a>
               </div>
@@ -366,7 +379,7 @@ export default function Products() {
           <span className="products-cert-item">
             <img
               className="products-cert-seal"
-              src="/images/seal_inmetro.webp"
+              src="/images/seal_inmetro_white.webp"
               alt="Selo Inmetro"
               loading="lazy"
               decoding="async"
@@ -376,7 +389,7 @@ export default function Products() {
           <span className="products-cert-item">
             <img
               className="products-cert-seal"
-              src="/images/seal_anatel.webp"
+              src="/images/seal_anatel_white.webp"
               alt="Selo Anatel"
               loading="lazy"
               decoding="async"
