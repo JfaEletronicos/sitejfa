@@ -121,10 +121,10 @@ está em [referencia.md](referencia.md).
 - Filme da bateria: um plano contínuo, sem cortes e sem paradas (só o último quadro assenta;
   `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
   nunca vai e volta. Motion blur só quando a imagem anda rápido.
-- Filme da bateria: câmera como um objeto voando (6DoF), nunca trilho/órbita perfeita;
-  bateria às vezes fora do centro; contraste forte entre lento e rápido.
-- Vista explodida: separa com a câmera de fora, pausa de leitura, depois tornado (espiral
-  por dentro, olhando sempre o centro fixo), sai e remonta.
+- Filme da bateria: câmera como um pássaro/mosca voando (6DoF, `flight`), nunca trilho nem
+  órbita perfeita; curvas suaves (spline de curvatura contínua) e inclinadas; nada de tremida
+  ou oscilação de mão; bateria às vezes fora do centro; contraste forte entre lento e rápido.
+- Vista explodida: só movimento 3/4 lento, de fora (sem passar entre as peças).
 - Vista explodida: a tampa sobe inteira (display, parafusos e botão juntos); separam-se só as
   peças internas; antes de remontar, a câmera passa entre elas.
 - Quando o briefing de um filme contradiz este checklist (ex.: cena sem texto, fundo preto

@@ -181,3 +181,74 @@ export function cueState(t, cue) {
   }
   return { opacity, rise, scale: 1 - kin };
 }
+
+/**
+ * Spline cúbica natural (curvatura contínua, C2) por marcações no tempo: a aceleração
+ * não dá degraus nas marcações, então o voo desliza (sem trancos nem tremidas). Marcações
+ * nas pontas com `rest: true` têm velocidade zero (partida/chegada em repouso).
+ *
+ * @param {Array<{t: number, rest?: boolean} & Record<string, number | number[]>>} keys
+ * @param {string[]} fields Campos interpolados (números ou vetores).
+ */
+export function smoothSpline(keys, fields) {
+  const n = keys.length;
+  const t = keys.map((k) => k.t);
+  const h = t.slice(1).map((v, i) => v - t[i]);
+  // Derivadas segundas de uma série escalar (sistema tridiagonal, algoritmo de Thomas).
+  const solve = (y) => {
+    const a = new Array(n).fill(0);
+    const b = new Array(n).fill(1);
+    const c = new Array(n).fill(0);
+    const d = new Array(n).fill(0);
+    if (keys[0].rest) {
+      b[0] = 2 * h[0];
+      c[0] = h[0];
+      d[0] = 6 * ((y[1] - y[0]) / h[0]);
+    }
+    for (let i = 1; i < n - 1; i++) {
+      a[i] = h[i - 1];
+      b[i] = 2 * (h[i - 1] + h[i]);
+      c[i] = h[i];
+      d[i] = 6 * ((y[i + 1] - y[i]) / h[i] - (y[i] - y[i - 1]) / h[i - 1]);
+    }
+    if (keys[n - 1].rest) {
+      a[n - 1] = h[n - 2];
+      b[n - 1] = 2 * h[n - 2];
+      d[n - 1] = -6 * ((y[n - 1] - y[n - 2]) / h[n - 2]);
+    }
+    for (let i = 1; i < n; i++) {
+      const m = a[i] / b[i - 1];
+      b[i] -= m * c[i - 1];
+      d[i] -= m * d[i - 1];
+    }
+    const M = new Array(n).fill(0);
+    M[n - 1] = d[n - 1] / b[n - 1];
+    for (let i = n - 2; i >= 0; i--) M[i] = (d[i] - c[i] * M[i + 1]) / b[i];
+    return M;
+  };
+  const series = {};
+  fields.forEach((f) => {
+    const size = Array.isArray(keys[0][f]) ? keys[0][f].length : 1;
+    series[f] = Array.from({ length: size }, (_, c) => {
+      const y = keys.map((k) => (Array.isArray(k[f]) ? k[f][c] : k[f]));
+      return { y, M: solve(y) };
+    });
+  });
+  return (time) => {
+    const tt = Math.min(Math.max(time, t[0]), t[n - 1]);
+    let i = 0;
+    while (i < n - 2 && t[i + 1] < tt) i++;
+    const hi = h[i];
+    const A = (t[i + 1] - tt) / hi;
+    const B = 1 - A;
+    const out = {};
+    fields.forEach((f) => {
+      const vals = series[f].map(
+        ({ y, M }) =>
+          A * y[i] + B * y[i + 1] + (((A * A * A - A) * M[i] + (B * B * B - B) * M[i + 1]) * hi * hi) / 6,
+      );
+      out[f] = Array.isArray(keys[0][f]) ? vals : vals[0];
+    });
+    return out;
+  };
+}

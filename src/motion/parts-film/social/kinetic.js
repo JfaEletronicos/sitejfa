@@ -15,7 +15,7 @@
  * motion), distortion.js e transitions.js (sistemas).
  */
 import './kinetic.css';
-import { EASE, spline } from '../tracks';
+import { EASE, spline, smoothSpline } from '../tracks';
 import {
   SOCIAL_MOTION_CONFIG as CFG,
   TYPOGRAPHY as TYPO,
@@ -674,20 +674,13 @@ export function createKineticVariant(score) {
        */
       /**
        * Câmera em voo livre (shot.flight): posição e ponto de olhar com trajetórias próprias
-       * (6DoF), inclinação de curva pela aceleração lateral do voo (como um drone ou um
-       * pássaro) e uma micro-oscilação orgânica. Convertida para alvo + órbita do palco.
+       * (6DoF), em spline de curvatura contínua (desliza como um pássaro, sem trancos), e
+       * inclinação nas curvas pela aceleração lateral do voo. Sem tremida artificial.
+       * Convertida para alvo + órbita do palco.
        */
-      const flightNoise = (t, seed, amp) =>
-        [0, 1, 2].map(
-          (i) =>
-            (Math.sin(t * 1.93 + seed + i * 2.1) * 0.5 +
-              Math.sin(t * 3.37 + seed * 1.7 + i * 4.3) * 0.3 +
-              Math.sin(t * 0.71 + seed * 0.6 + i) * 0.2) *
-            amp,
-        );
       function flightPose(shot, tb) {
         if (!shot.spline) {
-          shot.spline = spline(
+          shot.spline = smoothSpline(
             shot.keys.map((k) => ({
               t: k.t,
               rest: k.rest,
@@ -696,33 +689,29 @@ export function createKineticVariant(score) {
               roll: k.roll ?? 0,
               lens: k.lens ?? 1,
               shift: k.shift || [0, 0],
-              wobble: k.wobble ?? 1,
             })),
-            ['pos', 'look', 'roll', 'lens', 'shift', 'wobble'],
-            { monotone: true },
+            ['pos', 'look', 'roll', 'lens', 'shift'],
           );
         }
-        const at = (t) => shot.spline(Math.min(Math.max(t, shot.t[0]), shot.t[1]));
+        const at = (t) => shot.spline(t);
         const v = at(tb);
-        const amp = v.wobble * (shot.wobble ?? 0.05);
-        const nPos = flightNoise(tb, 1.3, amp);
-        const nLook = flightNoise(tb, 7.9, amp * 0.6);
-        const pos = v.pos.map((x, i) => x + nPos[i]);
-        const look = v.look.map((x, i) => x + nLook[i]);
-        // Curva: aceleração lateral (no eixo "direita" da câmera) vira inclinação.
-        const h = 0.14;
-        const pa = at(tb - h).pos;
-        const pb = at(tb + h).pos;
-        const acc = v.pos.map((x, i) => (pa[i] - 2 * x + pb[i]) / (h * h));
-        const f = look.map((x, i) => x - pos[i]);
-        const fl = Math.hypot(...f) || 1;
-        const right = [-f[2] / fl, 0, f[0] / fl];
-        const rl = Math.hypot(...right) || 1;
-        const lateral = (acc[0] * right[0] + acc[2] * right[2]) / rl;
-        const bank = Math.max(
-          -(shot.maxBank ?? 12),
-          Math.min(shot.maxBank ?? 12, lateral * (shot.bankK ?? 0.9)),
-        );
+        const { pos, look } = v;
+        // Curva: aceleração lateral (no eixo "direita" da câmera) vira inclinação, média de
+        // uma janela curta para a inclinação entrar e sair aos poucos.
+        const lateralAt = (tc) => {
+          const h = 0.2;
+          const p0 = at(tc - h).pos;
+          const p1 = at(tc).pos;
+          const p2 = at(tc + h).pos;
+          const acc = p1.map((x, i) => (p0[i] - 2 * x + p2[i]) / (h * h));
+          const l = at(tc).look;
+          const f = [l[0] - p1[0], l[2] - p1[2]];
+          const fl = Math.hypot(...f) || 1;
+          return (acc[0] * -f[1] + acc[2] * f[0]) / fl;
+        };
+        const lateral = (lateralAt(tb - 0.25) + lateralAt(tb) + lateralAt(tb + 0.25)) / 3;
+        const max = shot.maxBank ?? 8;
+        const bank = Math.max(-max, Math.min(max, lateral * (shot.bankK ?? 0.6)));
         const d = pos.map((x, i) => x - look[i]);
         const dist = Math.hypot(...d) || 1e-3;
         return {
