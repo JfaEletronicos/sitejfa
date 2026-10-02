@@ -100,6 +100,17 @@
   font-style: italic;
 }
 
+/* Letra esticada da Stretch Pro (letras repetidas viram uma só, mais larga): só em
+   elementos decorativos. */
+.sk-part.is-liga {
+  font-variant-ligatures: common-ligatures;
+  font-feature-settings: 'liga' 1;
+}
+
+.sk-part.is-lower {
+  text-transform: none;
+}
+
 .sk-part.is-outline {
   color: transparent;
   -webkit-text-stroke: max(2px, 0.022em) var(--c);

@@ -14,8 +14,8 @@
 
 /** Cenas (régua do modo debug). */
 export const SCENES = [
-  { id: 'hook', label: 'Você não vê', start: 0, end: 1.95 },
-  { id: 'em-tudo', label: 'Mas ela está em tudo', start: 1.95, end: 4.42 },
+  { id: 'hook', label: 'Você não vê, mas...', start: 0, end: 2.15 },
+  { id: 'em-tudo', label: 'Ela está em tudo', start: 2.15, end: 4.42 },
   { id: 'palavras', label: 'Controle · Energia', start: 4.42, end: 6.45 },
   { id: 'pausa-1', label: 'Pausa', start: 6.45, end: 7.12 },
   { id: 'explosao', label: 'Precisão · Conexão · Tecnologia', start: 7.12, end: 10.78 },
@@ -25,11 +25,24 @@ export const SCENES = [
 ];
 
 // ---------------------------------------------------------------------------
+// ESPAÇOS: cada cena monta os seus planos de texto num ângulo em volta da placa
+// (yaw, graus). Quando a câmera virtual chega a esse ângulo, os planos da cena ficam de
+// frente; os da cena anterior giram para o lado. Passar de cena = andar no mesmo universo.
+// As cenas ainda em rascunho ficam em "rest", de frente para onde a câmera para.
+// ---------------------------------------------------------------------------
+export const SPACES = {
+  1: { yaw: 0 },
+  2: { yaw: 52 },
+  rest: { yaw: 55 },
+};
+
+// ---------------------------------------------------------------------------
 // PLANOS 3D
 // pose: alvo, azimute/elevação (graus), distância, `lens` (× CAMERA.fov), `roll` (giro do quadro, graus)
 // board: rotação [yaw, pitch, roll] (graus) e posição; shift: posição da placa no quadro
 // (fração; +x direita, +y cima); pan: movimento de câmera que também desloca as camadas
-// de texto (com paralaxe); light: preset de luz (kinetic.js).
+// de texto (com paralaxe); light: preset de luz ou preset com marcações (kinetic.js).
+// Planos com `keys` usam marcações contínuas (sem corte entre cenas).
 // ---------------------------------------------------------------------------
 const pose = (target, az, el, dist, extra = {}) => ({ target, az, el, dist, lens: 1, roll: 0, ...extra });
 const ENCODER = [-0.012, 0.13, -0.11];
@@ -37,73 +50,48 @@ const CHIP = [0.485, 0.012, -0.151];
 const CENTER = [0, 0, 0];
 
 export const SHOTS = [
-  // CENA 1 · VOCÊ NÃO VÊ.: a placa é o centro do quadro desde o primeiro quadro.
-  // Um plano contínuo em duas fases (sem corte): ela sobe para o lugar e assenta...
+  // CENAS 1 E 2 num plano só (a passagem entre elas é a câmera andando, sem corte).
+  // A placa é o centro do quadro o tempo todo: sobe para o lugar, assenta, avança
+  // devagar e, depois da órbita da câmera, segue como foco da cena 2.
   {
-    t: [0, 1.0],
-    cam: [pose([0, 0, 0], -24, 43, 3.75, { roll: 35 }), pose([0, 0, 0], -18, 46, 3.4, { roll: 39 })],
-    ease: 'expoOut',
-    board: [{ rot: [8, 0, 0] }, { rot: [3, 0, 0] }],
-    shift: [
-      [0, -0.27],
-      [0, -0.17],
+    t: [0, 4.42],
+    keys: [
+      { t: 0, target: CENTER, az: -24, el: 43, dist: 3.75, roll: 35, shift: [0, -0.27], rot: [8, 0, 0] },
+      { t: 0.55, target: CENTER, az: -20.5, el: 45, dist: 3.48, roll: 38, shift: [0, -0.19], rot: [4, 0, 0] },
+      { t: 1.0, target: CENTER, az: -18, el: 46, dist: 3.4, roll: 39, shift: [0, -0.17], rot: [3, 0, 0] },
+      { t: 1.95, target: CENTER, az: -13, el: 48, dist: 3.05, roll: 41, shift: [0, -0.14], rot: [0, 0, 0] },
+      { t: 2.7, target: CENTER, az: -12, el: 52, dist: 3.5, roll: 30, shift: [0.07, -0.14], rot: [0, 0, 0] },
+      { t: 4.42, target: CENTER, az: -8, el: 54, dist: 3.2, roll: 27, shift: [0.07, -0.12], rot: [-2, 0, 0] },
     ],
-    light: 'feature',
-    sweep: [55, 15],
-  },
-  // ...e depois avança devagar em direção à câmera, encostando no "VÊ.".
-  {
-    t: [1.0, 1.95],
-    cam: [pose([0, 0, 0], -18, 46, 3.4, { roll: 39 }), pose([0, 0, 0], -13, 48, 3.0, { roll: 41 })],
-    ease: 'glide',
-    board: [{ rot: [3, 0, 0] }, { rot: [0, 0, 0] }],
-    shift: [
-      [0, -0.17],
-      [0, -0.14],
-    ],
-    light: 'feature',
-    sweep: [15, -40],
-  },
-  // MAS: só tipografia (placa fora).
-  { t: [1.95, 2.36], hidden: true },
-  // ELA: placa inteira atravessando o quadro azul na diagonal.
-  {
-    t: [2.36, 2.86],
-    cam: [pose([0.25, 0, 0], 0, 68, 5.2, { roll: -28 }), pose([0.1, 0, 0], 4, 70, 4.6, { roll: -24 })],
-    ease: 'expoOut',
-    board: [{ rot: [-8, 0, 0] }, { rot: [-2, 0, 0] }],
-    shift: [
-      [0.02, -0.16],
-      [-0.02, -0.18],
-    ],
-    light: 'onColor',
-    sweep: [40, -30],
-  },
-  // ESTÁ: macro nos terminais do CI, atrás da palavra.
-  {
-    t: [2.86, 3.36],
-    cam: [pose(CHIP, 24, 26, 0.46, { lens: 0.9 }), pose(CHIP, 32, 24, 0.38, { lens: 0.9 })],
-    ease: 'linear',
-    shift: [
-      [0, -0.05],
-      [0, -0.05],
-    ],
-    light: 'macro',
-    aperture: 0.5,
-    sweep: [30, -20],
-  },
-  // EM TUDO.: placa inteira em pé no centro, girando rápido (sem volta completa).
-  {
-    t: [3.36, 4.42],
-    cam: [pose(CENTER, 0, 72, 9.5, { roll: 90 }), pose(CENTER, 0, 66, 6.6, { roll: 90 })],
-    ease: 'expoOut',
-    board: [{ rot: [-26, 0, 0] }, { rot: [12, 0, 0] }],
-    shift: [
-      [0, 0],
-      [0, 0],
-    ],
-    light: 'punch',
-    sweep: [50, -50],
+    // A placa começa preta (só o contorno do contraluz) e a luz vai revelando, de uma
+    // ponta até o centro, até o estúdio completo; na cena 2, luz de fundo claro.
+    light: {
+      base: 'feature',
+      keys: [
+        [
+          0,
+          { keyLux: 0, env: 0, fill: 0, rimLux: 0.45, keyAngle: 7, keyLead: -1.45, bloom: 0.02, sweep: 70 },
+        ],
+        [0.4, { keyLux: 2.6, keyAngle: 10, keyLead: -1.05, env: 0.02 }],
+        [0.95, { keyLux: 6, keyAngle: 20, keyLead: -0.45, env: 0.16, fill: 0.05, sweep: 30 }],
+        [
+          1.5,
+          {
+            keyLux: 8,
+            keyAngle: 32,
+            keyLead: 0,
+            env: 0.38,
+            fill: 0.12,
+            rimLux: 2.0,
+            bloom: 0.04,
+            sweep: -10,
+          },
+        ],
+        [2.3, { keyLux: 8, fill: 0.12, env: 0.38, sweep: -40, exposure: 1.02 }],
+        [3.0, { keyLux: 8.4, fill: 0.24, env: 0.5, rimLux: 2.0, bloom: 0.02, sweep: 40, exposure: 1.04 }],
+        [4.42, { sweep: -30 }],
+      ],
+    },
   },
   // CONTROLE.: macro em órbita do encoder (o eixo atravessa a palavra).
   {
@@ -305,7 +293,15 @@ export const CAMERA_RIG = [
   // Cena 1: órbita da esquerda para a direita, descendo e aproximando.
   { t: -0.2, yaw: -11, pitch: 6, dolly: 0, truck: [0.02, 0] },
   { t: 1.0, yaw: -1.5, pitch: 1.5, dolly: 0.07, truck: [0, 0] },
-  { t: 2.0, yaw: 8, pitch: -3, dolly: 0.11, truck: [0, 0], rest: true },
+  { t: 1.75, yaw: 6, pitch: -2.5, dolly: 0.1, truck: [0, 0] },
+  // Passagem 1 → 2: a câmera gira em volta da placa e entra entre os planos de texto
+  // (aproxima no meio do caminho); os planos da cena 1 giram para o lado e os da cena 2
+  // chegam de frente. Um universo só.
+  { t: 2.18, yaw: 27, pitch: -1, dolly: 0.2, truck: [0, 0] },
+  { t: 2.65, yaw: 44.5, pitch: 1.5, dolly: 0.1, truck: [0, 0] },
+  // Cena 2: a órbita desacelera sem voltar (nada de "mola"), aproximando devagar.
+  { t: 3.2, yaw: 51.5, pitch: 1, dolly: 0.08, truck: [0, 0] },
+  { t: 4.42, yaw: 55, pitch: 0, dolly: 0.13, truck: [0, 0], rest: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -401,27 +397,28 @@ function stack(text, t, rows, o = {}) {
 }
 
 export const WORDS = [
-  // 0–2 s · VOCÊ NÃO VÊ
-  // Fundo: "INVISÍVEL" gigante, esticada na altura do quadro, passando devagar atrás de
-  // tudo em azul quase apagado (o que a placa é: invisível).
-  word('INVISÍVEL', [-0.4, 2.3], {
+  // 0–2 s · VOCÊ NÃO VÊ, mas...
+  // Fundo: "INVISSÍVEL" gigante na Stretch Pro, com o S esticado (o "SS" vira uma letra
+  // só, mais larga), passando devagar atrás de tudo em azul quase apagado.
+  word('INVISSÍVEL', [-0.4, 2.45], {
     layer: 'far',
-    font: 'condensed',
+    font: 'wide',
+    liga: true,
     size: 'huge',
     color: 'jfaBlue',
-    opacity: 0.1,
-    x: -6,
-    y: 50,
+    opacity: 0.11,
+    x: -150,
+    y: 54,
     align: 'left',
-    fit: 2.3,
-    fitY: 1.06,
-    drift: [-88, 0],
-    stretch: 0.18,
-    fade: [0.35, 0.4],
+    fitMode: 'uniformY',
+    fitY: 0.24,
+    drift: [-95, 0],
+    fade: [0.35, 0.45],
   }),
   // Um bloco só, linhas coladas, três estilos: Poppins Light, Poppins ExtraBold
-  // Itálico (azul) e, no "VÊ", a troca de fonte. As entradas se sobrepõem.
-  word('VOCÊ NÃO', [-0.12, 1.98], {
+  // Itálico (azul) e, no "VÊ", a troca de fonte. As entradas se sobrepõem e a saída é
+  // uma fusão enquanto a câmera gira para a cena 2.
+  word('VOCÊ NÃO', [-0.12, 2.3], {
     parts: [
       { text: 'VOCÊ', weight: 300, tracking: 1.5 },
       { text: 'NÃO', weight: 800, italic: true, color: 'electricBlue', delay: 0.09, gap: 0.24 },
@@ -431,13 +428,13 @@ export const WORDS = [
     y: 19.2,
     align: 'left',
     in: { type: 'mask', dur: 0.46 },
-    out: { type: 'mask', dur: 0.3 },
+    out: { type: 'fade', dur: 0.45 },
   }),
   // "VÊ" não para quieto: troca de fonte em ritmo (curto, curto, longo) com fusão
   // curta entre as fontes, já durante a entrada, e trava na Stretch Pro no fim.
   ...fontCycle(
     'VÊ',
-    [0.02, 2.0],
+    [0.02, 2.3],
     [
       { font: 'wide', size: 90 },
       { font: 'serif', italic: true, size: 124 },
@@ -453,40 +450,79 @@ export const WORDS = [
       order: [1, 2, 3, 4, 5, 1, 3, 2, 4, 5],
       crossfade: 0.07,
     },
-    { x: 9, y: 30.1, align: 'left', in: { type: 'mask', dur: 0.5 }, out: { type: 'mask', dur: 0.3 } },
+    { x: 9, y: 30.1, align: 'left', in: { type: 'mask', dur: 0.5 }, out: { type: 'fade', dur: 0.45 } },
   ),
+  // "mas..." embaixo do "VÊ": a ponta que leva para a cena 2 (serifada, itálica, minúscula).
+  word('mas...', [1.3, 2.4], {
+    font: 'serif',
+    italic: true,
+    lower: true,
+    size: 40,
+    x: 9.6,
+    y: 38.4,
+    align: 'left',
+    in: { type: 'mask', dur: 0.46 },
+    out: { type: 'fade', dur: 0.45 },
+  }),
 
-  // 2–4,4 s · MAS / ELA / ESTÁ / EM TUDO.
-  word('MAS', [1.95, 2.36], {
-    color: 'black',
-    y: 50,
-    fit: 1.34,
-    rotate: -4,
-    grow: 0.08,
+  // 2,2–4,4 s · ELA ESTÁ EM TUDO (espaço 2, fundo claro)
+  // Fundo: faixas com as linhas onde a placa está (e "EM TUDO"), na Stretch Pro com uma
+  // letra esticada em cada uma, correndo em sentidos alternados atrás da placa.
+  ...[
+    ['EM TUUDO   EM TUUDO   EM TUUDO', 9, 18],
+    ['GELAADEIRA   GELAADEIRA', 27.5, -22],
+    ['LAAVADORA   LAAVADORA', 46, 20],
+    ['AR-CONDICIONAADO   AR-CONDICIONAADO', 64.5, -18],
+    ['EM TUUDO   EM TUUDO   EM TUUDO', 83, 22],
+  ].map(([text, y, drift], i) =>
+    word(text, [2.0 + i * 0.05, 4.65], {
+      space: 2,
+      layer: 'far',
+      font: 'wide',
+      liga: true,
+      size: 'medium',
+      color: 'jfaBlue',
+      opacity: 0.1,
+      x: drift > 0 ? -60 : 160,
+      y,
+      align: drift > 0 ? 'left' : 'right',
+      drift: [drift, 0],
+      fade: [0.55, 0.35],
+    }),
+  ),
+  // Um bloco só, colado, alinhado à esquerda: Instrument Serif itálica + Poppins Black
+  // azul na primeira linha e Anton (condensada) na segunda. Entradas sobrepostas.
+  word('ELA ESTÁ', [2.3, 4.6], {
+    space: 2,
+    parts: [
+      { text: 'ELA', font: 'serif', italic: true, color: 'black' },
+      { text: 'ESTÁ', weight: 900, color: 'electricBlue', delay: 0.1, gap: 0.22 },
+    ],
+    size: 46,
+    x: 9,
+    y: 18.6,
+    align: 'left',
+    in: { type: 'mask', dur: 0.46 },
+    out: { type: 'fade', dur: 0.3 },
   }),
-  word('ELA', [2.36, 2.86], {
-    y: 33,
-    fit: 1.04,
-    sy: 1.1,
-    in: { type: 'zoom', dur: 0.2 },
-    grow: 0.06,
-  }),
-  word('ESTÁ', [2.86, 3.36], {
+  // Na frente da placa: se a ponta dela encostar, passa por trás da palavra.
+  // Animação da cena: depois de assentar, "EM TUDO" se estica devagar para a direita
+  // (ocupa mais espaço, como a placa ocupa tudo), sem voltar.
+  word('EM TUDO', [2.48, 4.6], {
+    space: 2,
     layer: 'front',
-    y: 47,
-    fit: 1.16,
-    sy: 1.45,
-    split: true,
-    fx: [{ preset: 'warp', at: 0, dur: 0.5 }],
-    drift: [-3, 0],
-  }),
-  ...stack('EM TUDO', [3.36, 4.42], 7, {
-    size: 'large',
-    fit: 1.08,
-    gap: 12.5,
-    spread: 4,
-    grow: 0.12,
-    accentRing: 2,
+    font: 'condensed',
+    color: 'black',
+    size: 84,
+    x: 9,
+    y: 29.4,
+    align: 'left',
+    in: { type: 'mask', dur: 0.5 },
+    out: { type: 'fade', dur: 0.3 },
+    stretchKeys: [
+      [0.45, 1],
+      [1.75, 1.2, 'soft'],
+    ],
   }),
 
   // 4,4–6,5 s · CONTROLE. / ENERGIA.
@@ -692,6 +728,11 @@ export const WORDS = [
   }),
 ];
 
+// Cenas ainda em rascunho (a partir de 4,4 s) ficam no espaço "rest".
+WORDS.forEach((w) => {
+  if (!w.space) w.space = w.t[0] >= 4.4 ? 'rest' : 1;
+});
+
 // ---------------------------------------------------------------------------
 // GRÁFICOS (SVG, sem imagem). Posição = centro, em % do quadro; largura em % da largura.
 // ---------------------------------------------------------------------------
@@ -700,7 +741,7 @@ export const GRAPHICS = [
   // pouco do texto. As pupilas trocam de lado uma vez, devagar, e os olhos se fecham no fim.
   {
     type: 'eyes',
-    t: [0.36, 1.98],
+    t: [0.36, 2.3],
     layer: 'back',
     x: 51,
     y: 26.2,
@@ -708,7 +749,7 @@ export const GRAPHICS = [
     aspect: 170 / 200,
     rotate: -12,
     in: { dur: 0.3 },
-    out: { dur: 0.3 },
+    out: { dur: 0.45 },
     // [tempo local (s), olhar: -1 esquerda a 1 direita, duração (s), curva]
     // Entra olhando para a esquerda e troca de lado uma vez só, devagar.
     look: [
@@ -720,13 +761,13 @@ export const GRAPHICS = [
 ];
 
 // ---------------------------------------------------------------------------
-// FUNDO (troca seca) e BLOCOS DE COR (retângulos em %: [x, y, largura, altura])
+// FUNDO e BLOCOS DE COR (retângulos em %: [x, y, largura, altura])
 // ---------------------------------------------------------------------------
+// [tempo, cor, fusão (s)]: sem fusão, troca seca.
 export const BACKGROUND = [
   [0, 'glow'],
-  [1.95, 'white'],
-  [2.36, 'jfaBlue'],
-  [2.86, 'black'],
+  // Depois da passagem, o fundo clareia devagar até o branco enquanto a cena 2 começa.
+  [2.15, 'white', 0.85],
   [4.42, 'deepBlue'],
   [5.45, 'jfaBlue'],
   [6.45, 'black'],
@@ -753,10 +794,6 @@ export const BLOCKS = [
 // TRANSIÇÕES (centradas no corte) e DISTORÇÕES GLOBAIS (sobre a composição inteira)
 // ---------------------------------------------------------------------------
 export const CUTS = [
-  { t: 1.95, type: 'hardCut', dur: 0.08 },
-  { t: 2.36, type: 'hardCut', dur: 0.08 },
-  { t: 2.86, type: 'distortionCut', dur: 0.16 },
-  { t: 3.36, type: 'scaleCut', dur: 0.14 },
   { t: 4.42, type: 'zoomIn', dur: 0.24 },
   { t: 5.45, type: 'verticalWipe', dur: 0.26, color: 'jfaBlue' },
   { t: 6.45, type: 'hardCut', dur: 0.08 },
@@ -775,7 +812,6 @@ export const CUTS = [
 ];
 
 export const FX = [
-  { t: 3.36, dur: 0.42, preset: 'impact' },
   { t: 7.12, dur: 0.5, preset: 'impact' },
   { t: 7.14, dur: 0.3, preset: 'shake' },
   { t: 10.78, dur: 0.24, preset: 'impact', amount: 0.8 },
@@ -801,6 +837,8 @@ const CUE_LABEL = {
 };
 export const CUES = [
   { t: 0, id: 'abertura', label: 'Batida de abertura' },
+  { t: 1.75, id: 'passagem', label: 'Passagem lateral (whoosh suave)', until: 2.65 },
+  { t: 2.15, id: 'fundo-claro', label: 'Fundo clareando (swell)', until: 3.0 },
   ...CUTS.map((c) => ({ t: c.t, id: `${c.type}-${c.t}`, label: CUE_LABEL[c.type] })),
   { t: 12.75, id: 'pausa', label: 'Silêncio (pausa)', until: 15.3 },
 ].sort((a, b) => a.t - b.t);

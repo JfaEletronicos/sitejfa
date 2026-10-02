@@ -2,8 +2,11 @@
  * Variante "social-kinetic": peça vertical de tipografia cinética com a placa 3D real.
  *
  * Camadas do quadro (de trás para a frente):
- *   fundo (cor chapada) → composição [blocos de cor → palavras de trás → placa 3D (canvas
- *   transparente) → palavras da frente] → painéis de transição (flash, cortina, máscara).
+ *   fundo (cor/radial) → composição [blocos de cor → planos de fundo → planos de trás →
+ *   placa 3D (canvas transparente) → planos da frente] → painéis de transição.
+ * Cada cena tem o seu "espaço": planos de texto girados em volta da placa. Uma câmera
+ * virtual única move a placa e todos os planos, então passar de uma cena para a outra
+ * é a câmera andando dentro de um mesmo universo.
  * A composição inteira recebe as distorções globais; cada palavra recebe as suas; a
  * placa recebe as dela no shader (efeito de tela, sem deformar o modelo).
  *
@@ -22,7 +25,19 @@ import {
 } from './config';
 import { addDistortion, emptyDistortion, evalPreset } from './distortion';
 import { TRANSITIONS, emptyFx } from './transitions';
-import { SCENES, SHOTS, WORDS, GRAPHICS, BACKGROUND, BLOCKS, CUTS, FX, CUES, CAMERA_RIG } from './score';
+import {
+  SCENES,
+  SPACES,
+  SHOTS,
+  WORDS,
+  GRAPHICS,
+  BACKGROUND,
+  BLOCKS,
+  CUTS,
+  FX,
+  CUES,
+  CAMERA_RIG,
+} from './score';
 import { createEyes } from './eyes';
 
 // Elementos gráficos desenhados em SVG (ver score.js → GRAPHICS).
@@ -119,6 +134,31 @@ const LIGHTS = {
   },
 };
 
+/**
+ * Luz de um plano no instante `tb`: preset (`light: 'feature'`) ou preset com
+ * marcações ({ base, keys: [[tempo, { campo: valor }], ...] }), interpoladas com
+ * curva suave. Ex.: placa preta que vai sendo revelada.
+ */
+function lightAt(shot, tb) {
+  const spec = typeof shot.light === 'string' || !shot.light ? { base: shot.light } : shot.light;
+  const out = { ...(LIGHTS[spec.base] || LIGHTS.punch) };
+  const keys = spec.keys || [];
+  const fields = new Set(keys.flatMap(([, o]) => Object.keys(o)));
+  fields.forEach((f) => {
+    const track = keys.filter(([, o]) => o[f] != null).map(([t, o]) => [t, o[f]]);
+    if (tb <= track[0][0]) out[f] = track[0][1];
+    else if (tb >= track[track.length - 1][0]) out[f] = track[track.length - 1][1];
+    else {
+      let i = 1;
+      while (track[i][0] < tb) i++;
+      const [t0, v0] = track[i - 1];
+      const [t1, v1] = track[i];
+      out[f] = lerp(v0, v1, EASE.soft((tb - t0) / (t1 - t0)));
+    }
+  });
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // Cores (colorIntensity: 0 = só preto e branco)
 // ---------------------------------------------------------------------------
@@ -131,6 +171,24 @@ function surfaceColor(key) {
   if (!BLUES.has(key)) return COLORS[key];
   return rgb(lerpArr(hex(COLORS.black), hex(COLORS[key]), clamp01(K('colorIntensity'))));
 }
+/** Mesma regra de surfaceColor, em [r, g, b] (para misturar cores no tempo). */
+function surfaceRgb(key) {
+  if (!BLUES.has(key)) return hex(COLORS[key]);
+  return lerpArr(hex(COLORS.black), hex(COLORS[key]), clamp01(K('colorIntensity')));
+}
+
+/**
+ * Fundo como radial [centro, borda, posição]: "glow"/"hero" = azul profundo atrás da
+ * placa caindo para o preto; "white" = branco com a borda levemente fria; cores = chapado.
+ */
+function backdrop(key) {
+  if (key === 'glow') return { c: surfaceRgb('deepBlue'), e: hex(COLORS.black), y: 60 };
+  if (key === 'hero') return { c: surfaceRgb('deepBlue'), e: hex(COLORS.black), y: 44 };
+  if (key === 'white') return { c: hex(COLORS.white), e: [233, 238, 245], y: 50 };
+  const c = surfaceRgb(key);
+  return { c, e: c, y: 50 };
+}
+
 /** Cor de texto: os azuis caem para o branco. */
 function inkColor(key) {
   if (!BLUES.has(key)) return COLORS[key];
@@ -190,6 +248,8 @@ const partsOf = (w) =>
       color: w.color,
       outline: w.outline,
       tracking: w.tracking,
+      liga: w.liga,
+      lower: w.lower,
     },
   ];
 const isMask = (w) => w.in.type === 'mask' || w.out.type === 'mask';
@@ -315,6 +375,8 @@ function wordPose(w, tb, m, frame) {
   scale *= 1 + Math.min(w.grow * pl * ti, TYPO.maxScale - 1);
   if (w.stretch) sx *= 1 + w.stretch * pl * ti;
   if (w.scaleKeys) scale = keyedScale(w.scaleKeys, lt);
+  // Estiramento marcado: só a largura, em [tempo local, largura, curva].
+  if (w.stretchKeys) sx *= 1 + (keyedScale(w.stretchKeys, lt) - 1) * ti;
 
   // Distorção própria da palavra.
   const d = emptyDistortion();
@@ -369,10 +431,16 @@ export default {
     comp.className = 'sk-comp';
     frameEl.insertBefore(comp, canvas);
     const blocksLayer = el('sk-blocks', comp);
-    const far = el('sk-type sk-far', comp);
-    const back = el('sk-type sk-back', comp);
+    // Planos de texto: um por (espaço, profundidade). Ordem no DOM = ordem na tela:
+    // todos os fundos, todos os de trás, a placa, todos os da frente.
+    const spaceIds = Object.keys(SPACES);
+    const layers = {};
+    ['far', 'back'].forEach((depth) =>
+      spaceIds.forEach((id) => (layers[`${id}:${depth}`] = el(`sk-type sk-${depth}`, comp))),
+    );
     comp.appendChild(canvas);
-    const front = el('sk-type sk-front', comp);
+    spaceIds.forEach((id) => (layers[`${id}:front`] = el('sk-type sk-front', comp)));
+    const layerOf = (item) => layers[`${item.space || 1}:${item.layer || 'back'}`];
     const overlay = document.createElement('div');
     overlay.className = 'sk-overlay';
     frameEl.insertBefore(overlay, frameEl.querySelector('.pf-loader'));
@@ -388,12 +456,12 @@ export default {
     // Cada palavra (ou linha) tem uma ou mais partes, cada uma com a sua fonte, peso,
     // estilo e cor, alinhadas na mesma linha de base.
     const words = WORDS.map((w) => {
-      const layer = w.layer === 'front' ? front : w.layer === 'far' ? far : back;
-      const node = el(`sk-word${isMask(w) ? ' is-mask' : ''}`, layer);
+      const node = el(`sk-word${isMask(w) ? ' is-mask' : ''}`, layerOf(w));
       node.setAttribute('aria-hidden', 'true');
       const parts = partsOf(w).map((part) => {
         const wrap = el(
-          `sk-part is-${part.font || 'sans'}${part.outline ? ' is-outline' : ''}${part.italic ? ' is-italic' : ''}`,
+          `sk-part is-${part.font || 'sans'}${part.outline ? ' is-outline' : ''}${part.italic ? ' is-italic' : ''}` +
+            `${part.liga ? ' is-liga' : ''}${part.lower ? ' is-lower' : ''}`,
           node,
           'span',
         );
@@ -413,8 +481,7 @@ export default {
 
     // Gráficos (SVG) na camada indicada, por cima das palavras dela.
     const graphics = GRAPHICS.map((g) => {
-      const layer = g.layer === 'front' ? front : g.layer === 'far' ? far : back;
-      const wrap = el('sk-graphic', layer);
+      const wrap = el('sk-graphic', layerOf(g));
       const inst = GRAPHIC_TYPES[g.type]();
       wrap.appendChild(inst.node);
       return { g, wrap, inst, shown: false };
@@ -443,8 +510,12 @@ export default {
         const nh = node.offsetHeight || 1;
         let sx = 1;
         let sy = w.sy;
-        // fitY: altura alvo (fração do quadro), esticando só na vertical.
-        if (w.fitY) sy = (w.fitY * frame.height) / nh;
+        // fitY: altura alvo (fração do quadro), esticando só na vertical;
+        // com fitMode "uniformY" a palavra inteira escala até essa altura.
+        if (w.fitY && w.fitMode === 'uniformY') {
+          sx = (w.fitY * frame.height) / nh;
+          sy *= sx;
+        } else if (w.fitY) sy = (w.fitY * frame.height) / nh;
         if (w.fit) {
           const target = w.fit * (w.fitAxis === 'y' ? frame.height : frame.width);
           // "stretch": só a largura se ajusta (letras esticadas/comprimidas);
@@ -517,25 +588,77 @@ export default {
       };
     }
 
+    /**
+     * Pose da câmera e da placa num plano: de/para com curva (`cam`) ou marcações
+     * contínuas (`keys`, spline com velocidade contínua, para planos que atravessam cenas).
+     * Intensidades valem sobre o quanto cada valor se afasta do início do plano.
+     */
+    function shotPose(shot, tb) {
+      const [t0, t1] = shot.t;
+      const p = clamp01((tb - t0) / (t1 - t0));
+      const kc = K('cameraIntensity');
+      const kz = kc * CAM.zoomIntensity;
+      const kp = K('productIntensity');
+      if (shot.keys) {
+        if (!shot.spline) {
+          const full = shot.keys.map((k) => ({
+            t: k.t,
+            rest: k.rest,
+            target: k.target,
+            az: k.az,
+            el: k.el,
+            logDist: Math.log(k.dist),
+            lens: k.lens ?? 1,
+            roll: k.roll ?? 0,
+            shift: k.shift || [0, 0],
+            rot: k.rot || [0, 0, 0],
+          }));
+          shot.first = full[0];
+          shot.spline = spline(full, ['target', 'az', 'el', 'logDist', 'lens', 'roll', 'shift', 'rot']);
+        }
+        const v = shot.spline(tb);
+        const f = shot.first;
+        const by = (a, b, k) => (Array.isArray(a) ? a.map((x, i) => x + (b[i] - x) * k) : a + (b - a) * k);
+        return {
+          p,
+          target: by(f.target, v.target, kc),
+          az: by(f.az, v.az, kc),
+          el: by(f.el, v.el, kc),
+          logDist: by(f.logDist, v.logDist, kz),
+          lens: v.lens,
+          roll: by(f.roll, v.roll, kc),
+          shift: by(f.shift, v.shift, kp),
+          rot: by(f.rot, v.rot, kp),
+          pan: [0, 0],
+        };
+      }
+      const e = curve(shot.ease)(p);
+      const [a, b] = shot.cam;
+      const boardA = shot.board ? shot.board[0] : { rot: [0, 0, 0] };
+      const boardB = shot.board ? shot.board[1] : boardA;
+      return {
+        p,
+        target: lerpArr(a.target, b.target, kc * e),
+        az: lerp(a.az, b.az, kc * e),
+        el: lerp(a.el, b.el, kc * e),
+        logDist: lerp(Math.log(a.dist), Math.log(b.dist), kz * e),
+        lens: lerp(a.lens, b.lens, e),
+        roll: lerp(a.roll, b.roll, kc * e),
+        shift: shot.shift ? lerpArr(shot.shift[0], shot.shift[1], kp * e) : [0, 0],
+        rot: lerpArr(boardA.rot, boardB.rot, kp * e),
+        pan: shot.pan ? lerpArr(shot.pan[0], shot.pan[1], e) : [0, 0],
+      };
+    }
+
     function stageState(tb, fx, cam) {
       const shot = shotAt(tb);
       if (shot.hidden) return { hidden: true, pan: [0, 0] };
-      const [t0, t1] = shot.t;
-      const p = clamp01((tb - t0) / (t1 - t0));
-      const e = curve(shot.ease)(p);
-      const kc = K('cameraIntensity') * e;
-      const kz = kc * CAM.zoomIntensity;
-      const kp = K('productIntensity') * e;
-      const [a, b] = shot.cam;
-      const target = lerpArr(a.target, b.target, kc);
-      const dist = Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), kz) + fx.camZoom) * (1 - cam.dolly);
-      const light = LIGHTS[shot.light] || LIGHTS.punch;
-      const boardA = shot.board ? shot.board[0] : { rot: [0, 0, 0] };
-      const boardB = shot.board ? shot.board[1] : boardA;
-      const rot = lerpArr(boardA.rot, boardB.rot, kp);
-      const shift = shot.shift ? lerpArr(shot.shift[0], shot.shift[1], kp) : [0, 0];
-      const pan = shot.pan ? lerpArr(shot.pan[0], shot.pan[1], e) : [0, 0];
-      const sweep = shot.sweep ? lerp(shot.sweep[0], shot.sweep[1], p) : 40 - 80 * p;
+      const pose = shotPose(shot, tb);
+      const { p, target, rot, shift, pan } = pose;
+      const dist = Math.exp(pose.logDist + fx.camZoom) * (1 - cam.dolly);
+      const light = lightAt(shot, tb);
+      const sweep =
+        light.sweep != null ? light.sweep : shot.sweep ? lerp(shot.sweep[0], shot.sweep[1], p) : 40 - 80 * p;
       const blurOn = CFG.motionBlur ? 1 : 0;
       const shotBlur = shot.blur || [0, 0];
       const jitter = fx.dist.displacement;
@@ -543,11 +666,11 @@ export default {
         hidden: false,
         cam: {
           target,
-          az: lerp(a.az, b.az, kc) + fx.camAz,
-          el: lerp(a.el, b.el, kc),
+          az: pose.az + fx.camAz,
+          el: pose.el,
           logDist: Math.log(dist),
-          fov: CAM.fov * lerp(a.lens, b.lens, e),
-          roll: lerp(a.roll, b.roll, kc),
+          fov: CAM.fov * pose.lens,
+          roll: pose.roll,
         },
         roll: 0,
         fit: 0,
@@ -556,10 +679,10 @@ export default {
         shift: shift[1] + pan[1] + cam.truck[1],
         orbit: { yaw: cam.yaw, pitch: cam.pitch },
         fade: 1,
-        aperture: shot.aperture || 0,
+        aperture: light.aperture ?? shot.aperture ?? 0,
         keyLux: light.keyLux,
         keyAngle: light.keyAngle,
-        keyLead: 0,
+        keyLead: light.keyLead || 0,
         keyDist: Math.min(Math.max(dist * 1.15, 1.0), 9),
         keyAz: light.keyAz,
         keyEl: light.keyEl,
@@ -589,12 +712,20 @@ export default {
       };
     }
 
+    /** Fundo no instante `tb`: [tempo, cor, fusão (s)] — sem fusão, troca seca. */
     function backgroundAt(tb) {
-      let key = BACKGROUND[0][1];
-      BACKGROUND.forEach(([t, k]) => {
-        if (tb >= t) key = k;
+      let from = BACKGROUND[0][1];
+      let to = from;
+      let k = 1;
+      BACKGROUND.forEach(([t, key, fade = 0]) => {
+        if (tb < t) return;
+        from = to === key ? from : to;
+        to = key;
+        k = fade > 0 ? EASE.soft(clamp01((tb - t) / fade)) : 1;
       });
-      return key;
+      const a = backdrop(from);
+      const b = backdrop(to);
+      return { c: lerpArr(a.c, b.c, k), e: lerpArr(a.e, b.e, k), y: lerp(a.y, b.y, k) };
     }
 
     function evaluate(tb) {
@@ -607,15 +738,9 @@ export default {
       if (needsMeasure) measure();
       const { width: W, height: H } = frame;
 
-      // Fundo.
+      // Fundo (radial atrás da placa, com fusão entre cores).
       const bg = backgroundAt(tb);
-      if (bg === 'hero' || bg === 'glow') {
-        // Radial azul profundo atrás da placa (no centro dela).
-        const at = bg === 'hero' ? '50% 44%' : '50% 60%';
-        base.style.background = `radial-gradient(120% 62% at ${at}, ${surfaceColor('deepBlue')} 0%, ${COLORS.black} 72%)`;
-      } else {
-        base.style.background = surfaceColor(bg);
-      }
+      base.style.background = `radial-gradient(120% 62% at 50% ${bg.y.toFixed(1)}%, ${rgb(bg.c)} 0%, ${rgb(bg.e)} 72%)`;
 
       // Composição: transições + distorção global.
       const d = fx.dist;
@@ -650,18 +775,21 @@ export default {
       const depthK = CAM.parallax / BASE_PARALLAX;
       const tx = (cam.truck[0] + pan[0]) * W;
       const ty = -(cam.truck[1] + pan[1]) * H;
-      [
-        [far, LAYER_DEPTH.far],
-        [back, LAYER_DEPTH.back],
-        [front, LAYER_DEPTH.front],
-      ].forEach(([layer, depth]) => {
-        const z = depth * depthK * H;
+      Object.entries(layers).forEach(([key, layer]) => {
+        const [id, depthName] = key.split(':');
+        const space = SPACES[id];
+        const z = (space.depth?.[depthName] ?? LAYER_DEPTH[depthName]) * depthK * H;
         // Escala que compensa a profundidade: em repouso, cada plano fica do tamanho desenhado.
         const k = (P - z) / P;
+        // Plano voltado para a câmera quando ela está no ângulo do espaço dele (yaw).
+        const rel = cam.yaw - space.yaw;
+        // Planos de costas para a câmera somem (e não gastam desenho).
+        const facing = Math.cos(rel * DEG);
+        layer.style.visibility = facing > 0.05 ? 'visible' : 'hidden';
         layer.style.transform =
           `perspective(${P.toFixed(1)}px) translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) ` +
           `translateZ(${(cam.dolly * P).toFixed(2)}px) rotateX(${cam.pitch.toFixed(3)}deg) ` +
-          `rotateY(${cam.yaw.toFixed(3)}deg) translateZ(${z.toFixed(2)}px) scale(${k.toFixed(4)})`;
+          `rotateY(${rel.toFixed(3)}deg) translateZ(${z.toFixed(2)}px) scale(${k.toFixed(4)})`;
       });
 
       // Palavras.
