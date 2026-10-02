@@ -32,7 +32,7 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador),
   só quando a imagem anda rápido; nunca atravessa um corte. Máximo em `CAMERA.blurSamples`.
 - Plano em voo livre (`flight: true` no SHOT): marcações `{ t, pos, look, roll, lens, shift,
-  wobble }` (posição e ponto de olhar independentes, 6DoF); inclinação de curva automática
+wobble }` (posição e ponto de olhar independentes, 6DoF); inclinação de curva automática
   pela aceleração lateral (`bankK`, `maxBank`) e micro-oscilação (`wobble`). Spline sem
   ultrapassagem: cada eixo fica entre duas marcações vizinhas (use isso para não entrar no
   produto).
