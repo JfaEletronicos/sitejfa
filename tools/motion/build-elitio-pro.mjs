@@ -8,7 +8,8 @@
  *   - arruela e parafuso sextavado nos bornes, anel vermelho no positivo e alças de corda
  *     trançada (geometria, sem textura), conforme a foto do produto;
  *   - rebarba da injeção na linha de molde entre corpo e tampa e marca do ponto de injeção;
- *   - camadas da vista explodida (grupos EXPLODE_body/cells/bms/lid), com células,
+ *   - camadas da vista explodida (grupos EXPLODE_<camada>: corpo, células, suporte, barramentos, BMS, tampa, anéis, botão,
+ *     painel, arruelas e parafusos), com células,
  *     barramentos e BMS conceituais (formas limpas, sem componentes inventados).
  * O acabamento fino da superfície (casca de laranja, riscos, desgaste) é feito no shader do
  * palco (surface-detail.js), sem textura.
@@ -209,7 +210,8 @@ const LABEL_Y = 97.5, CASE_D = 170;
 // adesivos de cima); o corpo leva os adesivos da frente e de trás, a rebarba e as marcas.
 root.updateMatrixWorld(true);
 const L = {};
-for (const name of ['body', 'cells', 'bms', 'lid']) {
+const LAYERS = ['body', 'cells', 'holder', 'bus', 'bms', 'lid', 'rings', 'button', 'panel', 'washers', 'bolts'];
+for (const name of LAYERS) {
   L[name] = new THREE.Group();
   L[name].name = 'EXPLODE_' + name;
   root.add(L[name]);
@@ -243,12 +245,28 @@ cad.traverse((o) => {
   caseMesh.parent.remove(caseMesh);
 }
 piano.side = THREE.DoubleSide;
-// Display e botão (CAD) vão com a tampa; peças acrescentadas, por nome.
-for (const o of [...cad.children]) L.lid.attach(o);
+// Peças do CAD: painel (conjunto do display) e botão liga/desliga, cada um na sua camada.
+let disp = null;
+let btn = null;
+cad.traverse((o) => {
+  if (!disp && /DISPLAY/.test(o.name)) disp = o;
+  if (!btn && /Bot/.test(o.name)) btn = o;
+});
+L.panel.attach(disp);
+L.button.attach(btn);
+// Peças acrescentadas, por nome. As alças ficam com o corpo (penduradas na tampa, viram ruído).
 for (const o of [...parts.children]) {
-  // As alças ficam com o corpo na vista explodida (penduradas na tampa, viram ruído).
-  const body = /frontal|ficha|Rebarba|Ponto de injeção|Pegador|Corda/.test(o.name);
-  (body ? L.body : L.lid).attach(o);
+  const name = o.name;
+  const layer = /frontal|ficha|Rebarba|Ponto de injeção|Pegador|Corda/.test(name)
+    ? 'body'
+    : /^Anel/.test(name)
+      ? 'rings'
+      : /^Arruela/.test(name)
+        ? 'washers'
+        : /^(Parafuso|Chanfro)/.test(name)
+          ? 'bolts'
+          : 'lid';
+  L[layer].attach(o);
 }
 // Borda do corte: anel na boca do corpo (parede de 3 mm). A tampa fica aberta por baixo
 // (o BMS mora dentro dela quando a bateria está fechada).
@@ -292,14 +310,33 @@ const mmGroup = (layer, name) => {
     }
   }
 }
+// Suporte das células: placa isolante preta com furos para os terminais (conceitual).
+{
+  const g = mmGroup('holder', 'Suporte das células');
+  const sh = new THREE.Shape();
+  sh.moveTo(-152, -83); sh.lineTo(152, -83); sh.lineTo(152, 83); sh.lineTo(-152, 83); sh.closePath();
+  for (const x of [-117, -39, 39, 117]) for (const z of [-52, 52]) {
+    const h = new THREE.Path();
+    h.absarc(x, z, 7.5, 0, Math.PI * 2, false);
+    sh.holes.push(h);
+  }
+  const geo = new THREE.ExtrudeGeometry(sh, { depth: 3, bevelEnabled: true, bevelSize: 0.6, bevelThickness: 0.6, bevelSegments: 2, curveSegments: 24 });
+  geo.rotateX(-Math.PI / 2);
+  const m = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ name: 'Suporte das células', color: 0x141518, roughness: 0.55 }));
+  m.position.y = 188.6;
+  g.add(m);
+}
 // Barramentos de cobre (ligação em série) e módulo BMS com dissipador (conceituais).
 {
-  const g = mmGroup('bms', 'Barramentos e BMS');
+  const g = mmGroup('bus', 'Barramentos');
   const cu = new THREE.MeshPhysicalMaterial({ name: 'Barramento cobre', color: 0xc8814f, metalness: 1, roughness: 0.28 });
   for (const [x, z] of [[-78, 52], [0, -52], [78, 52]]) {
     const b = new THREE.Mesh(new RoundedBoxGeometry(84, 3, 22, 2, 1), cu);
     b.position.set(x, 196, z); g.add(b);
   }
+}
+{
+  const g = mmGroup('bms', 'BMS');
   const anod = new THREE.MeshPhysicalMaterial({ name: 'BMS anodizado', color: 0x23262b, metalness: 0.5, roughness: 0.38 });
   const fin = new THREE.MeshStandardMaterial({ name: 'BMS dissipador', color: 0x9da3ab, metalness: 1, roughness: 0.4 });
   const plate = new THREE.Mesh(new RoundedBoxGeometry(170, 6, 70, 2, 1.5), anod);

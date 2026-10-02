@@ -86,11 +86,14 @@ export function keyed(keys) {
  * Spline de Hermite com nós no tempo (Catmull-Rom não uniforme): passa por todas
  * as marcações com velocidade contínua, então a câmera nunca "freia" numa marcação.
  * Marcações com `rest: true` têm velocidade zero (partida/chegada em repouso).
+ * Com `monotone`, nenhum campo passa do ponto entre duas marcações (tangentes limitadas,
+ * Fritsch–Carlson): a câmera nunca anda para trás para corrigir.
  *
  * @param {Array<{t: number, rest?: boolean} & Record<string, number | number[]>>} keys
  * @param {string[]} fields Campos interpolados (números ou vetores).
+ * @param {{ monotone?: boolean }} [opts]
  */
-export function spline(keys, fields) {
+export function spline(keys, fields, { monotone = false } = {}) {
   const n = keys.length;
   // Tangente de cada campo em cada marcação (média ponderada das inclinações vizinhas).
   const tangents = keys.map((k, i) => {
@@ -109,7 +112,17 @@ export function spline(keys, fields) {
         const next = i < n - 1 ? (at(i + 1, c) - at(i, c)) / (keys[i + 1].t - keys[i].t) : null;
         if (prev === null) m.push(next);
         else if (next === null) m.push(prev);
-        else {
+        else if (monotone) {
+          // Extremo local: para ali; senão, média limitada a 3× a menor inclinação.
+          if (prev * next <= 0) m.push(0);
+          else {
+            const dp = keys[i].t - keys[i - 1].t;
+            const dn = keys[i + 1].t - keys[i].t;
+            const avg = (prev * dn + next * dp) / (dp + dn);
+            const lim = 3 * Math.min(Math.abs(prev), Math.abs(next));
+            m.push(Math.sign(avg) * Math.min(Math.abs(avg), lim));
+          }
+        } else {
           const dp = keys[i].t - keys[i - 1].t;
           const dn = keys[i + 1].t - keys[i].t;
           m.push((prev * dn + next * dp) / (dp + dn));

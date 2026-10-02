@@ -693,7 +693,9 @@ export function createKineticVariant(score) {
               rot: k.rot || [0, 0, 0],
             }));
             shot.first = full[0];
-            shot.spline = spline(full, ['target', 'az', 'el', 'logDist', 'lens', 'roll', 'shift', 'rot']);
+            shot.spline = spline(full, ['target', 'az', 'el', 'logDist', 'lens', 'roll', 'shift', 'rot'], {
+              monotone: shot.monotone,
+            });
           }
           const v = shot.spline(tb);
           const f = shot.first;
@@ -773,8 +775,10 @@ export function createKineticVariant(score) {
         const move = Math.hypot(...a.pos.map((v, i) => v - b.pos[i])) / Math.min(a.d, b.d);
         const shiftMove = Math.hypot(a.shift[0] - b.shift[0], a.shift[1] - b.shift[1]) * 2;
         const px = ((turn + move + shiftMove) / (CAM.fov * DEG)) * frame.height;
-        const n = Math.min(CAM.blurSamples, Math.ceil(px / 5));
-        if (n < 2) return null;
+        // Abaixo de ~14 px de rastro a imagem fica nítida (sem fantasmas em movimento lento);
+        // acima, uma amostra a cada ~3 px para o rastro ficar contínuo.
+        if (px < 14) return null;
+        const n = Math.min(CAM.blurSamples, Math.ceil(px / 3));
         return Array.from({ length: n }, (_, i) => evaluate(t0 + ((t1 - t0) * i) / (n - 1)).stage);
       }
 
@@ -821,6 +825,7 @@ export function createKineticVariant(score) {
           rimLux: light.rimLux,
           rimAz: light.rimAz,
           wash: light.wash,
+          floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),
           fill: light.fill,

@@ -77,7 +77,7 @@ export const CAMERA = {
   parallax: 0.15,
 
   // Motion blur de câmera (roteiros com meta.shutter): máximo de instantes somados por quadro.
-  blurSamples: 12,
+  blurSamples: 20,
 };
 
 export const COLORS = {

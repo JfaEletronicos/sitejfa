@@ -203,7 +203,8 @@ function buildContactShadow(halfX, halfZ) {
       void main() {
         vec2 q = abs(vP) - uHalf + 0.05;
         float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - 0.05;
-        float a = d < 0.0 ? 1.0 : exp(-d * 9.0) * 0.75 + exp(-d * 2.2) * 0.25;
+        // Núcleo junto da base (milímetros) e uma penumbra larga em volta (centímetros).
+        float a = d < 0.0 ? 1.0 : exp(-d * 14.0) * 0.55 + exp(-d * 3.0) * 0.45;
         gl_FragColor = vec4(0.0, 0.0, 0.0, a * uOpacity);
       }`,
   });
@@ -431,6 +432,7 @@ export async function createStage({
   // espaço (manchas no chão, queda nas paredes, sombra), em vez de clarear a imagem.
   let contact = null;
   let wash = null;
+  let reflect = null;
   if (white) {
     const box = new THREE.Box3().setFromObject(board);
     const profile = [new THREE.Vector2(0, 0), new THREE.Vector2(36, 0)];
@@ -441,10 +443,64 @@ export async function createStage({
     profile.push(new THREE.Vector2(45, 60));
     const cyc = new THREE.Mesh(
       new THREE.LatheGeometry(profile, 96),
-      new THREE.MeshStandardMaterial({ color: 0xf1f2f4, roughness: 0.92, side: THREE.DoubleSide }),
+      new THREE.MeshStandardMaterial({ color: 0xe6e7e9, roughness: 0.92, side: THREE.DoubleSide }),
     );
     cyc.position.y = box.min.y;
     cyc.receiveShadow = true;
+    // Piso brilhante: reflexo planar da bateria (câmera espelhada, só o produto), desfocado e
+    // sumindo conforme se afasta da base, como num piso de estúdio envernizado.
+    reflect = {
+      target: new THREE.WebGLRenderTarget(1, 1, {
+        type: THREE.HalfFloatType,
+        minFilter: THREE.LinearMipmapLinearFilter,
+        magFilter: THREE.LinearFilter,
+        generateMipmaps: true,
+      }),
+      camera: new THREE.PerspectiveCamera(),
+      matrix: new THREE.Matrix4(),
+      strength: { value: 0 },
+      floorY: box.min.y,
+    };
+    const halfFoot = new THREE.Vector2(
+      (box.max.x - box.min.x) / 2 - 0.15,
+      (box.max.z - box.min.z) / 2 - 0.05,
+    );
+    cyc.material.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, {
+        uRefl: { value: reflect.target.texture },
+        uReflMatrix: { value: reflect.matrix },
+        uReflK: reflect.strength,
+        uHalf: { value: halfFoot },
+        uFloorY: { value: reflect.floorY },
+      });
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vCycW;')
+        .replace(
+          '#include <begin_vertex>',
+          '#include <begin_vertex>\nvCycW = (modelMatrix * vec4(transformed, 1.0)).xyz;',
+        );
+      sh.fragmentShader = sh.fragmentShader
+        .replace(
+          '#include <common>',
+          '#include <common>\nuniform sampler2D uRefl;\nuniform mat4 uReflMatrix;\nuniform float uReflK, uFloorY;\nuniform vec2 uHalf;\nvarying vec3 vCycW;',
+        )
+        .replace(
+          '#include <opaque_fragment>',
+          `float flr = 1.0 - smoothstep(0.0, 0.3, vCycW.y - uFloorY);
+          vec2 fq = abs(vCycW.xz) - uHalf;
+          float fd = max(length(max(fq, 0.0)) + min(max(fq.x, fq.y), 0.0), 0.0);
+          vec4 rp = uReflMatrix * vec4(vCycW, 1.0);
+          vec4 rc = textureLod(uRefl, rp.xy / rp.w, clamp(1.0 + fd * 1.6, 0.0, 6.0));
+          vec3 fv = normalize(cameraPosition - vCycW);
+          float fres = 0.3 + 0.7 * pow(1.0 - max(fv.y, 0.0), 3.0);
+          float rk = uReflK * flr * exp(-fd / 2.2) * fres;
+          outgoingLight = outgoingLight * (1.0 - rc.a * rk) + rc.rgb * rk;
+          #include <opaque_fragment>`,
+        );
+    };
+    board.traverse((o) => {
+      if (o.isMesh) o.layers.enable(1);
+    });
     contact = buildContactShadow((box.max.x - box.min.x) / 2 - 0.15, (box.max.z - box.min.z) / 2 - 0.05);
     contact.position.y = box.min.y + 0.002;
     // Luz de fundo: mancha larga no chão e na parede atrás do produto (silhueta).
@@ -474,6 +530,13 @@ export async function createStage({
     ? new THREE.HemisphereLight(0xffffff, 0x9a9da3, 0)
     : new THREE.HemisphereLight(0x3a64c8, 0x05070a, 0);
   scene.add(fill);
+
+  if (white) {
+    // As luzes também valem no passe do reflexo (camada 1, só o produto).
+    [key, rim, fill, wash].forEach((l) => l.layers.enable(1));
+    key.shadow.radius = 5;
+    key.shadow.blurSamples = 16;
+  }
 
   const camera = new THREE.PerspectiveCamera(30, REF_ASPECT, 0.01, 100);
 
@@ -568,6 +631,7 @@ export async function createStage({
     const h = Math.max(1, Math.round(height * pixelRatio));
     sceneTarget.setSize(w, h);
     accumTarget.setSize(w, h);
+    if (reflect) reflect.target.setSize(Math.max(1, w >> 1), Math.max(1, h >> 1));
     const u = composite.uniforms;
     u.uResolution.value.set(w, h);
     // Desfoque máximo proporcional ao quadro (sutil: <1% do menor lado).
@@ -698,6 +762,41 @@ export async function createStage({
     return dist;
   }
 
+  /** Passe do reflexo do piso: a câmera espelhada no plano do chão vê só o produto. */
+  const tmpFwd = new THREE.Vector3();
+  const tmpUp2 = new THREE.Vector3();
+  function drawScene(s) {
+    if (reflect) {
+      reflect.strength.value = s.floorReflect ?? 0;
+      if (reflect.strength.value > 0) {
+        camera.updateMatrixWorld();
+        const mc = reflect.camera;
+        mc.position.copy(camera.position);
+        mc.position.y = 2 * reflect.floorY - camera.position.y;
+        tmpFwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
+        tmpFwd.y = -tmpFwd.y;
+        tmpUp2.set(0, 1, 0).applyQuaternion(camera.quaternion);
+        tmpUp2.y = -tmpUp2.y;
+        mc.up.copy(tmpUp2);
+        mc.lookAt(tmp.copy(mc.position).add(tmpFwd));
+        mc.projectionMatrix.copy(camera.projectionMatrix);
+        mc.projectionMatrixInverse.copy(camera.projectionMatrixInverse);
+        mc.layers.set(1);
+        mc.updateMatrixWorld();
+        reflect.matrix
+          .set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1)
+          .multiply(mc.projectionMatrix)
+          .multiply(mc.matrixWorldInverse);
+        renderer.setRenderTarget(reflect.target);
+        renderer.clear();
+        renderer.render(scene, mc);
+      }
+    }
+    renderer.setRenderTarget(sceneTarget);
+    renderer.clear();
+    renderer.render(scene, camera);
+  }
+
   /**
    * Desenha um estado da timeline. Com `s.samples` (estados em instantes dentro do tempo de
    * obturador), soma todos: motion blur real da câmera.
@@ -718,9 +817,7 @@ export async function createStage({
       blendMat.uniforms.uWeight.value = 1 / samples.length;
       samples.forEach((ss) => {
         place(ss);
-        renderer.setRenderTarget(sceneTarget);
-        renderer.clear();
-        renderer.render(scene, camera);
+        drawScene(ss);
         renderer.setRenderTarget(accumTarget);
         renderer.render(blendScene, postCamera);
       });
@@ -729,9 +826,7 @@ export async function createStage({
       composite.uniforms.tColor.value = accumTarget.texture;
     } else {
       dist = place(s);
-      renderer.setRenderTarget(sceneTarget);
-      renderer.clear();
-      renderer.render(scene, camera);
+      drawScene(s);
       composite.uniforms.tColor.value = sceneTarget.texture;
     }
 
