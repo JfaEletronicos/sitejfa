@@ -90,9 +90,11 @@ const MACRO = { aperture: 3.0 };
 const WIDE = { aperture: STUDIO.aperture };
 
 // UM plano contínuo em voo livre (6DoF), como um pássaro em volta da bateria: posição e
-// olhar com trajetórias próprias, curvas suaves (spline de curvatura contínua) inclinadas
-// pela aceleração lateral, sem tremida. A velocidade vem do espaçamento entre marcações. O
-// ângulo em volta da bateria só cresce (nunca vai e volta). Unidades de 10 cm.
+// olhar com trajetórias próprias, caminho sem laços e curvas inclinadas pela aceleração
+// lateral, sem tremida. A velocidade de cada trecho vem do espaçamento entre marcações e
+// muda aos poucos (nunca volta nem passa do ponto); `stop` assenta a câmera antes de ela
+// mudar de sentido. O ângulo em volta da bateria só cresce (nunca vai e volta). Unidades
+// de 10 cm.
 export const SHOTS = [
   {
     t: [0, 29.45],
@@ -103,42 +105,46 @@ export const SHOTS = [
       { t: 2.2, pos: [-6.3, 1.3, 15.0], look: [0.35, 1.18, 0] },
       { t: 4.0, pos: [-4.6, 1.55, 12.3], look: [0.15, 1.2, 0] },
       // 02 · revelação: mergulho e fly-by rente ao logotipo...
-      { t: 4.95, pos: [-1.2, 0.8, 4.8], look: [0.6, 1.15, 0.86] },
+      { t: 4.95, pos: [-1.2, 0.8, 4.8], look: [0.3, 1.2, 0.86] },
       { t: 5.5, pos: [0.9, 1.05, 3.5], look: [0.1, 1.3, 0.86] },
       // ...quase parada para ler...
       { t: 6.0, pos: [1.6, 1.4, 3.6], look: [0.0, 1.32, 0.86], lens: 0.95 },
       { t: 6.4, pos: [1.9, 1.6, 3.7], look: [0.2, 1.35, 0.86], lens: 0.95 },
       // ...sobe pela quina da frente até o borne positivo e fica nele, devagar (macro)...
-      { t: 7.15, pos: [2.7, 3.6, 1.7], look: [1.6, 2.3, -0.3] },
-      { t: 7.85, pos: [2.6, 3.5, -0.2], look: [1.85, 2.45, -0.55], lens: 0.95 },
-      { t: 8.85, pos: [2.95, 3.25, -0.95], look: [1.85, 2.42, -0.55], lens: 0.95 },
+      // (lente mais fechada e um pouco mais longe: o giro em volta do borne fica lento).
+      { t: 7.2, pos: [3.3, 3.7, 1.6], look: [1.7, 2.35, -0.35], lens: 0.85 },
+      { t: 7.9, pos: [3.55, 3.9, 0.45], look: [1.85, 2.45, -0.55], lens: 0.72 },
+      { t: 8.9, pos: [3.75, 3.75, -0.3], look: [1.85, 2.42, -0.55], lens: 0.72 },
       // ...mergulha na ponta (orelha e alça)...
-      { t: 9.45, pos: [4.3, 1.6, -1.6], look: [2.3, 1.0, 0] },
+      { t: 9.5, pos: [4.4, 1.7, -1.5], look: [2.3, 1.0, 0] },
       { t: 9.95, pos: [4.1, 1.2, -2.3], look: [2.3, 1.0, 0] },
       // ...fly-by pela traseira (ficha técnica), olhando para trás enquanto avança...
       { t: 10.6, pos: [2.4, 1.25, -3.4], look: [1.7, 1.0, -0.86] },
-      { t: 11.1, pos: [0.6, 1.3, -3.7], look: [1.3, 1.0, -0.86] },
-      // ...contorna a outra ponta, sobe pela frente-esquerda e paira sobre o painel
-      // (display aceso), de cima, com o foco nele...
-      { t: 11.75, pos: [-3.7, 1.9, -2.7], look: [-2.3, 1.2, 0] },
-      { t: 12.45, pos: [-2.25, 4.8, 0.83], look: [-0.4, 2.3, -0.3], lens: 0.6 },
-      { t: 12.9, pos: [-2.0, 5.3, 1.45], look: [-0.08, 2.44, -0.36], lens: 0.55 },
-      { t: 13.4, pos: [-1.8, 5.28, 1.65], look: [-0.08, 2.44, -0.36], lens: 0.55 },
-      { t: 13.9, pos: [-1.6, 5.25, 1.85], look: [-0.08, 2.44, -0.36], lens: 0.55 },
-      // ...e fecha a volta recuando rápido, subindo: proporções.
-      { t: 14.55, pos: [-1.0, 3.0, 7.6], look: [0, 1.3, 0] },
-      { t: 15.35, pos: [2.0, 4.0, 15.0], look: [0, 1.3, 0] },
-      // 03 · cards: 3/4 alto e controlado, deriva lenta.
-      { t: 17.55, pos: [9.0, 5.6, 17.5], look: [0, 1.35, 0] },
-      // 04 · explodida: 3/4 lento, de fora; o olhar sobe com a estrutura aberta, fica na
-      // leitura e desce quando ela se fecha.
-      { t: 17.95, pos: [9.4, 5.9, 16.2], look: [0, 2.4, 0] },
-      { t: 19.75, pos: [9.4, 5.6, 13.0], look: [0, 3.2, 0] },
-      { t: 21.45, pos: [9.8, 5.4, 11.8], look: [0, 3.1, 0] },
-      { t: 22.75, pos: [9.8, 4.2, 11.0], look: [0, 1.6, 0] },
-      // 05 · hero: aproximação lenta e baixa em 3/4 (espaço acima para a mensagem).
-      { t: 24.15, pos: [8.6, 1.2, 9.4], look: [0.2, 1.3, 0], shift: [0, -0.12] },
-      { t: 25.45, pos: [7.1, 0.95, 7.4], look: [0.1, 1.25, 0], shift: [0, -0.08] },
+      // ...contorna a outra ponta subindo aos poucos e chega por cima ao painel (display
+      // aceso), desacelerando até pairar, com o foco nele...
+      { t: 11.15, pos: [0.4, 1.5, -3.9], look: [0.6, 1.05, -0.86] },
+      { t: 11.8, pos: [-3.3, 2.7, -3.0], look: [-1.3, 1.5, -0.5] },
+      { t: 12.45, pos: [-3.4, 4.6, -0.2], look: [-0.5, 2.3, -0.35], lens: 0.65 },
+      { t: 12.85, pos: [-2.45, 5.15, 0.9], look: [-0.15, 2.42, -0.36], lens: 0.57 },
+      { t: 13.1, pos: [-2.1, 5.26, 1.29], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 13.65, pos: [-1.97, 5.27, 1.42], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 14.2, pos: [-1.84, 5.27, 1.55], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 14.5, pos: [-1.6, 5.22, 1.88], look: [-0.06, 2.3, -0.3], lens: 0.6 },
+      // ...e fecha a volta recuando numa espiral que abre e sobe (proporções)...
+      { t: 15.0, pos: [-0.75, 4.75, 5.3], look: [0, 1.7, 0] },
+      { t: 15.6, pos: [1.2, 4.8, 10.4], look: [0, 1.35, 0] },
+      // 03 · cards: a espiral perde velocidade no 3/4 alto, deriva lenta.
+      { t: 16.75, pos: [6.33, 5.5, 17.38], look: [0, 1.35, 0] },
+      // 04 · explodida: 3/4 lento, de fora, fechando devagar em volta; o olhar sobe com a
+      // estrutura aberta, fica na leitura e desce quando ela se fecha.
+      { t: 17.95, pos: [9.2, 5.9, 17.3], look: [0, 2.4, 0] },
+      { t: 19.75, pos: [9.79, 5.65, 14.5], look: [0, 3.2, 0] },
+      { t: 21.45, pos: [9.94, 5.4, 12.28], look: [0, 3.1, 0] },
+      { t: 22.75, pos: [9.9, 4.3, 11.0], look: [0, 1.6, 0] },
+      // 05 · hero: aproximação lenta e baixa em 3/4 (espaço acima para a mensagem), que
+      // assenta antes de recuar.
+      { t: 24.15, pos: [8.67, 1.25, 9.14], look: [0.2, 1.3, 0], shift: [0, -0.12] },
+      { t: 25.45, pos: [7.0, 0.95, 7.27], look: [0.1, 1.25, 0], shift: [0, -0.08], stop: true },
       // 06 · final: afastamento lento, subindo, muito espaço negativo.
       { t: 29.45, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
     ],
@@ -174,13 +180,13 @@ export const SHOTS = [
         [5.3, WIDE],
         [6.0, MACRO],
         [6.6, WIDE],
-        [7.8, MACRO],
-        [8.9, MACRO],
-        [9.4, WIDE],
+        [7.85, MACRO],
+        [8.95, MACRO],
+        [9.45, WIDE],
         [12.3, WIDE],
-        [12.85, MACRO],
-        [13.95, MACRO],
-        [14.45, WIDE],
+        [13.05, MACRO],
+        [14.3, MACRO],
+        [14.85, WIDE],
       ],
     },
   },
@@ -232,9 +238,9 @@ export const CUES = [
   { t: 1.8, id: 'silhueta', label: 'Luz de fundo: silhueta', until: 3.0 },
   { t: 3.0, id: 'luz', label: 'Estúdio acende', until: 4.2 },
   { t: 4.2, id: 'revelacao', label: 'Voo em volta (whooshes)', until: 15.35 },
-  { t: 7.85, id: 'borne', label: 'Borne positivo (macro)', until: 8.85 },
-  { t: 12.9, id: 'display', label: 'Painel (display aceso)', until: 13.9 },
-  { t: 14.55, id: 'recuo', label: 'Recuo rápido (proporções)' },
+  { t: 7.9, id: 'borne', label: 'Borne positivo (macro)', until: 8.9 },
+  { t: 13.1, id: 'display', label: 'Painel (display aceso)', until: 14.2 },
+  { t: 14.5, id: 'recuo', label: 'Recuo (proporções)' },
   { t: 17.95, id: 'explodida', label: 'Peças se separam', until: 19.75 },
   { t: 22.65, id: 'clique', label: 'Clique (bateria fecha)' },
   { t: 25.45, id: 'final', label: 'Afastamento final', until: 29.45 },

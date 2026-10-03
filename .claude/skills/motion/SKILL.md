@@ -122,8 +122,10 @@ está em [referencia.md](referencia.md).
   `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
   nunca vai e volta. Motion blur só quando a imagem anda rápido.
 - Filme da bateria: câmera como um pássaro/mosca voando (6DoF, `flight`), nunca trilho nem
-  órbita perfeita; curvas suaves (spline de curvatura contínua) e inclinadas; nada de tremida
-  ou oscilação de mão; bateria às vezes fora do centro; contraste forte entre lento e rápido.
+  órbita perfeita; curvas suaves e inclinadas, sem laços nem "voltinhas"; velocidade e giro
+  da vista mudando aos poucos (sem trancos ao entrar ou sair de um take lento); nada de
+  tremida ou oscilação de mão; bateria às vezes fora do centro; contraste forte entre lento e
+  rápido.
 - Vista explodida: só movimento 3/4 lento, de fora (sem passar entre as peças).
 - Filme da bateria: o display usa a arte original do cliente (`assets/elitio-pro/display`: face
   "Painel superior" e tela "DISPLAY", acesa); o take do display fica no fim da volta de 360°,

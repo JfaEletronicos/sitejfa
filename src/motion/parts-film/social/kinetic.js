@@ -15,7 +15,7 @@
  * motion), distortion.js e transitions.js (sistemas).
  */
 import './kinetic.css';
-import { EASE, spline, smoothSpline } from '../tracks';
+import { EASE, spline, arcPath, flightPace, smoothTrack } from '../tracks';
 import {
   SOCIAL_MOTION_CONFIG as CFG,
   TYPOGRAPHY as TYPO,
@@ -674,8 +674,8 @@ export function createKineticVariant(score) {
        */
       /**
        * Câmera em voo livre (shot.flight): posição e ponto de olhar com trajetórias próprias
-       * (6DoF), em spline de curvatura contínua (desliza como um pássaro, sem trancos), e
-       * inclinação nas curvas pela aceleração lateral do voo. Sem tremida artificial.
+       * (6DoF), caminho suave sem laços com ritmo próprio (desliza como um pássaro, sem
+       * trancos nem voltas) e inclinação nas curvas pela aceleração lateral do voo.
        * Convertida para alvo + órbita do palco.
        */
       function flightPose(shot, tb) {
@@ -683,19 +683,29 @@ export function createKineticVariant(score) {
           const keys = shot.keys.map((k) => ({
             t: k.t,
             rest: k.rest,
+            stop: k.stop,
             pos: k.pos,
             look: k.look,
             roll: k.roll ?? 0,
             lens: k.lens ?? 1,
             shift: k.shift || [0, 0],
           }));
-          // Posição em curva de curvatura contínua (voo sem trancos); olhar, lente e
-          // enquadramento sem ultrapassagem (entre marcações iguais o olhar fica parado).
-          const path = smoothSpline(keys, ['pos', 'roll']);
-          const aim = spline(keys, ['look', 'lens', 'shift'], { monotone: true });
+          // FORMA e RITMO separados, como num rig de câmera: o caminho no espaço é uma curva
+          // sem laços (arcPath) e a velocidade ao longo dele vem de cada trecho, suavizada
+          // no tempo (flightPace): acelera e freia aos poucos, nunca volta nem passa do
+          // ponto. Olhar, lente e enquadramento sem ultrapassagem e suavizados também
+          // (entre marcações iguais o olhar fica parado).
+          const path = arcPath(keys.map((k) => k.pos));
+          const pace = flightPace(keys, path.knots, shot.pace ?? 0.3);
+          const aim = smoothTrack(
+            spline(keys, ['look', 'lens', 'shift', 'roll'], { monotone: true }),
+            shot.t[0],
+            shot.t[1],
+            shot.aimSmooth ?? 0.22,
+          );
           shot.spline = (t) => {
             const tt = Math.min(Math.max(t, shot.t[0]), shot.t[1]);
-            return { ...path(tt), ...aim(tt) };
+            return { pos: path.at(pace(tt)), ...aim(tt) };
           };
         }
         const at = (t) => shot.spline(t);

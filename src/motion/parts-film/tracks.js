@@ -183,71 +183,159 @@ export function cueState(t, cue) {
 }
 
 /**
- * Spline cúbica natural (curvatura contínua, C2) por marcações no tempo: a aceleração
- * não dá degraus nas marcações, então o voo desliza (sem trancos nem tremidas). Marcações
- * nas pontas com `rest: true` têm velocidade zero (partida/chegada em repouso).
+ * Caminho no espaço (Catmull-Rom centrípeta: sem laços nem bicos entre os pontos), medido
+ * em comprimento de arco. Separa a FORMA do voo do RITMO: `at(s)` devolve o ponto a uma
+ * distância s do início; `knots` são as distâncias de cada ponto de passagem.
  *
- * @param {Array<{t: number, rest?: boolean} & Record<string, number | number[]>>} keys
- * @param {string[]} fields Campos interpolados (números ou vetores).
+ * @param {number[][]} points Pontos de passagem [x, y, z].
  */
-export function smoothSpline(keys, fields) {
-  const n = keys.length;
-  const t = keys.map((k) => k.t);
-  const h = t.slice(1).map((v, i) => v - t[i]);
-  // Derivadas segundas de uma série escalar (sistema tridiagonal, algoritmo de Thomas).
-  const solve = (y) => {
-    const a = new Array(n).fill(0);
-    const b = new Array(n).fill(1);
-    const c = new Array(n).fill(0);
-    const d = new Array(n).fill(0);
-    if (keys[0].rest) {
-      b[0] = 2 * h[0];
-      c[0] = h[0];
-      d[0] = 6 * ((y[1] - y[0]) / h[0]);
-    }
-    for (let i = 1; i < n - 1; i++) {
-      a[i] = h[i - 1];
-      b[i] = 2 * (h[i - 1] + h[i]);
-      c[i] = h[i];
-      d[i] = 6 * ((y[i + 1] - y[i]) / h[i] - (y[i] - y[i - 1]) / h[i - 1]);
-    }
-    if (keys[n - 1].rest) {
-      a[n - 1] = h[n - 2];
-      b[n - 1] = 2 * h[n - 2];
-      d[n - 1] = -6 * ((y[n - 1] - y[n - 2]) / h[n - 2]);
-    }
-    for (let i = 1; i < n; i++) {
-      const m = a[i] / b[i - 1];
-      b[i] -= m * c[i - 1];
-      d[i] -= m * d[i - 1];
-    }
-    const M = new Array(n).fill(0);
-    M[n - 1] = d[n - 1] / b[n - 1];
-    for (let i = n - 2; i >= 0; i--) M[i] = (d[i] - c[i] * M[i + 1]) / b[i];
-    return M;
+export function arcPath(points, samplesPerSegment = 48) {
+  const n = points.length;
+  const P = (i) => points[Math.min(Math.max(i, 0), n - 1)];
+  const sub = (a, b) => a.map((v, k) => v - b[k]);
+  const dist = (a, b) => Math.max(Math.hypot(...sub(a, b)), 1e-6);
+  // Ponto num segmento (Barry–Goldman, parametrização centrípeta).
+  const segPoint = (i, u) => {
+    const p0 = i === 0 ? P(0).map((v, k) => 2 * v - P(1)[k]) : P(i - 1);
+    const p1 = P(i);
+    const p2 = P(i + 1);
+    const p3 = i + 2 > n - 1 ? P(n - 1).map((v, k) => 2 * v - P(n - 2)[k]) : P(i + 2);
+    const t0 = 0;
+    const t1 = t0 + Math.sqrt(dist(p0, p1));
+    const t2 = t1 + Math.sqrt(dist(p1, p2));
+    const t3 = t2 + Math.sqrt(dist(p2, p3));
+    const t = t1 + (t2 - t1) * u;
+    const lerp = (a, b, ta, tb) => a.map((v, k) => ((tb - t) * v + (t - ta) * b[k]) / (tb - ta));
+    const a1 = lerp(p0, p1, t0, t1);
+    const a2 = lerp(p1, p2, t1, t2);
+    const a3 = lerp(p2, p3, t2, t3);
+    const b1 = lerp(a1, a2, t0, t2);
+    const b2 = lerp(a2, a3, t1, t3);
+    return lerp(b1, b2, t1, t2);
   };
-  const series = {};
-  fields.forEach((f) => {
-    const size = Array.isArray(keys[0][f]) ? keys[0][f].length : 1;
-    series[f] = Array.from({ length: size }, (_, c) => {
-      const y = keys.map((k) => (Array.isArray(k[f]) ? k[f][c] : k[f]));
-      return { y, M: solve(y) };
-    });
+  // Tabela de comprimento de arco.
+  const table = [{ s: 0, p: P(0) }];
+  const knots = [0];
+  let s = 0;
+  for (let i = 0; i < n - 1; i++) {
+    let prev = P(i);
+    for (let k = 1; k <= samplesPerSegment; k++) {
+      const p = k === samplesPerSegment ? P(i + 1) : segPoint(i, k / samplesPerSegment);
+      s += Math.hypot(...sub(p, prev));
+      table.push({ s, p });
+      prev = p;
+    }
+    knots.push(s);
+  }
+  const at = (x) => {
+    const target = Math.min(Math.max(x, 0), s);
+    let lo = 0;
+    let hi = table.length - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (table[mid].s < target) lo = mid;
+      else hi = mid;
+    }
+    const a = table[lo];
+    const b = table[hi];
+    const k = b.s > a.s ? (target - a.s) / (b.s - a.s) : 0;
+    return a.p.map((v, j) => v + (b.p[j] - v) * k);
+  };
+  return { at, knots, length: s };
+}
+
+// Suavização gaussiana de uma série amostrada (bordas estendidas com `left`/`right`).
+function gaussian(values, dt, sigma, left = values[0], right = values[values.length - 1]) {
+  if (!(sigma > 0)) return values.slice();
+  const r = Math.ceil((3 * sigma) / dt);
+  const w = [];
+  let sum = 0;
+  for (let j = -r; j <= r; j++) {
+    const x = Math.exp(-0.5 * ((j * dt) / sigma) ** 2);
+    w.push(x);
+    sum += x;
+  }
+  const n = values.length;
+  return values.map((_, i) => {
+    let acc = 0;
+    for (let j = -r; j <= r; j++) {
+      const k = i + j;
+      acc += w[j + r] * (k < 0 ? left : k >= n ? right : values[k]);
+    }
+    return acc / sum;
   });
-  return (time) => {
-    const tt = Math.min(Math.max(time, t[0]), t[n - 1]);
+}
+
+/**
+ * Ritmo do voo: a distância percorrida ao longo do caminho em função do tempo. Em cada trecho
+ * a velocidade é a distância ÷ o tempo entre as marcações (indo a zero numa marcação `stop`
+ * ou `rest`), suavizada no tempo por uma gaussiana de `sigma` segundos: acelera e freia aos
+ * poucos, nunca volta e nunca passa do ponto. Devolve s(t).
+ *
+ * @param {{ t: number, stop?: boolean, rest?: boolean }[]} keys
+ * @param {number[]} knots Distância de cada marcação ao início do caminho.
+ */
+export function flightPace(keys, knots, sigma = 0.3, dt = 1 / 240) {
+  const n = keys.length;
+  const t0 = keys[0].t;
+  const t1 = keys[n - 1].t;
+  const halt = keys.map((k) => !!(k.stop || k.rest));
+  const rawV = (t) => {
     let i = 0;
-    while (i < n - 2 && t[i + 1] < tt) i++;
-    const hi = h[i];
-    const A = (t[i + 1] - tt) / hi;
-    const B = 1 - A;
+    while (i < n - 2 && keys[i + 1].t <= t) i++;
+    const h = keys[i + 1].t - keys[i].t;
+    const avg = (knots[i + 1] - knots[i]) / h;
+    const u = Math.min(Math.max((t - keys[i].t) / h, 0), 1);
+    const a = halt[i];
+    const b = halt[i + 1];
+    if (a && b) return 6 * avg * u * (1 - u);
+    if (b) return 2 * avg * (1 - u);
+    if (a) return 2 * avg * u;
+    return avg;
+  };
+  const count = Math.ceil((t1 - t0) / dt) + 1;
+  const v = Array.from({ length: count }, (_, i) => rawV(t0 + i * dt));
+  const sv = gaussian(v, dt, sigma, halt[0] ? 0 : v[0], halt[n - 1] ? 0 : v[count - 1]);
+  const s = [0];
+  for (let i = 1; i < count; i++) s.push(s[i - 1] + ((sv[i - 1] + sv[i]) / 2) * dt);
+  const k = knots[n - 1] / (s[count - 1] || 1);
+  return (t) => {
+    const x = Math.min(Math.max((t - t0) / dt, 0), count - 1);
+    const i = Math.min(Math.floor(x), count - 2);
+    return (s[i] + (s[i + 1] - s[i]) * (x - i)) * k;
+  };
+}
+
+/**
+ * Suaviza no tempo (gaussiana de `sigma` s) uma trilha `fn(t)` que devolve campos numéricos
+ * ou vetores: tira os cantos das mudanças de alvo, lente e enquadramento sem ultrapassar.
+ */
+export function smoothTrack(fn, t0, t1, sigma, dt = 1 / 240) {
+  const count = Math.ceil((t1 - t0) / dt) + 1;
+  const raw = Array.from({ length: count }, (_, i) => fn(t0 + i * dt));
+  const fields = Object.keys(raw[0]);
+  const tracks = {};
+  fields.forEach((f) => {
+    const size = Array.isArray(raw[0][f]) ? raw[0][f].length : 0;
+    const comps = Math.max(size, 1);
+    tracks[f] = [];
+    for (let c = 0; c < comps; c++)
+      tracks[f].push(
+        gaussian(
+          raw.map((r) => (size ? r[f][c] : r[f])),
+          dt,
+          sigma,
+        ),
+      );
+  });
+  return (t) => {
+    const x = Math.min(Math.max((t - t0) / dt, 0), count - 1);
+    const i = Math.min(Math.floor(x), count - 2);
+    const u = x - i;
     const out = {};
     fields.forEach((f) => {
-      const vals = series[f].map(
-        ({ y, M }) =>
-          A * y[i] + B * y[i + 1] + (((A * A * A - A) * M[i] + (B * B * B - B) * M[i + 1]) * hi * hi) / 6,
-      );
-      out[f] = Array.isArray(keys[0][f]) ? vals : vals[0];
+      const vals = tracks[f].map((tr) => tr[i] + (tr[i + 1] - tr[i]) * u);
+      out[f] = Array.isArray(raw[0][f]) ? vals : vals[0];
     });
     return out;
   };

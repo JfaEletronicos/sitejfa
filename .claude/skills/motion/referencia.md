@@ -32,10 +32,17 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador),
   só quando a imagem anda rápido; nunca atravessa um corte. Máximo em `CAMERA.blurSamples`.
 - Plano em voo livre (`flight: true` no SHOT): marcações `{ t, pos, look, roll, lens, shift }`
-  (posição e ponto de olhar independentes, 6DoF) numa spline de curvatura contínua
-  (`smoothSpline` em tracks.js), com inclinação de curva automática pela aceleração lateral
-  (`bankK`, `maxBank`). A curva pode passar um pouco das marcações: confira por amostragem
-  que a câmera não entra no produto.
+  (posição e ponto de olhar independentes, 6DoF), com inclinação de curva automática pela
+  aceleração lateral (`bankK`, `maxBank`). FORMA e RITMO separados: o caminho passa pelos
+  pontos numa curva sem laços (`arcPath`, Catmull-Rom centrípeta) e a velocidade de cada
+  trecho (distância ÷ tempo entre marcações) é suavizada no tempo (`flightPace`, gaussiana de
+  `pace` s, padrão 0,3): nunca volta nem passa do ponto. Olhar/lente/enquadramento sem
+  ultrapassagem e suavizados (`aimSmooth`, padrão 0,22 s). `stop: true` numa marcação assenta
+  a câmera ali (use quando ela muda de sentido); `rest: true` no fim. Para um take lento,
+  ponha marcações de desaceleração antes e de aceleração depois (a suavização espalha a
+  velocidade dos trechos vizinhos uns 0,6 s). Confira velocidade, aceleração e giro da vista
+  por amostragem (meta: aceleração ≲ 10 un/s², giro ≲ 80°/s nos trechos rápidos e ≲ 15°/s nos
+  takes de detalhe) e que a câmera não entra no produto.
 - `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
   na vertical (unidades de cena).
 
