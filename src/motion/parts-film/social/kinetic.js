@@ -814,26 +814,29 @@ export function createKineticVariant(score) {
 
       /**
        * Motion blur de câmera (roteiros com meta.shutter, em s): quando a câmera anda rápido,
-       * o palco soma vários instantes dentro do tempo de obturador. O número de amostras acompanha o
+       * o palco soma vários instantes dentro do tempo de obturador. O obturador pode abrir mais
+       * em trechos marcados (`shutter` nas marcações de luz do plano: rastro de alta
+       * velocidade nos deslocamentos de um ponto a outro). O número de amostras acompanha o
        * quanto a imagem se desloca na tela; parada ou lenta, uma amostra só (nítido).
        * As amostras nunca atravessam um corte (ficam dentro do plano atual).
        */
       function blurSamples(tb) {
-        const shutter = meta.shutter || 0;
-        if (!CFG.motionBlur || !shutter) return null;
+        if (!CFG.motionBlur || !meta.shutter) return null;
         const shot = shotAt(tb);
+        const shutter = lightAt(shot, tb).shutter ?? meta.shutter;
         const t0 = Math.max(shot.t[0], tb - shutter / 2);
         const t1 = Math.min(shot.t[1] - 1e-4, tb + shutter / 2);
         if (t1 <= t0) return null;
         const pose = (t) => {
           const st = evaluate(t).stage;
           if (st.hidden) return null;
-          const { az, el, logDist, target } = st.cam;
+          const { az, el, logDist, target, fov } = st.cam;
           const d = Math.exp(logDist);
           const a = az * DEG;
           const e = el * DEG;
           const dir = [Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e)];
-          return { st, d, pos: target.map((v, i) => v + dir[i] * d), dir, shift: [st.shiftX, st.shift] };
+          const pos = target.map((v, i) => v + dir[i] * d);
+          return { st, d, pos, dir, fov: fov || CAM.fov, shift: [st.shiftX, st.shift] };
         };
         const a = pose(t0);
         const b = pose(t1);
@@ -846,11 +849,12 @@ export function createKineticVariant(score) {
         );
         const move = Math.hypot(...a.pos.map((v, i) => v - b.pos[i])) / Math.min(a.d, b.d);
         const shiftMove = Math.hypot(a.shift[0] - b.shift[0], a.shift[1] - b.shift[1]) * 2;
-        const px = ((turn + move + shiftMove) / (CAM.fov * DEG)) * frame.height;
-        // Abaixo de ~14 px de rastro a imagem fica nítida (sem fantasmas em movimento lento);
-        // acima, uma amostra a cada ~3 px para o rastro ficar contínuo.
-        if (px < 14) return null;
-        const n = Math.min(CAM.blurSamples, Math.ceil(px / 3));
+        // Rastro em px de um quadro de 1920 de altura (mesma régua em qualquer resolução).
+        const px = ((turn + move + shiftMove) / (Math.min(a.fov, b.fov) * DEG)) * 1920;
+        // Abaixo de ~24 px de rastro a imagem fica nítida; acima, uma amostra a cada ~16 px
+        // (o palco arrasta cada amostra até as vizinhas, então o rastro sai contínuo).
+        if (px < 24) return null;
+        const n = Math.min(CAM.blurSamples, Math.max(2, Math.ceil(px / 16)));
         return Array.from({ length: n }, (_, i) => evaluate(t0 + ((t1 - t0) * i) / (n - 1)).stage);
       }
 

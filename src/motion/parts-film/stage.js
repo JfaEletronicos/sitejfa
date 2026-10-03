@@ -622,7 +622,10 @@ export async function createStage({
   });
 
   // Motion blur de câmera de verdade: vários instantes dentro do tempo de obturador
-  // somados aqui (a câmera anda entre eles; o produto, parado, fica nítido onde deve).
+  // somados aqui (a câmera anda entre eles; o produto, parado, fica nítido onde deve). Cada
+  // instante é arrastado na tela até a metade do caminho para o instante vizinho (pela
+  // profundidade de cada pixel e as câmeras dos dois instantes), então o rastro sai
+  // contínuo, sem cópias fantasmas, mesmo com poucos instantes.
   const accumTarget = new THREE.WebGLRenderTarget(1, 1, {
     type: THREE.HalfFloatType,
     minFilter: THREE.LinearMipmapLinearFilter,
@@ -633,10 +636,59 @@ export async function createStage({
     vertexShader: COMPOSITE_VERT,
     fragmentShader: /* glsl */ `
       uniform sampler2D tSrc;
+      uniform sampler2D tDepth;
+      uniform mat4 uInvViewProj;
+      uniform mat4 uPrevViewProj;
+      uniform mat4 uNextViewProj;
+      uniform float uHasPrev;
+      uniform float uHasNext;
       uniform float uWeight;
+      uniform float uSeed;
+      uniform vec2 uResolution;
       varying vec2 vUv;
-      void main() { gl_FragColor = texture2D(tSrc, vUv) * uWeight; }`,
-    uniforms: { tSrc: { value: sceneTarget.texture }, uWeight: { value: 1 } },
+      // Onde o ponto do mundo cai na tela de outra câmera (deslocamento em uv; 0 se atrás).
+      vec2 flowTo(mat4 vp, vec3 w) {
+        vec4 c = vp * vec4(w, 1.0);
+        if (c.w <= 1e-4) return vec2(0.0);
+        vec2 d = (c.xy / c.w) * 0.5 + 0.5 - vUv;
+        float l = length(d);
+        return l > 0.25 ? d * (0.25 / l) : d;
+      }
+      void main() {
+        float depth = texture2D(tDepth, vUv).x;
+        vec4 w = uInvViewProj * vec4(vUv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+        w.xyz /= w.w;
+        vec2 dn = flowTo(uNextViewProj, w.xyz);
+        vec2 dp = flowTo(uPrevViewProj, w.xyz);
+        if (uHasPrev < 0.5) dp = -dn;
+        if (uHasNext < 0.5) dn = -dp;
+        // Durante a sua fatia do obturador o pixel vê os pontos que estavam entre
+        // vUv - dn/2 (fim da fatia) e vUv - dp/2 (começo).
+        vec2 a = -0.5 * dn;
+        vec2 b = -0.5 * dp;
+        float len = length((b - a) * uResolution);
+        int taps = int(clamp(ceil(len / 1.5), 1.0, 32.0));
+        float j = fract(52.9829189 * fract(dot(gl_FragCoord.xy + uSeed, vec2(0.06711056, 0.00583715))));
+        vec4 acc = vec4(0.0);
+        for (int i = 0; i < 32; i++) {
+          if (i >= taps) break;
+          float k = taps == 1 ? 0.5 : (float(i) + j) / float(taps);
+          acc += textureLod(tSrc, vUv + mix(a, b, k), 0.0);
+        }
+        gl_FragColor = acc / float(taps) * uWeight;
+      }`,
+    uniforms: {
+      tSrc: { value: sceneTarget.texture },
+      tDepth: { value: sceneTarget.depthTexture },
+      uInvViewProj: { value: new THREE.Matrix4() },
+      uPrevViewProj: { value: new THREE.Matrix4() },
+      uNextViewProj: { value: new THREE.Matrix4() },
+      uHasPrev: { value: 0 },
+      uHasNext: { value: 0 },
+      uWeight: { value: 1 },
+      uSeed: { value: 0 },
+      uResolution: { value: new THREE.Vector2(1, 1) },
+    },
     depthTest: false,
     depthWrite: false,
     blending: THREE.CustomBlending,
@@ -702,6 +754,7 @@ export async function createStage({
     const h = Math.max(1, Math.round(height * pixelRatio));
     sceneTarget.setSize(w, h);
     accumTarget.setSize(w, h);
+    blendMat.uniforms.uResolution.value.set(w, h);
     if (reflect) reflect.target.setSize(Math.max(1, w >> 1), Math.max(1, h >> 1));
     const u = composite.uniforms;
     u.uResolution.value.set(w, h);
@@ -869,9 +922,18 @@ export async function createStage({
     renderer.render(scene, camera);
   }
 
+  // Matrizes de projeção × vista de cada instante do obturador (reaproveitadas).
+  const sampleViewProj = [];
+  const viewProjOf = (ss, i) => {
+    place(ss);
+    camera.updateMatrixWorld();
+    if (!sampleViewProj[i]) sampleViewProj[i] = new THREE.Matrix4();
+    return sampleViewProj[i].multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  };
+
   /**
    * Desenha um estado da timeline. Com `s.samples` (estados em instantes dentro do tempo de
-   * obturador), soma todos: motion blur real da câmera.
+   * obturador), soma todos, cada um arrastado até os vizinhos: motion blur real da câmera.
    */
   function render(s) {
     if (s.hidden) {
@@ -886,10 +948,22 @@ export async function createStage({
       renderer.autoClear = false;
       renderer.setRenderTarget(accumTarget);
       renderer.clear();
-      blendMat.uniforms.uWeight.value = 1 / samples.length;
-      samples.forEach((ss) => {
-        place(ss);
-        drawScene(ss);
+      const n = samples.length;
+      samples.forEach((ss, i) => viewProjOf(ss, i));
+      const bu = blendMat.uniforms;
+      bu.uWeight.value = 1 / n;
+      // O instante do meio por último: a profundidade que fica (foco) é a do quadro.
+      const mid = Math.floor((n - 1) / 2);
+      const order = [...Array(n).keys()].filter((i) => i !== mid).concat(mid);
+      order.forEach((i) => {
+        place(samples[i]);
+        drawScene(samples[i]);
+        bu.uInvViewProj.value.copy(sampleViewProj[i]).invert();
+        bu.uPrevViewProj.value.copy(sampleViewProj[Math.max(i - 1, 0)]);
+        bu.uNextViewProj.value.copy(sampleViewProj[Math.min(i + 1, n - 1)]);
+        bu.uHasPrev.value = i > 0 ? 1 : 0;
+        bu.uHasNext.value = i < n - 1 ? 1 : 0;
+        bu.uSeed.value = i * 17;
         renderer.setRenderTarget(accumTarget);
         renderer.render(blendScene, postCamera);
       });

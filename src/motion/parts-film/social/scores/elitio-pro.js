@@ -7,7 +7,8 @@
  * A bateria nunca se move; a vista explodida é a única exceção. Estúdio branco em 3D
  * (ciclorama iluminado pelas luzes do set, piso brilhante com reflexo), luz e reflexos
  * presos ao mundo (studio: 'white' no palco) e motion blur de câmera real só quando a
- * imagem anda rápido (meta.shutter).
+ * imagem anda rápido (meta.shutter), com o obturador bem aberto nos deslocamentos entre os
+ * takes (rastro de alta velocidade; `shutter` nas marcações de luz).
  * Modelo do CAD original da caixa (public/models/elitio-pro.glb, montado por
  * tools/motion/build-elitio-pro.mjs), em pé, em unidades de 10 cm (475 × 240 × 170 mm).
  *
@@ -88,6 +89,10 @@ const STUDIO = {
 // Profundidade de campo nos closes (foco no alvo da câmera).
 const MACRO = { aperture: 3.0 };
 const WIDE = { aperture: STUDIO.aperture };
+// Obturador: normal nos takes (nítidos) e bem aberto nos deslocamentos de um ponto a
+// outro, para o rastro de alta velocidade (o motion blur só aparece onde a imagem anda).
+const TAKE = { shutter: 1 / 30 };
+const RUSH = { shutter: 1 / 10 };
 
 // UM plano contínuo em voo livre (6DoF), como um pássaro em volta da bateria: posição e
 // olhar com trajetórias próprias, caminho sem laços e curvas inclinadas pela aceleração
@@ -187,6 +192,24 @@ export const SHOTS = [
         [13.05, MACRO],
         [14.3, MACRO],
         [14.85, WIDE],
+        // Rastro de velocidade entre os takes: mergulho até o logotipo, logotipo → borne,
+        // borne → ponta → traseira → outra ponta → display, e o recuo depois do display.
+        [3.7, TAKE],
+        [4.25, RUSH],
+        [5.4, RUSH],
+        [5.85, TAKE],
+        [6.35, TAKE],
+        [6.7, RUSH],
+        [7.3, RUSH],
+        [7.7, TAKE],
+        [8.6, TAKE],
+        [8.95, RUSH],
+        [12.55, RUSH],
+        [13.0, TAKE],
+        [14.2, TAKE],
+        [14.5, RUSH],
+        [15.4, RUSH],
+        [16.0, TAKE],
       ],
     },
   },
