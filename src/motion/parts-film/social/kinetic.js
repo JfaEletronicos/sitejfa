@@ -460,6 +460,7 @@ export function createKineticVariant(score) {
     fx: FX,
     cues: CUES,
     explode: EXPLODE = {},
+    passes: PASSES = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -803,6 +804,61 @@ export function createKineticVariant(score) {
         };
       }
 
+      /**
+       * Passagem de luz do take (roteiros com `passes`): UMA luz por vez, andando devagar e em
+       * velocidade constante pelo caminho `path` enquanto mira `aim`; entra e sai em `fade` s.
+       * `lux`: spot com sombra (acende etiquetas e metais onde passa); `glint`: brilho da faixa
+       * fina de softbox (a linha de luz que corre pelo black piano, de través ao caminho);
+       * `beam`: feixe no ar; `dust`: poeira dentro do feixe. A faixa fica na posição do
+       * reflexo; o spot (e o feixe) sobe `tilt` graus em volta do alvo, para acender o que
+       * passa sem estourar um ponto de brilho no meio do verniz.
+       */
+      const passPaths = new Map();
+      const passTrack = (pts) => {
+        if (!Array.isArray(pts[0])) return () => pts;
+        if (!passPaths.has(pts)) passPaths.set(pts, arcPath(pts));
+        const path = passPaths.get(pts);
+        return (u) => path.at(u * path.length);
+      };
+      function passAt(tb) {
+        const p = PASSES.find((x) => tb >= x.t[0] && tb <= x.t[1]);
+        if (!p) return { lux: 0, time: tb };
+        const [t0, t1] = p.t;
+        const fade = p.fade ?? 0.7;
+        const env = Math.min(EASE.soft(clamp01((tb - t0) / fade)), EASE.soft(clamp01((t1 - tb) / fade)));
+        const u = (tb - t0) / (t1 - t0);
+        const along = passTrack(p.path);
+        const a = along(Math.max(u - 0.02, 0));
+        const b = along(Math.min(u + 0.02, 1));
+        const pos = along(u);
+        const aim = passTrack(p.aim)(u);
+        const v = pos.map((x, i) => x - aim[i]);
+        const d = Math.hypot(...v) || 1;
+        const tilt = (p.tilt ?? 40) * DEG;
+        const el = Math.asin(Math.max(-1, Math.min(1, v[1] / d)));
+        const az = Math.atan2(v[0], v[2]);
+        // Já alto: gira de lado em volta do alvo; senão, sobe.
+        const [sEl, sAz] = el + tilt <= 80 * DEG ? [el + tilt, az] : [el, az + tilt];
+        const spot = [
+          aim[0] + d * Math.cos(sEl) * Math.sin(sAz),
+          aim[1] + d * Math.sin(sEl),
+          aim[2] + d * Math.cos(sEl) * Math.cos(sAz),
+        ];
+        return {
+          pos,
+          aim,
+          spot,
+          dir: b.map((v, i) => v - a[i]),
+          lux: (p.lux ?? 0.9) * env,
+          glint: (p.glint ?? 24) * env,
+          strip: p.strip ?? [3.2, 0.14],
+          angle: p.angle ?? 12,
+          beam: (p.beam ?? 0.25) * env,
+          dust: (p.dust ?? 1) * env,
+          time: tb,
+        };
+      }
+
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
       function explodeAt(tb) {
         const out = {};
@@ -901,7 +957,7 @@ export function createKineticVariant(score) {
           rimLux: light.rimLux,
           rimAz: light.rimAz,
           wash: light.wash,
-          beams: light.beams,
+          pass: passAt(tb),
           floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),

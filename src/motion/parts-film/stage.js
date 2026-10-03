@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { surfaceDetail } from './surface-detail';
 
 const DEG = Math.PI / 180;
@@ -138,10 +139,10 @@ function buildStudioEnvironment(renderer) {
 }
 
 /**
- * Estúdio branco (variante da bateria): sala cinza-média, chão claro que rebate luz e
- * softboxes grandes de bordas suaves (teto, faixas laterais e um anel de painéis verticais)
- * com recortes pretos entre elas, como num set de produto. Os reflexos no black piano ficam
- * desenhados (forma de softbox) sem lavar a caixa de cinza. Nenhuma imagem é usada.
+ * Estúdio branco (variante da bateria): sala em meia-luz, chão claro que rebate luz, uma
+ * softbox grande e suave no alto e dois rebatedores laterais fracos e fixos. Só o
+ * suficiente para o black piano ter forma; o brilho que anda vem da passagem de luz de cada
+ * take (uma luz por vez), não do ambiente. Nenhuma imagem é usada.
  */
 function buildWhiteStudioEnvironment(renderer) {
   const env = new THREE.Scene();
@@ -150,10 +151,10 @@ function buildWhiteStudioEnvironment(renderer) {
   env.add(
     new THREE.Mesh(
       new THREE.BoxGeometry(10, 10, 10),
-      new THREE.MeshBasicMaterial({ color: 0x2a2d32, side: THREE.BackSide }),
+      new THREE.MeshBasicMaterial({ color: 0x1c1e22, side: THREE.BackSide }),
     ),
   );
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), basic(0.24));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), basic(0.2));
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -4.9;
   env.add(floor);
@@ -163,15 +164,9 @@ function buildWhiteStudioEnvironment(renderer) {
     m.lookAt(0, 0, 0);
     env.add(m);
   };
-  box(5, 3.2, 1.3, [0, 4.8, 0.4]);
-  for (let k = 0; k < 8; k++) {
-    const a = (k / 8) * Math.PI * 2 + 0.2;
-    box(2.2, 4.2, k % 2 ? 1.6 : 1.0, [Math.cos(a) * 4.9, 0.4, Math.sin(a) * 4.9]);
-  }
-  box(1.1, 6, 1.5, [-4.8, 1.2, 1.6]);
-  box(1.1, 6, 1.2, [4.8, 1.0, -1.2]);
-  box(6, 1.2, 1.1, [0, 1.6, 4.8]);
-  box(5, 1.0, 0.8, [0, 1.2, -4.8]);
+  box(5, 3.2, 1.1, [0, 4.8, 0.4]);
+  box(1.6, 5, 0.42, [-4.8, 0.8, 1.4]);
+  box(1.6, 5, 0.3, [4.8, 0.8, -1.4]);
   const pmrem = new THREE.PMREMGenerator(renderer);
   const target = pmrem.fromScene(env, 0.035, 0.1, 100);
   pmrem.dispose();
@@ -185,15 +180,13 @@ function buildWhiteStudioEnvironment(renderer) {
 }
 
 /**
- * Feixe de luz no ar (set de cinema): cone aberto da fonte até o chão, somado à imagem, mais
- * forte perto da fonte e no miolo do cone, com variação lenta (poeira/fumaça leve). Shader.
+ * Feixe de luz no ar: cone aberto da fonte para onde a luz aponta, somado à imagem, mais
+ * forte perto da fonte e no miolo do cone, com variação lenta (fumaça leve). Cone unitário
+ * (ponta na origem, base de raio 1 em y = -1) posto no lugar a cada quadro por `aimBeam`.
  */
-function buildBeam(from, to, rBottom) {
-  const a = new THREE.Vector3(...from);
-  const b = new THREE.Vector3(...to);
-  const len = a.distanceTo(b);
-  const geo = new THREE.CylinderGeometry(0.22, rBottom, len, 48, 1, true);
-  geo.translate(0, -len / 2, 0);
+function buildBeam() {
+  const geo = new THREE.CylinderGeometry(0.03, 1, 1, 48, 1, true);
+  geo.translate(0, -0.5, 0);
   const mat = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -212,7 +205,7 @@ function buildBeam(from, to, rBottom) {
         vAlong = uv.y;
         vec4 w = modelMatrix * vec4(position, 1.0);
         vW = w.xyz;
-        vN = normalize(mat3(modelMatrix) * normal);
+        vN = normalize(transpose(inverse(mat3(modelMatrix))) * normal);
         gl_Position = projectionMatrix * viewMatrix * w;
       }`,
     fragmentShader: /* glsl */ `
@@ -229,10 +222,87 @@ function buildBeam(from, to, rBottom) {
       }`,
   });
   const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.copy(a);
-  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), b.clone().sub(a).normalize());
   mesh.renderOrder = 5;
+  mesh.frustumCulled = false;
   return mesh;
+}
+
+/**
+ * Poeira no ar que só aparece dentro do feixe (brilha ao atravessar a luz e some fora dela),
+ * flutuando devagar. Pontos somados à imagem; posição calculada no shader pelo tempo.
+ */
+function buildDust(count = 2400) {
+  const pos = new Float32Array(count * 3);
+  const seed = new Float32Array(count);
+  let r = 0x9e3779b9;
+  const rnd = () => {
+    r ^= r << 13;
+    r ^= r >>> 17;
+    r ^= r << 5;
+    return (r >>> 0) / 4294967296;
+  };
+  for (let i = 0; i < count; i++) {
+    pos[i * 3] = -9 + rnd() * 18;
+    pos[i * 3 + 1] = 0.2 + rnd() * 11;
+    pos[i * 3 + 2] = -7 + rnd() * 16;
+    seed[i] = rnd();
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.CustomBlending,
+    blendSrc: THREE.OneFactor,
+    blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.ZeroFactor,
+    blendDstAlpha: THREE.OneFactor,
+    uniforms: {
+      uOpacity: { value: 0 },
+      uTime: { value: 0 },
+      uApex: { value: new THREE.Vector3() },
+      uAxis: { value: new THREE.Vector3(0, -1, 0) },
+      uCos: { value: 0.98 },
+      uLen: { value: 10 },
+      uProj: { value: 800 },
+    },
+    vertexShader: /* glsl */ `
+      attribute float seed;
+      uniform float uTime, uCos, uLen, uProj;
+      uniform vec3 uApex, uAxis;
+      varying float vLit;
+      void main() {
+        float t = uTime;
+        vec3 p = position + vec3(
+          sin(t * 0.13 + seed * 31.0) * 0.45,
+          sin(t * 0.09 + seed * 17.0) * 0.3 - t * 0.02,
+          cos(t * 0.11 + seed * 23.0) * 0.45);
+        p.y = 0.2 + mod(p.y - 0.2, 11.0);
+        vec3 d = p - uApex;
+        float along = dot(d, uAxis);
+        float c = along / max(length(d), 1e-3);
+        float inside = smoothstep(uCos, mix(uCos, 1.0, 0.35), c) * step(0.0, along) * (1.0 - smoothstep(uLen * 0.8, uLen, along));
+        float twinkle = 0.55 + 0.45 * sin(t * (0.6 + seed) + seed * 40.0);
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        float px = (0.006 + 0.01 * fract(seed * 7.3)) * uProj / max(-mv.z, 0.05);
+        vLit = inside * twinkle * min(px * px, 1.0);
+        gl_PointSize = clamp(px, 1.0, 6.0);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform float uOpacity;
+      varying float vLit;
+      void main() {
+        vec2 q = gl_PointCoord * 2.0 - 1.0;
+        float a = max(1.0 - dot(q, q), 0.0);
+        gl_FragColor = vec4(vec3(1.0, 0.96, 0.9) * uOpacity * vLit * a * a, 0.0);
+      }`,
+  });
+  const points = new THREE.Points(geo, mat);
+  points.frustumCulled = false;
+  points.renderOrder = 6;
+  return points;
 }
 
 /** Sombra de contato: escurecimento suave em volta da pegada do produto no chão (shader). */
@@ -490,7 +560,7 @@ export async function createStage({
   let contact = null;
   let wash = null;
   let reflect = null;
-  let beams = [];
+  let pass = null;
   if (white) {
     const box = new THREE.Box3().setFromObject(board);
     const profile = [new THREE.Vector2(0, 0), new THREE.Vector2(36, 0)];
@@ -570,15 +640,21 @@ export async function createStage({
     wash.position.set(0, 16, 16);
     wash.target.position.set(1.5, 0, -14);
     scene.add(cyc, contact, wash, wash.target);
-    {
-      // Feixes no ar (opacidade pela timeline, 0 = sem feixe): da luz de cima (alto, à
-      // esquerda e à frente) e um contraluz alto atrás.
-      beams = [
-        buildBeam([-2.4, 13.2, 4.2], [0.3, 0, -0.2], 3.0),
-        buildBeam([5, 13, -9], [-0.5, 0, 0.6], 2.4),
-      ];
-      scene.add(...beams);
-    }
+    // Passagem de luz (uma por take): spot com sombra que acende onde passa, uma faixa de
+    // softbox no mesmo lugar (o brilho que corre pelo black piano, pelo display e pelos
+    // metais) e o feixe visível no ar com poeira brilhando dentro dele.
+    RectAreaLightUniformsLib.init();
+    const spot = new THREE.SpotLight(0xfff3e6, 0, 0, 12 * DEG, 0.75, 2);
+    spot.castShadow = true;
+    spot.shadow.mapSize.set(1024, 1024);
+    spot.shadow.bias = -0.00006;
+    spot.shadow.normalBias = 0.001;
+    spot.shadow.radius = 4;
+    spot.shadow.camera.near = 0.5;
+    spot.shadow.camera.far = 40;
+    const strip = new THREE.RectAreaLight(0xfff6ee, 0, 2.4, 0.5);
+    pass = { spot, strip, beam: buildBeam(), dust: buildDust() };
+    scene.add(spot, spot.target, strip, pass.beam, pass.dust);
   }
 
   // Luz principal: spot suave com sombra (recorte de luz de estúdio).
@@ -604,7 +680,7 @@ export async function createStage({
 
   if (white) {
     // As luzes também valem no passe do reflexo (camada 1, só o produto).
-    [key, rim, fill, wash].forEach((l) => l.layers.enable(1));
+    [key, rim, fill, wash, pass.spot, pass.strip].forEach((l) => l.layers.enable(1));
     key.shadow.radius = 5;
     key.shadow.blurSamples = 16;
   }
@@ -784,6 +860,63 @@ export async function createStage({
    *   `orbit` ({ yaw, pitch } em graus, eixos da tela)
    *   e `fx` ({ wave, waveFreq, wavePhase, chroma, blur: [x, y] }, em pixels do quadro).
    */
+  /**
+   * Passagem de luz do take: a faixa de softbox na posição do reflexo (o brilho que corre)
+   * e o spot com o feixe e a poeira um pouco acima dela, mirando o mesmo ponto.
+   */
+  const passDir = new THREE.Vector3();
+  const passFrom = new THREE.Vector3();
+  const passGlint = new THREE.Vector3();
+  const passAim = new THREE.Vector3();
+  const DOWN = new THREE.Vector3(0, -1, 0);
+  function placePass(ps) {
+    const { spot, strip, beam, dust } = pass;
+    const on = ps && (ps.lux > 0 || ps.glint > 0) && ps.pos;
+    if (!on) {
+      spot.intensity = 0;
+      strip.intensity = 0;
+      beam.visible = false;
+      dust.visible = false;
+      return;
+    }
+    passFrom.fromArray(ps.spot || ps.pos);
+    passGlint.fromArray(ps.pos);
+    passAim.fromArray(ps.aim);
+    const d = passFrom.distanceTo(passAim);
+    passDir.subVectors(passAim, passFrom).normalize();
+    spot.position.copy(passFrom);
+    spot.target.position.copy(passAim);
+    spot.target.updateMatrixWorld();
+    spot.angle = ps.angle * DEG;
+    spot.intensity = ps.lux * d * d;
+    // Faixa fina de través ao caminho: a linha de brilho atravessa a superfície (em vez de
+    // escorregar ao longo de si mesma).
+    strip.position.copy(passGlint);
+    strip.up.fromArray(ps.dir || [0, 1, 0]);
+    if (strip.up.lengthSq() < 1e-8) strip.up.set(0, 1, 0);
+    strip.up.normalize();
+    strip.lookAt(passAim);
+    strip.width = ps.strip[0];
+    strip.height = ps.strip[1];
+    strip.intensity = ps.glint;
+    // O feixe vai até o chão (ou bem além do alvo, se a luz vier de lado).
+    const len = passDir.y < -0.05 ? Math.min(passFrom.y / -passDir.y, d * 2.5) : d * 1.6;
+    const radius = Math.tan(ps.angle * DEG) * len;
+    beam.visible = ps.beam > 0;
+    beam.position.copy(passFrom);
+    beam.quaternion.setFromUnitVectors(DOWN, passDir);
+    beam.scale.set(radius, len, radius);
+    beam.material.uniforms.uOpacity.value = ps.beam;
+    const du = dust.material.uniforms;
+    dust.visible = ps.dust > 0;
+    du.uOpacity.value = ps.dust;
+    du.uTime.value = ps.time;
+    du.uApex.value.copy(passFrom);
+    du.uAxis.value.copy(passDir);
+    du.uCos.value = Math.cos(ps.angle * DEG * 1.1);
+    du.uLen.value = len;
+  }
+
   /** Posiciona produto, camadas, câmera e luzes para um estado; devolve a distância da câmera. */
   function place(s) {
     const aspect = size.width / size.height;
@@ -836,6 +969,10 @@ export async function createStage({
     camera.projectionMatrix.elements[8] = -2 * (s.shiftX || 0);
     camera.projectionMatrix.elements[9] = -2 * s.shift;
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+    if (pass) {
+      const h = size.height * renderer.getPixelRatio();
+      pass.dust.material.uniforms.uProj.value = h / (2 * Math.tan((camera.fov * DEG) / 2));
+    }
 
     const kaz = s.keyAz * DEG;
     const kel = s.keyEl * DEG;
@@ -859,8 +996,8 @@ export async function createStage({
       scene.environmentIntensity = s.env;
       scene.environmentRotation.set(0, s.sweep * DEG, 0);
       wash.intensity = s.wash ?? 0;
-      beams.forEach((b) => (b.material.uniforms.uOpacity.value = s.beams ?? 0));
       contact.material.uniforms.uOpacity.value = s.contact ?? 0;
+      placePass(s.pass);
     } else {
       // Luz principal: segue o alvo da câmera, um pouco à frente do caminho.
       key.target.position.set(tmpTarget.x + s.keyLead, 0, tmpTarget.z);

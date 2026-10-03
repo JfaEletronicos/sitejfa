@@ -62,12 +62,10 @@ export const SPACES = {
   1: { yaw: 0 },
 };
 
-// Estúdio aceso: luz de cima com sombra, contraluz, rebatimento das paredes, reflexos das
-// softboxes, luz de fundo e piso brilhante. Níveis contidos (nada estoura).
 // Estúdio branco com luz de cinema (referência: vídeo da hero da home): luz baixa, uma
 // mancha de luz de cima no chão e a queda para as paredes em meia-luz, recortes nas
-// arestas, faixas de luz correndo pelo black piano (passagens de luz) e feixes leves no ar.
-// Foco raso.
+// arestas e reflexos parados (o ambiente não gira). O que anda é a passagem de luz de cada
+// take (PASSES): uma luz por vez, devagar. Foco raso.
 const STUDIO = {
   keyLux: 0.6,
   keyAz: -30,
@@ -80,7 +78,6 @@ const STUDIO = {
   wash: 0.14,
   contact: 0.9,
   floorReflect: 0.4,
-  beams: 0.1,
   aperture: 1.0,
   bloom: 0,
   sweep: 15,
@@ -169,19 +166,13 @@ export const SHOTS = [
             wash: 0,
             contact: 0,
             floorReflect: 0,
-            beams: 0,
           },
         ],
         [0.4, { wash: 0 }],
-        // Primeiro o fundo (silhueta) e os feixes no ar; depois as arestas e as faixas de luz.
-        [1.8, { wash: 0.3, beams: 0.04, rimLux: 0, keyLux: 0, env: 0, fill: 0, contact: 0.3 }],
+        // Primeiro o fundo (silhueta); depois as arestas e a luz de cima.
+        [1.8, { wash: 0.3, rimLux: 0, keyLux: 0, env: 0, fill: 0, contact: 0.3 }],
         [3.0, { rimLux: 1.4, keyLux: 0.25, env: 0.3, contact: 0.7, fill: 0.03, floorReflect: 0.25 }],
         [4.2, { ...STUDIO }],
-        // Passagens de luz: as faixas do set giram devagar e correm pelas superfícies.
-        [9.0, { sweep: 75 }],
-        [15.35, { sweep: 140 }],
-        [22.75, { sweep: 215 }],
-        [29.45, { sweep: 275 }],
         [5.3, WIDE],
         [6.0, MACRO],
         [6.6, WIDE],
@@ -212,6 +203,132 @@ export const SHOTS = [
         [16.0, TAKE],
       ],
     },
+  },
+];
+
+// Passagens de luz: UMA por take, lenta, com o feixe visível no ar (e poeira brilhando
+// dentro dele). A luz anda pelo caminho `path` mirando `aim`; o caminho foi calculado pelo
+// reflexo (posição da câmera em cada take) para o brilho atravessar devagar a parte em
+// destaque: aresta de cima na silhueta, logotipo, tampa até o borne, vidro do display,
+// aresta no 3/4 alto, tampa erguida na explodida, frente no hero e aresta no final.
+// Onde ela passa, acende etiquetas, metais e a textura do verniz, e a sombra anda junto.
+export const PASSES = [
+  {
+    t: [0.6, 4.3],
+    strip: [5, 0.3],
+    glint: 30,
+    path: [
+      [0.6, 10.9, 0.1],
+      [3.6, 10.6, 0.2],
+      [6.9, 9.95, -0.1],
+    ],
+    aim: [
+      [-2.1, 2.36, 0.8],
+      [2.1, 2.36, 0.8],
+    ],
+    beam: 0.2,
+  },
+  {
+    t: [4.85, 6.55],
+    path: [
+      [-1.3, 2.4, 8.8],
+      [-3.4, 1.8, 8.2],
+    ],
+    aim: [
+      [-1.5, 1.35, 0.86],
+      [1.2, 1.27, 0.86],
+    ],
+    beam: 0.08,
+    fade: 0.5,
+  },
+  {
+    t: [7.2, 8.85],
+    path: [
+      [-5.1, 5.75, -3.65],
+      [-4.95, 6.85, -2.1],
+      [-4.5, 7.2, -1.6],
+    ],
+    aim: [
+      [1.0, 2.42, 0.25],
+      [1.85, 2.42, -0.5],
+    ],
+    beam: 0.18,
+    fade: 0.5,
+  },
+  {
+    t: [12.8, 14.45],
+    path: [
+      [3.6, 8.8, -2.3],
+      [3.8, 8.4, -3.9],
+      [4.5, 7.3, -5.6],
+    ],
+    aim: [
+      [-0.85, 2.45, -0.2],
+      [0.7, 2.45, -0.5],
+    ],
+    glint: 9,
+    beam: 0.18,
+    fade: 0.5,
+  },
+  {
+    t: [15.5, 17.9],
+    strip: [5, 0.3],
+    glint: 30,
+    path: [
+      [-5.3, 13.45, 3.85],
+      [-3.6, 13.35, 2.95],
+      [-2.8, 13.15, 3.1],
+    ],
+    aim: [
+      [-1.9, 2.36, 0.8],
+      [1.9, 2.36, 0.8],
+    ],
+    beam: 0.2,
+  },
+  {
+    t: [18.1, 22.5],
+    strip: [5, 0.3],
+    glint: 30,
+    path: [
+      [-7.45, 14.65, 0.55],
+      [-5.55, 14.25, 0.25],
+      [-4.3, 14.15, -0.7],
+    ],
+    aim: [
+      [-1.8, 6.4, 0.8],
+      [1.8, 6.4, 0.8],
+    ],
+    angle: 16,
+    beam: 0.2,
+  },
+  {
+    t: [23.1, 25.6],
+    path: [
+      [-7.6, 0.9, 6.8],
+      [-6.0, 1.6, 7.2],
+      [-4.6, 1.5, 7.6],
+    ],
+    aim: [
+      [-1.6, 1.2, 0.86],
+      [1.4, 1.3, 0.86],
+    ],
+    beam: 0.14,
+  },
+  {
+    t: [25.8, 29.4],
+    strip: [5, 0.3],
+    glint: 30,
+    path: [
+      [-10.9, 8.7, -0.2],
+      [-9.1, 9.4, 1.4],
+      [-7.4, 9.6, 2.4],
+      [-5.8, 9.8, 2.8],
+    ],
+    aim: [
+      [-2.0, 2.36, 0.8],
+      [2.0, 2.36, 0.8],
+    ],
+    beam: 0.2,
   },
 ];
 
@@ -283,4 +400,5 @@ export default {
   fx: FX,
   cues: CUES,
   explode: EXPLODE,
+  passes: PASSES,
 };
