@@ -25,12 +25,23 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 ### Estúdio branco, vista explodida e motion blur (filme da bateria)
 
 - Entrada em `VARIANTS` com `studio: 'white'`: ciclorama 3D iluminado pelas luzes do set, luz
-  e reflexos presos ao mundo (a câmera anda, a luz não). Campos de luz extras: `wash` (luz de
-  fundo no chão e na parede atrás), `contact` (sombra de contato), `rimAz` (direção do
-  contraluz, em graus no mundo); `keyAz`/`keyEl` também ficam no mundo.
+  e reflexos presos ao mundo (a câmera anda, a luz não). Luz natural: `keyLux`/`keyAz`/`keyEl`
+  são uma janela grande fixa (RectAreaLight) mais um sol fraco só para a sombra macia, na
+  mesma direção do mundo; o ambiente tem paredes claras contínuas, a softbox de cima e a
+  janela, parados. Campos de luz extras: `wash` (luz de fundo no chão e na parede atrás),
+  `contact` (sombra de contato), `rimAz` (direção do contraluz, em graus no mundo).
+- `shafts` no roteiro (estúdio branco): feixes de sol parados dos takes de perto,
+  `{ t: [acende, aceso, apaga, apagado], aim, az, el, radius, lux?, haze? }` (fonte longe,
+  raios quase paralelos, borda macia, sombra, névoa e poeira dentro). Feixes seguidos usam
+  dois rigs alternados (no máximo dois acesos ao mesmo tempo, e só um da vez com o seguinte).
 - `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
-- `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador),
-  só quando a imagem anda rápido; nunca atravessa um corte. Máximo em `CAMERA.blurSamples`.
+- `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador; cada
+  instante é arrastado na tela até os vizinhos pela profundidade, então o rastro sai contínuo
+  com poucas amostras). `shutter` nas marcações de luz do plano abre mais o obturador num
+  trecho (ex.: 1/10 s nos deslocamentos entre takes). O rastro é medido projetando o alvo, o
+  plano de foco em volta e o fundo pelas câmeras do começo e do fim do obturador; nítido
+  abaixo de ~14 px (num quadro de 1920), abrindo aos poucos até ~36 px. Nunca atravessa um
+  corte. Máximo de amostras em `CAMERA.blurSamples` (número ímpar, a do meio no quadro).
 - Plano em voo livre (`flight: true` no SHOT): marcações `{ t, pos, look, roll, lens, shift }`
   (posição e ponto de olhar independentes, 6DoF), com inclinação de curva automática pela
   aceleração lateral (`bankK`, `maxBank`). FORMA e RITMO separados: o caminho passa pelos
@@ -72,7 +83,7 @@ escolhem o espaço com `space` (padrão `1`).
 - `target` em pontos do modelo (`PLACA.CENTER`, `PLACA.ENCODER`, `PLACA.CHIP`); `shift` move a
   placa no quadro (fração; +x direita, +y cima).
 - `light`: preset `'punch' | 'macro' | 'onColor' | 'feature' | 'hero'` ou
-  `{ base, keys: [[t, { keyLux, keyAngle, keyAz, keyEl, keyLead, rimLux, fill, env, bloom, exposure, sweep, aperture }]] }`.
+  `{ base, keys: [[t, { keyLux, keyAngle, keyAz, keyEl, keyLead, rimLux, fill, env, bloom, exposure, sweep, aperture, shutter }]] }`.
   Placa revelada do preto: comece com `keyLux: 0, env: 0, fill: 0, rimLux` baixo e suba.
 
 ### CAMERA_RIG (câmera virtual: placa + planos de texto)

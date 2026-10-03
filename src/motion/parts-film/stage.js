@@ -140,9 +140,9 @@ function buildStudioEnvironment(renderer) {
 
 /**
  * Estúdio branco (variante da bateria): sala em meia-luz, chão claro que rebate luz, uma
- * softbox grande e suave no alto e dois rebatedores laterais fracos e fixos. Só o
- * suficiente para o black piano ter forma; o brilho que anda vem da passagem de luz de cada
- * take (uma luz por vez), não do ambiente. Nenhuma imagem é usada.
+ * softbox suave no alto, a janela da luz principal em 3/4 e um rebatedor fraco do outro
+ * lado, tudo parado: os reflexos no black piano só andam porque a câmera anda. Nenhuma
+ * imagem é usada.
  */
 function buildWhiteStudioEnvironment(renderer) {
   const env = new THREE.Scene();
@@ -164,8 +164,32 @@ function buildWhiteStudioEnvironment(renderer) {
     m.lookAt(0, 0, 0);
     env.add(m);
   };
-  box(5, 3.2, 1.1, [0, 4.8, 0.4]);
-  box(1.6, 5, 0.42, [-4.8, 0.8, 1.4]);
+  // Paredes claras em volta, contínuas e sem recortes (luz de dia rebatida): o black piano
+  // ganha forma em qualquer ângulo, com reflexo em degradê e sem faixas marcadas.
+  const ring = (elBottom, elTop, v) => {
+    const geo = new THREE.SphereGeometry(
+      4.6,
+      48,
+      6,
+      0,
+      Math.PI * 2,
+      (90 - elTop) * DEG,
+      (elTop - elBottom) * DEG,
+    );
+    env.add(
+      new THREE.Mesh(
+        geo,
+        new THREE.MeshBasicMaterial({ color: new THREE.Color(v, v, v), side: THREE.BackSide }),
+      ),
+    );
+  };
+  ring(4, 18, 0.16);
+  ring(18, 34, 0.22);
+  ring(34, 52, 0.26);
+  ring(52, 70, 0.22);
+  box(5, 3.2, 0.8, [0, 4.8, 0.4]);
+  // A janela da luz principal (3/4 à esquerda, na mesma direção da luz do set).
+  box(3.4, 2.6, 0.9, [-2.43, 2.45, 3.48]);
   box(1.6, 5, 0.3, [4.8, 0.8, -1.4]);
   const pmrem = new THREE.PMREMGenerator(renderer);
   const target = pmrem.fromScene(env, 0.035, 0.1, 100);
@@ -180,12 +204,12 @@ function buildWhiteStudioEnvironment(renderer) {
 }
 
 /**
- * Feixe de luz no ar: cone aberto da fonte para onde a luz aponta, somado à imagem, mais
- * forte perto da fonte e no miolo do cone, com variação lenta (fumaça leve). Cone unitário
- * (ponta na origem, base de raio 1 em y = -1) posto no lugar a cada quadro por `aimBeam`.
+ * Feixe de sol no ar (luz natural): coluna de luz quase paralela, de borda macia, somada à
+ * imagem, mais densa no miolo, com a névoa variando devagar. Coluna unitária (topo na
+ * origem, base de raio 1 em y = -1) posta no lugar a cada quadro.
  */
-function buildBeam() {
-  const geo = new THREE.CylinderGeometry(0.03, 1, 1, 48, 1, true);
+function buildShaft() {
+  const geo = new THREE.CylinderGeometry(1, 1, 1, 64, 1, true);
   geo.translate(0, -0.5, 0);
   const mat = new THREE.ShaderMaterial({
     transparent: true,
@@ -196,7 +220,11 @@ function buildBeam() {
     blendDst: THREE.OneFactor,
     blendSrcAlpha: THREE.ZeroFactor,
     blendDstAlpha: THREE.OneFactor,
-    uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color(1.0, 0.97, 0.92) } },
+    uniforms: {
+      uOpacity: { value: 0 },
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color(1.0, 0.95, 0.87) },
+    },
     vertexShader: /* glsl */ `
       varying float vAlong;
       varying vec3 vW;
@@ -210,15 +238,18 @@ function buildBeam() {
       }`,
     fragmentShader: /* glsl */ `
       uniform float uOpacity;
+      uniform float uTime;
       uniform vec3 uColor;
       varying float vAlong;
       varying vec3 vW;
       varying vec3 vN;
       void main() {
-        float core = pow(abs(dot(normalize(vN), normalize(cameraPosition - vW))), 2.2);
-        float fade = pow(vAlong, 1.3) * smoothstep(0.0, 0.25, vAlong);
-        float haze = 0.75 + 0.25 * sin(vW.x * 2.3 + vW.y * 1.7 + vW.z * 2.9);
-        gl_FragColor = vec4(uColor * uOpacity * core * fade * haze, 0.0);
+        // Miolo denso e borda que some aos poucos (luz natural, sem contorno marcado).
+        float core = pow(abs(dot(normalize(vN), normalize(cameraPosition - vW))), 3.0);
+        float ends = smoothstep(0.0, 0.12, vAlong) * smoothstep(1.0, 0.55, vAlong);
+        vec3 q = vW * 0.55 + vec3(0.0, -uTime * 0.06, uTime * 0.04);
+        float haze = 0.72 + 0.16 * sin(q.x * 2.1 + sin(q.y * 1.3)) + 0.12 * sin(q.z * 2.7 + q.y);
+        gl_FragColor = vec4(uColor * uOpacity * core * ends * haze, 0.0);
       }`,
   });
   const mesh = new THREE.Mesh(geo, mat);
@@ -560,7 +591,7 @@ export async function createStage({
   let contact = null;
   let wash = null;
   let reflect = null;
-  let pass = null;
+  let nat = null;
   if (white) {
     const box = new THREE.Box3().setFromObject(board);
     const profile = [new THREE.Vector2(0, 0), new THREE.Vector2(36, 0)];
@@ -640,26 +671,41 @@ export async function createStage({
     wash.position.set(0, 16, 16);
     wash.target.position.set(1.5, 0, -14);
     scene.add(cyc, contact, wash, wash.target);
-    // Passagem de luz (uma por take): spot com sombra que acende onde passa, uma faixa de
-    // softbox no mesmo lugar (o brilho que corre pelo black piano, pelo display e pelos
-    // metais) e o feixe visível no ar com poeira brilhando dentro dele.
+    // Luz natural, sempre parada no set: uma janela grande em 3/4 (luz suave que envolve,
+    // com sombra macia, como luz de dia) e, nos takes de perto, um feixe de sol entrando
+    // de cima (quase paralelo, borda macia, sombra própria) com névoa e poeira dentro.
+    // Nenhuma luz anda; só acendem e apagam devagar.
     RectAreaLightUniformsLib.init();
-    const spot = new THREE.SpotLight(0xfff3e6, 0, 0, 12 * DEG, 0.75, 2);
-    spot.castShadow = true;
-    spot.shadow.mapSize.set(1024, 1024);
-    spot.shadow.bias = -0.00006;
-    spot.shadow.normalBias = 0.001;
-    spot.shadow.radius = 4;
-    spot.shadow.camera.near = 0.5;
-    spot.shadow.camera.far = 40;
-    const strip = new THREE.RectAreaLight(0xfff6ee, 0, 2.4, 0.5);
-    pass = { spot, strip, beam: buildBeam(), dust: buildDust() };
-    scene.add(spot, spot.target, strip, pass.beam, pass.dust);
+    const windowLight = new THREE.RectAreaLight(0xfff8f0, 0, 8, 6);
+    const sun = new THREE.DirectionalLight(0xfff4e8, 0);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.bias = -0.0002;
+    sun.shadow.normalBias = 0.02;
+    sun.shadow.radius = 9;
+    Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 45 });
+    // Dois feixes (um entra enquanto o anterior sai, longe da câmera).
+    const shafts = [0, 1].map(() => {
+      const spot = new THREE.SpotLight(0xfff0dc, 0, 0, 2 * DEG, 1, 2);
+      spot.castShadow = true;
+      spot.shadow.mapSize.set(1024, 1024);
+      spot.shadow.bias = -0.0001;
+      spot.shadow.normalBias = 0.01;
+      spot.shadow.radius = 6;
+      spot.shadow.camera.near = 12;
+      spot.shadow.camera.far = 45;
+      const rig = { spot, column: buildShaft(), dust: buildDust(1400) };
+      scene.add(spot, spot.target, rig.column, rig.dust);
+      return rig;
+    });
+    nat = { windowLight, sun, shafts };
+    scene.add(windowLight, sun, sun.target);
   }
 
   // Luz principal: spot suave com sombra (recorte de luz de estúdio).
   const key = new THREE.SpotLight(0xfff4ea, 0, 0, 10 * DEG, 1, 2);
-  key.castShadow = true;
+  // No estúdio branco a luz principal é a janela em 3/4 (abaixo); este spot fica apagado.
+  key.castShadow = !white;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.bias = -0.00004;
   key.shadow.normalBias = 0.0009;
@@ -680,7 +726,9 @@ export async function createStage({
 
   if (white) {
     // As luzes também valem no passe do reflexo (camada 1, só o produto).
-    [key, rim, fill, wash, pass.spot, pass.strip].forEach((l) => l.layers.enable(1));
+    [key, rim, fill, wash, nat.windowLight, nat.sun, ...nat.shafts.map((r) => r.spot)].forEach((l) =>
+      l.layers.enable(1),
+    );
     key.shadow.radius = 5;
     key.shadow.blurSamples = 16;
   }
@@ -861,59 +909,68 @@ export async function createStage({
    *   e `fx` ({ wave, waveFreq, wavePhase, chroma, blur: [x, y] }, em pixels do quadro).
    */
   /**
-   * Passagem de luz do take: a faixa de softbox na posição do reflexo (o brilho que corre)
-   * e o spot com o feixe e a poeira um pouco acima dela, mirando o mesmo ponto.
+   * Luz natural do estúdio branco: janela em 3/4 (e o sol que dá a sombra macia) na direção
+   * keyAz/keyEl, e até dois feixes de sol (`s.shafts`: alvo, direção, raio, lux e névoa),
+   * todos parados.
    */
-  const passDir = new THREE.Vector3();
-  const passFrom = new THREE.Vector3();
-  const passGlint = new THREE.Vector3();
-  const passAim = new THREE.Vector3();
+  const SET_CENTER = new THREE.Vector3(0, 1.2, 0);
+  const shaftDir = new THREE.Vector3();
+  const shaftCam = new THREE.Vector3();
   const DOWN = new THREE.Vector3(0, -1, 0);
-  function placePass(ps) {
-    const { spot, strip, beam, dust } = pass;
-    const on = ps && (ps.lux > 0 || ps.glint > 0) && ps.pos;
-    if (!on) {
+  function placeNatural(s) {
+    const { windowLight, sun, shafts } = nat;
+    const kaz = s.keyAz * DEG;
+    const kel = s.keyEl * DEG;
+    const kx = Math.sin(kaz) * Math.cos(kel);
+    const ky = Math.sin(kel);
+    const kz = Math.cos(kaz) * Math.cos(kel);
+    windowLight.position.set(kx * 13, ky * 13 + SET_CENTER.y, kz * 13);
+    windowLight.lookAt(SET_CENTER);
+    windowLight.intensity = s.keyLux * 3.5;
+    sun.position.set(kx * 20, ky * 20 + SET_CENTER.y, kz * 20);
+    sun.target.position.copy(SET_CENTER);
+    sun.target.updateMatrixWorld();
+    sun.intensity = s.keyLux * 0.3;
+    shafts.forEach((rig, i) => placeShaft(rig, s.shafts?.[i]));
+  }
+
+  /** Um feixe de sol parado: fonte longe (raios quase paralelos), borda macia, névoa e poeira. */
+  function placeShaft({ spot, column, dust }, sh) {
+    if (!sh || !(sh.lux > 0)) {
       spot.intensity = 0;
-      strip.intensity = 0;
-      beam.visible = false;
+      column.visible = false;
       dust.visible = false;
       return;
     }
-    passFrom.fromArray(ps.spot || ps.pos);
-    passGlint.fromArray(ps.pos);
-    passAim.fromArray(ps.aim);
-    const d = passFrom.distanceTo(passAim);
-    passDir.subVectors(passAim, passFrom).normalize();
-    spot.position.copy(passFrom);
-    spot.target.position.copy(passAim);
+    const D = 26;
+    const az = sh.az * DEG;
+    const el = sh.el * DEG;
+    shaftDir.set(-Math.sin(az) * Math.cos(el), -Math.sin(el), -Math.cos(az) * Math.cos(el));
+    spot.target.position.fromArray(sh.aim);
     spot.target.updateMatrixWorld();
-    spot.angle = ps.angle * DEG;
-    spot.intensity = ps.lux * d * d;
-    // Faixa fina de través ao caminho: a linha de brilho atravessa a superfície (em vez de
-    // escorregar ao longo de si mesma).
-    strip.position.copy(passGlint);
-    strip.up.fromArray(ps.dir || [0, 1, 0]);
-    if (strip.up.lengthSq() < 1e-8) strip.up.set(0, 1, 0);
-    strip.up.normalize();
-    strip.lookAt(passAim);
-    strip.width = ps.strip[0];
-    strip.height = ps.strip[1];
-    strip.intensity = ps.glint;
-    // O feixe vai até o chão (ou bem além do alvo, se a luz vier de lado).
-    const len = passDir.y < -0.05 ? Math.min(passFrom.y / -passDir.y, d * 2.5) : d * 1.6;
-    const radius = Math.tan(ps.angle * DEG) * len;
-    beam.visible = ps.beam > 0;
-    beam.position.copy(passFrom);
-    beam.quaternion.setFromUnitVectors(DOWN, passDir);
-    beam.scale.set(radius, len, radius);
-    beam.material.uniforms.uOpacity.value = ps.beam;
+    spot.position.copy(spot.target.position).addScaledVector(shaftDir, -D);
+    spot.angle = Math.atan(sh.radius / D);
+    spot.intensity = sh.lux * D * D;
+    // A coluna vai da fonte até o chão.
+    const len = spot.position.y / Math.max(-shaftDir.y, 0.05);
+    const r = sh.radius * 1.05;
+    // Com a câmera dentro do feixe a névoa viraria um véu na imagem toda: ela some ali.
+    shaftCam.subVectors(camera.position, spot.position);
+    const perp = shaftCam.addScaledVector(shaftDir, -shaftCam.dot(shaftDir)).length();
+    const haze = sh.haze * THREE.MathUtils.smoothstep(perp, r * 0.95, r * 1.7);
+    column.visible = haze > 0;
+    column.position.copy(spot.position);
+    column.quaternion.setFromUnitVectors(DOWN, shaftDir);
+    column.scale.set(r, len, r);
+    column.material.uniforms.uOpacity.value = haze;
+    column.material.uniforms.uTime.value = sh.time;
     const du = dust.material.uniforms;
-    dust.visible = ps.dust > 0;
-    du.uOpacity.value = ps.dust;
-    du.uTime.value = ps.time;
-    du.uApex.value.copy(passFrom);
-    du.uAxis.value.copy(passDir);
-    du.uCos.value = Math.cos(ps.angle * DEG * 1.1);
+    dust.visible = haze > 0;
+    du.uOpacity.value = Math.min(haze * 4, 1);
+    du.uTime.value = sh.time;
+    du.uApex.value.copy(spot.position);
+    du.uAxis.value.copy(shaftDir);
+    du.uCos.value = Math.cos(spot.angle * 1.1);
     du.uLen.value = len;
   }
 
@@ -969,9 +1026,10 @@ export async function createStage({
     camera.projectionMatrix.elements[8] = -2 * (s.shiftX || 0);
     camera.projectionMatrix.elements[9] = -2 * s.shift;
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
-    if (pass) {
+    if (nat) {
       const h = size.height * renderer.getPixelRatio();
-      pass.dust.material.uniforms.uProj.value = h / (2 * Math.tan((camera.fov * DEG) / 2));
+      const proj = h / (2 * Math.tan((camera.fov * DEG) / 2));
+      nat.shafts.forEach((r) => (r.dust.material.uniforms.uProj.value = proj));
     }
 
     const kaz = s.keyAz * DEG;
@@ -979,15 +1037,8 @@ export async function createStage({
     if (white) {
       // Set de verdade: luz principal, contraluz e reflexos presos ao mundo (a câmera anda,
       // a luz e as sombras ficam onde estão).
-      const kd = 14;
-      key.target.position.set(0, 0.9, 0);
-      key.position.set(
-        kd * Math.sin(kaz) * Math.cos(kel),
-        kd * Math.sin(kel),
-        kd * Math.cos(kaz) * Math.cos(kel),
-      );
-      key.angle = s.keyAngle * DEG;
-      key.intensity = s.keyLux * kd * kd;
+      key.intensity = 0;
+      placeNatural(s);
       const raz = (s.rimAz ?? 200) * DEG;
       rim.position.set(Math.sin(raz) * 6, 4.5, Math.cos(raz) * 6);
       rim.target.position.set(0, 1, 0);
@@ -997,7 +1048,6 @@ export async function createStage({
       scene.environmentRotation.set(0, s.sweep * DEG, 0);
       wash.intensity = s.wash ?? 0;
       contact.material.uniforms.uOpacity.value = s.contact ?? 0;
-      placePass(s.pass);
     } else {
       // Luz principal: segue o alvo da câmera, um pouco à frente do caminho.
       key.target.position.set(tmpTarget.x + s.keyLead, 0, tmpTarget.z);

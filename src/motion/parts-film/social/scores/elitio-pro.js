@@ -62,14 +62,15 @@ export const SPACES = {
   1: { yaw: 0 },
 };
 
-// Estúdio branco com luz de cinema (referência: vídeo da hero da home): luz baixa, uma
-// mancha de luz de cima no chão e a queda para as paredes em meia-luz, recortes nas
-// arestas e reflexos parados (o ambiente não gira). O que anda é a passagem de luz de cada
-// take (PASSES): uma luz por vez, devagar. Foco raso.
+// Estúdio branco com luz natural e baixa (referência: vídeo da hero da home): uma janela
+// grande e fixa em 3/4 à esquerda (luz suave, sombra macia), contraluz, rebatimento das
+// paredes e a queda para o fundo em meia-luz. Nos takes de perto, feixes de sol (SHAFTS).
+// Nenhuma luz anda (num plano sem cortes, luz trocando de lugar aparece); só acendem e
+// apagam devagar, fora da vista ou durante os deslocamentos. Foco raso.
 const STUDIO = {
   keyLux: 0.6,
-  keyAz: -30,
-  keyEl: 70,
+  keyAz: -35,
+  keyEl: 30,
   keyAngle: 30,
   rimLux: 1.5,
   rimAz: 200,
@@ -173,6 +174,12 @@ export const SHOTS = [
         [1.8, { wash: 0.3, rimLux: 0, keyLux: 0, env: 0, fill: 0, contact: 0.3 }],
         [3.0, { rimLux: 1.4, keyLux: 0.25, env: 0.3, contact: 0.7, fill: 0.03, floorReflect: 0.25 }],
         [4.2, { ...STUDIO }],
+        // Nos takes de perto a janela baixa um pouco (os feixes de sol mandam, SHAFTS); no
+        // recuo depois do display ela volta.
+        [5.2, { keyLux: 0.6 }],
+        [6.2, { keyLux: 0.42 }],
+        [14.5, { keyLux: 0.42 }],
+        [15.8, { keyLux: 0.6 }],
         [5.3, WIDE],
         [6.0, MACRO],
         [6.6, WIDE],
@@ -206,130 +213,23 @@ export const SHOTS = [
   },
 ];
 
-// Passagens de luz: UMA por take, lenta, com o feixe visível no ar (e poeira brilhando
-// dentro dele). A luz anda pelo caminho `path` mirando `aim`; o caminho foi calculado pelo
-// reflexo (posição da câmera em cada take) para o brilho atravessar devagar a parte em
-// destaque: aresta de cima na silhueta, logotipo, tampa até o borne, vidro do display,
-// aresta no 3/4 alto, tampa erguida na explodida, frente no hero e aresta no final.
-// Onde ela passa, acende etiquetas, metais e a textura do verniz, e a sombra anda junto.
-export const PASSES = [
-  {
-    t: [0.6, 4.3],
-    strip: [5, 0.3],
-    glint: 30,
-    path: [
-      [0.6, 10.9, 0.1],
-      [3.6, 10.6, 0.2],
-      [6.9, 9.95, -0.1],
-    ],
-    aim: [
-      [-2.1, 2.36, 0.8],
-      [2.1, 2.36, 0.8],
-    ],
-    beam: 0.2,
-  },
-  {
-    t: [4.85, 6.55],
-    path: [
-      [-1.3, 2.4, 8.8],
-      [-3.4, 1.8, 8.2],
-    ],
-    aim: [
-      [-1.5, 1.35, 0.86],
-      [1.2, 1.27, 0.86],
-    ],
-    beam: 0.08,
-    fade: 0.5,
-  },
-  {
-    t: [7.2, 8.85],
-    path: [
-      [-5.1, 5.75, -3.65],
-      [-4.95, 6.85, -2.1],
-      [-4.5, 7.2, -1.6],
-    ],
-    aim: [
-      [1.0, 2.42, 0.25],
-      [1.85, 2.42, -0.5],
-    ],
-    beam: 0.18,
-    fade: 0.5,
-  },
-  {
-    t: [12.8, 14.45],
-    path: [
-      [3.6, 8.8, -2.3],
-      [3.8, 8.4, -3.9],
-      [4.5, 7.3, -5.6],
-    ],
-    aim: [
-      [-0.85, 2.45, -0.2],
-      [0.7, 2.45, -0.5],
-    ],
-    glint: 9,
-    beam: 0.18,
-    fade: 0.5,
-  },
-  {
-    t: [15.5, 17.9],
-    strip: [5, 0.3],
-    glint: 30,
-    path: [
-      [-5.3, 13.45, 3.85],
-      [-3.6, 13.35, 2.95],
-      [-2.8, 13.15, 3.1],
-    ],
-    aim: [
-      [-1.9, 2.36, 0.8],
-      [1.9, 2.36, 0.8],
-    ],
-    beam: 0.2,
-  },
-  {
-    t: [18.1, 22.5],
-    strip: [5, 0.3],
-    glint: 30,
-    path: [
-      [-7.45, 14.65, 0.55],
-      [-5.55, 14.25, 0.25],
-      [-4.3, 14.15, -0.7],
-    ],
-    aim: [
-      [-1.8, 6.4, 0.8],
-      [1.8, 6.4, 0.8],
-    ],
-    angle: 16,
-    beam: 0.2,
-  },
-  {
-    t: [23.1, 25.6],
-    path: [
-      [-7.6, 0.9, 6.8],
-      [-6.0, 1.6, 7.2],
-      [-4.6, 1.5, 7.6],
-    ],
-    aim: [
-      [-1.6, 1.2, 0.86],
-      [1.4, 1.3, 0.86],
-    ],
-    beam: 0.14,
-  },
-  {
-    t: [25.8, 29.4],
-    strip: [5, 0.3],
-    glint: 30,
-    path: [
-      [-10.9, 8.7, -0.2],
-      [-9.1, 9.4, 1.4],
-      [-7.4, 9.6, 2.4],
-      [-5.8, 9.8, 2.8],
-    ],
-    aim: [
-      [-2.0, 2.36, 0.8],
-      [2.0, 2.36, 0.8],
-    ],
-    beam: 0.2,
-  },
+// Feixes de sol dos takes de perto: um por take, cada um PARADO no seu lugar (fonte longe,
+// raios quase paralelos, borda macia, névoa e poeira dentro), entrando de cima por um lado
+// em que a câmera o veja atravessar o quadro. Acende antes de a câmera chegar (t[0]→t[1],
+// enquanto o ponto ainda está fora do quadro ou no deslocamento) e apaga depois que ela sai
+// (t[2]→t[3]); a luz nunca muda de lugar na frente da câmera. Névoa leve (`haze`): no close
+// a câmera olha através do feixe, e névoa forte vira véu.
+export const SHAFTS = [
+  // Logotipo (acende junto com o estúdio, ainda de longe).
+  { t: [3.4, 4.6, 6.5, 7.3], aim: [0.0, 1.4, 0.86], az: 25, el: 55, radius: 0.75 },
+  // Borne positivo (acende enquanto a câmera está no logotipo, fora do quadro).
+  { t: [5.9, 6.9, 9.0, 9.8], aim: [1.85, 2.42, -0.55], az: -130, el: 58, radius: 0.7 },
+  // Ponta direita: orelha e alça (acende enquanto a câmera está no borne).
+  { t: [7.9, 8.8, 10.2, 11.0], aim: [2.38, 1.2, 0.1], az: 60, el: 50, radius: 0.8, lux: 2.2 },
+  // Traseira: ficha técnica (acende enquanto a câmera está na ponta direita).
+  { t: [9.8, 10.4, 11.5, 12.2], aim: [1.0, 1.1, -0.86], az: -160, el: 48, radius: 0.9 },
+  // Display (acende enquanto a câmera passa pela traseira).
+  { t: [11.0, 12.1, 14.4, 15.3], aim: [-0.08, 2.44, -0.36], az: 125, el: 60, radius: 0.65 },
 ];
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
@@ -400,5 +300,5 @@ export default {
   fx: FX,
   cues: CUES,
   explode: EXPLODE,
-  passes: PASSES,
+  shafts: SHAFTS,
 };

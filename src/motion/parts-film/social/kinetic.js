@@ -460,7 +460,7 @@ export function createKineticVariant(score) {
     fx: FX,
     cues: CUES,
     explode: EXPLODE = {},
-    passes: PASSES = [],
+    shafts: SHAFTS = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -805,58 +805,28 @@ export function createKineticVariant(score) {
       }
 
       /**
-       * Passagem de luz do take (roteiros com `passes`): UMA luz por vez, andando devagar e em
-       * velocidade constante pelo caminho `path` enquanto mira `aim`; entra e sai em `fade` s.
-       * `lux`: spot com sombra (acende etiquetas e metais onde passa); `glint`: brilho da faixa
-       * fina de softbox (a linha de luz que corre pelo black piano, de través ao caminho);
-       * `beam`: feixe no ar; `dust`: poeira dentro do feixe. A faixa fica na posição do
-       * reflexo; o spot (e o feixe) sobe `tilt` graus em volta do alvo, para acender o que
-       * passa sem estourar um ponto de brilho no meio do verniz.
+       * Feixes de sol dos takes de perto (roteiros com `shafts`): cada um PARADO no seu lugar,
+       * acendendo em t[0]→t[1] (antes de a câmera chegar) e apagando em t[2]→t[3] (depois que
+       * ela sai). Feixes seguidos usam rigs alternados, então um pode entrar enquanto o
+       * anterior sai.
        */
-      const passPaths = new Map();
-      const passTrack = (pts) => {
-        if (!Array.isArray(pts[0])) return () => pts;
-        if (!passPaths.has(pts)) passPaths.set(pts, arcPath(pts));
-        const path = passPaths.get(pts);
-        return (u) => path.at(u * path.length);
-      };
-      function passAt(tb) {
-        const p = PASSES.find((x) => tb >= x.t[0] && tb <= x.t[1]);
-        if (!p) return { lux: 0, time: tb };
-        const [t0, t1] = p.t;
-        const fade = p.fade ?? 0.7;
-        const env = Math.min(EASE.soft(clamp01((tb - t0) / fade)), EASE.soft(clamp01((t1 - tb) / fade)));
-        const u = (tb - t0) / (t1 - t0);
-        const along = passTrack(p.path);
-        const a = along(Math.max(u - 0.02, 0));
-        const b = along(Math.min(u + 0.02, 1));
-        const pos = along(u);
-        const aim = passTrack(p.aim)(u);
-        const v = pos.map((x, i) => x - aim[i]);
-        const d = Math.hypot(...v) || 1;
-        const tilt = (p.tilt ?? 40) * DEG;
-        const el = Math.asin(Math.max(-1, Math.min(1, v[1] / d)));
-        const az = Math.atan2(v[0], v[2]);
-        // Já alto: gira de lado em volta do alvo; senão, sobe.
-        const [sEl, sAz] = el + tilt <= 80 * DEG ? [el + tilt, az] : [el, az + tilt];
-        const spot = [
-          aim[0] + d * Math.cos(sEl) * Math.sin(sAz),
-          aim[1] + d * Math.sin(sEl),
-          aim[2] + d * Math.cos(sEl) * Math.cos(sAz),
-        ];
-        return {
-          pos,
-          aim,
-          spot,
-          dir: b.map((v, i) => v - a[i]),
-          lux: (p.lux ?? 0.9) * env,
-          glint: (p.glint ?? 24) * env,
-          strip: p.strip ?? [3.2, 0.14],
-          angle: p.angle ?? 12,
-          beam: (p.beam ?? 0.25) * env,
-          dust: (p.dust ?? 1) * env,
-          time: tb,
-        };
+      function shaftsAt(tb) {
+        const out = [null, null];
+        SHAFTS.forEach((sh, i) => {
+          const [a, b, c, d] = sh.t;
+          const w = Math.min(EASE.soft(clamp01((tb - a) / (b - a))), EASE.soft(clamp01((d - tb) / (d - c))));
+          if (w <= 0) return;
+          out[i % 2] = {
+            aim: sh.aim,
+            az: sh.az,
+            el: sh.el,
+            radius: sh.radius ?? 0.9,
+            lux: (sh.lux ?? 1.6) * w,
+            haze: (sh.haze ?? 0.1) * w,
+            time: tb,
+          };
+        });
+        return out;
       }
 
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
@@ -880,38 +850,72 @@ export function createKineticVariant(score) {
         if (!CFG.motionBlur || !meta.shutter) return null;
         const shot = shotAt(tb);
         const shutter = lightAt(shot, tb).shutter ?? meta.shutter;
-        const t0 = Math.max(shot.t[0], tb - shutter / 2);
-        const t1 = Math.min(shot.t[1] - 1e-4, tb + shutter / 2);
-        if (t1 <= t0) return null;
+        const lo = Math.max(shot.t[0], tb - shutter / 2);
+        const hi = Math.min(shot.t[1] - 1e-4, tb + shutter / 2);
+        if (hi <= lo) return null;
+        // Câmera de um instante: posição, eixos da tela (com o giro) e abertura.
         const pose = (t) => {
           const st = evaluate(t).stage;
           if (st.hidden) return null;
-          const { az, el, logDist, target, fov } = st.cam;
+          const { az, el, logDist, target, fov, roll } = st.cam;
           const d = Math.exp(logDist);
           const a = az * DEG;
           const e = el * DEG;
-          const dir = [Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e)];
-          const pos = target.map((v, i) => v + dir[i] * d);
-          return { st, d, pos, dir, fov: fov || CAM.fov, shift: [st.shiftX, st.shift] };
+          const back = [Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e)];
+          const pos = target.map((v, i) => v + back[i] * d);
+          const f = back.map((v) => -v);
+          const r0 = [Math.cos(a), 0, -Math.sin(a)];
+          const u0 = [r0[1] * f[2] - r0[2] * f[1], r0[2] * f[0] - r0[0] * f[2], r0[0] * f[1] - r0[1] * f[0]];
+          const rr = -((roll || 0) + (st.roll || 0) * 90) * DEG;
+          const right = r0.map((v, i) => v * Math.cos(rr) + u0[i] * Math.sin(rr));
+          const up = u0.map((v, i) => v * Math.cos(rr) - r0[i] * Math.sin(rr));
+          const tv = Math.tan(((fov || CAM.fov) * DEG) / 2);
+          return { d, pos, f, right, up, tv, target, shift: [st.shiftX || 0, st.shift || 0] };
         };
-        const a = pose(t0);
-        const b = pose(t1);
+        const a = pose(lo);
+        const b = pose(hi);
         if (!a || !b) return null;
-        const turn = Math.acos(
-          Math.min(
-            1,
-            a.dir.reduce((acc, v, i) => acc + v * b.dir[i], 0),
-          ),
-        );
-        const move = Math.hypot(...a.pos.map((v, i) => v - b.pos[i])) / Math.min(a.d, b.d);
-        const shiftMove = Math.hypot(a.shift[0] - b.shift[0], a.shift[1] - b.shift[1]) * 2;
-        // Rastro em px de um quadro de 1920 de altura (mesma régua em qualquer resolução).
-        const px = ((turn + move + shiftMove) / (Math.min(a.fov, b.fov) * DEG)) * 1920;
-        // Abaixo de ~24 px de rastro a imagem fica nítida; acima, uma amostra a cada ~16 px
-        // (o palco arrasta cada amostra até as vizinhas, então o rastro sai contínuo).
-        if (px < 24) return null;
-        const n = Math.min(CAM.blurSamples, Math.max(2, Math.ceil(px / 16)));
-        return Array.from({ length: n }, (_, i) => evaluate(t0 + ((t1 - t0) * i) / (n - 1)).stage);
+        // Quanto a imagem anda de verdade (px de um quadro 1080×1920): o alvo, pontos em volta
+        // dele no plano de foco e o fundo atrás, projetados pelas duas câmeras.
+        const screen = (c, P) => {
+          const v = P.map((x, i) => x - c.pos[i]);
+          const z = Math.max(
+            v.reduce((m, x, i) => m + x * c.f[i], 0),
+            1e-3,
+          );
+          const x = v.reduce((m, q, i) => m + q * c.right[i], 0) / z / (c.tv * (9 / 16)) + 2 * c.shift[0];
+          const y = v.reduce((m, q, i) => m + q * c.up[i], 0) / z / c.tv + 2 * c.shift[1];
+          return [x * 540, y * 960];
+        };
+        const k = 0.35 * a.d;
+        const T = a.target;
+        const pts = [
+          T,
+          T.map((v, i) => v + a.right[i] * k + a.up[i] * k),
+          T.map((v, i) => v - a.right[i] * k + a.up[i] * k),
+          T.map((v, i) => v + a.right[i] * k - a.up[i] * k),
+          T.map((v, i) => v - a.right[i] * k - a.up[i] * k),
+          T.map((v, i) => v + a.f[i] * a.d * 2),
+        ];
+        let px = 0;
+        pts.forEach((P) => {
+          const sa = screen(a, P);
+          const sb = screen(b, P);
+          px = Math.max(px, Math.hypot(sa[0] - sb[0], sa[1] - sb[1]));
+        });
+        // Nítido abaixo de ~14 px de rastro; o obturador abre aos poucos até ~36 px (sem o
+        // desfoque "acender" de repente). Cada amostra cobre uma fatia igual do obturador e é
+        // arrastada até as vizinhas no palco, então poucas amostras bastam; número ímpar para
+        // a do meio cair no instante do quadro (profundidade do foco).
+        const g = clamp01((px - 14) / 22);
+        const open = g * g * (3 - 2 * g);
+        if (open <= 0.01) return null;
+        const t0 = Math.max(shot.t[0], tb - (shutter * open) / 2);
+        const t1 = Math.min(shot.t[1] - 1e-4, tb + (shutter * open) / 2);
+        if (t1 <= t0) return null;
+        let n = Math.min(CAM.blurSamples, Math.max(3, Math.ceil((px * open) / 40)));
+        if (n % 2 === 0) n = n < CAM.blurSamples ? n + 1 : n - 1;
+        return Array.from({ length: n }, (_, i) => evaluate(t0 + ((t1 - t0) * (i + 0.5)) / n).stage);
       }
 
       function stageState(tb, fx, cam) {
@@ -957,7 +961,7 @@ export function createKineticVariant(score) {
           rimLux: light.rimLux,
           rimAz: light.rimAz,
           wash: light.wash,
-          pass: passAt(tb),
+          shafts: shaftsAt(tb),
           floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),

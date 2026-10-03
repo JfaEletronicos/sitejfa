@@ -118,9 +118,16 @@ está em [referencia.md](referencia.md).
 - Filme da bateria: base 3D primeiro (cenário, luz, produto e câmera, sem texto); a luz tem
   de parecer luz no espaço (manchas no chão, queda nas paredes, sombras), nunca a imagem
   clareando por igual.
+- Filme da bateria: luz natural, nunca cara de lâmpada de teto (sem círculos de luz
+  marcados). Num plano sem cortes nenhuma luz anda (luz trocando de lugar aparece): takes de
+  longe com uma janela fixa em 3/4; takes de perto com um feixe de sol parado por take, que
+  acende ANTES de a câmera chegar (o take nunca começa escuro) e apaga depois que ela sai.
+  Névoa do feixe leve (no close a câmera olha através dele e vira véu). Reflexos do ambiente
+  parados e sem faixas.
 - Filme da bateria: um plano contínuo, sem cortes e sem paradas (só o último quadro assenta;
   `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
-  nunca vai e volta. Motion blur só quando a imagem anda rápido.
+  nunca vai e volta. Motion blur só quando a imagem anda rápido; nos deslocamentos de um
+  ponto a outro o obturador abre mais (rastro de alta velocidade), nos takes fica nítido.
 - Filme da bateria: câmera como um pássaro/mosca voando (6DoF, `flight`), nunca trilho nem
   órbita perfeita; curvas suaves e inclinadas, sem laços nem "voltinhas"; velocidade e giro
   da vista mudando aos poucos (sem trancos ao entrar ou sair de um take lento); nada de
