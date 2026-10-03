@@ -31,8 +31,8 @@ const kinetic = (loadScore) => () =>
     engine.createKineticVariant(score.default),
   );
 // Cada variante: como carregar e qual modelo 3D (GLB em public/models) usar; `upAxis: 'y'`
-// para modelos que já vêm em pé; `studio: 'white'` para o estúdio branco com chão e luz presa
-// ao mundo; `detail` para o acabamento fino da superfície (surface-detail.js).
+// para modelos que já vêm em pé; `studio: 'white'` (estúdio branco) ou `'cinema'` (set escuro,
+// com feixes de luz) com chão e luz presa ao mundo, `cyc` para a cor do ciclorama; `detail` para o acabamento fino da superfície (surface-detail.js).
 const VARIANTS = {
   premium: { load: () => import('./premium').then((m) => m.default), model: PLACA },
   'social-kinetic': { load: kinetic(() => import('./social/scores/em-tudo')), model: PLACA },
@@ -104,6 +104,7 @@ async function boot() {
       transparent: variantModule.transparent,
       upAxis: entry.upAxis,
       studio: entry.studio,
+      cyc: entry.cyc,
       detail: entry.detail,
     });
   } catch (err) {

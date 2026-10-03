@@ -887,6 +887,7 @@ export function createKineticVariant(score) {
           rimLux: light.rimLux,
           rimAz: light.rimAz,
           wash: light.wash,
+          beams: light.beams,
           floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),

@@ -63,25 +63,30 @@ export const SPACES = {
 
 // Estúdio aceso: luz de cima com sombra, contraluz, rebatimento das paredes, reflexos das
 // softboxes, luz de fundo e piso brilhante. Níveis contidos (nada estoura).
+// Estúdio branco com luz de cinema (referência: vídeo da hero da home): luz baixa, uma
+// mancha de luz de cima no chão e a queda para as paredes em meia-luz, recortes nas
+// arestas, faixas de luz correndo pelo black piano (passagens de luz) e feixes leves no ar.
+// Foco raso.
 const STUDIO = {
-  keyLux: 0.75,
+  keyLux: 0.6,
   keyAz: -30,
   keyEl: 70,
-  keyAngle: 36,
-  rimLux: 0.9,
+  keyAngle: 30,
+  rimLux: 1.5,
   rimAz: 200,
-  fill: 0.26,
-  env: 0.85,
-  wash: 0.32,
-  contact: 0.85,
-  floorReflect: 0.55,
-  aperture: 0.6,
+  fill: 0.07,
+  env: 0.38,
+  wash: 0.14,
+  contact: 0.9,
+  floorReflect: 0.4,
+  beams: 0.1,
+  aperture: 1.0,
   bloom: 0,
   sweep: 15,
-  exposure: 0.95,
+  exposure: 1.0,
 };
 // Profundidade de campo nos closes (foco no alvo da câmera).
-const MACRO = { aperture: 2.6 };
+const MACRO = { aperture: 3.0 };
 const WIDE = { aperture: STUDIO.aperture };
 
 // UM plano contínuo em voo livre (6DoF), como um pássaro em volta da bateria: posição e
@@ -128,8 +133,8 @@ export const SHOTS = [
       // 04 · explodida: 3/4 lento, de fora; o olhar sobe com a estrutura aberta, fica na
       // leitura e desce quando ela se fecha.
       { t: 17.95, pos: [9.4, 5.9, 16.2], look: [0, 2.4, 0] },
-      { t: 19.75, pos: [10.2, 6.4, 14.0], look: [0, 4.0, 0] },
-      { t: 21.45, pos: [10.6, 6.2, 12.6], look: [0, 3.8, 0] },
+      { t: 19.75, pos: [9.4, 5.6, 13.0], look: [0, 3.2, 0] },
+      { t: 21.45, pos: [9.8, 5.4, 11.8], look: [0, 3.1, 0] },
       { t: 22.75, pos: [9.8, 4.2, 11.0], look: [0, 1.6, 0] },
       // 05 · hero: aproximação lenta e baixa em 3/4 (espaço acima para a mensagem).
       { t: 24.15, pos: [8.6, 1.2, 9.4], look: [0.2, 1.3, 0], shift: [0, -0.12] },
@@ -142,11 +147,30 @@ export const SHOTS = [
     light: {
       base: 'feature',
       keys: [
-        [0, { ...STUDIO, keyLux: 0, rimLux: 0, fill: 0, env: 0, wash: 0, contact: 0, floorReflect: 0 }],
+        [
+          0,
+          {
+            ...STUDIO,
+            keyLux: 0,
+            rimLux: 0,
+            fill: 0,
+            env: 0,
+            wash: 0,
+            contact: 0,
+            floorReflect: 0,
+            beams: 0,
+          },
+        ],
         [0.4, { wash: 0 }],
-        [1.8, { wash: 0.6, rimLux: 0, keyLux: 0, env: 0, fill: 0, contact: 0.25 }],
-        [3.0, { rimLux: 0.8, keyLux: 0.35, env: 0.2, contact: 0.55, fill: 0.05, floorReflect: 0.3 }],
+        // Primeiro o fundo (silhueta) e os feixes no ar; depois as arestas e as faixas de luz.
+        [1.8, { wash: 0.3, beams: 0.04, rimLux: 0, keyLux: 0, env: 0, fill: 0, contact: 0.3 }],
+        [3.0, { rimLux: 1.4, keyLux: 0.25, env: 0.3, contact: 0.7, fill: 0.03, floorReflect: 0.25 }],
         [4.2, { ...STUDIO }],
+        // Passagens de luz: as faixas do set giram devagar e correm pelas superfícies.
+        [9.0, { sweep: 75 }],
+        [15.35, { sweep: 140 }],
+        [22.75, { sweep: 215 }],
+        [29.45, { sweep: 275 }],
         [5.3, WIDE],
         [6.0, MACRO],
         [6.6, WIDE],
@@ -174,13 +198,13 @@ const layer = (lift, k) => [
   [CLOSE + k * 0.07, lift],
   [CLOSE + 0.9 + k * 0.07, 0, 'easeIn'],
 ];
-// Uns 9 cm entre uma camada e outra (a câmera passa entre células e suporte).
-const LID = layer(6.33, 4);
+// Uns 4 cm entre uma camada e outra.
+const LID = layer(4.1, 4);
 export const EXPLODE = {
-  cells: layer(2.54, 0),
-  holder: layer(3.5, 1),
-  bus: layer(4.36, 2),
-  bms: layer(5.27, 3),
+  cells: layer(2.3, 0),
+  holder: layer(2.75, 1),
+  bus: layer(3.13, 2),
+  bms: layer(3.53, 3),
   lid: LID,
   rings: LID,
   button: LID,

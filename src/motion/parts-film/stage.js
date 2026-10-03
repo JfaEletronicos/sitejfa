@@ -184,6 +184,57 @@ function buildWhiteStudioEnvironment(renderer) {
   return target;
 }
 
+/**
+ * Feixe de luz no ar (set de cinema): cone aberto da fonte até o chão, somado à imagem, mais
+ * forte perto da fonte e no miolo do cone, com variação lenta (poeira/fumaça leve). Shader.
+ */
+function buildBeam(from, to, rBottom) {
+  const a = new THREE.Vector3(...from);
+  const b = new THREE.Vector3(...to);
+  const len = a.distanceTo(b);
+  const geo = new THREE.CylinderGeometry(0.22, rBottom, len, 48, 1, true);
+  geo.translate(0, -len / 2, 0);
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    blending: THREE.CustomBlending,
+    blendSrc: THREE.OneFactor,
+    blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.ZeroFactor,
+    blendDstAlpha: THREE.OneFactor,
+    uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color(1.0, 0.97, 0.92) } },
+    vertexShader: /* glsl */ `
+      varying float vAlong;
+      varying vec3 vW;
+      varying vec3 vN;
+      void main() {
+        vAlong = uv.y;
+        vec4 w = modelMatrix * vec4(position, 1.0);
+        vW = w.xyz;
+        vN = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * viewMatrix * w;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform float uOpacity;
+      uniform vec3 uColor;
+      varying float vAlong;
+      varying vec3 vW;
+      varying vec3 vN;
+      void main() {
+        float core = pow(abs(dot(normalize(vN), normalize(cameraPosition - vW))), 2.2);
+        float fade = pow(vAlong, 1.3) * smoothstep(0.0, 0.25, vAlong);
+        float haze = 0.75 + 0.25 * sin(vW.x * 2.3 + vW.y * 1.7 + vW.z * 2.9);
+        gl_FragColor = vec4(uColor * uOpacity * core * fade * haze, 0.0);
+      }`,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(a);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), b.clone().sub(a).normalize());
+  mesh.renderOrder = 5;
+  return mesh;
+}
+
 /** Sombra de contato: escurecimento suave em volta da pegada do produto no chão (shader). */
 function buildContactShadow(halfX, halfZ) {
   const mat = new THREE.ShaderMaterial({
@@ -392,6 +443,7 @@ export async function createStage({
   transparent = false,
   upAxis = 'z',
   studio = 'dark',
+  cyc: cycColor = null,
   detail = [],
 }) {
   const renderer = new THREE.WebGLRenderer({
@@ -409,8 +461,13 @@ export async function createStage({
   const gltf = await new GLTFLoader().parseAsync(model, '');
 
   const scene = new THREE.Scene();
-  const white = studio === 'white';
-  const envTarget = white ? buildWhiteStudioEnvironment(renderer) : buildStudioEnvironment(renderer);
+  // "white": estúdio branco; "cinema": set escuro (grafite, faixas de luz). Os dois têm
+  // ciclorama 3D, piso com reflexo, sombra de contato, feixes de luz no ar e luzes presas ao
+  // mundo.
+  const white = studio === 'white' || studio === 'cinema';
+  const cinema = studio === 'cinema';
+  const envTarget =
+    studio === 'white' ? buildWhiteStudioEnvironment(renderer) : buildStudioEnvironment(renderer);
   scene.environment = envTarget.texture;
 
   const pivot = new THREE.Group();
@@ -433,6 +490,7 @@ export async function createStage({
   let contact = null;
   let wash = null;
   let reflect = null;
+  let beams = [];
   if (white) {
     const box = new THREE.Box3().setFromObject(board);
     const profile = [new THREE.Vector2(0, 0), new THREE.Vector2(36, 0)];
@@ -443,7 +501,11 @@ export async function createStage({
     profile.push(new THREE.Vector2(45, 60));
     const cyc = new THREE.Mesh(
       new THREE.LatheGeometry(profile, 96),
-      new THREE.MeshStandardMaterial({ color: 0xe6e7e9, roughness: 0.92, side: THREE.DoubleSide }),
+      new THREE.MeshStandardMaterial({
+        color: cycColor ?? (cinema ? 0x2a2c30 : 0xe6e7e9),
+        roughness: cinema ? 0.8 : 0.92,
+        side: THREE.DoubleSide,
+      }),
     );
     cyc.position.y = box.min.y;
     cyc.receiveShadow = true;
@@ -508,6 +570,15 @@ export async function createStage({
     wash.position.set(0, 16, 16);
     wash.target.position.set(1.5, 0, -14);
     scene.add(cyc, contact, wash, wash.target);
+    {
+      // Feixes no ar (opacidade pela timeline, 0 = sem feixe): da luz de cima (alto, à
+      // esquerda e à frente) e um contraluz alto atrás.
+      beams = [
+        buildBeam([-2.4, 13.2, 4.2], [0.3, 0, -0.2], 3.0),
+        buildBeam([5, 13, -9], [-0.5, 0, 0.6], 2.4),
+      ];
+      scene.add(...beams);
+    }
   }
 
   // Luz principal: spot suave com sombra (recorte de luz de estúdio).
@@ -527,7 +598,7 @@ export async function createStage({
   // Preenchimento quase nulo (azul profundo por cima, preto por baixo); no estúdio branco,
   // o rebatimento neutro das paredes e do chão.
   const fill = white
-    ? new THREE.HemisphereLight(0xffffff, 0x9a9da3, 0)
+    ? new THREE.HemisphereLight(cinema ? 0xbfc6d4 : 0xffffff, cinema ? 0x0c0d0f : 0x9a9da3, 0)
     : new THREE.HemisphereLight(0x3a64c8, 0x05070a, 0);
   scene.add(fill);
 
@@ -735,6 +806,7 @@ export async function createStage({
       scene.environmentIntensity = s.env;
       scene.environmentRotation.set(0, s.sweep * DEG, 0);
       wash.intensity = s.wash ?? 0;
+      beams.forEach((b) => (b.material.uniforms.uOpacity.value = s.beams ?? 0));
       contact.material.uniforms.uOpacity.value = s.contact ?? 0;
     } else {
       // Luz principal: segue o alvo da câmera, um pouco à frente do caminho.
