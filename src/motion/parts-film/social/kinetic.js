@@ -460,7 +460,6 @@ export function createKineticVariant(score) {
     fx: FX,
     cues: CUES,
     explode: EXPLODE = {},
-    shafts: SHAFTS = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -804,31 +803,6 @@ export function createKineticVariant(score) {
         };
       }
 
-      /**
-       * Feixes de sol dos takes de perto (roteiros com `shafts`): cada um PARADO no seu lugar,
-       * acendendo em t[0]→t[1] (antes de a câmera chegar) e apagando em t[2]→t[3] (depois que
-       * ela sai). Feixes seguidos usam três rigs alternados, então o seguinte pode entrar
-       * enquanto o anterior ainda está aceso.
-       */
-      function shaftsAt(tb) {
-        const out = [null, null, null];
-        SHAFTS.forEach((sh, i) => {
-          const [a, b, c, d] = sh.t;
-          const w = Math.min(EASE.soft(clamp01((tb - a) / (b - a))), EASE.soft(clamp01((d - tb) / (d - c))));
-          if (w <= 0) return;
-          out[i % 3] = {
-            aim: sh.aim,
-            az: sh.az,
-            el: sh.el,
-            radius: sh.radius ?? 0.9,
-            lux: (sh.lux ?? 1.6) * w,
-            haze: (sh.haze ?? 0.1) * w,
-            time: tb,
-          };
-        });
-        return out;
-      }
-
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
       function explodeAt(tb) {
         const out = {};
@@ -961,7 +935,6 @@ export function createKineticVariant(score) {
           rimLux: light.rimLux,
           rimAz: light.rimAz,
           wash: light.wash,
-          shafts: shaftsAt(tb),
           floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),

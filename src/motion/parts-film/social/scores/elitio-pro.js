@@ -4,9 +4,10 @@
  * paradas: a câmera só para no último quadro), em voo livre como um pássaro (6DoF: posição
  * e olhar independentes, curvas suaves e inclinadas), alternando trechos lentos e rápidos e
  * girando sempre para o mesmo lado em volta da bateria (sem ir e voltar).
- * A bateria nunca se move; a vista explodida é a única exceção. Estúdio branco em 3D
- * (ciclorama iluminado pelas luzes do set, piso brilhante com reflexo), luz e reflexos
- * presos ao mundo (studio: 'white' no palco) e motion blur de câmera real só quando a
+ * A bateria nunca se move; a vista explodida é a única exceção. Estúdio escuro de
+ * fotografia em 3D (ciclorama grafite, piso com reflexo leve) e UMA luz de estúdio fixa
+ * (softbox grande na frente, no alto), presa ao mundo (studio: 'cinema' no palco), e
+ * motion blur de câmera real só quando a
  * imagem anda rápido (meta.shutter), com o obturador bem aberto nos deslocamentos entre os
  * takes (rastro de alta velocidade; `shutter` nas marcações de luz).
  * Modelo do CAD original da caixa (public/models/elitio-pro.glb, montado por
@@ -15,8 +16,7 @@
  * Nesta etapa não entram textos, cards, trilha nem efeitos de motion: só cenário, luz,
  * produto e câmera (pedido do cliente, que vale acima do checklist geral da skill).
  *
- *   01 silhueta (0–4,2): estúdio apagado; a luz de fundo acende o chão e a parede atrás
- *      (silhueta), depois contraluz e luz de cima; termina todo claro. Deriva lenta.
+ *   01 abertura (0–4,2): sai do preto (1,2 s) com o estúdio já aceso; deriva lenta.
  *   02 revelação (4,2–15,35): voo livre em volta do produto, sempre para o mesmo lado:
  *      fly-by no logotipo, borne positivo (macro, devagar), mergulho na ponta, traseira
  *      (ficha), outra ponta e o painel com o display aceso, de cima (no fim da volta);
@@ -39,7 +39,7 @@ export const META = {
 };
 
 export const SCENES = [
-  { id: 'cena-01', label: '01 Silhueta', start: 0, end: 4.2 },
+  { id: 'cena-01', label: '01 Abertura', start: 0, end: 4.2 },
   { id: 'cena-02', label: '02 Revelação', start: 4.2, end: 15.35 },
   { id: 'cena-03', label: '03 Cards', start: 15.35, end: 17.95 },
   { id: 'cena-04', label: '04 Explodida', start: 17.95, end: 22.75 },
@@ -62,26 +62,24 @@ export const SPACES = {
   1: { yaw: 0 },
 };
 
-// Estúdio branco com luz natural e baixa (referência: vídeo da hero da home): uma janela
-// grande e fixa em 3/4 à esquerda (luz suave, sombra macia), contraluz, rebatimento das
-// paredes e a queda para o fundo em meia-luz. Nos takes de perto, feixes de sol (SHAFTS).
-// Nenhuma luz anda (num plano sem cortes, luz trocando de lugar aparece); só acendem e
-// apagam devagar, fora da vista ou durante os deslocamentos. Foco raso.
+// Estúdio escuro de fotografia com UMA luz fixa padrão: softbox grande na frente, a 55° de
+// altura, iluminando bem o produto (frente e topo) com sombra macia; ambiente quase preto,
+// então o único brilho no black piano é o da própria softbox (poucos reflexos). Sem
+// contraluz, luz de fundo nem luz que mude: só a câmera anda. Reflexo leve no chão.
 const STUDIO = {
-  keyLux: 0.6,
-  keyAz: -35,
-  keyEl: 30,
-  keyAngle: 30,
-  rimLux: 1.5,
+  keyLux: 3.2,
+  keyAz: 10,
+  keyEl: 55,
+  rimLux: 0,
   rimAz: 200,
-  fill: 0.07,
-  env: 0.38,
-  wash: 0.14,
-  contact: 0.9,
-  floorReflect: 0.4,
+  fill: 0.16,
+  env: 1.5,
+  wash: 0,
+  contact: 0.85,
+  floorReflect: 0.15,
   aperture: 1.0,
   bloom: 0,
-  sweep: 15,
+  sweep: 0,
   exposure: 1.0,
 };
 // Profundidade de campo nos closes (foco no alvo da câmera).
@@ -103,7 +101,7 @@ export const SHOTS = [
     t: [0, 29.45],
     flight: true,
     keys: [
-      // 01 · silhueta: deriva lenta, baixa, bateria levemente fora do centro.
+      // 01 · abertura: deriva lenta, baixa, bateria levemente fora do centro.
       { t: 0, pos: [-7.5, 1.0, 17.5], look: [0.5, 1.15, 0] },
       { t: 2.2, pos: [-6.3, 1.3, 15.0], look: [0.35, 1.18, 0] },
       { t: 4.0, pos: [-4.6, 1.55, 12.3], look: [0.15, 1.2, 0] },
@@ -151,35 +149,13 @@ export const SHOTS = [
       // 06 · final: afastamento lento, subindo, muito espaço negativo.
       { t: 29.45, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
     ],
-    // Luz presa ao set: primeiro a luz de fundo (silhueta), depois contraluz e luz de cima,
-    // e o estúdio inteiro aceso a partir de 4,2 s. Profundidade de campo nos closes.
+    // Luz fixa do set (STUDIO), profundidade de campo nos closes e obturador por trecho.
     light: {
       base: 'feature',
       keys: [
-        [
-          0,
-          {
-            ...STUDIO,
-            keyLux: 0,
-            rimLux: 0,
-            fill: 0,
-            env: 0,
-            wash: 0,
-            contact: 0,
-            floorReflect: 0,
-          },
-        ],
-        [0.4, { wash: 0 }],
-        // Primeiro o fundo (silhueta); depois as arestas e a luz de cima.
-        [1.8, { wash: 0.3, rimLux: 0, keyLux: 0, env: 0, fill: 0, contact: 0.3 }],
-        [3.0, { rimLux: 1.4, keyLux: 0.25, env: 0.3, contact: 0.7, fill: 0.03, floorReflect: 0.25 }],
-        [4.2, { ...STUDIO }],
-        // Nos takes de perto a janela baixa um pouco (os feixes de sol mandam, SHAFTS); no
-        // recuo depois do display ela volta.
-        [5.2, { keyLux: 0.6 }],
-        [6.2, { keyLux: 0.42 }],
-        [14.5, { keyLux: 0.42 }],
-        [15.8, { keyLux: 0.6 }],
+        // A luz é uma só e fica igual o filme todo; só a abertura sai do preto.
+        [0, { ...STUDIO, exposure: 0 }],
+        [1.2, { exposure: STUDIO.exposure }],
         [5.3, WIDE],
         [6.0, MACRO],
         [6.6, WIDE],
@@ -211,25 +187,6 @@ export const SHOTS = [
       ],
     },
   },
-];
-
-// Feixes de sol dos takes de perto: um por take, cada um PARADO no seu lugar (fonte longe,
-// raios quase paralelos, borda macia, névoa e poeira dentro), entrando de cima por um lado
-// em que a câmera o veja atravessar o quadro. Acende antes de a câmera chegar (t[0]→t[1],
-// enquanto o ponto ainda está fora do quadro ou no deslocamento) e apaga depois que ela sai
-// (t[2]→t[3]); a luz nunca muda de lugar na frente da câmera. Névoa leve (`haze`): no close
-// a câmera olha através do feixe, e névoa forte vira véu.
-export const SHAFTS = [
-  // Logotipo (acende junto com o estúdio, ainda de longe).
-  { t: [3.4, 4.6, 6.7, 7.4], aim: [0.0, 1.4, 0.86], az: 25, el: 55, radius: 0.75 },
-  // Borne positivo (acende enquanto a câmera está no logotipo, fora do quadro).
-  { t: [5.9, 6.9, 9.3, 9.9], aim: [1.85, 2.42, -0.55], az: -130, el: 58, radius: 0.7 },
-  // Ponta direita: orelha e alça (acende enquanto a câmera está no borne).
-  { t: [7.9, 8.8, 10.5, 11.0], aim: [2.38, 1.2, 0.1], az: 60, el: 50, radius: 0.8, lux: 2.2 },
-  // Traseira: ficha técnica (acende enquanto a câmera está na ponta direita).
-  { t: [9.8, 10.4, 11.5, 12.2], aim: [1.0, 1.1, -0.86], az: -160, el: 48, radius: 0.9 },
-  // Display (acende enquanto a câmera passa pela traseira).
-  { t: [10.4, 11.3, 14.6, 15.8], aim: [-0.08, 2.44, -0.36], az: 125, el: 60, radius: 0.65 },
 ];
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
@@ -274,9 +231,7 @@ export const CUTS = [];
 export const FX = [];
 
 export const CUES = [
-  { t: 0, id: 'escuro', label: 'Escuro / ambiente grave', until: 1.8 },
-  { t: 1.8, id: 'silhueta', label: 'Luz de fundo: silhueta', until: 3.0 },
-  { t: 3.0, id: 'luz', label: 'Estúdio acende', until: 4.2 },
+  { t: 0, id: 'abertura', label: 'Sai do preto / ambiente grave', until: 4.2 },
   { t: 4.2, id: 'revelacao', label: 'Voo em volta (whooshes)', until: 15.35 },
   { t: 7.9, id: 'borne', label: 'Borne positivo (macro)', until: 8.9 },
   { t: 13.1, id: 'display', label: 'Painel (display aceso)', until: 14.2 },
@@ -300,5 +255,4 @@ export default {
   fx: FX,
   cues: CUES,
   explode: EXPLODE,
-  shafts: SHAFTS,
 };

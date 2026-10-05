@@ -24,17 +24,14 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 
 ### Estúdio branco, vista explodida e motion blur (filme da bateria)
 
-- Entrada em `VARIANTS` com `studio: 'white'`: ciclorama 3D iluminado pelas luzes do set, luz
-  e reflexos presos ao mundo (a câmera anda, a luz não). Luz natural: `keyLux`/`keyAz`/`keyEl`
-  são uma janela grande fixa (RectAreaLight) mais um sol fraco só para a sombra macia, na
-  mesma direção do mundo; o ambiente tem paredes claras contínuas, a softbox de cima e a
-  janela, parados. Campos de luz extras: `wash` (luz de fundo no chão e na parede atrás),
-  `contact` (sombra de contato), `rimAz` (direção do contraluz, em graus no mundo).
-- `shafts` no roteiro (estúdio branco): feixes de sol parados dos takes de perto,
-  `{ t: [acende, aceso, apaga, apagado], aim, az, el, radius, lux?, haze? }` (fonte longe,
-  raios quase paralelos, borda macia, sombra, névoa e poeira dentro). Feixes seguidos usam
-  três rigs alternados (o feixe i usa o rig i % 3: no máximo três acesos ao mesmo tempo).
-  Acenda e apague com o alvo fora do quadro (confira projetando o alvo pela câmera).
+- Entrada em `VARIANTS` com `studio: 'white'` (estúdio branco) ou `'cinema'` (estúdio
+  escuro de fotografia: ciclorama grafite e ambiente quase preto, com só a softbox
+  desenhada): ciclorama 3D iluminado pela luz do set, presa ao mundo (a câmera anda, a luz
+  não). `keyLux`/`keyAz`/`keyEl` são uma softbox grande (RectAreaLight) mais um sol fraco
+  só para a sombra macia, na mesma direção do mundo, mirando o centro do produto. Campos de
+  luz extras: `wash` (luz de fundo no chão e na parede atrás), `contact` (sombra de
+  contato), `floorReflect` (reflexo no chão), `rimAz` (direção do contraluz, em graus no
+  mundo).
 - `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador; cada
   instante é arrastado na tela até os vizinhos pela profundidade, então o rastro sai contínuo
