@@ -70,7 +70,8 @@ export async function openFilm({
       const css = url.includes('googleapis');
       route.fulfill({ body, contentType: css ? 'text/css' : 'font/woff2' });
     } catch {
-      route.abort();
+      // Sem curl (ou ele falhou): o próprio Chromium baixa a fonte. Abortar trocava as fontes.
+      route.continue();
     }
   });
   page.on('pageerror', (e) => console.error('[página]', e.message));
