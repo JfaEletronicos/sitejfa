@@ -52,6 +52,14 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
   velocidade dos trechos vizinhos uns 0,6 s). Confira velocidade, aceleração e giro da vista
   por amostragem (meta: aceleração ≲ 10 un/s², giro ≲ 80°/s nos trechos rápidos e ≲ 15°/s nos
   takes de detalhe) e que a câmera não entra no produto.
+- `glass` no roteiro: cards Liquid Glass no espaço 3D do palco (`glass-cards.js`): vidro de
+  verdade (transmissão com desfoque do que está atrás, reflexo, verniz), borda fina, brilho
+  em diagonal e texto desenhado em canvas com as fontes do site. Presos ao mundo (acompanham
+  a câmera, ganham motion blur e saem no vídeo exportado, ao contrário do texto em HTML).
+  `{ id, t: [entra, sai], pos, face (ponto para onde o card olha), w, h, radius?, depth?,
+inDur?, outDur?, lines: [{ x, y, align?, parts: [{ text, font, weight, italic, size,
+alpha, tracking, gap, sub }] }] }` (x, y e size em frações da altura do card; a linha
+  diminui sozinha se não couber).
 - `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
   na vertical (unidades de cena).
 

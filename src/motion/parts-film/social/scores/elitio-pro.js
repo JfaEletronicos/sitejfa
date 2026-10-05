@@ -189,6 +189,75 @@ export const SHOTS = [
   },
 ];
 
+// 03 · cards Liquid Glass (a única cena técnica): três cards de vidro em escada acima da
+// bateria, no 3/4 alto, e o LiFePO₄ discreto no chão à frente. Vidro de verdade no espaço
+// 3D (desfoque do que está atrás, reflexo e borda fina), virados para onde a câmera passa
+// na cena; entram um a um, ficam ~1 s e somem antes da explodida.
+const FACE = [7.6, 5.6, 17.4];
+const label = (text) => ({
+  x: 0.16,
+  y: 0.32,
+  parts: [{ text, weight: 400, size: 0.11, alpha: 0.7, tracking: 0.16 }],
+});
+const value = (num, unit, size = 0.5) => ({
+  x: 0.14,
+  y: 0.84,
+  parts: [
+    { text: num, weight: 800, size },
+    { text: unit, weight: 300, size, gap: 0 },
+  ],
+});
+export const GLASS = [
+  {
+    id: 'tensao',
+    t: [16.2, 17.3],
+    pos: [-1.6, 4.1, 0.6],
+    face: FACE,
+    w: 2.1,
+    h: 1.25,
+    lines: [label('TENSÃO NOMINAL'), value('12', 'V')],
+  },
+  {
+    id: 'capacidade',
+    t: [16.42, 17.42],
+    pos: [1.4, 5.2, -0.2],
+    face: FACE,
+    w: 2.1,
+    h: 1.25,
+    lines: [label('CAPACIDADE'), value('280', 'Ah')],
+  },
+  {
+    id: 'energia',
+    t: [16.64, 17.54],
+    pos: [-1.3, 6.3, -0.4],
+    face: FACE,
+    w: 2.5,
+    h: 1.25,
+    lines: [label('ENERGIA'), value('3,58', ' kWh', 0.44)],
+  },
+  {
+    id: 'quimica',
+    t: [16.9, 17.6],
+    pos: [0.4, 0.3, 2.9],
+    face: FACE,
+    w: 2.0,
+    h: 0.44,
+    radius: 0.22,
+    depth: 0.04,
+    lines: [
+      {
+        align: 'center',
+        y: 0.66,
+        parts: [
+          { text: 'CÉLULAS', weight: 400, size: 0.3, alpha: 0.7, tracking: 0.14, gap: 0.12 },
+          { text: 'LiFePO', weight: 600, size: 0.38 },
+          { text: '4', weight: 600, size: 0.38, sub: true },
+        ],
+      },
+    ],
+  },
+];
+
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
 // vertical, alinhados. Abre de cima para baixo; fecha de baixo para cima depois que a
@@ -255,4 +324,5 @@ export default {
   fx: FX,
   cues: CUES,
   explode: EXPLODE,
+  glass: GLASS,
 };

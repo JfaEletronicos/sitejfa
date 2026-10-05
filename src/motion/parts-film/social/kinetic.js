@@ -460,6 +460,7 @@ export function createKineticVariant(score) {
     fx: FX,
     cues: CUES,
     explode: EXPLODE = {},
+    glass: GLASS = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -803,6 +804,29 @@ export function createKineticVariant(score) {
         };
       }
 
+      /**
+       * Cards Liquid Glass (roteiros com `glass`): cada um entra em `t[0]` (sobe um pouco e
+       * cresce de 94% para 100%, em `inDur`) e sai em `t[1]` (sobe e some, em `outDur`).
+       */
+      function glassAt(tb) {
+        return GLASS.map((g) => {
+          const inDur = g.inDur ?? 0.6;
+          const outDur = g.outDur ?? 0.45;
+          const a = EASE.enter(clamp01((tb - g.t[0]) / inDur));
+          const b = EASE.soft(clamp01((tb - g.t[1]) / outDur));
+          const opacity = a * (1 - b);
+          const lift = (1 - a) * -0.14 + b * 0.12;
+          return {
+            id: g.id,
+            spec: g,
+            pos: [g.pos[0], g.pos[1] + lift, g.pos[2]],
+            face: g.face,
+            opacity,
+            scale: 0.94 + 0.06 * a,
+          };
+        }).filter((g) => g.opacity > 0.002);
+      }
+
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
       function explodeAt(tb) {
         const out = {};
@@ -938,6 +962,7 @@ export function createKineticVariant(score) {
           floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),
+          glass: glassAt(tb),
           fill: light.fill,
           env: light.env,
           sweep,

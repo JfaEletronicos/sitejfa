@@ -15,6 +15,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { surfaceDetail } from './surface-detail';
+import { createGlassCard } from './glass-cards';
 
 const DEG = Math.PI / 180;
 // 1 mm da placa = 0,01 unidade de cena (placa com 3,1 de comprimento).
@@ -824,6 +825,31 @@ export async function createStage({
     sun.intensity = s.keyLux * 0.3;
   }
 
+  /**
+   * Cards Liquid Glass presos ao mundo (`s.glass`: `[{ id, spec, pos, face, opacity, scale }]`).
+   * Criados na primeira vez que aparecem (o texto usa as fontes já carregadas).
+   */
+  const glassCards = new Map();
+  function placeGlass(list) {
+    const seen = new Set();
+    (list || []).forEach((g) => {
+      let card = glassCards.get(g.id);
+      if (!card) {
+        card = createGlassCard(g.spec);
+        glassCards.set(g.id, card);
+        scene.add(card.group);
+      }
+      seen.add(g.id);
+      card.group.position.fromArray(g.pos);
+      card.group.lookAt(g.face[0], g.face[1], g.face[2]);
+      card.group.scale.setScalar(g.scale);
+      card.setOpacity(g.opacity);
+    });
+    glassCards.forEach((card, id) => {
+      if (!seen.has(id)) card.setOpacity(0);
+    });
+  }
+
   /** Posiciona produto, camadas, câmera e luzes para um estado; devolve a distância da câmera. */
   function place(s) {
     const aspect = size.width / size.height;
@@ -837,6 +863,8 @@ export async function createStage({
     pivot.rotation.set(s.boardPitch * DEG, s.boardYaw * DEG, s.boardRoll * DEG, 'YXZ');
     const bp = s.boardPos || ZERO3;
     pivot.position.set(bp[0], bp[1] + s.floatY, bp[2]);
+
+    placeGlass(s.glass);
 
     // Câmera em órbita do alvo.
     const az = s.cam.az * DEG;
