@@ -131,7 +131,9 @@ está em [referencia.md](referencia.md).
   uma animação para cada linha (ex.: contador que para em cada número 1 → 2 → 3, palavra que
   carrega de contorno para preenchida, palavra que se inclina até virar itálico).
 - Filme da bateria: a bateria tem de se destacar do fundo mesmo que a luz não seja realista
-  (ambiente claro só para o produto; ciclorama escuro).
+  (ambiente claro só para o produto; ciclorama escuro). Black piano quase absoluto fica preto
+  e só mostra reflexos estourados: no filme ele vira um carvão com verniz menos espelhado
+  (`look` na variante, `ELITIO_PRO_LOOK`). Nada de pontos estourados.
 - Filme da bateria: um plano contínuo, sem cortes e sem paradas (só o último quadro assenta;
   `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
   nunca vai e volta. Motion blur só quando a imagem anda rápido; nos deslocamentos de um

@@ -69,21 +69,21 @@ export const SPACES = {
 // lado, que desenham as arestas contra o escuro. Ambiente quase preto (poucos reflexos) e
 // reflexo leve no chão. Nenhuma luz anda nem muda: só a câmera se move.
 const STUDIO = {
-  keyLux: 5,
+  keyLux: 6.5,
   keyAz: 10,
   keyEl: 55,
-  edge: 18,
+  edge: 6,
   rimLux: 0,
   rimAz: 200,
   fill: 0.03,
-  env: 2.2,
+  env: 1.6,
   wash: 0,
   contact: 0.9,
   floorReflect: 0.3,
   aperture: 1.0,
   bloom: 0,
   sweep: 0,
-  exposure: 1.0,
+  exposure: 1.12,
 };
 // Profundidade de campo nos closes (foco no alvo da câmera).
 const MACRO = { aperture: 3.0 };

@@ -18,7 +18,7 @@
  */
 import './parts-film.css';
 import { createFilm } from './film';
-import { ELITIO_PRO_DETAIL } from './surface-detail';
+import { ELITIO_PRO_DETAIL, ELITIO_PRO_LOOK } from './surface-detail';
 
 const PLACA = '/models/placa_lb1004.glb';
 const ELITIO_PRO = '/models/elitio-pro.glb';
@@ -43,6 +43,7 @@ const VARIANTS = {
     upAxis: 'y',
     studio: 'cinema',
     detail: ELITIO_PRO_DETAIL,
+    look: ELITIO_PRO_LOOK,
   },
 };
 
@@ -106,6 +107,7 @@ async function boot() {
       studio: entry.studio,
       cyc: entry.cyc,
       detail: entry.detail,
+      look: entry.look,
     });
   } catch (err) {
     console.error('[JFA Parts] filme indisponível:', err);

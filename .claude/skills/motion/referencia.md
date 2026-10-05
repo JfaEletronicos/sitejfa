@@ -34,6 +34,8 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
   mundo), `edge` (dois recortes finos atrás do produto, que desenham as arestas). No estúdio
   escuro a softbox fica mais perto e menor (a luz cai rápido e o fundo fica escuro).
 - `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
+- `look` na entrada: ajustes de material por nome só para o filme (`[[regex, { color,
+roughness, clearcoat, clearcoatRoughness, ... }]]`), ex.: clarear o black piano.
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador; cada
   instante é arrastado na tela até os vizinhos pela profundidade, então o rastro sai contínuo
   com poucas amostras). `shutter` nas marcações de luz do plano abre mais o obturador num

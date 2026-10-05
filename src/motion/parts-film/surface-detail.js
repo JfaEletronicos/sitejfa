@@ -141,3 +141,16 @@ export const ELITIO_PRO_DETAIL = [
   [/^Pegador$/, { wear: 1.4, scratch: 1.2, peel: 0.5 }],
   [/^Adesivo /, { wear: 0, scratch: 0.6, peel: 0.6 }],
 ];
+
+/**
+ * Ajustes de material da E-LÍTIO PRO no filme (estúdio escuro): o black piano de verdade é
+ * preto quase absoluto e só aparece onde reflete luz (linhas finas e estouradas); aqui ele
+ * fica um carvão escuro, com verniz menos espelhado, para o corpo ganhar volume com a luz e os
+ * reflexos se espalharem em vez de estourar. Não é realista de propósito: a bateria se
+ * destaca do fundo.
+ */
+export const ELITIO_PRO_LOOK = [
+  [/^Caixa black piano$/, { color: 0x383b41, roughness: 0.38, clearcoat: 0.8, clearcoatRoughness: 0.09 }],
+  [/^Pegador$/, { color: 0x2e3035, roughness: 0.45 }],
+  [/^Display face$/, { color: 0x1d1e22, clearcoatRoughness: 0.06 }],
+];

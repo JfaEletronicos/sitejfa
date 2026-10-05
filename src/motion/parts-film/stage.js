@@ -469,6 +469,7 @@ export async function createStage({
   studio = 'dark',
   cyc: cycColor = null,
   detail = [],
+  look = [],
 }) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -500,6 +501,19 @@ export async function createStage({
   const board = buildBoard(gltf, renderer.capabilities.getMaxAnisotropy(), upAxis);
   pivot.add(board);
   scene.add(pivot);
+  // Ajustes de material do filme por nome (`look`: [[regex, { color, roughness, ... }]]):
+  // ex.: clarear o black piano para o corpo ganhar volume com a luz.
+  if (look.length) {
+    board.traverse((o) => {
+      if (!o.isMesh) return;
+      const rule = look.find(([re]) => re.test(o.material.name || ''));
+      if (!rule) return;
+      const { color, ...rest } = rule[1];
+      if (color != null) o.material.color.set(color);
+      Object.assign(o.material, rest);
+      o.material.needsUpdate = true;
+    });
+  }
   // Acabamento fino (casca de laranja, riscos, desgaste) por nome de material; o ruído
   // usa milímetros (1 unidade de cena = 1000 / MODEL_SCALE mm).
   if (detail.length) {
