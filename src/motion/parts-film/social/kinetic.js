@@ -832,12 +832,27 @@ export function createKineticVariant(score) {
       /**
        * Tipografia 3D (roteiros com `type`): cada linha entra por máscara em `t[0]` (sobe de
        * dentro dela mesma, em `inDur`) e sai por máscara em `t[1]` (desce, em `outDur`).
+       * `rollAt: [t, dur]` rola o contador da parte com `roll` até o último valor; `sheenAt:
+       * [t, dur]` passa um brilho em diagonal pelas letras.
        */
       function typeAt(tb) {
         return TYPE3D.map((l) => {
           const reveal = EASE.enter(clamp01((tb - l.t[0]) / (l.inDur ?? 0.8)));
           const out = EASE.soft(clamp01((tb - l.t[1]) / (l.outDur ?? 0.55)));
-          return { id: l.id, spec: l, pos: l.pos, face: l.face, reveal, out, opacity: l.opacity ?? 1 };
+          const steps = (l.parts.find((p) => p.roll)?.roll.length ?? 1) - 1;
+          const roll = l.rollAt ? steps * EASE.enter(clamp01((tb - l.rollAt[0]) / l.rollAt[1])) : steps;
+          const sheen = l.sheenAt ? -0.3 + 1.6 * EASE.soft(clamp01((tb - l.sheenAt[0]) / l.sheenAt[1])) : -1;
+          return {
+            id: l.id,
+            spec: l,
+            pos: l.pos,
+            face: l.face,
+            reveal,
+            out,
+            opacity: l.opacity ?? 1,
+            roll,
+            sheen,
+          };
         }).filter((l) => l.reveal > 0.001 && l.out < 0.999);
       }
 
@@ -971,6 +986,7 @@ export function createKineticVariant(score) {
           keyAz: light.keyAz,
           keyEl: light.keyEl,
           rimLux: light.rimLux,
+          edge: light.edge,
           rimAz: light.rimAz,
           wash: light.wash,
           floorReflect: light.floorReflect,

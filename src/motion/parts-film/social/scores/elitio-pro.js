@@ -62,21 +62,23 @@ export const SPACES = {
   1: { yaw: 0 },
 };
 
-// Estúdio escuro de fotografia com UMA luz fixa padrão: softbox grande na frente, a 55° de
-// altura, iluminando bem o produto (frente e topo) com sombra macia; ambiente quase preto,
-// então o único brilho no black piano é o da própria softbox (poucos reflexos). Sem
-// contraluz, luz de fundo nem luz que mude: só a câmera anda. Reflexo leve no chão.
+// Estúdio escuro de fotografia com luz fixa de estúdio: fundo e chão quase pretos, e o
+// produto iluminado. Uma softbox na frente, no alto e perto (ilumina bem a bateria e cai
+// rápido, sem clarear o fundo), com sombra macia, e dois recortes finos atrás, um de cada
+// lado, que desenham as arestas contra o escuro. Ambiente quase preto (poucos reflexos) e
+// reflexo leve no chão. Nenhuma luz anda nem muda: só a câmera se move.
 const STUDIO = {
   keyLux: 3.2,
   keyAz: 10,
   keyEl: 55,
+  edge: 9,
   rimLux: 0,
   rimAz: 200,
-  fill: 0.16,
-  env: 1.5,
+  fill: 0.03,
+  env: 0.9,
   wash: 0,
-  contact: 0.85,
-  floorReflect: 0.15,
+  contact: 0.9,
+  floorReflect: 0.3,
   aperture: 1.0,
   bloom: 0,
   sweep: 0,
@@ -142,12 +144,14 @@ export const SHOTS = [
       { t: 21.25, pos: [9.79, 5.65, 14.5], look: [0, 3.2, 0] },
       { t: 22.95, pos: [9.94, 5.4, 12.28], look: [0, 3.1, 0] },
       { t: 24.25, pos: [9.9, 4.3, 11.0], look: [0, 1.6, 0] },
-      // 05 · hero: aproximação lenta e baixa em 3/4 (espaço acima para a mensagem), que
-      // assenta antes de recuar.
-      { t: 25.65, pos: [8.67, 1.25, 9.14], look: [0.2, 1.3, 0], shift: [0, -0.12] },
-      { t: 26.95, pos: [7.0, 0.95, 7.27], look: [0.1, 1.25, 0], shift: [0, -0.08], stop: true },
-      // 06 · final: afastamento lento, subindo, muito espaço negativo.
-      { t: 30.95, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
+      // 05 · hero e 06 · final num movimento só, sem parar e sem voltar: a câmera desce e se
+      // aproxima girando devagar em volta da bateria (espaço acima para a frase) e, sem
+      // frear, abre em espiral subindo para o afastamento final (o ângulo só cresce).
+      { t: 25.55, pos: [9.0, 1.75, 8.54], look: [0.15, 1.3, 0], shift: [0, -0.11] },
+      { t: 26.85, pos: [8.55, 1.3, 6.92], look: [0.1, 1.28, 0], shift: [0, -0.1] },
+      { t: 28.2, pos: [10.22, 2.2, 7.02], look: [0.05, 1.25, 0], shift: [0, -0.05] },
+      { t: 29.4, pos: [13.57, 3.9, 8.48], look: [0, 1.2, 0] },
+      { t: 30.95, pos: [18.19, 6.2, 10.5], look: [0, 1.2, 0], rest: true },
     ],
     // Luz fixa do set (STUDIO), profundidade de campo nos closes e obturador por trecho.
     light: {
@@ -246,17 +250,36 @@ export const GLASS = [
 ];
 
 // 05 · hero: a frase em 3D logo atrás da bateria, centrada no quadro (no eixo da vista da
-// aproximação), em três linhas de fontes diferentes: 3X (Stretch Pro), MAIS ENERGIA (Poppins
-// Black) e "para o seu projeto" (serifada itálica), com a bateria cobrindo o pé da última
-// linha (efeito 3D). Assinatura da cena: cada linha sobe por máscara de dentro dela mesma, uma
-// depois da outra; saem descendo quando começa o afastamento final.
-const HERO_FACE = [8.3, 1.2, 8.6];
-const HERO = [-1.6, -1.7];
-const line = (id, t, y, parts) => ({ id, t, pos: [HERO[0], y, HERO[1]], face: HERO_FACE, parts });
+// aproximação), em três linhas juntas de fontes diferentes: 3X (Stretch Pro), MAIS ENERGIA
+// (Poppins Black) e "para o seu projeto" (serifada itálica), com a bateria encostando no pé
+// da última linha (efeito 3D). Entram por máscara, subindo de dentro delas mesmas, uma depois
+// da outra. Assinatura da cena: o número rola como um contador, 1X → 2X → 3X, e assenta no 3;
+// em seguida um brilho atravessa a frase. Saem descendo quando a câmera abre para o final.
+const HERO_FACE = [8.8, 1.5, 7.7];
+const HERO = [-1.6, -1.55];
+const line = (id, t, y, parts, extra = {}) => ({
+  id,
+  t,
+  pos: [HERO[0], y, HERO[1]],
+  face: HERO_FACE,
+  parts,
+  ...extra,
+});
 export const TYPE3D = [
-  line('hero-3x', [24.85, 26.95], 5.2, [{ text: '3X', font: 'wide', size: 1.0 }]),
-  line('hero-energia', [25.05, 27.0], 4.2, [{ text: 'MAIS ENERGIA', weight: 900, size: 0.42 }]),
-  line('hero-projeto', [25.3, 27.05], 3.35, [
+  line(
+    'hero-3x',
+    [24.95, 27.35],
+    4.39,
+    [
+      { text: '3', roll: ['1', '2', '3'], font: 'wide', size: 1.0 },
+      { text: 'X', font: 'wide', size: 1.0 },
+    ],
+    { rollAt: [25.35, 0.95], sheenAt: [26.2, 0.75] },
+  ),
+  line('hero-energia', [25.15, 27.4], 3.74, [{ text: 'MAIS ENERGIA', weight: 900, size: 0.42 }], {
+    sheenAt: [26.32, 0.75],
+  }),
+  line('hero-projeto', [25.35, 27.45], 3.3, [
     { text: 'para o seu projeto', font: 'serif', italic: true, size: 0.5, alpha: 0.9 },
   ]),
 ];

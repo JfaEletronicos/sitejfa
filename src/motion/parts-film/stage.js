@@ -518,7 +518,7 @@ export async function createStage({
     const cyc = new THREE.Mesh(
       new THREE.LatheGeometry(profile, 96),
       new THREE.MeshStandardMaterial({
-        color: cycColor ?? (cinema ? 0x26282c : 0xe6e7e9),
+        color: cycColor ?? (cinema ? 0x121316 : 0xe6e7e9),
         roughness: cinema ? 0.85 : 0.92,
         side: THREE.DoubleSide,
       }),
@@ -589,7 +589,18 @@ export async function createStage({
     // Luz principal do set, parada: uma softbox grande (luz suave que ilumina bem, com um
     // reflexo só) e um sol fraco na mesma direção só para a sombra macia.
     RectAreaLightUniformsLib.init();
-    const softbox = new THREE.RectAreaLight(0xfff8f0, 0, 7, 5);
+    // No estúdio escuro a softbox fica mais perto e menor: a luz cai rápido depois do produto
+    // e o chão e o fundo ficam escuros.
+    const softbox = new THREE.RectAreaLight(0xfff8f0, 0, cinema ? 4.5 : 7, cinema ? 3.2 : 5);
+    // Recortes: duas faixas altas e finas atrás do produto, uma de cada lado, que desenham as
+    // arestas contra o fundo escuro (`edge`).
+    const edges = [145, 215].map((az) => {
+      const strip = new THREE.RectAreaLight(0xf2f5ff, 0, 0.45, 4.5);
+      strip.position.set(Math.sin(az * DEG) * 6.5, 3.6, Math.cos(az * DEG) * 6.5);
+      strip.lookAt(0, 1.2, 0);
+      scene.add(strip);
+      return strip;
+    });
     const sun = new THREE.DirectionalLight(0xfff4e8, 0);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
@@ -597,7 +608,7 @@ export async function createStage({
     sun.shadow.normalBias = 0.02;
     sun.shadow.radius = 9;
     Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 45 });
-    nat = { softbox, sun };
+    nat = { softbox, sun, edges };
     scene.add(softbox, sun, sun.target);
   }
 
@@ -625,7 +636,7 @@ export async function createStage({
 
   if (white) {
     // As luzes também valem no passe do reflexo (camada 1, só o produto).
-    [key, rim, fill, wash, nat.softbox, nat.sun].forEach((l) => l.layers.enable(1));
+    [key, rim, fill, wash, nat.softbox, nat.sun, ...nat.edges].forEach((l) => l.layers.enable(1));
     key.shadow.radius = 5;
     key.shadow.blurSamples = 16;
   }
@@ -807,23 +818,26 @@ export async function createStage({
    */
   /**
    * Luz principal do set (estúdio branco ou escuro): softbox e o sol da sombra na direção
-   * keyAz/keyEl (graus no mundo), parados, mirando o centro do produto.
+   * keyAz/keyEl (graus no mundo), parados, mirando o centro do produto; e os recortes das
+   * arestas (`edge`).
    */
   const SET_CENTER = new THREE.Vector3(0, 1.2, 0);
+  const BOX_DIST = cinema ? 8 : 13;
   function placeKeyLight(s) {
-    const { softbox, sun } = nat;
+    const { softbox, sun, edges } = nat;
     const kaz = s.keyAz * DEG;
     const kel = s.keyEl * DEG;
     const kx = Math.sin(kaz) * Math.cos(kel);
     const ky = Math.sin(kel);
     const kz = Math.cos(kaz) * Math.cos(kel);
-    softbox.position.set(kx * 13, ky * 13 + SET_CENTER.y, kz * 13);
+    softbox.position.set(kx * BOX_DIST, ky * BOX_DIST + SET_CENTER.y, kz * BOX_DIST);
     softbox.lookAt(SET_CENTER);
     softbox.intensity = s.keyLux * 3.5;
     sun.position.set(kx * 20, ky * 20 + SET_CENTER.y, kz * 20);
     sun.target.position.copy(SET_CENTER);
     sun.target.updateMatrixWorld();
     sun.intensity = s.keyLux * 0.3;
+    edges.forEach((e) => (e.intensity = s.edge ?? 0));
   }
 
   /**
