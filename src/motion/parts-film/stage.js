@@ -1259,8 +1259,6 @@ export async function createStage({
       m.uniforms.on.value = 0;
       m.uniforms.tex.value = null;
     });
-    const autoShadow = renderer.shadowMap.autoUpdate;
-    renderer.shadowMap.autoUpdate = false;
     mirrors.forEach((m) => {
       m.group.updateWorldMatrix(true, false);
       const n = m.uniforms.n.value.copy(m.dir).transformDirection(m.group.matrixWorld);
@@ -1294,14 +1292,14 @@ export async function createStage({
       renderer.render(scene, mc);
     });
     renderer.clippingPlanes = [];
-    renderer.shadowMap.autoUpdate = autoShadow;
     mirrors.forEach((m) => {
       m.uniforms.tex.value = m.target.texture;
       m.uniforms.on.value = m.active ? 1 : 0;
     });
   }
 
-  function drawScene(s) {
+  /** Passes auxiliares do instante: espelhos e reflexo do piso. */
+  function drawReflections(s) {
     drawMirrors();
     if (reflect) {
       reflect.strength.value = s.floorReflect ?? 0;
@@ -1329,6 +1327,9 @@ export async function createStage({
         renderer.render(scene, mc);
       }
     }
+  }
+
+  function drawScene() {
     renderer.setRenderTarget(sceneTarget);
     renderer.clear();
     renderer.render(scene, camera);
@@ -1355,6 +1356,9 @@ export async function createStage({
     }
     let dist;
     const samples = s.samples;
+    // A sombra é desenhada uma vez por quadro (no primeiro passe), não em cada passe.
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = true;
     if (samples && samples.length > 1) {
       const autoClear = renderer.autoClear;
       renderer.autoClear = false;
@@ -1367,9 +1371,13 @@ export async function createStage({
       // O instante do meio por último: a profundidade que fica (foco) é a do quadro.
       const mid = Math.floor((n - 1) / 2);
       const order = [...Array(n).keys()].filter((i) => i !== mid).concat(mid);
+      // Espelhos e reflexo do piso uma vez, no instante do meio: no rastro eles se arrastam
+      // junto com o resto, e cada instante custaria mais três passes do produto.
+      place(samples[mid]);
+      drawReflections(samples[mid]);
       order.forEach((i) => {
         place(samples[i]);
-        drawScene(samples[i]);
+        drawScene();
         bu.uInvViewProj.value.copy(sampleViewProj[i]).invert();
         bu.uPrevViewProj.value.copy(sampleViewProj[Math.max(i - 1, 0)]);
         bu.uNextViewProj.value.copy(sampleViewProj[Math.min(i + 1, n - 1)]);
@@ -1384,7 +1392,8 @@ export async function createStage({
       composite.uniforms.tColor.value = accumTarget.texture;
     } else {
       dist = place(s);
-      drawScene(s);
+      drawReflections(s);
+      drawScene();
       composite.uniforms.tColor.value = sceneTarget.texture;
     }
 
