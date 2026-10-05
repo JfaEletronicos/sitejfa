@@ -55,28 +55,20 @@ roughness, clearcoat, clearcoatRoughness, ... }]]`), ex.: clarear o black piano.
   velocidade dos trechos vizinhos uns 0,6 s). Confira velocidade, aceleração e giro da vista
   por amostragem (meta: aceleração ≲ 10 un/s², giro ≲ 80°/s nos trechos rápidos e ≲ 15°/s nos
   takes de detalhe) e que a câmera não entra no produto.
-- `glass` no roteiro: cards Liquid Glass no espaço 3D do palco (`glass-cards.js`): vidro de
-  verdade (transmissão com desfoque do que está atrás, reflexo, verniz), borda fina, brilho
-  em diagonal e texto desenhado em canvas com as fontes do site. Presos ao mundo (acompanham
-  a câmera, ganham motion blur e saem no vídeo exportado, ao contrário do texto em HTML).
-  `{ id, t: [entra, sai], pos, face (ponto para onde o card olha), w, h, radius?, depth?,
+- `glass` no roteiro: cards Liquid Glass no espaço 3D do palco (`glass-cards.js`): vidro
+  escuro de verdade (transmissão com desfoque do que está atrás, pouco reflexo), borda fina e
+  texto desenhado em canvas com as fontes do site. Presos ao mundo e sempre de frente para a
+  câmera (paralelos à tela), ganham motion blur e saem no vídeo exportado.
+  `{ id, t: [entra, sai], pos, w, h, radius?, depth?, rise?,
 inDur?, outDur?, lines: [{ x, y, align?, parts: [{ text, font, weight, italic, size,
 alpha, tracking, gap, sub }] }] }` (x, y e size em frações da altura do card; a linha
   diminui sozinha se não couber).
-- `type` no roteiro: tipografia 3D no palco (`type3d.js`), uma linha por entrada, desenhada
-  em canvas com as fontes do site sobre um plano preso ao mundo (o produto cobre o que está
-  atrás dele). `{ id, t: [entra, sai], pos, face, parts: [{ text, font, weight, italic, size
-(altura da fonte em unidades de cena), alpha, tracking, gap, color, roll }], inDur?,
-outDur?, opacity?, rollAt?: [t, dur], sheenAt?: [t, dur] }`. Uma parte com
-  `roll: ['1', '2', '3']` rola como contador (para em cada valor) em `rollAt`; `charge` +
-  `chargeAt` carrega a linha de contorno a preenchida; `toItalic` numa parte + `italicAt`
-  inclina a palavra até a itálica; `cascade` entra letra por letra; `focusAt` sai do desfoque;
-  `flipAt` (+ `flipAngle`) entra girando em 3D; `image` (arquivo do cliente, ex.: logo) no lugar
-  do texto, com `size` = altura; `depth`/`layers` dão volume; `cam` = câmera de referência do
-  `face` girado por `yaw` no helper do roteiro. `sheenAt` passa um
-  brilho em diagonal pelas letras. Entra por máscara subindo de dentro da própria linha e sai
-  descendo. Para ficar
-  no meio do quadro, ponha as linhas na vertical de um ponto no eixo da vista (atrás do alvo).
+- `titles` no roteiro: títulos em 2D por cima da imagem (`titles.js`, cena de sobreposição do
+  palco, desenhados no canvas, então saem no vídeo exportado; sem motion blur, foco ou tom do
+  palco). `{ id, t: [entra, sai], x?, y (% do quadro, centro), align?, parts: [{ text, font,
+weight, italic, size (fração da altura do quadro), alpha, tracking, gap, color }] | image
+(arquivo do cliente) + size, pill?, inDur?, outDur?, rise?, blur? }`. Entram com fusão,
+  subida curta e desfoque que se resolve; saem com fusão.
 - `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
   na vertical (unidades de cena).
 

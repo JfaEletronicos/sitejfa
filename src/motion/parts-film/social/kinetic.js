@@ -461,7 +461,7 @@ export function createKineticVariant(score) {
     cues: CUES,
     explode: EXPLODE = {},
     glass: GLASS = [],
-    type: TYPE3D = [],
+    titles: TITLES = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -806,74 +806,48 @@ export function createKineticVariant(score) {
       }
 
       /**
-       * Cards Liquid Glass (roteiros com `glass`): cada um entra em `t[0]` (sobe `rise` de
-       * baixo para cima e cresce de 94% para 100%, em `inDur`) e sai em `t[1]` (sobe de leve e
-       * some, em `outDur`).
+       * Cards Liquid Glass (roteiros com `glass`): cada um entra em `t[0]` com fusão, subindo
+       * `rise` de leve (em `inDur`), e sai em `t[1]` com fusão (em `outDur`). Ficam sempre de
+       * frente para a câmera, paralelos à tela.
        */
       function glassAt(tb) {
         return GLASS.map((g) => {
-          const inDur = g.inDur ?? 0.6;
+          const inDur = g.inDur ?? 0.9;
           const outDur = g.outDur ?? 0.45;
-          const a = EASE.enter(clamp01((tb - g.t[0]) / inDur));
+          const a = EASE.soft(clamp01((tb - g.t[0]) / inDur));
           const b = EASE.soft(clamp01((tb - g.t[1]) / outDur));
           const opacity = a * (1 - b);
-          const lift = (1 - a) * -(g.rise ?? 0.14) + b * 0.12;
+          const lift = (1 - a) * -(g.rise ?? 0.1) + b * 0.04;
           return {
             id: g.id,
             spec: g,
             pos: [g.pos[0], g.pos[1] + lift, g.pos[2]],
-            face: g.face,
             opacity,
-            scale: 0.94 + 0.06 * a,
+            scale: 0.985 + 0.015 * a,
           };
         }).filter((g) => g.opacity > 0.002);
       }
 
       /**
-       * Tipografia 3D (roteiros com `type`): cada linha entra por máscara em `t[0]` (sobe de
-       * dentro dela mesma, em `inDur`) e sai por máscara em `t[1]` (desce, em `outDur`).
-       * Animação própria de cada linha: `rollAt: [t, dur]` rola o contador da parte com `roll`
-       * de valor em valor (para um instante em cada um); `chargeAt: [t, dur]` preenche a linha
-       * (`charge`) da esquerda para a direita; `italicAt: [t, dur]` inclina a parte com
-       * `toItalic` até a itálica; `sheenAt: [t, dur]` passa um brilho pelas letras.
+       * Títulos em 2D (roteiros com `titles`): `{ id, t: [entra, sai], x, y, parts | image,
+       * size, align?, pill?, inDur?, outDur?, rise?, blur? }`. Entram com fusão, subindo `rise`
+       * (fração da altura do quadro) e resolvendo um desfoque leve; saem com fusão.
        */
-      const span = (tb, at) => (at ? EASE.soft(clamp01((tb - at[0]) / at[1])) : null);
-      function typeAt(tb) {
-        return TYPE3D.map((l) => {
-          const reveal = EASE.enter(clamp01((tb - l.t[0]) / (l.inDur ?? 0.8)));
-          const out = EASE.soft(clamp01((tb - l.t[1]) / (l.outDur ?? 0.55)));
-          const steps = (l.parts.find((p) => p.roll)?.roll.length ?? 1) - 1;
-          let roll = steps;
-          if (l.rollAt && steps > 0) {
-            const gap = l.rollAt[1] / steps;
-            roll = 0;
-            for (let i = 0; i < steps; i++)
-              roll += EASE.soft(clamp01((tb - l.rollAt[0] - i * gap) / (gap * 0.6)));
-          }
-          const fill = l.charge ? (span(tb, l.chargeAt) ?? 1) : 1;
-          const morph = span(tb, l.italicAt) ?? 0;
-          const sheenK = span(tb, l.sheenAt);
-          const sheen = sheenK === null ? -1 : -0.3 + 1.6 * sheenK;
-          const focus = span(tb, l.focusAt);
-          const blur = focus === null ? 0 : 5 * (1 - focus);
-          const flipK = l.flipAt ? EASE.enter(clamp01((tb - l.flipAt[0]) / l.flipAt[1])) : 1;
-          const flip = (1 - flipK) * (l.flipAngle ?? 80) * DEG;
+      function titlesAt(tb) {
+        return TITLES.map((ti) => {
+          const a = EASE.soft(clamp01((tb - ti.t[0]) / (ti.inDur ?? 1.2)));
+          const b = EASE.soft(clamp01((tb - ti.t[1]) / (ti.outDur ?? 0.7)));
+          const opacity = a * (1 - b);
           return {
-            id: l.id,
-            spec: l,
-            pos: l.pos,
-            face: l.face,
-            reveal,
-            out,
-            opacity: l.opacity ?? 1,
-            roll,
-            fill,
-            morph,
-            sheen,
-            blur,
-            flip,
+            id: ti.id,
+            spec: ti,
+            x: ti.x ?? 50,
+            y: ti.y,
+            opacity,
+            rise: (1 - a) * (ti.rise ?? 0.008),
+            blur: (1 - a) * (ti.blur ?? 2.5),
           };
-        }).filter((l) => l.reveal > 0.001 && l.out < 0.999);
+        }).filter((ti) => ti.opacity > 0.002);
       }
 
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
@@ -1013,7 +987,7 @@ export function createKineticVariant(score) {
           contact: light.contact,
           explode: explodeAt(tb),
           glass: glassAt(tb),
-          type: typeAt(tb),
+          titles: titlesAt(tb),
           fill: light.fill,
           env: light.env,
           sweep,
@@ -1300,8 +1274,8 @@ export function createKineticVariant(score) {
       ];
 
       const sample = 'VOCÊ NÃO VÊ. ÇÃ';
-      // Imagens das linhas 3D (logo do cliente) carregadas antes do primeiro quadro.
-      const imagesReady = TYPE3D.filter((l) => l.image).map(
+      // Imagens dos títulos (logo do cliente) carregadas antes do primeiro quadro.
+      const imagesReady = TITLES.filter((l) => l.image).map(
         (l) =>
           new Promise((resolve) => {
             const img = new Image();

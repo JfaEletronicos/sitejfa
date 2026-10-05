@@ -91,7 +91,7 @@ const WIDE = { aperture: STUDIO.aperture };
 // Obturador: normal nos takes (nítidos) e bem aberto nos deslocamentos de um ponto a
 // outro, para o rastro de alta velocidade (o motion blur só aparece onde a imagem anda).
 const TAKE = { shutter: 1 / 30 };
-const RUSH = { shutter: 1 / 10 };
+const RUSH = { shutter: 1 / 12 };
 
 // UM plano contínuo em voo livre (6DoF), como um pássaro em volta da bateria: posição e
 // olhar com trajetórias próprias, caminho sem laços e curvas inclinadas pela aceleração
@@ -200,30 +200,28 @@ export const SHOTS = [
 // cobrir o pé dele (efeito 3D). Vidro de verdade no espaço 3D (desfoque do que está atrás,
 // reflexo e borda fina), virado para onde a câmera passa na cena; cada card entra subindo de
 // leve, de baixo para cima, ficam ~1 s e somem antes da explodida.
-const FACE = [7.6, 5.6, 17.4];
 const COL = [-0.7, -1.87];
 const label = (text) => ({
   align: 'center',
-  y: 0.32,
-  parts: [{ text, weight: 400, size: 0.11, alpha: 0.7, tracking: 0.16 }],
+  y: 0.33,
+  parts: [{ text, weight: 500, size: 0.1, alpha: 0.6, tracking: 0.12 }],
 });
-const value = (num, unit, size = 0.46) => ({
+const value = (num, unit, size = 0.42) => ({
   align: 'center',
   y: 0.74,
   parts: [
-    { text: num, weight: 800, size },
-    { text: unit, weight: 300, size },
+    { text: num, weight: 600, size },
+    { text: unit, weight: 300, size, alpha: 0.85 },
   ],
 });
 const card = (id, t, y, lines, extra = {}) => ({
   id,
   t,
   pos: [COL[0], y, COL[1]],
-  face: FACE,
   w: 2.2,
   h: 1.1,
-  rise: 0.35,
-  inDur: 0.75,
+  rise: 0.1,
+  inDur: 0.9,
   lines,
   ...extra,
 });
@@ -250,128 +248,41 @@ export const GLASS = [
   ),
 ];
 
-// 05 · hero: "3X / MAIS ENERGIA / para o seu projeto", cada linha um objeto 3D independente
-// atrás da bateria: profundidades e ângulos diferentes (3X mais ao fundo e virado para um lado,
-// MAIS ENERGIA no meio virado para o outro, a serifada mais perto), com volume nas duas
-// primeiras. Vistas da câmera do meio da leitura (26,4 s) elas formam um bloco centrado e
-// colado; com a câmera andando, a perspectiva de cada uma muda. Cada linha entra subindo por
-// máscara e tem a sua animação: o 3X é um contador que rola 1 → 2 → 3 (para em cada número),
-// MAIS ENERGIA nasce em contorno e carrega da esquerda para a direita como uma bateria, e
-// "projeto" se inclina até virar itálico. Saem descendo quando a câmera abre para o final.
-const HERO_CAM = [8.58, 1.34, 7.44];
-const FINAL_CAM = [18.16, 6.19, 10.49];
-// Ponto para onde a linha olha: a câmera de referência girada `yaw` graus em volta dela.
-const facing = (pos, yaw, cam = HERO_CAM) => {
-  const a = (yaw * Math.PI) / 180;
-  const dx = cam[0] - pos[0];
-  const dz = cam[2] - pos[2];
-  return [pos[0] + dx * Math.cos(a) + dz * Math.sin(a), cam[1], pos[2] - dx * Math.sin(a) + dz * Math.cos(a)];
-};
-const line = (id, t, pos, yaw, parts, extra = {}) => ({
-  id,
-  t,
-  pos,
-  face: facing(pos, yaw, extra.cam),
-  parts,
-  ...extra,
-});
-export const TYPE3D = [
-  line(
-    'hero-3x',
-    [24.95, 27.35],
-    [-1.431, 4.42, -1.366],
-    -22,
-    [
-      { text: '3', roll: ['1', '2', '3'], font: 'wide', size: 0.99 },
-      { text: 'X', font: 'wide', size: 0.99 },
-    ],
-    { depth: 0.3, layers: 10, rollAt: [25.45, 0.8], sheenAt: [26.35, 0.7] },
-  ),
-  line(
-    'hero-energia',
-    [25.15, 27.4],
-    [-0.999, 3.652, -0.985],
-    14,
-    [{ text: 'MAIS ENERGIA', weight: 900, size: 0.4 }],
-    {
-      depth: 0.12,
-      layers: 6,
-      charge: true,
-      chargeAt: [25.7, 0.9],
-    },
-  ),
-  line(
-    'hero-projeto',
-    [25.35, 27.45],
-    [-0.562, 3.187, -0.601],
-    -8,
-    [
-      { text: 'para o seu', font: 'serif', size: 0.44, alpha: 0.9, gap: 0.12 },
-      { text: 'projeto', font: 'serif', size: 0.44, toItalic: true },
-    ],
-    { italicAt: [26.15, 0.6] },
-  ),
-  // 06 · final: no afastamento, acima da bateria e atrás dela, cada linha um objeto 3D
-  // independente (profundidade e ângulo próprios), alinhadas para o quadro final (30,9 s): o
-  // logo JFA (arquivo do cliente) entra girando em 3D, E-LÍTIO PRO letra por letra em
-  // cascata, e 12V 280Ah sai do desfoque para o foco. Ficam até o fim.
-  line('final-logo', [28.0, 99], [-3.093, 5.377, -1.786], 12, [], {
-    cam: FINAL_CAM,
-    image: '/images/jfa_logo_white.webp',
-    size: 0.88,
-    depth: 0.06,
-    layers: 4,
-    inDur: 0.7,
-    flipAt: [28.0, 1.0],
-  }),
-  line(
-    'final-nome',
-    [28.3, 99],
-    [-2.345, 4.279, -1.354],
-    -12,
-    [{ text: 'E-LÍTIO PRO', font: 'wide', size: 0.49 }],
-    {
-      cam: FINAL_CAM,
-      cascade: true,
-      inDur: 1.1,
-      depth: 0.14,
-      layers: 6,
-    },
-  ),
-  line(
-    'final-specs',
-    [28.7, 99],
-    [-1.69, 3.716, -0.976],
-    8,
-    [
-      { text: '12V', weight: 700, size: 0.38, gap: 0.2 },
-      { text: '280Ah', weight: 300, size: 0.38 },
-    ],
-    { cam: FINAL_CAM, focusAt: [28.7, 1.0], depth: 0.06, layers: 4 },
-  ),
+// Títulos em 2D por cima da imagem, na linguagem de filme de produto: poucos, centrados,
+// tipografia limpa (Poppins semibold e light, cinza claro no secundário), entrando com fusão,
+// subida curta e desfoque que se resolve; saindo com fusão. Nada de texto em 3D.
+const SUB = '#b8bcc5';
+export const TITLES = [
+  // 05 · hero: a mensagem acima da bateria enquanto a câmera se aproxima.
+  {
+    id: 'hero-1',
+    t: [25.1, 27.15],
+    y: 22.5,
+    parts: [{ text: '3X mais energia', weight: 600, size: 0.046, tracking: -0.01 }],
+  },
+  {
+    id: 'hero-2',
+    t: [25.45, 27.2],
+    y: 27.2,
+    parts: [{ text: 'para o seu projeto', weight: 300, size: 0.024, color: SUB, tracking: 0.01 }],
+  },
+  // 06 · final: nome, especificações, chamada e a assinatura JFA (arquivo do cliente).
+  { id: 'final-nome', t: [28.3, 99], y: 21.5, parts: [{ text: 'E-LÍTIO PRO', weight: 600, size: 0.05 }] },
+  {
+    id: 'final-specs',
+    t: [28.7, 99],
+    y: 26.4,
+    parts: [{ text: '12V  ·  280Ah  ·  3,58 kWh', weight: 300, size: 0.021, color: SUB, tracking: 0.02 }],
+  },
+  {
+    id: 'final-cta',
+    t: [29.5, 99],
+    y: 72.5,
+    pill: true,
+    parts: [{ text: 'Já disponível', weight: 500, size: 0.02, tracking: 0.02 }],
+  },
+  { id: 'final-logo', t: [30.0, 99], y: 86.5, image: '/images/jfa_logo_white.webp', size: 0.024, alpha: 0.9 },
 ];
-
-// 06 · final: o CTA num botão de vidro (Liquid Glass) abaixo da bateria, mais perto da
-// câmera; entra subindo de leve e fica até o fim.
-GLASS.push({
-  id: 'cta',
-  t: [29.4, 99],
-  pos: [8.012, 1.681, 4.626],
-  face: FINAL_CAM,
-  w: 2.3,
-  h: 0.52,
-  radius: 0.26,
-  depth: 0.05,
-  rise: 0.25,
-  inDur: 0.8,
-  lines: [
-    {
-      align: 'center',
-      y: 0.66,
-      parts: [{ text: 'JÁ DISPONÍVEL', weight: 600, size: 0.38, tracking: 0.14 }],
-    },
-  ],
-});
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
@@ -440,5 +351,5 @@ export default {
   cues: CUES,
   explode: EXPLODE,
   glass: GLASS,
-  type: TYPE3D,
+  titles: TITLES,
 };

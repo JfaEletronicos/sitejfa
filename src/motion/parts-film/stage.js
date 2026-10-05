@@ -16,7 +16,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { surfaceDetail } from './surface-detail';
 import { createGlassCard } from './glass-cards';
-import { createTypeLine } from './type3d';
+import { createTitle } from './titles';
 
 const DEG = Math.PI / 180;
 // 1 mm da placa = 0,01 unidade de cena (placa com 3,1 de comprimento).
@@ -870,7 +870,8 @@ export async function createStage({
   }
 
   /**
-   * Cards Liquid Glass presos ao mundo (`s.glass`: `[{ id, spec, pos, face, opacity, scale }]`).
+   * Cards Liquid Glass presos ao mundo (`s.glass`: `[{ id, spec, pos, opacity, scale }]`), de
+   * frente para a câmera.
    * Criados na primeira vez que aparecem (o texto usa as fontes já carregadas).
    */
   const glassCards = new Map();
@@ -880,12 +881,16 @@ export async function createStage({
       let card = glassCards.get(g.id);
       if (!card) {
         card = createGlassCard(g.spec);
+        // Vidro escuro e discreto: quase não reflete o ambiente claro do produto.
+        card.glass.material.envMap = envTarget.texture;
+        card.glass.material.envMapIntensity = 0.12;
         glassCards.set(g.id, card);
         scene.add(card.group);
       }
       seen.add(g.id);
       card.group.position.fromArray(g.pos);
-      card.group.lookAt(g.face[0], g.face[1], g.face[2]);
+      // De frente para a câmera, paralelo à tela (interface limpa no espaço).
+      card.group.quaternion.copy(camera.quaternion);
       card.group.scale.setScalar(g.scale);
       card.setOpacity(g.opacity);
     });
@@ -895,28 +900,36 @@ export async function createStage({
   }
 
   /**
-   * Tipografia 3D presa ao mundo (`s.type`: `[{ id, spec, pos, face, reveal, out, opacity }]`),
-   * criada na primeira vez que aparece.
+   * Títulos em 2D por cima da imagem (`s.titles`: `[{ id, spec, x, y, opacity, rise, blur }]`,
+   * x/y em % do quadro, `rise` em fração da altura). Cena de sobreposição com câmera
+   * ortográfica em alturas de quadro; criados na primeira vez que aparecem.
    */
-  const typeLines = new Map();
-  function placeType(list) {
+  const overlayScene = new THREE.Scene();
+  const overlayCamera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, -1, 1);
+  const titles = new Map();
+  function placeTitles(list) {
+    const aspect = size.width / size.height;
+    overlayCamera.left = -aspect / 2;
+    overlayCamera.right = aspect / 2;
+    overlayCamera.updateProjectionMatrix();
     const seen = new Set();
-    (list || []).forEach((l) => {
-      let line = typeLines.get(l.id);
-      if (!line) {
-        line = createTypeLine(l.spec);
-        typeLines.set(l.id, line);
-        scene.add(line.group);
+    (list || []).forEach((t) => {
+      let title = titles.get(t.id);
+      if (!title) {
+        title = createTitle(t.spec);
+        titles.set(t.id, title);
+        overlayScene.add(title.mesh);
       }
-      seen.add(l.id);
-      line.group.position.fromArray(l.pos);
-      line.group.lookAt(l.face[0], l.face[1], l.face[2]);
-      if (l.flip) line.group.rotateY(l.flip);
-      line.set(l);
+      seen.add(t.id);
+      const [w] = title.size;
+      const cx = (t.x / 100 - 0.5) * aspect + (t.spec.align === 'left' ? w / 2 : 0);
+      title.mesh.position.set(cx, 0.5 - t.y / 100 - t.rise, 0);
+      title.set(t);
     });
-    typeLines.forEach((line, id) => {
-      if (!seen.has(id)) line.set({ reveal: 0, out: 0, opacity: 0 });
+    titles.forEach((title, id) => {
+      if (!seen.has(id)) title.set({ opacity: 0, blur: 0 });
     });
+    return seen.size > 0;
   }
 
   /** Posiciona produto, camadas, câmera e luzes para um estado; devolve a distância da câmera. */
@@ -932,9 +945,6 @@ export async function createStage({
     pivot.rotation.set(s.boardPitch * DEG, s.boardYaw * DEG, s.boardRoll * DEG, 'YXZ');
     const bp = s.boardPos || ZERO3;
     pivot.position.set(bp[0], bp[1] + s.floatY, bp[2]);
-
-    placeGlass(s.glass);
-    placeType(s.type);
 
     // Câmera em órbita do alvo.
     const az = s.cam.az * DEG;
@@ -974,6 +984,7 @@ export async function createStage({
     camera.projectionMatrix.elements[8] = -2 * (s.shiftX || 0);
     camera.projectionMatrix.elements[9] = -2 * s.shift;
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+    placeGlass(s.glass);
 
     const kaz = s.keyAz * DEG;
     const kel = s.keyEl * DEG;
@@ -1131,6 +1142,13 @@ export async function createStage({
 
     renderer.setRenderTarget(null);
     renderer.render(postScene, postCamera);
+    // Títulos por cima da imagem pronta (sem desfoque de câmera, foco ou tom do palco).
+    if (placeTitles(s.titles)) {
+      const autoClear = renderer.autoClear;
+      renderer.autoClear = false;
+      renderer.render(overlayScene, overlayCamera);
+      renderer.autoClear = autoClear;
+    }
   }
 
   /** Compila shaders e envia texturas para a GPU antes do primeiro quadro. */

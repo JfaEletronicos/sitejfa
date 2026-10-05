@@ -91,10 +91,9 @@ function sheenTexture() {
   canvas.height = 256;
   const ctx = canvas.getContext('2d');
   const g = ctx.createLinearGradient(0, 0, 256, 256);
-  g.addColorStop(0, 'rgba(255,255,255,0.20)');
-  g.addColorStop(0.35, 'rgba(255,255,255,0.06)');
-  g.addColorStop(0.6, 'rgba(255,255,255,0.0)');
-  g.addColorStop(1, 'rgba(255,255,255,0.05)');
+  g.addColorStop(0, 'rgba(255,255,255,0.08)');
+  g.addColorStop(0.45, 'rgba(255,255,255,0.02)');
+  g.addColorStop(1, 'rgba(255,255,255,0.0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 256);
   const tex = new THREE.CanvasTexture(canvas);
@@ -104,7 +103,7 @@ function sheenTexture() {
 
 /**
  * Cria um card. `spec`: `{ w, h, depth, radius, lines }` (unidades de cena). Devolve
- * `{ group, setOpacity }`; o grupo olha para +Z (use lookAt para virá-lo para a câmera).
+ * `{ group, setOpacity, glass }`; o grupo olha para +Z (o palco o põe de frente para a câmera).
  */
 export function createGlassCard(spec) {
   const w = spec.w;
@@ -128,13 +127,13 @@ export function createGlassCard(spec) {
     new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       metalness: 0,
-      roughness: 0.32,
+      roughness: 0.55,
       transmission: 1,
       thickness: 0.35,
-      ior: 1.45,
-      clearcoat: 1,
-      clearcoatRoughness: 0.06,
-      specularIntensity: 1,
+      ior: 1.4,
+      clearcoat: 0.12,
+      clearcoatRoughness: 0.25,
+      specularIntensity: 0.18,
       transparent: true,
       opacity: 1,
     }),
@@ -151,10 +150,10 @@ export function createGlassCard(spec) {
   group.add(sheen);
 
   const ringShape = roundedRect(new THREE.Shape(), w, h, r);
-  ringShape.holes.push(roundedRect(new THREE.Path(), w - 0.03, h - 0.03, Math.max(r - 0.015, 0.01)));
+  ringShape.holes.push(roundedRect(new THREE.Path(), w - 0.016, h - 0.016, Math.max(r - 0.008, 0.01)));
   const ring = new THREE.Mesh(
     new THREE.ShapeGeometry(ringShape, 12),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.28, depthWrite: false }),
   );
   ring.position.z = depth / 2 + depth * 0.3 + 0.003;
   ring.renderOrder = 11;
@@ -168,7 +167,7 @@ export function createGlassCard(spec) {
   text.renderOrder = 12;
   group.add(text);
 
-  const base = { sheen: 1, ring: 0.55, text: 1 };
+  const base = { sheen: 1, ring: 0.28, text: 1 };
   function setOpacity(o) {
     glass.material.opacity = o;
     glass.visible = o > 0.002;
@@ -178,5 +177,5 @@ export function createGlassCard(spec) {
     group.visible = o > 0.002;
   }
   setOpacity(0);
-  return { group, setOpacity };
+  return { group, setOpacity, glass };
 }

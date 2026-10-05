@@ -126,10 +126,13 @@ está em [referencia.md](referencia.md).
   luz marcados) nem fundo claro.
 - Câmera do filme da bateria: nunca parar e voltar pelo mesmo caminho (aproximar e depois
   recuar = vai e volta); para mudar de sentido, curvar em espiral seguindo o giro.
-- Texto 3D do filme: nunca como texto comum: cada linha é um objeto 3D independente
-  (profundidade, ângulo e volume próprios), e a vista muda com a câmera; linhas bem juntas;
-  uma animação para cada linha (ex.: contador que para em cada número 1 → 2 → 3, palavra que
-  carrega de contorno para preenchida, palavra que se inclina até virar itálico).
+- Filme da bateria: clean, sofisticado e elegante, com linguagem de filme de produto (Apple
+  como referência de linguagem, nunca de identidade): títulos em 2D por cima da imagem
+  (`titles`), poucos, centrados, Poppins semibold + light com o secundário em cinza claro;
+  entradas com fusão, subida curta e desfoque que se resolve; saídas com fusão. Nada de texto
+  em 3D, volume, contador, carga, itálico animado, cascata, giro de logo ou outros efeitos
+  chamativos. Cards de vidro escuros e discretos (borda fina, sem brilho forte), de frente
+  para a câmera, entrando com fusão.
 - Filme da bateria: a bateria tem de se destacar do fundo mesmo que a luz não seja realista
   (ambiente claro só para o produto; ciclorama escuro). Black piano quase absoluto fica preto
   e só mostra reflexos estourados: no filme ele vira um carvão com verniz menos espelhado
