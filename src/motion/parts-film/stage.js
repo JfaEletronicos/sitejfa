@@ -141,49 +141,104 @@ function buildStudioEnvironment(renderer) {
 }
 
 /**
- * Estúdio escuro de fotografia (variante da bateria, `studio: 'cinema'`): sala quase preta,
- * chão grafite e só a softbox da luz principal (frente, no alto), com um degradê muito leve
- * no horizonte para as arestas do black piano não sumirem no fundo. Poucos reflexos: o
- * único brilho desenhado é o da própria luz. Nenhuma imagem é usada.
+ * Estúdio escuro de fotografia (variante da bateria, `studio: 'cinema'`): sala quase preta e
+ * chão grafite. É o que o black piano reflete, então é montado como um set de produto preto
+ * brilhante: um difusor grande no teto, quatro rebatedores grandes em degradê nas diagonais
+ * (cada face vertical reflete uma luz que cai aos poucos, nunca um cinza liso) com bandeiras
+ * pretas entre eles, e a softbox da luz principal (frente, no alto). Cada fonte tem a queda de
+ * luz de um tecido iluminado por trás (centro mais claro, borda definida); cor chapada e borda
+ * dura no reflexo denunciam computação gráfica. Resolução alta (1024 por face) para os
+ * reflexos espelhados ficarem nítidos. Nenhuma imagem é usada.
  */
 function buildDarkStudioEnvironment(renderer) {
   const env = new THREE.Scene();
-  const basic = (v) =>
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(v, v, v), side: THREE.DoubleSide });
+  const textures = [];
+  const canvasTex = (draw) => {
+    const c = document.createElement('canvas');
+    c.width = 512;
+    c.height = 512;
+    draw(c.getContext('2d'), 512);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    textures.push(t);
+    return t;
+  };
   env.add(
     new THREE.Mesh(
-      new THREE.BoxGeometry(10, 10, 10),
+      new THREE.BoxGeometry(16, 16, 16),
       new THREE.MeshBasicMaterial({ color: new THREE.Color(0.012, 0.012, 0.014), side: THREE.BackSide }),
     ),
   );
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), basic(0.03));
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(16, 16),
+    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.03, 0.03, 0.03), side: THREE.DoubleSide }),
+  );
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -4.9;
   env.add(floor);
-  const ring = new THREE.SphereGeometry(4.6, 48, 4, 0, Math.PI * 2, 62 * DEG, 30 * DEG);
+  // Paredes acima dos rebatedores: só a luz que vaza do teto, um degradê muito escuro (as
+  // faces de cima vistas do alto refletem isso, nunca um preto chapado).
+  const spill = canvasTex((ctx, n) => {
+    const g = ctx.createLinearGradient(0, 0, 0, n);
+    g.addColorStop(0, '#000000');
+    g.addColorStop(0.45, '#ffffff');
+    g.addColorStop(1, '#000000');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, n, n);
+  });
   env.add(
     new THREE.Mesh(
-      ring,
-      new THREE.MeshBasicMaterial({ color: new THREE.Color(0.14, 0.14, 0.15), side: THREE.BackSide }),
+      new THREE.SphereGeometry(6.5, 64, 16, 0, Math.PI * 2, 28 * DEG, 52 * DEG),
+      new THREE.MeshBasicMaterial({
+        map: spill,
+        color: new THREE.Color(0.1, 0.1, 0.105),
+        side: THREE.BackSide,
+      }),
     ),
   );
-  const panel = (w, h, v, pos) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic(v));
-    m.position.set(...pos);
+  // Tecido iluminado por trás: centro claro (um pouco abaixo do meio nos rebatedores) e queda
+  // larga até a borda; a borda é definida, mas não serrilhada.
+  const fabric = (cy, edge, blur) =>
+    canvasTex((ctx, n) => {
+      const g = ctx.createRadialGradient(n / 2, n * cy, 0, n / 2, n / 2, n * 0.7);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(0.45, '#d4d4d4');
+      g.addColorStop(1, edge);
+      ctx.filter = `blur(${blur}px)`;
+      ctx.fillStyle = g;
+      ctx.fillRect(12, 12, n - 24, n - 24);
+    });
+  const softbox = fabric(0.46, '#bdbdbd', 2);
+  const scrim = fabric(0.42, '#6e6e6e', 5);
+  // Fonte na direção (az, el) em graus, a `d` unidades, com tamanho angular (largura, altura).
+  const source = (tex, az, el, wDeg, hDeg, v, d = 5) => {
+    const m = new THREE.Mesh(
+      new THREE.PlaneGeometry(2 * d * Math.tan((wDeg / 2) * DEG), 2 * d * Math.tan((hDeg / 2) * DEG)),
+      new THREE.MeshBasicMaterial({
+        map: tex,
+        color: new THREE.Color(v, v, v),
+        transparent: true,
+        side: THREE.DoubleSide,
+      }),
+    );
+    m.position.set(
+      d * Math.sin(az * DEG) * Math.cos(el * DEG),
+      d * Math.sin(el * DEG),
+      d * Math.cos(az * DEG) * Math.cos(el * DEG),
+    );
     m.lookAt(0, 0, 0);
     env.add(m);
   };
-  // A softbox (mesma direção da luz do set: frente, a 55° de altura) e painéis grandes e
-  // suaves em volta: o produto reflete um estúdio claro e se destaca. Esse ambiente só vale
+  // Difusor do teto (as faces de cima ganham um degradê largo), os rebatedores das diagonais
+  // (bandeiras pretas nas direções das faces: de frente, a face fica escura no meio e o
+  // degradê aparece pelos lados) e a softbox principal na direção e no tamanho da luz do set
+  // (keyAz 10, keyEl 55; 4,5 × 3,2 a 8 unidades), na frente do difusor. Esse ambiente só vale
   // para o produto; o ciclorama usa quase nada dele (envMapIntensity baixo) e fica escuro.
-  panel(3.6, 2.6, 1.6, [0.48, 4.0, 2.7]);
-  panel(6, 2.4, 0.7, [0, 4.85, -0.6]);
-  panel(2.2, 4.2, 0.55, [-4.6, 1.2, 1.4]);
-  panel(2.2, 4.2, 0.55, [4.6, 1.2, -1.4]);
-  panel(4.4, 1.6, 0.4, [0, 1.6, 4.7]);
-  panel(4.4, 1.6, 0.4, [0, 1.6, -4.7]);
+  source(scrim, 180, 89, 96, 96, 0.5, 4.8);
+  [45, 135, 225, 315].forEach((az, k) => source(scrim, az, 6, 56, 56, [0.7, 0.55, 0.6, 0.75][k]));
+  source(softbox, 10, 55, 31, 22.5, 2.4, 4.4);
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const target = pmrem.fromScene(env, 0.04, 0.1, 100);
+  const target = pmrem.fromScene(env, 0.004, 0.1, 100, { size: 1024 });
   pmrem.dispose();
   env.traverse((o) => {
     if (o.isMesh) {
@@ -191,6 +246,7 @@ function buildDarkStudioEnvironment(renderer) {
       o.material.dispose();
     }
   });
+  textures.forEach((t) => t.dispose());
   return target;
 }
 
@@ -311,6 +367,8 @@ const COMPOSITE_FRAG = /* glsl */ `
   uniform float uRadScale;
   uniform float uBloom;
   uniform float uExposure;
+  uniform float uGrain;
+  uniform float uVignette;
   uniform float uFade;
   uniform float uGlow;
   uniform vec2 uGlowCenter;
@@ -428,8 +486,17 @@ const COMPOSITE_FRAG = /* glsl */ `
       // Saída pré-multiplicada: a placa sobre o que estiver atrás do canvas, e o
       // brilho em volta somado à luz do fundo.
       float a = scene.a;
-      vec3 body = a > 0.0001 ? toSRGB(neutralToneMap(scene.rgb / a * uExposure)) * a : vec3(0.0);
+      // Brilhos fortes ganham um halo leve, como numa lente de verdade.
+      vec3 lit = scene.rgb / max(a, 0.0001) * uExposure + glow(uv) * uBloom * 0.6;
+      vec3 body = a > 0.0001 ? toSRGB(neutralToneMap(lit)) * a : vec3(0.0);
       vec3 halo = toSRGB(glow(uv) * uBloom) * (1.0 - a);
+      // Vinheta leve e granulação de sensor (mais nos meios-tons, muda a cada quadro).
+      float aspectV = uResolution.x / uResolution.y;
+      vec2 qv = (vUv - 0.5) * vec2(aspectV, 1.0) / max(aspectV, 1.0);
+      body *= mix(1.0, smoothstep(1.0, 0.25, length(qv)), uVignette);
+      float lum = dot(body, vec3(0.2126, 0.7152, 0.0722));
+      float grain = (hash(gl_FragCoord.xy * 1.37 + uFrame * 31.0) + hash(gl_FragCoord.yx * 0.73 + uFrame * 17.0) - 1.0);
+      body += grain * uGrain * (0.006 + 0.03 * sqrt(max(lum, 0.0)) * (1.0 - lum)) * a;
       vec3 c = (body + halo) * uFade + (hash(gl_FragCoord.xy + uFrame * 17.0) - 0.5) / 255.0 * a;
       gl_FragColor = vec4(max(c, 0.0), a * uFade);
       return;
@@ -459,7 +526,8 @@ const COMPOSITE_FRAG = /* glsl */ `
  *   `upAxis` = 'y' para modelos que já vêm em pé (bateria), 'z' (padrão) para a placa;
  *   `studio` = 'white' para o estúdio branco em 3D (ciclorama iluminado, sombra de contato,
  *   luz de fundo) com luzes e reflexos presos ao mundo, como num set de verdade;
- *   `detail` = [[/nome do material/, { wear, scratch, peel }]] acabamento fino no shader.
+ *   `detail` = [[/nome do material/, { wear, scratch, peel }]] acabamento fino no shader;
+ *   `mirrors` = [{ layer, material, dir }] faces planas espelhadas (reflexo do próprio produto).
  */
 export async function createStage({
   canvas,
@@ -470,6 +538,7 @@ export async function createStage({
   cyc: cycColor = null,
   detail = [],
   look = [],
+  mirrors: mirrorSpecs = [],
 }) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -523,6 +592,75 @@ export async function createStage({
       if (rule) surfaceDetail(o.material, { ...rule[1], unit: 1000 / MODEL_SCALE });
     });
   }
+
+  // Espelhos: cada face plana grande do black piano reflete o próprio produto (a tampa, os
+  // bornes e o display; as laterais, os pegadores). Uma câmera espelhada no plano da face
+  // renderiza o produto acima dele; o verniz usa essa imagem no lugar do ambiente.
+  const mirrors = mirrorSpecs.flatMap((spec) => {
+    const group = board.userData.layers.get(spec.layer) || board;
+    const dir = new THREE.Vector3(...spec.dir).normalize();
+    const areas = new Map();
+    let material = null;
+    const a = new THREE.Vector3();
+    const b = new THREE.Vector3();
+    const c = new THREE.Vector3();
+    const nrm = new THREE.Vector3();
+    group.traverse((o) => {
+      if (!o.isMesh || !spec.material.test(o.material.name || '')) return;
+      material = o.material;
+      const { position: pos, normal } = o.geometry.attributes;
+      const idx = o.geometry.index;
+      const count = idx ? idx.count : pos.count;
+      const at = (k) => (idx ? idx.getX(k) : k);
+      for (let k = 0; k < count; k += 3) {
+        nrm.fromBufferAttribute(normal, at(k));
+        nrm.add(b.fromBufferAttribute(normal, at(k + 1))).add(c.fromBufferAttribute(normal, at(k + 2)));
+        if (nrm.normalize().dot(dir) < 0.999) continue;
+        a.fromBufferAttribute(pos, at(k));
+        b.fromBufferAttribute(pos, at(k + 1)).sub(a);
+        c.fromBufferAttribute(pos, at(k + 2)).sub(a);
+        const key = Math.round(a.dot(dir) * 1000);
+        const face = areas.get(key) || { area: 0, box: new THREE.Box3() };
+        face.area += b.cross(c).length() / 2;
+        face.box.expandByPoint(a).expandByPoint(b.add(a)).expandByPoint(c.add(a));
+        areas.set(key, face);
+      }
+    });
+    if (!material || !areas.size) return [];
+    // A face externa: entre os planos grandes (≥ 30% do maior), o mais de fora.
+    const big = Math.max(...[...areas.values()].map((f) => f.area));
+    const key = Math.max(...[...areas].filter(([, f]) => f.area >= big * 0.3).map(([k]) => k));
+    const offset = key / 1000;
+    const faceBox = areas.get(key).box;
+    const target = new THREE.WebGLRenderTarget(1, 1, {
+      type: THREE.HalfFloatType,
+      samples: 4,
+      minFilter: THREE.LinearMipmapLinearFilter,
+      magFilter: THREE.LinearFilter,
+      generateMipmaps: true,
+    });
+    const uniforms = {
+      tex: { value: target.texture },
+      mat: { value: new THREE.Matrix4() },
+      n: { value: new THREE.Vector3() },
+      d: { value: 0 },
+      on: { value: 0 },
+    };
+    material.userData.mirrors = [...(material.userData.mirrors || []), uniforms];
+    material.needsUpdate = true;
+    return [
+      {
+        group,
+        dir,
+        offset,
+        faceBox,
+        target,
+        uniforms,
+        camera: new THREE.PerspectiveCamera(),
+        plane: new THREE.Plane(),
+      },
+    ];
+  });
 
   // Estúdio branco de verdade: chão e parede infinita (ciclorama com curva no rodapé) em
   // 3D, iluminados pelas mesmas luzes do produto, mais a sombra de contato. A luz desenha o
@@ -777,6 +915,8 @@ export async function createStage({
       uMaxBlur: { value: 8 },
       uRadScale: { value: 1 },
       uBloom: { value: 0 },
+      uGrain: { value: 0 },
+      uVignette: { value: 0 },
       uExposure: { value: 1 },
       uFade: { value: 0 },
       uGlow: { value: 0 },
@@ -817,6 +957,7 @@ export async function createStage({
     accumTarget.setSize(w, h);
     blendMat.uniforms.uResolution.value.set(w, h);
     if (reflect) reflect.target.setSize(Math.max(1, w >> 1), Math.max(1, h >> 1));
+    mirrors.forEach((m) => m.target.setSize(w, h));
     const u = composite.uniforms;
     u.uResolution.value.set(w, h);
     // Desfoque máximo proporcional ao quadro (sutil: <1% do menor lado).
@@ -1097,7 +1238,71 @@ export async function createStage({
   /** Passe do reflexo do piso: a câmera espelhada no plano do chão vê só o produto. */
   const tmpFwd = new THREE.Vector3();
   const tmpUp2 = new THREE.Vector3();
+  const tmpN = new THREE.Vector3();
+  const tmpMat = new THREE.Matrix4();
+  const mirrorPoint = (v, n, d) => v.sub(tmpN.copy(n).multiplyScalar(2 * (v.dot(n) - d)));
+  const mirrorDir = (v, n) => v.sub(tmpN.copy(n).multiplyScalar(2 * v.dot(n)));
+  /**
+   * Passes dos espelhos (antes do piso e da imagem): câmera espelhada no plano de cada face
+   * voltada para a câmera, só o produto, cortado no plano. O verniz não lê os espelhos
+   * durante esses passes (nada de reflexo do reflexo, nem textura lida e escrita junto).
+   */
+  const frustum = new THREE.Frustum();
+  const faceWorld = new THREE.Box3();
+  function drawMirrors() {
+    if (!mirrors.length) return;
+    camera.updateMatrixWorld();
+    frustum.setFromProjectionMatrix(
+      tmpMat.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+    );
+    mirrors.forEach((m) => {
+      m.uniforms.on.value = 0;
+      m.uniforms.tex.value = null;
+    });
+    const autoShadow = renderer.shadowMap.autoUpdate;
+    renderer.shadowMap.autoUpdate = false;
+    mirrors.forEach((m) => {
+      m.group.updateWorldMatrix(true, false);
+      const n = m.uniforms.n.value.copy(m.dir).transformDirection(m.group.matrixWorld);
+      const d = tmp.copy(m.dir).multiplyScalar(m.offset).applyMatrix4(m.group.matrixWorld).dot(n);
+      m.uniforms.d.value = d;
+      // Só a face voltada para a câmera e dentro do quadro.
+      m.active =
+        camera.position.dot(n) - d > 0.02 &&
+        frustum.intersectsBox(faceWorld.copy(m.faceBox).applyMatrix4(m.group.matrixWorld));
+      if (!m.active) return;
+      const mc = m.camera;
+      mirrorPoint(mc.position.copy(camera.position), n, d);
+      mirrorDir(tmpFwd.set(0, 0, -1).applyQuaternion(camera.quaternion), n);
+      mirrorDir(tmpUp2.set(0, 1, 0).applyQuaternion(camera.quaternion), n);
+      mc.up.copy(tmpUp2);
+      mc.lookAt(tmp.copy(mc.position).add(tmpFwd));
+      // Quadro um pouco mais aberto que o da câmera (o deslocamento da lente fica dentro).
+      mc.projectionMatrix.copy(camera.projectionMatrix);
+      mc.projectionMatrix.elements[0] /= 1.35;
+      mc.projectionMatrix.elements[5] /= 1.35;
+      mc.projectionMatrixInverse.copy(mc.projectionMatrix).invert();
+      mc.layers.set(1);
+      mc.updateMatrixWorld();
+      m.uniforms.mat.value
+        .set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1)
+        .multiply(mc.projectionMatrix)
+        .multiply(mc.matrixWorldInverse);
+      renderer.clippingPlanes = [m.plane.set(n, -(d + 0.002))];
+      renderer.setRenderTarget(m.target);
+      renderer.clear();
+      renderer.render(scene, mc);
+    });
+    renderer.clippingPlanes = [];
+    renderer.shadowMap.autoUpdate = autoShadow;
+    mirrors.forEach((m) => {
+      m.uniforms.tex.value = m.target.texture;
+      m.uniforms.on.value = m.active ? 1 : 0;
+    });
+  }
+
   function drawScene(s) {
+    drawMirrors();
     if (reflect) {
       reflect.strength.value = s.floorReflect ?? 0;
       if (reflect.strength.value > 0) {
@@ -1193,6 +1398,8 @@ export async function createStage({
     u.uFocus.value = dist;
     u.uFocusScale.value = s.aperture * dist * 0.55;
     u.uBloom.value = s.bloom;
+    u.uGrain.value = s.grain ?? 0;
+    u.uVignette.value = s.vignette ?? 0;
     u.uExposure.value = s.exposure;
     u.uFade.value = s.fade;
     u.uGlow.value = s.bgGlow;

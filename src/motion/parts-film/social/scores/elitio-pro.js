@@ -77,7 +77,9 @@ const STUDIO = {
   contact: 0.9,
   floorReflect: 0.3,
   aperture: 1.0,
-  bloom: 0,
+  bloom: 0.05,
+  grain: 1,
+  vignette: 0.32,
   sweep: 0,
   exposure: 1.12,
 };

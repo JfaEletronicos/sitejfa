@@ -1028,6 +1028,8 @@ export function createKineticVariant(score) {
           sweep,
           bgGlow: 0,
           bloom: light.bloom,
+          grain: light.grain,
+          vignette: light.vignette,
           exposure: light.exposure,
           boardYaw: rot[0],
           boardPitch: rot[1],

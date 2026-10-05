@@ -33,9 +33,20 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
   contato), `floorReflect` (reflexo no chão), `rimAz` (direção do contraluz, em graus no
   mundo), `edge` (dois recortes finos atrás do produto, que desenham as arestas). No estúdio
   escuro a softbox fica mais perto e menor (a luz cai rápido e o fundo fica escuro).
-- `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
+- `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`):
+  `[[regex, { wear, scratch, peel, wave, swirl, dust, smudge, coatDirect }]]` (intensidades;
+  `peel` casca de laranja, `wave` ondulação larga, `swirl` arcos de polimento, `coatDirect: 0`
+  tira do verniz o reflexo direto das luzes e deixa só o do ambiente).
 - `look` na entrada: ajustes de material por nome só para o filme (`[[regex, { color,
-roughness, clearcoat, clearcoatRoughness, ... }]]`), ex.: clarear o black piano.
+roughness, specularIntensity, clearcoat, clearcoatRoughness, envMapIntensity, ... }]]`).
+- `mirrors` na entrada: faces planas espelhadas (`[{ layer, material, dir }]`; `layer` = grupo
+  da vista explodida, o plano é o maior plano do material voltado para `dir`). Cada face
+  voltada para a câmera e dentro do quadro ganha um passe com a câmera espelhada (só o
+  produto, cortado no plano) que entra no reflexo do verniz no lugar do ambiente.
+- Estúdio escuro (`'cinema'`): o ambiente que o produto reflete é um set de produto preto
+  (difusor no teto, quatro rebatedores em degradê nas diagonais, softbox na direção da luz do
+  set, vazamento fraco nas paredes), desenhado em código, 1024 por face. `grain` e `vignette`
+  no estúdio do roteiro: grão de sensor e vinheta na composição.
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador; cada
   instante é arrastado na tela até os vizinhos pela profundidade, então o rastro sai contínuo
   com poucas amostras). `shutter` nas marcações de luz do plano abre mais o obturador num

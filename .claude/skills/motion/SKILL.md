@@ -139,9 +139,17 @@ está em [referencia.md](referencia.md).
   (exceção pedida à regra de efeitos discretos). Na explodida, o nome de cada peça ligado por
   linha fina (`callouts`). Fecha com a cena sumindo no preto e o logo JFA aparecendo.
 - Filme da bateria: a bateria tem de se destacar do fundo mesmo que a luz não seja realista
-  (ambiente claro só para o produto; ciclorama escuro). Black piano quase absoluto fica preto
-  e só mostra reflexos estourados: no filme ele vira um carvão com verniz menos espelhado
-  (`look` na variante, `ELITIO_PRO_LOOK`). Nada de pontos estourados.
+  (ambiente claro só para o produto; ciclorama escuro). Nada de pontos estourados.
+- Black piano brilhante e fotográfico, sem cara de animação: preto profundo (albedo baixo,
+  sem brilho na camada de baixo) desenhado só pelos reflexos de um estúdio de produto preto
+  (difusor no teto, rebatedores grandes em degradê nas diagonais com bandeiras pretas entre
+  eles, softbox principal com queda de luz e borda definida); o verniz não reflete o
+  retângulo chapado das luzes (`coatDirect: 0`). Faces planas grandes espelham o próprio
+  produto (`mirrors`: tampa com bornes e display, laterais com os pegadores). Acabamento fino
+  no shader (casca de laranja, ondulação de peça injetada, poeira rara, riscos quase
+  invisíveis, sem arcos de polimento marcados) e câmera de verdade (grão, vinheta, halo leve).
+  Cinza liso no corpo parece "plástico velho"; metal liso sob os rebatedores estoura (menos
+  ambiente no alumínio das células).
 - Filme da bateria: um plano contínuo, sem cortes e sem paradas (só o último quadro assenta;
   `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
   nunca vai e volta. Motion blur só quando a imagem anda rápido; nos deslocamentos de um
