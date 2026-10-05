@@ -63,19 +63,20 @@ export const SPACES = {
 };
 
 // Estúdio escuro de fotografia com luz fixa de estúdio: fundo e chão quase pretos, e o
-// produto iluminado. Uma softbox na frente, no alto e perto (ilumina bem a bateria e cai
+// produto bem iluminado, destacado do resto (sem compromisso com luz realista: o ambiente
+// que o produto reflete é claro, mas o ciclorama quase não o recebe). Uma softbox na frente, no alto e perto (ilumina bem a bateria e cai
 // rápido, sem clarear o fundo), com sombra macia, e dois recortes finos atrás, um de cada
 // lado, que desenham as arestas contra o escuro. Ambiente quase preto (poucos reflexos) e
 // reflexo leve no chão. Nenhuma luz anda nem muda: só a câmera se move.
 const STUDIO = {
-  keyLux: 3.2,
+  keyLux: 5,
   keyAz: 10,
   keyEl: 55,
-  edge: 9,
+  edge: 18,
   rimLux: 0,
   rimAz: 200,
   fill: 0.03,
-  env: 0.9,
+  env: 2.2,
   wash: 0,
   contact: 0.9,
   floorReflect: 0.3,
@@ -249,19 +250,31 @@ export const GLASS = [
   ),
 ];
 
-// 05 · hero: a frase em 3D logo atrás da bateria, centrada no quadro (no eixo da vista da
-// aproximação), em três linhas juntas de fontes diferentes: 3X (Stretch Pro), MAIS ENERGIA
-// (Poppins Black) e "para o seu projeto" (serifada itálica), com a bateria encostando no pé
-// da última linha (efeito 3D). Entram por máscara, subindo de dentro delas mesmas, uma depois
-// da outra. Assinatura da cena: o número rola como um contador, 1X → 2X → 3X, e assenta no 3;
-// em seguida um brilho atravessa a frase. Saem descendo quando a câmera abre para o final.
-const HERO_FACE = [8.8, 1.5, 7.7];
-const HERO = [-1.6, -1.55];
-const line = (id, t, y, parts, extra = {}) => ({
+// 05 · hero: "3X / MAIS ENERGIA / para o seu projeto", cada linha um objeto 3D independente
+// atrás da bateria: profundidades e ângulos diferentes (3X mais ao fundo e virado para um lado,
+// MAIS ENERGIA no meio virado para o outro, a serifada mais perto), com volume nas duas
+// primeiras. Vistas da câmera do meio da leitura (26,4 s) elas formam um bloco centrado e
+// colado; com a câmera andando, a perspectiva de cada uma muda. Cada linha entra subindo por
+// máscara e tem a sua animação: o 3X é um contador que rola 1 → 2 → 3 (para em cada número),
+// MAIS ENERGIA nasce em contorno e carrega da esquerda para a direita como uma bateria, e
+// "projeto" se inclina até virar itálico. Saem descendo quando a câmera abre para o final.
+const HERO_CAM = [8.58, 1.34, 7.44];
+// Ponto para onde a linha olha: a câmera do meio da cena girada `yaw` graus em volta dela.
+const facing = (pos, yaw) => {
+  const a = (yaw * Math.PI) / 180;
+  const dx = HERO_CAM[0] - pos[0];
+  const dz = HERO_CAM[2] - pos[2];
+  return [
+    pos[0] + dx * Math.cos(a) + dz * Math.sin(a),
+    HERO_CAM[1],
+    pos[2] - dx * Math.sin(a) + dz * Math.cos(a),
+  ];
+};
+const line = (id, t, pos, yaw, parts, extra = {}) => ({
   id,
   t,
-  pos: [HERO[0], y, HERO[1]],
-  face: HERO_FACE,
+  pos,
+  face: facing(pos, yaw),
   parts,
   ...extra,
 });
@@ -269,19 +282,38 @@ export const TYPE3D = [
   line(
     'hero-3x',
     [24.95, 27.35],
-    4.39,
+    [-1.431, 4.42, -1.366],
+    -22,
     [
-      { text: '3', roll: ['1', '2', '3'], font: 'wide', size: 1.0 },
-      { text: 'X', font: 'wide', size: 1.0 },
+      { text: '3', roll: ['1', '2', '3'], font: 'wide', size: 0.99 },
+      { text: 'X', font: 'wide', size: 0.99 },
     ],
-    { rollAt: [25.35, 0.95], sheenAt: [26.2, 0.75] },
+    { depth: 0.3, layers: 10, rollAt: [25.45, 0.8], sheenAt: [26.35, 0.7] },
   ),
-  line('hero-energia', [25.15, 27.4], 3.74, [{ text: 'MAIS ENERGIA', weight: 900, size: 0.42 }], {
-    sheenAt: [26.32, 0.75],
-  }),
-  line('hero-projeto', [25.35, 27.45], 3.3, [
-    { text: 'para o seu projeto', font: 'serif', italic: true, size: 0.5, alpha: 0.9 },
-  ]),
+  line(
+    'hero-energia',
+    [25.15, 27.4],
+    [-0.999, 3.652, -0.985],
+    14,
+    [{ text: 'MAIS ENERGIA', weight: 900, size: 0.4 }],
+    {
+      depth: 0.12,
+      layers: 6,
+      charge: true,
+      chargeAt: [25.7, 0.9],
+    },
+  ),
+  line(
+    'hero-projeto',
+    [25.35, 27.45],
+    [-0.562, 3.187, -0.601],
+    -8,
+    [
+      { text: 'para o seu', font: 'serif', size: 0.44, alpha: 0.9, gap: 0.12 },
+      { text: 'projeto', font: 'serif', size: 0.44, toItalic: true },
+    ],
+    { italicAt: [26.15, 0.6] },
+  ),
 ];
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,

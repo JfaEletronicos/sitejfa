@@ -126,8 +126,12 @@ está em [referencia.md](referencia.md).
   luz marcados) nem fundo claro.
 - Câmera do filme da bateria: nunca parar e voltar pelo mesmo caminho (aproximar e depois
   recuar = vai e volta); para mudar de sentido, curvar em espiral seguindo o giro.
-- Texto 3D do filme: linhas juntas (entrelinha curta) e uma animação que chame atenção por
-  take (ex.: número que rola como contador e brilho atravessando as letras).
+- Texto 3D do filme: nunca como texto comum: cada linha é um objeto 3D independente
+  (profundidade, ângulo e volume próprios), e a vista muda com a câmera; linhas bem juntas;
+  uma animação para cada linha (ex.: contador que para em cada número 1 → 2 → 3, palavra que
+  carrega de contorno para preenchida, palavra que se inclina até virar itálico).
+- Filme da bateria: a bateria tem de se destacar do fundo mesmo que a luz não seja realista
+  (ambiente claro só para o produto; ciclorama escuro).
 - Filme da bateria: um plano contínuo, sem cortes e sem paradas (só o último quadro assenta;
   `monotone: true` no plano); a câmera gira 360° sempre para o mesmo lado (o `az` só cresce),
   nunca vai e volta. Motion blur só quando a imagem anda rápido; nos deslocamentos de um

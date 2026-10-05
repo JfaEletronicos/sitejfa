@@ -832,16 +832,28 @@ export function createKineticVariant(score) {
       /**
        * Tipografia 3D (roteiros com `type`): cada linha entra por máscara em `t[0]` (sobe de
        * dentro dela mesma, em `inDur`) e sai por máscara em `t[1]` (desce, em `outDur`).
-       * `rollAt: [t, dur]` rola o contador da parte com `roll` até o último valor; `sheenAt:
-       * [t, dur]` passa um brilho em diagonal pelas letras.
+       * Animação própria de cada linha: `rollAt: [t, dur]` rola o contador da parte com `roll`
+       * de valor em valor (para um instante em cada um); `chargeAt: [t, dur]` preenche a linha
+       * (`charge`) da esquerda para a direita; `italicAt: [t, dur]` inclina a parte com
+       * `toItalic` até a itálica; `sheenAt: [t, dur]` passa um brilho pelas letras.
        */
+      const span = (tb, at) => (at ? EASE.soft(clamp01((tb - at[0]) / at[1])) : null);
       function typeAt(tb) {
         return TYPE3D.map((l) => {
           const reveal = EASE.enter(clamp01((tb - l.t[0]) / (l.inDur ?? 0.8)));
           const out = EASE.soft(clamp01((tb - l.t[1]) / (l.outDur ?? 0.55)));
           const steps = (l.parts.find((p) => p.roll)?.roll.length ?? 1) - 1;
-          const roll = l.rollAt ? steps * EASE.enter(clamp01((tb - l.rollAt[0]) / l.rollAt[1])) : steps;
-          const sheen = l.sheenAt ? -0.3 + 1.6 * EASE.soft(clamp01((tb - l.sheenAt[0]) / l.sheenAt[1])) : -1;
+          let roll = steps;
+          if (l.rollAt && steps > 0) {
+            const gap = l.rollAt[1] / steps;
+            roll = 0;
+            for (let i = 0; i < steps; i++)
+              roll += EASE.soft(clamp01((tb - l.rollAt[0] - i * gap) / (gap * 0.6)));
+          }
+          const fill = l.charge ? (span(tb, l.chargeAt) ?? 1) : 1;
+          const morph = span(tb, l.italicAt) ?? 0;
+          const sheenK = span(tb, l.sheenAt);
+          const sheen = sheenK === null ? -1 : -0.3 + 1.6 * sheenK;
           return {
             id: l.id,
             spec: l,
@@ -851,6 +863,8 @@ export function createKineticVariant(score) {
             out,
             opacity: l.opacity ?? 1,
             roll,
+            fill,
+            morph,
             sheen,
           };
         }).filter((l) => l.reveal > 0.001 && l.out < 0.999);

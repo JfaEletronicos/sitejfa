@@ -164,14 +164,24 @@ function buildDarkStudioEnvironment(renderer) {
   env.add(
     new THREE.Mesh(
       ring,
-      new THREE.MeshBasicMaterial({ color: new THREE.Color(0.08, 0.08, 0.085), side: THREE.BackSide }),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(0.14, 0.14, 0.15), side: THREE.BackSide }),
     ),
   );
-  // A softbox (mesma direção da luz do set: frente, a 55° de altura).
-  const box = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 2.6), basic(1.2));
-  box.position.set(0.48, 4.0, 2.7);
-  box.lookAt(0, 0, 0);
-  env.add(box);
+  const panel = (w, h, v, pos) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic(v));
+    m.position.set(...pos);
+    m.lookAt(0, 0, 0);
+    env.add(m);
+  };
+  // A softbox (mesma direção da luz do set: frente, a 55° de altura) e painéis grandes e
+  // suaves em volta: o produto reflete um estúdio claro e se destaca. Esse ambiente só vale
+  // para o produto; o ciclorama usa quase nada dele (envMapIntensity baixo) e fica escuro.
+  panel(3.6, 2.6, 1.6, [0.48, 4.0, 2.7]);
+  panel(6, 2.4, 0.7, [0, 4.85, -0.6]);
+  panel(2.2, 4.2, 0.55, [-4.6, 1.2, 1.4]);
+  panel(2.2, 4.2, 0.55, [4.6, 1.2, -1.4]);
+  panel(4.4, 1.6, 0.4, [0, 1.6, 4.7]);
+  panel(4.4, 1.6, 0.4, [0, 1.6, -4.7]);
   const pmrem = new THREE.PMREMGenerator(renderer);
   const target = pmrem.fromScene(env, 0.04, 0.1, 100);
   pmrem.dispose();
@@ -525,6 +535,11 @@ export async function createStage({
     );
     cyc.position.y = box.min.y;
     cyc.receiveShadow = true;
+    if (cinema) {
+      // Estúdio escuro: o ciclorama quase não recebe o ambiente (que é claro para o produto).
+      cyc.material.envMap = envTarget.texture;
+      cyc.material.envMapIntensity = 0.06;
+    }
     // Piso brilhante: reflexo planar da bateria (câmera espelhada, só o produto), desfocado e
     // sumindo conforme se afasta da base, como num piso de estúdio envernizado.
     reflect = {
@@ -877,11 +892,11 @@ export async function createStage({
       if (!line) {
         line = createTypeLine(l.spec);
         typeLines.set(l.id, line);
-        scene.add(line.mesh);
+        scene.add(line.group);
       }
       seen.add(l.id);
-      line.mesh.position.fromArray(l.pos);
-      line.mesh.lookAt(l.face[0], l.face[1], l.face[2]);
+      line.group.position.fromArray(l.pos);
+      line.group.lookAt(l.face[0], l.face[1], l.face[2]);
       line.set(l);
     });
     typeLines.forEach((line, id) => {
