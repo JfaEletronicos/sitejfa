@@ -1312,6 +1312,8 @@ function initRouter(ctx) {
         bateriaBreadcrumbCategory.textContent = category.title;
       }
       if (bateriaOthersAll) bateriaOthersAll.href = '#/setores/' + category.slug;
+      // Setor da página no GA4: a mesma categoria do caminho (breadcrumb).
+      ctx.pageGroup = category.title;
       buildCommerceBlock(bateriaCommerceHero, b, { compact: true, fallbackLabel: 'Encontrar onde comprar' });
       // 02 · Especificações rápidas
       bateriaQuickSpecs.innerHTML = '';
@@ -1451,19 +1453,25 @@ function initRouter(ctx) {
     // baterias, categorias e produtos já o definem ao montar a página.
     const BASE_TITLE = 'JFA Eletr\xF4nicos';
     let lastReported = '';
+    // Setor (Grupo de conteúdo): Home e páginas de seção aqui; categorias, produtos e
+    // baterias o definem em ctx.pageGroup ao montar a página.
     const reportPage = (name) => {
-      if (name === 'home') document.title = BASE_TITLE;
-      else if (SECTION_PAGES[name]) {
+      let group = ctx.pageGroup;
+      if (name === 'home') {
+        document.title = BASE_TITLE;
+        group = 'Home';
+      } else if (SECTION_PAGES[name]) {
         const link = root.querySelector('#jfaHeader [data-nav-page="' + name + '"]');
         const label = (link && link.textContent.trim()) || name;
-        document.title = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase() + ' | ' + BASE_TITLE;
+        group = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+        document.title = group + ' | ' + BASE_TITLE;
       }
       const hash = location.hash || '';
       const path = name === 'home' || !hash.startsWith('#/') ? '/' : '/' + hash.slice(2).replace(/\/+$/, '');
       const key = path + '|' + document.title;
       if (key === lastReported) return;
       lastReported = key;
-      trackPageView(path, document.title);
+      trackPageView(path, document.title, group);
     };
     const applyRoute = () => {
       const hash = location.hash || '';

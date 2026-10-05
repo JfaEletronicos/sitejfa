@@ -491,6 +491,7 @@ function initSectorPages(ctx) {
       prod.others.appendChild(card);
     });
     document.title = pname + ' | JFA Eletrônicos';
+    ctx.pageGroup = sectorTitle;
     trackEvent('sector_product_view', { sector: slug, product_id: id });
     return 'produto';
   };
@@ -508,18 +509,21 @@ function initSectorPages(ctx) {
     // Moov: landing page fixa (components/pages/MoovPage.jsx).
     if (slug === 'moov' && root.getElementById('moovView')) {
       document.title = 'Moov | JFA Eletrônicos';
+      ctx.pageGroup = 'Moov';
       trackEvent('sector_page_view', { sector: slug });
       return 'moov';
     }
     if (SECTOR_CATALOGS[slug]) {
       renderCatalog(slug);
       document.title = (SECTOR_TITLES[slug] || slug) + ' | JFA Eletrônicos';
+      ctx.pageGroup = SECTOR_TITLES[slug] || slug;
       trackEvent('sector_page_view', { sector: slug });
       return 'setorCatalog';
     }
     // Parts: landing page fixa (components/pages/PartsPage.jsx).
     if (slug === 'parts' && root.getElementById('partsView')) {
       document.title = 'JFA Parts | JFA Eletrônicos';
+      ctx.pageGroup = 'JFA Parts';
       trackEvent('sector_page_view', { sector: slug });
       return 'parts';
     }
