@@ -805,8 +805,9 @@ export function createKineticVariant(score) {
       }
 
       /**
-       * Cards Liquid Glass (roteiros com `glass`): cada um entra em `t[0]` (sobe um pouco e
-       * cresce de 94% para 100%, em `inDur`) e sai em `t[1]` (sobe e some, em `outDur`).
+       * Cards Liquid Glass (roteiros com `glass`): cada um entra em `t[0]` (sobe `rise` de
+       * baixo para cima e cresce de 94% para 100%, em `inDur`) e sai em `t[1]` (sobe de leve e
+       * some, em `outDur`).
        */
       function glassAt(tb) {
         return GLASS.map((g) => {
@@ -815,7 +816,7 @@ export function createKineticVariant(score) {
           const a = EASE.enter(clamp01((tb - g.t[0]) / inDur));
           const b = EASE.soft(clamp01((tb - g.t[1]) / outDur));
           const opacity = a * (1 - b);
-          const lift = (1 - a) * -0.14 + b * 0.12;
+          const lift = (1 - a) * -(g.rise ?? 0.14) + b * 0.12;
           return {
             id: g.id,
             spec: g,

@@ -189,62 +189,48 @@ export const SHOTS = [
   },
 ];
 
-// 03 · cards Liquid Glass (a única cena técnica): três cards de vidro em escada acima da
-// bateria, no 3/4 alto, e o LiFePO₄ discreto no chão à frente. Vidro de verdade no espaço
-// 3D (desfoque do que está atrás, reflexo e borda fina), virados para onde a câmera passa
-// na cena; entram um a um, ficam ~1 s e somem antes da explodida.
+// 03 · cards Liquid Glass (a única cena técnica): uma coluna centrada no quadro, um card em
+// cima do outro, com textos centrados. A coluna fica logo atrás da bateria, no eixo da vista
+// (por isso fica no meio do quadro a cena toda), e o primeiro card desce até a bateria
+// cobrir o pé dele (efeito 3D). Vidro de verdade no espaço 3D (desfoque do que está atrás,
+// reflexo e borda fina), virado para onde a câmera passa na cena; cada card entra subindo de
+// leve, de baixo para cima, ficam ~1 s e somem antes da explodida.
 const FACE = [7.6, 5.6, 17.4];
+const COL = [-0.7, -1.87];
 const label = (text) => ({
-  x: 0.16,
+  align: 'center',
   y: 0.32,
   parts: [{ text, weight: 400, size: 0.11, alpha: 0.7, tracking: 0.16 }],
 });
-const value = (num, unit, size = 0.5) => ({
-  x: 0.14,
-  y: 0.84,
+const value = (num, unit, size = 0.46) => ({
+  align: 'center',
+  y: 0.74,
   parts: [
     { text: num, weight: 800, size },
-    { text: unit, weight: 300, size, gap: 0 },
+    { text: unit, weight: 300, size },
   ],
 });
+const card = (id, t, y, lines, extra = {}) => ({
+  id,
+  t,
+  pos: [COL[0], y, COL[1]],
+  face: FACE,
+  w: 2.2,
+  h: 1.1,
+  rise: 0.35,
+  inDur: 0.75,
+  lines,
+  ...extra,
+});
 export const GLASS = [
-  {
-    id: 'tensao',
-    t: [16.2, 17.3],
-    pos: [-1.6, 4.1, 0.6],
-    face: FACE,
-    w: 2.1,
-    h: 1.25,
-    lines: [label('TENSÃO NOMINAL'), value('12', 'V')],
-  },
-  {
-    id: 'capacidade',
-    t: [16.42, 17.42],
-    pos: [1.4, 5.2, -0.2],
-    face: FACE,
-    w: 2.1,
-    h: 1.25,
-    lines: [label('CAPACIDADE'), value('280', 'Ah')],
-  },
-  {
-    id: 'energia',
-    t: [16.64, 17.54],
-    pos: [-1.3, 6.3, -0.4],
-    face: FACE,
-    w: 2.5,
-    h: 1.25,
-    lines: [label('ENERGIA'), value('3,58', ' kWh', 0.44)],
-  },
-  {
-    id: 'quimica',
-    t: [16.9, 17.6],
-    pos: [0.4, 0.3, 2.9],
-    face: FACE,
-    w: 2.0,
-    h: 0.44,
-    radius: 0.22,
-    depth: 0.04,
-    lines: [
+  card('tensao', [16.2, 17.45], 2.7, [label('TENSÃO NOMINAL'), value('12', 'V')]),
+  card('capacidade', [16.38, 17.4], 3.98, [label('CAPACIDADE'), value('280', 'Ah')]),
+  card('energia', [16.56, 17.35], 5.26, [label('ENERGIA'), value('3,58', ' kWh', 0.42)]),
+  card(
+    'quimica',
+    [16.74, 17.3],
+    6.21,
+    [
       {
         align: 'center',
         y: 0.66,
@@ -255,7 +241,8 @@ export const GLASS = [
         ],
       },
     ],
-  },
+    { w: 1.9, h: 0.44, radius: 0.22, depth: 0.04 },
+  ),
 ];
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
