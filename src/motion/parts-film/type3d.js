@@ -27,6 +27,7 @@ const PX = 256; // pixels do canvas por unidade de cena (por 1 de `size`)
  * desenha o contorno na face e o preenchimento à parte.
  */
 function drawLine(spec) {
+  if (spec.imageEl) return drawImageLine(spec);
   const ctx0 = document.createElement('canvas').getContext('2d');
   const fontOf = (p, italic = p.italic) =>
     `${italic ? 'italic ' : ''}${p.weight || 400} ${Math.round(p.size * PX)}px ${FONTS[p.font || 'sans']}`;
@@ -61,6 +62,7 @@ function drawLine(spec) {
   const alt = spec.charge || spec.parts.some((p) => p.toItalic) ? make(W, H) : make(1, 1);
   let rollRange = [2, 2];
   let morphRange = [2, 2];
+  const cuts = [];
   let x = pad;
   spec.parts.forEach((p) => {
     const color = p.color || '#fff';
@@ -94,8 +96,9 @@ function drawLine(spec) {
       morphRange = [(x - pad * 0.3) / W, (x + wv + pad * 0.6) / W];
       x += wv;
     } else {
-      const chars = tr ? [...p.text] : [p.text];
+      const chars = tr || spec.cascade ? [...p.text] : [p.text];
       chars.forEach((ch, i) => {
+        if (ch.trim()) cuts.push(x / W);
         if (spec.charge) {
           paint(face.ctx, ch, x, base, 'stroke');
           paint(alt.ctx, ch, x, base, 'fill');
@@ -116,6 +119,7 @@ function drawLine(spec) {
   };
   const mode = spec.charge ? 1 : spec.parts.some((p) => p.toItalic) ? 2 : 0;
   return {
+    cuts: cuts.slice(0, 24),
     tex: texOf(face),
     alt: texOf(alt),
     strip: texOf(strip),
@@ -124,6 +128,42 @@ function drawLine(spec) {
     morphRange,
     mode,
     baseV: 1 - base / H,
+    w: W / PX,
+    h: H / PX,
+  };
+}
+
+/** Linha que é uma imagem do cliente (ex.: o logo), já carregada em `spec.imageEl`. */
+function drawImageLine(spec) {
+  const img = spec.imageEl;
+  const aspect = img.naturalWidth / img.naturalHeight;
+  const pad = 0.12;
+  const H = Math.round(spec.size * PX * (1 + pad * 2));
+  const W = Math.round(spec.size * aspect * PX + spec.size * PX * pad * 2);
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  c.getContext('2d').drawImage(
+    img,
+    spec.size * PX * pad,
+    spec.size * PX * pad,
+    W - spec.size * PX * pad * 2,
+    H - spec.size * PX * pad * 2,
+  );
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const blank = new THREE.CanvasTexture(document.createElement('canvas'));
+  return {
+    cuts: [],
+    tex,
+    alt: blank,
+    strip: blank,
+    rows: 1,
+    rollRange: [2, 2],
+    morphRange: [2, 2],
+    mode: 0,
+    baseV: 0.2,
     w: W / PX,
     h: H / PX,
   };
@@ -154,13 +194,29 @@ const FRAG = /* glsl */ `
   uniform float uOut;
   uniform float uOpacity;
   uniform float uDim;
+  uniform float uCuts[24];
+  uniform float uCount;
+  uniform float uBlur;
+  uniform float uTint;
   varying vec2 vUv;
   void main() {
     // Máscara na caixa da linha: o texto entra subindo de dentro dela (vem de baixo,
-    // cortado na borda de baixo) e sai descendo.
-    vec2 st = vec2(vUv.x, vUv.y + (1.0 - uReveal) + uOut);
+    // cortado na borda de baixo) e sai descendo. Em cascata (uCount > 0), cada letra entra
+    // um pouco depois da anterior.
+    float rv = uReveal;
+    if (uCount > 0.5) {
+      float idx = 0.0;
+      for (int i = 0; i < 24; i++) {
+        if (float(i) >= uCount) break;
+        if (vUv.x >= uCuts[i]) idx = float(i);
+      }
+      rv = clamp((uReveal - idx / uCount * 0.6) / 0.4, 0.0, 1.0);
+      rv = 1.0 - pow(1.0 - rv, 3.0);
+    }
+    vec2 st = vec2(vUv.x, vUv.y + (1.0 - rv) + uOut);
     if (st.y < 0.0 || st.y > 1.0) discard;
-    vec4 c = texture2D(map, st);
+    // Foco: a linha entra desfocada e ganha nitidez (uBlur em níveis de mipmap).
+    vec4 c = texture2D(map, st, uBlur);
     // Contador: a parte que rola mostra a faixa de valores, o próximo vindo de baixo (só na
     // janela das maiúsculas, para não invadir as linhas de cima e de baixo).
     if (vUv.x >= uRange.x && vUv.x <= uRange.y && vUv.y > 0.2 && vUv.y < 0.8) {
@@ -186,7 +242,7 @@ const FRAG = /* glsl */ `
     // Brilho que atravessa as letras em diagonal (o branco fica mais quente onde passa).
     float d = (st.x * uAspect + st.y * 0.6) / (uAspect + 0.6) - uSheen;
     float glow = exp(-d * d / 0.006);
-    c.rgb *= (0.8 + 2.6 * glow) * uDim;
+    c.rgb *= (mix(0.8, 1.0, uTint) + 2.6 * glow) * uDim;
     gl_FragColor = vec4(c.rgb, c.a * uOpacity);
     #include <colorspace_fragment>
   }`;
@@ -216,6 +272,11 @@ export function createTypeLine(spec) {
     uReveal: { value: 0 },
     uOut: { value: 0 },
     uOpacity: { value: 1 },
+    uCuts: { value: [...d.cuts, ...new Array(24 - d.cuts.length).fill(2)] },
+    uCount: { value: spec.cascade ? d.cuts.length : 0 },
+    uBlur: { value: 0 },
+    // Imagens (logo) com as cores originais; texto branco um pouco abaixo do branco puro.
+    uTint: { value: spec.imageEl ? 1 : 0 },
   };
   const group = new THREE.Group();
   const geometry = new THREE.PlaneGeometry(d.w, d.h);
@@ -234,7 +295,8 @@ export function createTypeLine(spec) {
     mesh.renderOrder = i === 0 ? 4 : 3;
     group.add(mesh);
   }
-  const set = ({ reveal, out, opacity, roll = d.rows - 1, fill = 1, morph = 0, sheen = -1 }) => {
+  const set = ({ reveal, out, opacity, roll = d.rows - 1, fill = 1, morph = 0, sheen = -1, blur = 0 }) => {
+    base.uBlur.value = blur;
     // Os uniformes são compartilhados entre as camadas (mesmos objetos).
     base.uReveal.value = reveal;
     base.uOut.value = out;

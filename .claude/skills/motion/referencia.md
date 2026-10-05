@@ -68,7 +68,12 @@ alpha, tracking, gap, sub }] }] }` (x, y e size em frações da altura do card; 
   atrás dele). `{ id, t: [entra, sai], pos, face, parts: [{ text, font, weight, italic, size
 (altura da fonte em unidades de cena), alpha, tracking, gap, color, roll }], inDur?,
 outDur?, opacity?, rollAt?: [t, dur], sheenAt?: [t, dur] }`. Uma parte com
-  `roll: ['1', '2', '3']` rola como contador até o último valor em `rollAt`; `sheenAt` passa um
+  `roll: ['1', '2', '3']` rola como contador (para em cada valor) em `rollAt`; `charge` +
+  `chargeAt` carrega a linha de contorno a preenchida; `toItalic` numa parte + `italicAt`
+  inclina a palavra até a itálica; `cascade` entra letra por letra; `focusAt` sai do desfoque;
+  `flipAt` (+ `flipAngle`) entra girando em 3D; `image` (arquivo do cliente, ex.: logo) no lugar
+  do texto, com `size` = altura; `depth`/`layers` dão volume; `cam` = câmera de referência do
+  `face` girado por `yaw` no helper do roteiro. `sheenAt` passa um
   brilho em diagonal pelas letras. Entra por máscara subindo de dentro da própria linha e sai
   descendo. Para ficar
   no meio do quadro, ponha as linhas na vertical de um ponto no eixo da vista (atrás do alvo).

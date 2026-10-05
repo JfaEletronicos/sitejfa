@@ -911,6 +911,7 @@ export async function createStage({
       seen.add(l.id);
       line.group.position.fromArray(l.pos);
       line.group.lookAt(l.face[0], l.face[1], l.face[2]);
+      if (l.flip) line.group.rotateY(l.flip);
       line.set(l);
     });
     typeLines.forEach((line, id) => {

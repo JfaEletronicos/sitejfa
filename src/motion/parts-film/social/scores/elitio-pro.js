@@ -259,22 +259,19 @@ export const GLASS = [
 // MAIS ENERGIA nasce em contorno e carrega da esquerda para a direita como uma bateria, e
 // "projeto" se inclina até virar itálico. Saem descendo quando a câmera abre para o final.
 const HERO_CAM = [8.58, 1.34, 7.44];
-// Ponto para onde a linha olha: a câmera do meio da cena girada `yaw` graus em volta dela.
-const facing = (pos, yaw) => {
+const FINAL_CAM = [18.16, 6.19, 10.49];
+// Ponto para onde a linha olha: a câmera de referência girada `yaw` graus em volta dela.
+const facing = (pos, yaw, cam = HERO_CAM) => {
   const a = (yaw * Math.PI) / 180;
-  const dx = HERO_CAM[0] - pos[0];
-  const dz = HERO_CAM[2] - pos[2];
-  return [
-    pos[0] + dx * Math.cos(a) + dz * Math.sin(a),
-    HERO_CAM[1],
-    pos[2] - dx * Math.sin(a) + dz * Math.cos(a),
-  ];
+  const dx = cam[0] - pos[0];
+  const dz = cam[2] - pos[2];
+  return [pos[0] + dx * Math.cos(a) + dz * Math.sin(a), cam[1], pos[2] - dx * Math.sin(a) + dz * Math.cos(a)];
 };
 const line = (id, t, pos, yaw, parts, extra = {}) => ({
   id,
   t,
   pos,
-  face: facing(pos, yaw),
+  face: facing(pos, yaw, extra.cam),
   parts,
   ...extra,
 });
@@ -314,7 +311,67 @@ export const TYPE3D = [
     ],
     { italicAt: [26.15, 0.6] },
   ),
+  // 06 · final: no afastamento, acima da bateria e atrás dela, cada linha um objeto 3D
+  // independente (profundidade e ângulo próprios), alinhadas para o quadro final (30,9 s): o
+  // logo JFA (arquivo do cliente) entra girando em 3D, E-LÍTIO PRO letra por letra em
+  // cascata, e 12V 280Ah sai do desfoque para o foco. Ficam até o fim.
+  line('final-logo', [28.0, 99], [-3.093, 5.377, -1.786], 12, [], {
+    cam: FINAL_CAM,
+    image: '/images/jfa_logo_white.webp',
+    size: 0.88,
+    depth: 0.06,
+    layers: 4,
+    inDur: 0.7,
+    flipAt: [28.0, 1.0],
+  }),
+  line(
+    'final-nome',
+    [28.3, 99],
+    [-2.345, 4.279, -1.354],
+    -12,
+    [{ text: 'E-LÍTIO PRO', font: 'wide', size: 0.49 }],
+    {
+      cam: FINAL_CAM,
+      cascade: true,
+      inDur: 1.1,
+      depth: 0.14,
+      layers: 6,
+    },
+  ),
+  line(
+    'final-specs',
+    [28.7, 99],
+    [-1.69, 3.716, -0.976],
+    8,
+    [
+      { text: '12V', weight: 700, size: 0.38, gap: 0.2 },
+      { text: '280Ah', weight: 300, size: 0.38 },
+    ],
+    { cam: FINAL_CAM, focusAt: [28.7, 1.0], depth: 0.06, layers: 4 },
+  ),
 ];
+
+// 06 · final: o CTA num botão de vidro (Liquid Glass) abaixo da bateria, mais perto da
+// câmera; entra subindo de leve e fica até o fim.
+GLASS.push({
+  id: 'cta',
+  t: [29.4, 99],
+  pos: [8.012, 1.681, 4.626],
+  face: FINAL_CAM,
+  w: 2.3,
+  h: 0.52,
+  radius: 0.26,
+  depth: 0.05,
+  rise: 0.25,
+  inDur: 0.8,
+  lines: [
+    {
+      align: 'center',
+      y: 0.66,
+      parts: [{ text: 'JÁ DISPONÍVEL', weight: 600, size: 0.38, tracking: 0.14 }],
+    },
+  ],
+});
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na

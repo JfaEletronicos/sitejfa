@@ -854,6 +854,10 @@ export function createKineticVariant(score) {
           const morph = span(tb, l.italicAt) ?? 0;
           const sheenK = span(tb, l.sheenAt);
           const sheen = sheenK === null ? -1 : -0.3 + 1.6 * sheenK;
+          const focus = span(tb, l.focusAt);
+          const blur = focus === null ? 0 : 5 * (1 - focus);
+          const flipK = l.flipAt ? EASE.enter(clamp01((tb - l.flipAt[0]) / l.flipAt[1])) : 1;
+          const flip = (1 - flipK) * (l.flipAngle ?? 80) * DEG;
           return {
             id: l.id,
             spec: l,
@@ -866,6 +870,8 @@ export function createKineticVariant(score) {
             fill,
             morph,
             sheen,
+            blur,
+            flip,
           };
         }).filter((l) => l.reveal > 0.001 && l.out < 0.999);
       }
@@ -1294,7 +1300,21 @@ export function createKineticVariant(score) {
       ];
 
       const sample = 'VOCÊ NÃO VÊ. ÇÃ';
+      // Imagens das linhas 3D (logo do cliente) carregadas antes do primeiro quadro.
+      const imagesReady = TYPE3D.filter((l) => l.image).map(
+        (l) =>
+          new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              l.imageEl = img;
+              resolve();
+            };
+            img.onerror = resolve;
+            img.src = l.image;
+          }),
+      );
       const fontsReady = Promise.all([
+        ...imagesReady,
         ...['300', '700', '800', '900'].map((wgt) => document.fonts?.load(`${wgt} 100px Poppins`, sample)),
         ...['300', '800'].map((wgt) => document.fonts?.load(`italic ${wgt} 100px Poppins`, sample)),
         document.fonts?.load('100px "Stretch Pro"', `${sample} ENERGIA JFA PARTS`),
