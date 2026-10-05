@@ -31,7 +31,8 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
   só para a sombra macia, na mesma direção do mundo, mirando o centro do produto. Campos de
   luz extras: `wash` (luz de fundo no chão e na parede atrás), `contact` (sombra de
   contato), `floorReflect` (reflexo no chão), `rimAz` (direção do contraluz, em graus no
-  mundo).
+  mundo), `edge` (dois recortes finos atrás do produto, que desenham as arestas). No estúdio
+  escuro a softbox fica mais perto e menor (a luz cai rápido e o fundo fica escuro).
 - `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador; cada
   instante é arrastado na tela até os vizinhos pela profundidade, então o rastro sai contínuo
@@ -63,8 +64,11 @@ alpha, tracking, gap, sub }] }] }` (x, y e size em frações da altura do card; 
 - `type` no roteiro: tipografia 3D no palco (`type3d.js`), uma linha por entrada, desenhada
   em canvas com as fontes do site sobre um plano preso ao mundo (o produto cobre o que está
   atrás dele). `{ id, t: [entra, sai], pos, face, parts: [{ text, font, weight, italic, size
-(altura da fonte em unidades de cena), alpha, tracking, gap, color }], inDur?, outDur?,
-opacity? }`. Entra por máscara subindo de dentro da própria linha e sai descendo. Para ficar
+(altura da fonte em unidades de cena), alpha, tracking, gap, color, roll }], inDur?,
+outDur?, opacity?, rollAt?: [t, dur], sheenAt?: [t, dur] }`. Uma parte com
+  `roll: ['1', '2', '3']` rola como contador até o último valor em `rollAt`; `sheenAt` passa um
+  brilho em diagonal pelas letras. Entra por máscara subindo de dentro da própria linha e sai
+  descendo. Para ficar
   no meio do quadro, ponha as linhas na vertical de um ponto no eixo da vista (atrás do alvo).
 - `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
   na vertical (unidades de cena).
