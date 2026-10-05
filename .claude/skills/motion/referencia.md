@@ -33,7 +33,8 @@ tela; `stillTime` é o quadro parado de "reduzir movimento"; `format` `'9x16'` (
 - `shafts` no roteiro (estúdio branco): feixes de sol parados dos takes de perto,
   `{ t: [acende, aceso, apaga, apagado], aim, az, el, radius, lux?, haze? }` (fonte longe,
   raios quase paralelos, borda macia, sombra, névoa e poeira dentro). Feixes seguidos usam
-  dois rigs alternados (no máximo dois acesos ao mesmo tempo, e só um da vez com o seguinte).
+  três rigs alternados (o feixe i usa o rig i % 3: no máximo três acesos ao mesmo tempo).
+  Acenda e apague com o alvo fora do quadro (confira projetando o alvo pela câmera).
 - `detail` na entrada: acabamento fino no shader por nome de material (`surface-detail.js`).
 - `meta.shutter` (s): motion blur de câmera real (soma de instantes dentro do obturador; cada
   instante é arrastado na tela até os vizinhos pela profundidade, então o rastro sai contínuo

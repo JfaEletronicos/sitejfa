@@ -221,15 +221,15 @@ export const SHOTS = [
 // a câmera olha através do feixe, e névoa forte vira véu.
 export const SHAFTS = [
   // Logotipo (acende junto com o estúdio, ainda de longe).
-  { t: [3.4, 4.6, 6.5, 7.3], aim: [0.0, 1.4, 0.86], az: 25, el: 55, radius: 0.75 },
+  { t: [3.4, 4.6, 6.7, 7.4], aim: [0.0, 1.4, 0.86], az: 25, el: 55, radius: 0.75 },
   // Borne positivo (acende enquanto a câmera está no logotipo, fora do quadro).
-  { t: [5.9, 6.9, 9.0, 9.8], aim: [1.85, 2.42, -0.55], az: -130, el: 58, radius: 0.7 },
+  { t: [5.9, 6.9, 9.3, 9.9], aim: [1.85, 2.42, -0.55], az: -130, el: 58, radius: 0.7 },
   // Ponta direita: orelha e alça (acende enquanto a câmera está no borne).
-  { t: [7.9, 8.8, 10.2, 11.0], aim: [2.38, 1.2, 0.1], az: 60, el: 50, radius: 0.8, lux: 2.2 },
+  { t: [7.9, 8.8, 10.5, 11.0], aim: [2.38, 1.2, 0.1], az: 60, el: 50, radius: 0.8, lux: 2.2 },
   // Traseira: ficha técnica (acende enquanto a câmera está na ponta direita).
   { t: [9.8, 10.4, 11.5, 12.2], aim: [1.0, 1.1, -0.86], az: -160, el: 48, radius: 0.9 },
   // Display (acende enquanto a câmera passa pela traseira).
-  { t: [11.0, 12.1, 14.4, 15.3], aim: [-0.08, 2.44, -0.36], az: 125, el: 60, radius: 0.65 },
+  { t: [10.4, 11.3, 14.6, 15.8], aim: [-0.08, 2.44, -0.36], az: 125, el: 60, radius: 0.65 },
 ];
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,

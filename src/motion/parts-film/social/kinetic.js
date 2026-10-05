@@ -807,16 +807,16 @@ export function createKineticVariant(score) {
       /**
        * Feixes de sol dos takes de perto (roteiros com `shafts`): cada um PARADO no seu lugar,
        * acendendo em t[0]→t[1] (antes de a câmera chegar) e apagando em t[2]→t[3] (depois que
-       * ela sai). Feixes seguidos usam rigs alternados, então um pode entrar enquanto o
-       * anterior sai.
+       * ela sai). Feixes seguidos usam três rigs alternados, então o seguinte pode entrar
+       * enquanto o anterior ainda está aceso.
        */
       function shaftsAt(tb) {
-        const out = [null, null];
+        const out = [null, null, null];
         SHAFTS.forEach((sh, i) => {
           const [a, b, c, d] = sh.t;
           const w = Math.min(EASE.soft(clamp01((tb - a) / (b - a))), EASE.soft(clamp01((d - tb) / (d - c))));
           if (w <= 0) return;
-          out[i % 2] = {
+          out[i % 3] = {
             aim: sh.aim,
             az: sh.az,
             el: sh.el,

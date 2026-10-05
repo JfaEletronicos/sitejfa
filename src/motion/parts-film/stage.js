@@ -684,8 +684,8 @@ export async function createStage({
     sun.shadow.normalBias = 0.02;
     sun.shadow.radius = 9;
     Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 45 });
-    // Dois feixes (um entra enquanto o anterior sai, longe da câmera).
-    const shafts = [0, 1].map(() => {
+    // Três feixes alternados (o seguinte entra enquanto o anterior ainda está aceso).
+    const shafts = [0, 1, 2].map(() => {
       const spot = new THREE.SpotLight(0xfff0dc, 0, 0, 2 * DEG, 1, 2);
       spot.castShadow = true;
       spot.shadow.mapSize.set(1024, 1024);
@@ -910,7 +910,7 @@ export async function createStage({
    */
   /**
    * Luz natural do estúdio branco: janela em 3/4 (e o sol que dá a sombra macia) na direção
-   * keyAz/keyEl, e até dois feixes de sol (`s.shafts`: alvo, direção, raio, lux e névoa),
+   * keyAz/keyEl, e até três feixes de sol (`s.shafts`: alvo, direção, raio, lux e névoa),
    * todos parados.
    */
   const SET_CENTER = new THREE.Vector3(0, 1.2, 0);
