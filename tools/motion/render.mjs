@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Exporta um motion em vídeo, quadro a quadro, na resolução pedida (padrão: 4K vertical,
- * 2160×3840), com o motion blur real do palco. Grava o canvas do palco (o estúdio da bateria
+ * Exporta um motion em vídeo, quadro a quadro, na resolução pedida (padrão: Full HD vertical,
+ * 1080×1920), com o motion blur real do palco. Grava o canvas do palco (o estúdio da bateria
  * é todo 3D; motions com texto em HTML precisam de captura da página). Precisa do npm run dev
  * rodando e do ffmpeg.
  *
  *   node tools/motion/render.mjs --variant elitio-pro
- *     --size 2160x3840   tamanho do quadro (16:9 em 4K: 3840x2160 com --format 16x9)
+ *     --size 1080x1920   tamanho do quadro (16:9: 1920x1080 com --format 16x9)
  *     --fps 30           quadros por segundo
  *     --range 0-4.5      só um trecho (s)
  *     --format 16x9      proporção da página (padrão: a da variante)
@@ -24,7 +24,7 @@ import { openFilm, parseArgs } from './browser.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const variant = args.variant && args.variant !== true ? args.variant : '';
-const [width, height] = String(args.size || '2160x3840')
+const [width, height] = String(args.size || '1080x1920')
   .split('x')
   .map(Number);
 const fps = Number(args.fps || 30);
