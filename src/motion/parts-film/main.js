@@ -46,6 +46,16 @@ const VARIANTS = {
     look: ELITIO_PRO_LOOK,
     mirrors: ELITIO_PRO_MIRRORS,
   },
+  // Modelo de vídeo promocional (skill promo-produto), com a bateria como exemplo.
+  'produto-modelo': {
+    load: kinetic(() => import('./social/scores/produto-modelo')),
+    model: ELITIO_PRO,
+    upAxis: 'y',
+    studio: 'cinema',
+    detail: ELITIO_PRO_DETAIL,
+    look: ELITIO_PRO_LOOK,
+    mirrors: ELITIO_PRO_MIRRORS,
+  },
 };
 
 const params = new URLSearchParams(window.location.search);
