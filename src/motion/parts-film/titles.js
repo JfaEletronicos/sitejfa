@@ -19,13 +19,19 @@ const RES = 2400;
 
 /**
  * Desenha o título. `spec.parts`: `[{ text, font, weight, italic, size, alpha, tracking,
- * gap, color }]` com `size` em fração da altura do quadro; `spec.image` + `spec.imageEl` (logo)
- * com `spec.size` = altura; `spec.pill` desenha uma pílula de contorno fino em volta.
- * Devolve a textura e o tamanho do plano em alturas de quadro.
+ * gap, color, roll }]` com `size` em fração da altura do quadro; `spec.image` + `spec.imageEl`
+ * (logo) com `spec.size` = altura; `spec.pill` desenha uma pílula de contorno fino em volta.
+ * Uma parte com `roll` (lista de valores, o último é o final) vai para uma faixa à parte que
+ * o shader rola como um contador. Devolve as texturas e o tamanho do plano em alturas de quadro.
  */
 function drawTitle(spec) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
+  const strip = document.createElement('canvas');
+  strip.width = 1;
+  strip.height = 1;
+  let rows = 1;
+  let rollRange = [2, 2];
   if (spec.imageEl) {
     const img = spec.imageEl;
     const h = Math.round(spec.size * RES);
@@ -61,13 +67,32 @@ function drawTitle(spec) {
       ctx.stroke();
     }
     ctx.textBaseline = 'alphabetic';
+    const rollPart = spec.parts.find((p) => p.roll);
+    if (rollPart) {
+      rows = rollPart.roll.length;
+      strip.width = canvas.width;
+      strip.height = H * rows;
+    }
+    const sctx = strip.getContext('2d');
     let x = padX;
     spec.parts.forEach((p) => {
       ctx.font = fontOf(p);
       ctx.globalAlpha = p.alpha ?? 1;
       ctx.fillStyle = p.color || '#fff';
       const tr = (p.tracking || 0) * p.size * RES;
-      if (tr) {
+      if (p.roll) {
+        // Cada valor numa linha da faixa, alinhado pela direita do valor final.
+        const wFinal = ctx.measureText(p.text).width;
+        sctx.font = fontOf(p);
+        sctx.fillStyle = p.color || '#fff';
+        sctx.textBaseline = 'alphabetic';
+        p.roll.forEach((v, k) => sctx.fillText(v, x + wFinal - sctx.measureText(v).width, H * k + base));
+        rollRange = [
+          (x - maxSize * RES * 0.1) / canvas.width,
+          (x + wFinal + maxSize * RES * 0.1) / canvas.width,
+        ];
+        x += wFinal;
+      } else if (tr) {
         [...p.text].forEach((ch) => {
           ctx.fillText(ch, x, base);
           x += ctx.measureText(ch).width + tr;
@@ -80,20 +105,41 @@ function drawTitle(spec) {
       x += (p.gap || 0) * RES;
     });
   }
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
-  return { tex, w: canvas.width / RES, h: canvas.height / RES };
+  const texOf = (c) => {
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return t;
+  };
+  return {
+    tex: texOf(canvas),
+    strip: texOf(strip),
+    rows,
+    rollRange,
+    w: canvas.width / RES,
+    h: canvas.height / RES,
+  };
 }
 
-/** Cria o título. Devolve `{ mesh, set({ opacity, blur }) }` (`blur` em níveis de mipmap). */
+/**
+ * Cria o título. Devolve `{ mesh, set({ opacity, blur, roll }), size }` (`blur` em níveis de
+ * mipmap; `roll` = posição do contador, 0 = primeiro valor).
+ */
 export function createTitle(spec) {
-  const { tex, w, h } = drawTitle(spec);
+  const { tex, strip, rows, rollRange, w, h } = drawTitle(spec);
   const material = new THREE.ShaderMaterial({
     transparent: true,
     depthTest: false,
     depthWrite: false,
-    uniforms: { map: { value: tex }, uOpacity: { value: 0 }, uBlur: { value: 0 } },
+    uniforms: {
+      map: { value: tex },
+      strip: { value: strip },
+      uRows: { value: rows },
+      uRange: { value: new THREE.Vector2(...rollRange) },
+      uRoll: { value: rows - 1 },
+      uOpacity: { value: 0 },
+      uBlur: { value: 0 },
+    },
     vertexShader: /* glsl */ `
       varying vec2 vUv;
       void main() {
@@ -102,19 +148,30 @@ export function createTitle(spec) {
       }`,
     fragmentShader: /* glsl */ `
       uniform sampler2D map;
+      uniform sampler2D strip;
+      uniform float uRows;
+      uniform vec2 uRange;
+      uniform float uRoll;
       uniform float uOpacity;
       uniform float uBlur;
       varying vec2 vUv;
       void main() {
         vec4 c = texture2D(map, vUv, uBlur);
+        // Contador: a parte que rola mostra a faixa de valores (o próximo vem de baixo),
+        // recortada na altura das maiúsculas.
+        if (vUv.x >= uRange.x && vUv.x <= uRange.y && vUv.y > 0.18 && vUv.y < 0.82) {
+          float v = 1.0 - (uRoll + 1.0 - vUv.y) / uRows;
+          c += texture2D(strip, vec2(vUv.x, v), uBlur);
+        }
         gl_FragColor = vec4(c.rgb, c.a * uOpacity);
         #include <colorspace_fragment>
       }`,
   });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
-  const set = ({ opacity, blur }) => {
+  const set = ({ opacity, blur, roll = rows - 1 }) => {
     material.uniforms.uOpacity.value = opacity;
     material.uniforms.uBlur.value = blur;
+    material.uniforms.uRoll.value = roll;
     mesh.visible = opacity > 0.002;
   };
   set({ opacity: 0, blur: 0 });

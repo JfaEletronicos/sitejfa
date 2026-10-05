@@ -69,6 +69,11 @@ alpha, tracking, gap, sub }] }] }` (x, y e size em frações da altura do card; 
 weight, italic, size (fração da altura do quadro), alpha, tracking, gap, color }] | image
 (arquivo do cliente) + size, pill?, inDur?, outDur?, rise?, blur? }`. Entram com fusão,
   subida curta e desfoque que se resolve; saem com fusão.
+- `callouts` no roteiro: nomes das peças na explodida, na sobreposição 2D: `{ id, t: [entra,
+sai], layer (camada do explode que o ponto acompanha), anchor (ponto da peça fechada),
+side: 'left' | 'right', text }`. Um ponto na peça, uma linha fina que se desenha até a
+  coluna do lado (20% / 80% do quadro) e o nome depois dela; o nome nunca sai do quadro.
+- Títulos com contador: parte com `roll: ['1', '2', '3']` e `rollAt: [t, dur]` no título.
 - `explode: { <camada>: [[t, deslocamento, curva]] }`: camadas `EXPLODE_<nome>` do GLB sobem
   na vertical (unidades de cena).
 

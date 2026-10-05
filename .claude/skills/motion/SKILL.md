@@ -133,6 +133,11 @@ está em [referencia.md](referencia.md).
   em 3D, volume, contador, carga, itálico animado, cascata, giro de logo ou outros efeitos
   chamativos. Cards de vidro escuros e discretos (borda fina, sem brilho forte), de frente
   para a câmera, entrando com fusão.
+- Filme da bateria (ritmo): abertura curta (a ação começa em ~2 s), takes longos e lentos
+  (~1,6–2 s) e deslocamentos entre eles bem rápidos (~0,4–0,5 s, com rastro). Takes da volta:
+  adesivo frontal, adesivo de cima, adesivo traseiro e display. Contador no "3X" do hero
+  (exceção pedida à regra de efeitos discretos). Na explodida, o nome de cada peça ligado por
+  linha fina (`callouts`). Fecha com a cena sumindo no preto e o logo JFA aparecendo.
 - Filme da bateria: a bateria tem de se destacar do fundo mesmo que a luz não seja realista
   (ambiente claro só para o produto; ciclorama escuro). Black piano quase absoluto fica preto
   e só mostra reflexos estourados: no filme ele vira um carvão com verniz menos espelhado

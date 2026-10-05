@@ -462,6 +462,7 @@ export function createKineticVariant(score) {
     explode: EXPLODE = {},
     glass: GLASS = [],
     titles: TITLES = [],
+    callouts: CALLOUTS = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -838,16 +839,49 @@ export function createKineticVariant(score) {
           const a = EASE.soft(clamp01((tb - ti.t[0]) / (ti.inDur ?? 1.2)));
           const b = EASE.soft(clamp01((tb - ti.t[1]) / (ti.outDur ?? 0.7)));
           const opacity = a * (1 - b);
+          // Contador (parte com `roll`): para um instante em cada valor (`rollAt: [t, dur]`).
+          const steps = (ti.parts?.find((p) => p.roll)?.roll.length ?? 1) - 1;
+          let roll = steps;
+          if (ti.rollAt && steps > 0) {
+            const gap = ti.rollAt[1] / steps;
+            roll = 0;
+            for (let i = 0; i < steps; i++)
+              roll += EASE.soft(clamp01((tb - ti.rollAt[0] - i * gap) / (gap * 0.55)));
+          }
           return {
             id: ti.id,
             spec: ti,
             x: ti.x ?? 50,
             y: ti.y,
+            roll,
             opacity,
             rise: (1 - a) * (ti.rise ?? 0.008),
             blur: (1 - a) * (ti.blur ?? 2.5),
           };
         }).filter((ti) => ti.opacity > 0.002);
+      }
+
+      /**
+       * Nomes das peças na explodida (roteiros com `callouts`): `{ id, t: [entra, sai], layer,
+       * anchor, side: 'left' | 'right', text }`. Um ponto na peça (que acompanha a camada que
+       * sobe) e uma linha fina que se desenha até o nome, que entra com fusão; tudo sai com
+       * fusão.
+       */
+      function calloutsAt(tb, explode) {
+        return CALLOUTS.map((c) => {
+          const line = EASE.soft(clamp01((tb - c.t[0]) / 0.5));
+          const label = EASE.soft(clamp01((tb - c.t[0] - 0.25) / 0.55));
+          const out = 1 - EASE.soft(clamp01((tb - c.t[1]) / 0.4));
+          const lift = c.layer ? explode[c.layer] || 0 : 0;
+          return {
+            id: c.id,
+            spec: c,
+            pos: [c.anchor[0], c.anchor[1] + lift, c.anchor[2]],
+            line,
+            label: label * out,
+            opacity: Math.min(1, line * 3) * out,
+          };
+        }).filter((c) => c.opacity > 0.002);
       }
 
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
@@ -986,6 +1020,7 @@ export function createKineticVariant(score) {
           floorReflect: light.floorReflect,
           contact: light.contact,
           explode: explodeAt(tb),
+          callouts: calloutsAt(tb, explodeAt(tb)),
           glass: glassAt(tb),
           titles: titlesAt(tb),
           fill: light.fill,

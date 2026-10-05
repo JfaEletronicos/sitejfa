@@ -1,50 +1,46 @@
 /**
- * E-LÍTIO PRO 12V 280Ah (?variant=elitio-pro · 9:16 · 30,95 s): base 3D cinematográfica do
- * lançamento, com linguagem de comercial de carro, em UM plano contínuo (sem cortes e sem
- * paradas: a câmera só para no último quadro), em voo livre como um pássaro (6DoF: posição
- * e olhar independentes, curvas suaves e inclinadas), alternando trechos lentos e rápidos e
- * girando sempre para o mesmo lado em volta da bateria (sem ir e voltar).
- * A bateria nunca se move; a vista explodida é a única exceção. Estúdio escuro de
- * fotografia em 3D (ciclorama grafite, piso com reflexo leve) e UMA luz de estúdio fixa
- * (softbox grande na frente, no alto), presa ao mundo (studio: 'cinema' no palco), e
- * motion blur de câmera real só quando a
- * imagem anda rápido (meta.shutter), com o obturador bem aberto nos deslocamentos entre os
- * takes (rastro de alta velocidade; `shutter` nas marcações de luz).
+ * E-LÍTIO PRO 12V 280Ah (?variant=elitio-pro · 9:16 · 32,4 s): filme de lançamento com
+ * linguagem de filme de produto, clean e elegante, em UM plano contínuo (sem cortes e sem
+ * paradas), em voo livre como um pássaro (6DoF: posição e olhar independentes, curvas suaves
+ * e inclinadas): takes longos e lentos ligados por deslocamentos rápidos com rastro de
+ * velocidade, girando sempre para o mesmo lado em volta da bateria.
+ * A bateria nunca se move; a vista explodida é a única exceção. Estúdio escuro de fotografia
+ * em 3D (ciclorama grafite, piso com reflexo leve) e luz de estúdio fixa (studio: 'cinema'),
+ * motion blur de câmera real só quando a imagem anda rápido (meta.shutter, mais aberto nos
+ * deslocamentos). Títulos em 2D por cima da imagem (TITLES), cards de vidro (GLASS) e nomes
+ * das peças na explodida (CALLOUTS).
  * Modelo do CAD original da caixa (public/models/elitio-pro.glb, montado por
  * tools/motion/build-elitio-pro.mjs), em pé, em unidades de 10 cm (475 × 240 × 170 mm).
  *
- * Nesta etapa não entram textos, cards, trilha nem efeitos de motion: só cenário, luz,
- * produto e câmera (pedido do cliente, que vale acima do checklist geral da skill).
- *
- *   01 abertura (0–4,2): sai do preto (1,2 s) com o estúdio já aceso; deriva lenta.
- *   02 revelação (4,2–15,35): voo livre em volta do produto, sempre para o mesmo lado:
- *      fly-by no logotipo, borne positivo (macro, devagar), mergulho na ponta, traseira
- *      (ficha), outra ponta e o painel com o display aceso, de cima (no fim da volta);
- *      fecha a volta recuando rápido.
- *   03 cards (15,35–19,45): 3/4 alto e controlado, deriva lenta (cards Liquid Glass).
- *   04 vista explodida (19,45–24,25): a tampa sobe inteira e BMS, barramentos, suporte e
- *      células se separam na vertical; a câmera fica em 3/4 lento, de fora, e a bateria se
- *      recompõe (clique em ~24,15).
- *   05 hero (24,25–26,95): aproximação lenta e baixa em 3/4, espaço acima para a mensagem.
- *   06 final (26,95–30,95): afastamento lento, muito espaço negativo.
+ *   01 abertura (0–2,1): sai do preto já em movimento e mergulha.
+ *   02 revelação (2,1–13,6): takes do adesivo frontal (logotipo), do adesivo de cima, do
+ *      adesivo traseiro e do display aceso, de cima, ligados por deslocamentos rápidos;
+ *      fecha a volta recuando.
+ *   03 cards (13,6–17,4): 3/4 alto, deriva lenta, cards Liquid Glass com as especificações.
+ *   04 vista explodida (17,4–22,6): a tampa sobe inteira e BMS, barramentos, suporte e
+ *      células se separam; nomes das peças ligados por linhas finas; a bateria se recompõe.
+ *   05 hero (22,6–25,6): aproximação lenta e baixa, "3X mais energia" com o contador.
+ *   06 final (25,6–30,4): afastamento, nome, especificações e "Já disponível".
+ *   07 assinatura (30,4–32,4): a cena some no preto e o logo JFA aparece.
  */
 export const META = {
   id: 'elitio-pro',
   title: 'E-LÍTIO PRO 12V 280Ah',
-  duration: 30.95,
-  stillTime: 30.85,
+  duration: 32.4,
+  stillTime: 32.3,
   format: '9x16',
   // Obturador de 1/30 s: motion blur forte só quando a imagem anda rápido.
   shutter: 1 / 30,
 };
 
 export const SCENES = [
-  { id: 'cena-01', label: '01 Abertura', start: 0, end: 4.2 },
-  { id: 'cena-02', label: '02 Revelação', start: 4.2, end: 15.35 },
-  { id: 'cena-03', label: '03 Cards', start: 15.35, end: 19.45 },
-  { id: 'cena-04', label: '04 Explodida', start: 19.45, end: 24.25 },
-  { id: 'cena-05', label: '05 Hero', start: 24.25, end: 26.95 },
-  { id: 'cena-06', label: '06 Final', start: 26.95, end: 30.95 },
+  { id: 'cena-01', label: '01 Abertura', start: 0, end: 2.1 },
+  { id: 'cena-02', label: '02 Revelação', start: 2.1, end: 13.6 },
+  { id: 'cena-03', label: '03 Cards', start: 13.6, end: 17.4 },
+  { id: 'cena-04', label: '04 Explodida', start: 17.4, end: 22.6 },
+  { id: 'cena-05', label: '05 Hero', start: 22.6, end: 25.6 },
+  { id: 'cena-06', label: '06 Final', start: 25.6, end: 30.4 },
+  { id: 'cena-07', label: '07 Assinatura', start: 30.4, end: 32.4 },
 ];
 
 // Pontos do modelo (unidades de 10 cm; base no chão, frente para +z, positivo em +x).
@@ -101,94 +97,102 @@ const RUSH = { shutter: 1 / 12 };
 // de 10 cm.
 export const SHOTS = [
   {
-    t: [0, 30.95],
+    t: [0, 32.4],
     flight: true,
     keys: [
-      // 01 · abertura: deriva lenta, baixa, bateria levemente fora do centro.
-      { t: 0, pos: [-7.5, 1.0, 17.5], look: [0.5, 1.15, 0] },
-      { t: 2.2, pos: [-6.3, 1.3, 15.0], look: [0.35, 1.18, 0] },
-      { t: 4.0, pos: [-4.6, 1.55, 12.3], look: [0.15, 1.2, 0] },
-      // 02 · revelação: mergulho e fly-by rente ao logotipo...
-      { t: 4.95, pos: [-1.2, 0.8, 4.8], look: [0.3, 1.2, 0.86] },
-      { t: 5.5, pos: [0.9, 1.05, 3.5], look: [0.1, 1.3, 0.86] },
-      // ...quase parada para ler...
-      { t: 6.0, pos: [1.6, 1.4, 3.6], look: [0.0, 1.32, 0.86], lens: 0.95 },
-      { t: 6.4, pos: [1.9, 1.6, 3.7], look: [0.2, 1.35, 0.86], lens: 0.95 },
-      // ...sobe pela quina da frente até o borne positivo e fica nele, devagar (macro)...
-      // (lente mais fechada e um pouco mais longe: o giro em volta do borne fica lento).
-      { t: 7.2, pos: [3.3, 3.7, 1.6], look: [1.7, 2.35, -0.35], lens: 0.85 },
-      { t: 7.9, pos: [3.55, 3.9, 0.45], look: [1.85, 2.45, -0.55], lens: 0.72 },
-      { t: 8.9, pos: [3.75, 3.75, -0.3], look: [1.85, 2.42, -0.55], lens: 0.72 },
-      // ...mergulha na ponta (orelha e alça)...
-      { t: 9.5, pos: [4.4, 1.7, -1.5], look: [2.3, 1.0, 0] },
-      { t: 9.95, pos: [4.1, 1.2, -2.3], look: [2.3, 1.0, 0] },
-      // ...fly-by pela traseira (ficha técnica), olhando para trás enquanto avança...
-      { t: 10.6, pos: [2.4, 1.25, -3.4], look: [1.7, 1.0, -0.86] },
-      // ...contorna a outra ponta subindo aos poucos e chega por cima ao painel (display
-      // aceso), desacelerando até pairar, com o foco nele...
-      { t: 11.15, pos: [0.4, 1.5, -3.9], look: [0.6, 1.05, -0.86] },
-      { t: 11.8, pos: [-3.3, 2.7, -3.0], look: [-1.3, 1.5, -0.5] },
-      { t: 12.45, pos: [-3.4, 4.6, -0.2], look: [-0.5, 2.3, -0.35], lens: 0.65 },
-      { t: 12.85, pos: [-2.45, 5.15, 0.9], look: [-0.15, 2.42, -0.36], lens: 0.57 },
-      { t: 13.1, pos: [-2.1, 5.26, 1.29], look: [-0.08, 2.44, -0.36], lens: 0.55 },
-      { t: 13.65, pos: [-1.97, 5.27, 1.42], look: [-0.08, 2.44, -0.36], lens: 0.55 },
-      { t: 14.2, pos: [-1.84, 5.27, 1.55], look: [-0.08, 2.44, -0.36], lens: 0.55 },
-      { t: 14.5, pos: [-1.6, 5.22, 1.88], look: [-0.06, 2.3, -0.3], lens: 0.6 },
-      // ...e fecha a volta recuando numa espiral que abre e sobe (proporções)...
-      { t: 15.0, pos: [-0.75, 4.75, 5.3], look: [0, 1.7, 0] },
-      { t: 15.6, pos: [1.2, 4.8, 10.4], look: [0, 1.35, 0] },
+      // 01 · abertura curta: sai do preto já em movimento e mergulha logo.
+      { t: 0, pos: [-6.8, 1.2, 15.8], look: [0.4, 1.18, 0] },
+      { t: 1.4, pos: [-5.0, 1.45, 12.6], look: [0.2, 1.2, 0] },
+      // 02 · revelação: takes longos e lentos ligados por deslocamentos rápidos.
+      // Logotipo: o mergulho freia rente à frente e desliza devagar lendo o adesivo frontal.
+      { t: 2.1, pos: [-1.2, 0.8, 4.8], look: [0.3, 1.2, 0.86] },
+      { t: 2.5, pos: [0.6, 1.0, 3.6], look: [0.1, 1.3, 0.86] },
+      { t: 3.25, pos: [1.25, 1.3, 3.65], look: [0.0, 1.32, 0.86], lens: 0.95 },
+      { t: 4.05, pos: [1.7, 1.5, 3.7], look: [0.15, 1.34, 0.86], lens: 0.95 },
+      // ...sobe rápido para o adesivo de cima e desliza sobre ele, de cima...
+      { t: 4.6, pos: [2.7, 4.3, 2.6], look: [0.1, 2.3, 0.35], lens: 0.85 },
+      { t: 4.95, pos: [2.75, 4.85, 2.3], look: [-0.08, 2.4, 0.39], lens: 0.78 },
+      { t: 5.75, pos: [2.95, 4.95, 1.85], look: [-0.1, 2.4, 0.39], lens: 0.78 },
+      { t: 6.55, pos: [3.15, 4.95, 1.4], look: [-0.14, 2.4, 0.39], lens: 0.78 },
+      // ...desce rápido pela ponta até a traseira e desliza lendo o adesivo traseiro...
+      { t: 7.05, pos: [4.6, 2.0, -1.5], look: [2.0, 1.1, -0.6] },
+      { t: 7.45, pos: [3.1, 1.25, -3.5], look: [1.75, 1.0, -0.86], lens: 0.88 },
+      { t: 7.7, pos: [2.85, 1.2, -3.7], look: [1.72, 1.0, -0.86], lens: 0.85 },
+      { t: 8.5, pos: [2.3, 1.15, -3.9], look: [1.7, 1.0, -0.86], lens: 0.85 },
+      { t: 9.3, pos: [1.65, 1.15, -4.0], look: [1.66, 1.0, -0.86], lens: 0.85 },
+      // ...corre pela traseira, contorna a outra ponta subindo e chega por cima ao display...
+      { t: 9.8, pos: [-2.2, 2.6, -3.4], look: [-0.8, 1.6, -0.5] },
+      { t: 10.25, pos: [-3.3, 4.6, -0.3], look: [-0.4, 2.3, -0.35], lens: 0.65 },
+      { t: 10.55, pos: [-2.45, 5.15, 0.9], look: [-0.15, 2.42, -0.36], lens: 0.57 },
+      { t: 10.8, pos: [-2.1, 5.26, 1.29], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 11.6, pos: [-1.97, 5.27, 1.42], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 12.4, pos: [-1.84, 5.27, 1.55], look: [-0.08, 2.44, -0.36], lens: 0.55 },
+      { t: 12.7, pos: [-1.6, 5.22, 1.88], look: [-0.06, 2.3, -0.3], lens: 0.6 },
+      // ...e fecha a volta recuando rápido numa espiral que abre e sobe (proporções)...
+      { t: 13.1, pos: [-0.75, 4.75, 5.3], look: [0, 1.7, 0] },
+      { t: 13.6, pos: [1.2, 4.8, 10.4], look: [0, 1.35, 0] },
       // 03 · cards: a espiral perde velocidade no 3/4 alto, deriva lenta.
-      { t: 18.25, pos: [6.33, 5.5, 17.38], look: [0, 1.35, 0] },
+      { t: 16.2, pos: [6.33, 5.5, 17.38], look: [0, 1.35, 0] },
       // 04 · explodida: 3/4 lento, de fora, fechando devagar em volta; o olhar sobe com a
-      // estrutura aberta, fica na leitura e desce quando ela se fecha.
-      { t: 19.45, pos: [9.2, 5.9, 17.3], look: [0, 2.4, 0] },
-      { t: 21.25, pos: [9.79, 5.65, 14.5], look: [0, 3.2, 0] },
-      { t: 22.95, pos: [9.94, 5.4, 12.28], look: [0, 3.1, 0] },
-      { t: 24.25, pos: [9.9, 4.3, 11.0], look: [0, 1.6, 0] },
+      // estrutura aberta, fica na leitura (nomes das peças) e desce quando ela se fecha.
+      { t: 17.4, pos: [9.2, 5.9, 17.3], look: [0, 2.4, 0] },
+      { t: 19.4, pos: [9.79, 5.65, 14.5], look: [0, 3.3, 0] },
+      { t: 21.3, pos: [9.94, 5.4, 12.28], look: [0, 3.2, 0] },
+      { t: 22.6, pos: [9.9, 4.3, 11.0], look: [0, 1.6, 0] },
       // 05 · hero e 06 · final num movimento só, sem parar e sem voltar: a câmera desce e se
       // aproxima girando devagar em volta da bateria (espaço acima para a frase) e, sem
-      // frear, abre em espiral subindo para o afastamento final (o ângulo só cresce).
-      { t: 25.55, pos: [9.0, 1.75, 8.54], look: [0.15, 1.3, 0], shift: [0, -0.11] },
-      { t: 26.85, pos: [8.55, 1.3, 6.92], look: [0.1, 1.28, 0], shift: [0, -0.1] },
-      { t: 28.2, pos: [10.22, 2.2, 7.02], look: [0.05, 1.25, 0], shift: [0, -0.05] },
-      { t: 29.4, pos: [13.57, 3.9, 8.48], look: [0, 1.2, 0] },
-      { t: 30.95, pos: [18.19, 6.2, 10.5], look: [0, 1.2, 0], rest: true },
+      // frear, abre em espiral subindo para o afastamento final (o ângulo só cresce), até a
+      // cena sumir no preto.
+      { t: 23.9, pos: [9.0, 1.75, 8.54], look: [0.15, 1.3, 0], shift: [0, -0.11] },
+      { t: 25.2, pos: [8.55, 1.3, 6.92], look: [0.1, 1.28, 0], shift: [0, -0.1] },
+      { t: 26.55, pos: [10.22, 2.2, 7.02], look: [0.05, 1.25, 0], shift: [0, -0.05] },
+      { t: 27.75, pos: [13.57, 3.9, 8.48], look: [0, 1.2, 0] },
+      { t: 30.8, pos: [19.4, 6.7, 11.1], look: [0, 1.2, 0], rest: true },
     ],
-    // Luz fixa do set (STUDIO), profundidade de campo nos closes e obturador por trecho.
+    // Luz fixa do set (STUDIO), profundidade de campo nos takes de perto e obturador por
+    // trecho; a cena sai do preto no começo e volta ao preto no fim (assinatura JFA).
     light: {
       base: 'feature',
       keys: [
-        // A luz é uma só e fica igual o filme todo; só a abertura sai do preto.
         [0, { ...STUDIO, exposure: 0 }],
-        [1.2, { exposure: STUDIO.exposure }],
-        [5.3, WIDE],
-        [6.0, MACRO],
-        [6.6, WIDE],
-        [7.85, MACRO],
-        [8.95, MACRO],
-        [9.45, WIDE],
-        [12.3, WIDE],
-        [13.05, MACRO],
-        [14.3, MACRO],
-        [14.85, WIDE],
-        // Rastro de velocidade entre os takes: mergulho até o logotipo, logotipo → borne,
-        // borne → ponta → traseira → outra ponta → display, e o recuo depois do display.
-        [3.7, TAKE],
-        [4.25, RUSH],
-        [5.4, RUSH],
-        [5.85, TAKE],
-        [6.35, TAKE],
-        [6.7, RUSH],
-        [7.3, RUSH],
-        [7.7, TAKE],
-        [8.6, TAKE],
-        [8.95, RUSH],
-        [12.55, RUSH],
-        [13.0, TAKE],
-        [14.2, TAKE],
-        [14.5, RUSH],
-        [15.4, RUSH],
-        [16.0, TAKE],
+        [0.6, { exposure: STUDIO.exposure }],
+        [29.9, { exposure: STUDIO.exposure }],
+        [30.8, { exposure: 0 }],
+        [2.4, WIDE],
+        [2.8, MACRO],
+        [3.95, MACRO],
+        [4.3, WIDE],
+        [4.95, MACRO],
+        [6.45, MACRO],
+        [6.8, WIDE],
+        [7.6, MACRO],
+        [9.2, MACRO],
+        [9.55, WIDE],
+        [10.55, WIDE],
+        [10.85, MACRO],
+        [12.5, MACRO],
+        [12.95, WIDE],
+        // Rastro de velocidade só nos deslocamentos entre os takes.
+        [1.55, TAKE],
+        [1.75, RUSH],
+        [2.15, RUSH],
+        [2.4, TAKE],
+        [4.15, TAKE],
+        [4.3, RUSH],
+        [4.7, RUSH],
+        [4.9, TAKE],
+        [6.6, TAKE],
+        [6.75, RUSH],
+        [7.4, RUSH],
+        [7.6, TAKE],
+        [9.35, TAKE],
+        [9.5, RUSH],
+        [10.4, RUSH],
+        [10.65, TAKE],
+        [12.65, TAKE],
+        [12.8, RUSH],
+        [13.6, RUSH],
+        [14.1, TAKE],
       ],
     },
   },
@@ -226,12 +230,12 @@ const card = (id, t, y, lines, extra = {}) => ({
   ...extra,
 });
 export const GLASS = [
-  card('tensao', [16.6, 18.95], 2.7, [label('TENSÃO NOMINAL'), value('12', 'V')]),
-  card('capacidade', [16.85, 18.9], 3.98, [label('CAPACIDADE'), value('280', 'Ah')]),
-  card('energia', [17.1, 18.85], 5.26, [label('ENERGIA'), value('3,58', ' kWh', 0.42)]),
+  card('tensao', [14.6, 17.05], 2.7, [label('TENSÃO NOMINAL'), value('12', 'V')]),
+  card('capacidade', [14.85, 17.0], 3.98, [label('CAPACIDADE'), value('280', 'Ah')]),
+  card('energia', [15.1, 16.95], 5.26, [label('ENERGIA'), value('3,58', ' kWh', 0.42)]),
   card(
     'quimica',
-    [17.35, 18.8],
+    [15.35, 16.9],
     6.21,
     [
       {
@@ -253,43 +257,77 @@ export const GLASS = [
 // subida curta e desfoque que se resolve; saindo com fusão. Nada de texto em 3D.
 const SUB = '#b8bcc5';
 export const TITLES = [
-  // 05 · hero: a mensagem acima da bateria enquanto a câmera se aproxima.
+  // 05 · hero: a mensagem acima da bateria enquanto a câmera se aproxima; o número rola como
+  // um contador, 1 → 2 → 3, parando um instante em cada um.
   {
     id: 'hero-1',
-    t: [25.1, 27.15],
+    t: [23.45, 25.5],
     y: 22.5,
-    parts: [{ text: '3X mais energia', weight: 600, size: 0.046, tracking: -0.01 }],
+    rollAt: [23.85, 0.9],
+    parts: [
+      { text: '3', roll: ['1', '2', '3'], weight: 600, size: 0.046 },
+      { text: 'X mais energia', weight: 600, size: 0.046 },
+    ],
   },
   {
     id: 'hero-2',
-    t: [25.45, 27.2],
+    t: [23.8, 25.55],
     y: 27.2,
     parts: [{ text: 'para o seu projeto', weight: 300, size: 0.024, color: SUB, tracking: 0.01 }],
   },
-  // 06 · final: nome, especificações, chamada e a assinatura JFA (arquivo do cliente).
-  { id: 'final-nome', t: [28.3, 99], y: 21.5, parts: [{ text: 'E-LÍTIO PRO', weight: 600, size: 0.05 }] },
+  // 06 · final: nome, especificações e chamada; somem junto com a cena.
+  {
+    id: 'final-nome',
+    t: [26.65, 29.9],
+    outDur: 0.8,
+    y: 21.5,
+    parts: [{ text: 'E-LÍTIO PRO', weight: 600, size: 0.05 }],
+  },
   {
     id: 'final-specs',
-    t: [28.7, 99],
+    t: [27.05, 29.9],
+    outDur: 0.8,
     y: 26.4,
     parts: [{ text: '12V  ·  280Ah  ·  3,58 kWh', weight: 300, size: 0.021, color: SUB, tracking: 0.02 }],
   },
   {
     id: 'final-cta',
-    t: [29.5, 99],
+    t: [27.85, 29.9],
+    outDur: 0.8,
     y: 72.5,
     pill: true,
     parts: [{ text: 'Já disponível', weight: 500, size: 0.02, tracking: 0.02 }],
   },
-  { id: 'final-logo', t: [30.0, 99], y: 86.5, image: '/images/jfa_logo_white.webp', size: 0.024, alpha: 0.9 },
+  // 07 · assinatura: com a cena já no preto, o logo JFA (arquivo do cliente) aparece no centro.
+  {
+    id: 'assinatura',
+    t: [30.45, 99],
+    inDur: 1.3,
+    y: 50,
+    image: '/images/jfa_logo_white.webp',
+    size: 0.05,
+    rise: 0.004,
+  },
 ];
+
+// 04 · explodida: o nome de cada peça ligado por uma linha fina ao ponto da peça (que sobe
+// com ela), alternando os lados; entram de cima para baixo depois que a estrutura abre e
+// somem antes de ela fechar.
+const callout = (id, k, layer, anchor, side, text) => ({
+  id,
+  t: [OPEN + 1.7 + k * 0.14, CLOSE - 0.4],
+  layer,
+  anchor,
+  side,
+  text,
+});
 
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
 // vertical, alinhados. Abre de cima para baixo; fecha de baixo para cima depois que a
 // câmera fica em 3/4 de fora, e a tampa assenta por último (clique em ~24,15).
-const OPEN = 19.45;
-const CLOSE = 22.95;
+const OPEN = 17.4;
+const CLOSE = 21.7;
 const layer = (lift, k) => [
   [OPEN + (4 - k) * 0.12, 0],
   [OPEN + 1.3 + (4 - k) * 0.12, lift, 'soft'],
@@ -311,10 +349,19 @@ export const EXPLODE = {
   bolts: LID,
 };
 
+export const CALLOUTS = [
+  callout('tampa', 0, 'lid', [2.38, 2.2, 0.3], 'right', 'Tampa'),
+  callout('bms', 1, 'bms', [-0.85, 2.03, 0.2], 'left', 'BMS'),
+  callout('barramentos', 2, 'bus', [1.2, 1.96, 0.52], 'right', 'Barramentos'),
+  callout('suporte', 3, 'holder', [-1.52, 1.89, 0.4], 'left', 'Suporte'),
+  callout('celulas', 4, 'cells', [1.53, 1.2, 0.6], 'right', 'Células LiFePO₄'),
+  callout('caixa', 5, null, [-2.23, 1.0, 0.7], 'left', 'Caixa'),
+];
+
 // Câmera virtual (move os planos de texto, que ainda não existem): parada.
 export const CAMERA_RIG = [
   { t: 0, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0] },
-  { t: 30.95, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0], rest: true },
+  { t: 32.4, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0], rest: true },
 ];
 
 export const WORDS = [];
@@ -326,14 +373,17 @@ export const CUTS = [];
 export const FX = [];
 
 export const CUES = [
-  { t: 0, id: 'abertura', label: 'Sai do preto / ambiente grave', until: 4.2 },
-  { t: 4.2, id: 'revelacao', label: 'Voo em volta (whooshes)', until: 15.35 },
-  { t: 7.9, id: 'borne', label: 'Borne positivo (macro)', until: 8.9 },
-  { t: 13.1, id: 'display', label: 'Painel (display aceso)', until: 14.2 },
-  { t: 14.5, id: 'recuo', label: 'Recuo (proporções)' },
-  { t: 19.45, id: 'explodida', label: 'Peças se separam', until: 21.25 },
-  { t: 24.15, id: 'clique', label: 'Clique (bateria fecha)' },
-  { t: 26.95, id: 'final', label: 'Afastamento final', until: 30.95 },
+  { t: 0, id: 'abertura', label: 'Sai do preto / ambiente grave', until: 2.1 },
+  { t: 2.1, id: 'revelacao', label: 'Voo em volta (whooshes nos deslocamentos)', until: 13.6 },
+  { t: 2.5, id: 'logotipo', label: 'Adesivo frontal', until: 4.05 },
+  { t: 4.95, id: 'superior', label: 'Adesivo de cima', until: 6.55 },
+  { t: 7.7, id: 'traseiro', label: 'Adesivo traseiro', until: 9.3 },
+  { t: 10.8, id: 'display', label: 'Painel (display aceso)', until: 12.4 },
+  { t: 12.8, id: 'recuo', label: 'Recuo (proporções)' },
+  { t: 17.4, id: 'explodida', label: 'Peças se separam', until: 18.9 },
+  { t: 22.9, id: 'clique', label: 'Clique (bateria fecha)' },
+  { t: 25.6, id: 'final', label: 'Afastamento final', until: 30.4 },
+  { t: 30.4, id: 'assinatura', label: 'Fade out + logo JFA', until: 32.4 },
 ];
 
 export default {
@@ -352,4 +402,5 @@ export default {
   explode: EXPLODE,
   glass: GLASS,
   titles: TITLES,
+  callouts: CALLOUTS,
 };

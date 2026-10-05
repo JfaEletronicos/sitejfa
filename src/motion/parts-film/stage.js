@@ -932,6 +932,72 @@ export async function createStage({
     return seen.size > 0;
   }
 
+  /**
+   * Nomes das peças (`s.callouts`: `[{ id, spec, pos, line, label, opacity }]`): um ponto na
+   * peça (projetada pela câmera), uma linha fina horizontal que se desenha até a coluna do
+   * lado (`side`) e o nome depois dela. Na cena de sobreposição, por cima da imagem.
+   */
+  const callouts = new Map();
+  const calloutPos = new THREE.Vector3();
+  const CALLOUT = { colL: 0.2, colR: 0.8, minLen: 0.03, gap: 0.012, dot: 0.0032, line: 0.0012 };
+  function placeCallouts(list) {
+    const aspect = size.width / size.height;
+    const seen = new Set();
+    (list || []).forEach((c) => {
+      let co = callouts.get(c.id);
+      if (!co) {
+        const white = () =>
+          new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            depthTest: false,
+            depthWrite: false,
+          });
+        const dot = new THREE.Mesh(new THREE.CircleGeometry(1, 24), white());
+        const line = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), white());
+        const label = createTitle({
+          parts: [{ text: c.spec.text, weight: 400, size: 0.0125, color: '#e9ebef', tracking: 0.02 }],
+        });
+        co = { dot, line, label };
+        overlayScene.add(dot, line, label.mesh);
+        callouts.set(c.id, co);
+      }
+      seen.add(c.id);
+      // Ponto da peça na tela (coordenadas da sobreposição: altura do quadro = 1).
+      calloutPos.fromArray(c.pos).project(camera);
+      const X = (calloutPos.x * aspect) / 2;
+      const Y = calloutPos.y / 2;
+      const right = c.spec.side !== 'left';
+      const col = ((right ? CALLOUT.colR : CALLOUT.colL) - 0.5) * aspect;
+      const minLen = CALLOUT.minLen * aspect;
+      const [w, h] = co.label.size;
+      let end = right ? Math.max(col, X + minLen) : Math.min(col, X - minLen);
+      // O nome nunca sai do quadro: a linha encurta se for preciso.
+      const edge = aspect / 2 - 0.03 * aspect - w - CALLOUT.gap * aspect;
+      end = right
+        ? Math.min(end, Math.max(edge, X + 0.01 * aspect))
+        : Math.max(end, Math.min(-edge, X - 0.01 * aspect));
+      const len = (end - X) * c.line;
+      co.dot.position.set(X, Y, 0);
+      co.dot.scale.setScalar(CALLOUT.dot);
+      co.dot.material.opacity = c.opacity;
+      co.line.position.set(X + len / 2, Y, 0);
+      co.line.scale.set(Math.max(Math.abs(len), 1e-5), CALLOUT.line, 1);
+      co.line.material.opacity = c.opacity * 0.75;
+      const lx = right ? end + CALLOUT.gap * aspect + w / 2 : end - CALLOUT.gap * aspect - w / 2;
+      // A altura do x do texto fica na linha (o plano do título tem folga em cima e embaixo).
+      co.label.mesh.position.set(lx, Y + h * 0.06, 0);
+      co.label.set({ opacity: c.label, blur: (1 - c.label) * 1.5 });
+      co.dot.visible = co.line.visible = c.opacity > 0.002;
+    });
+    callouts.forEach((co, id) => {
+      if (seen.has(id)) return;
+      co.dot.visible = co.line.visible = false;
+      co.label.set({ opacity: 0, blur: 0 });
+    });
+    return seen.size > 0;
+  }
+
   /** Posiciona produto, camadas, câmera e luzes para um estado; devolve a distância da câmera. */
   function place(s) {
     const aspect = size.width / size.height;
@@ -1142,8 +1208,11 @@ export async function createStage({
 
     renderer.setRenderTarget(null);
     renderer.render(postScene, postCamera);
-    // Títulos por cima da imagem pronta (sem desfoque de câmera, foco ou tom do palco).
-    if (placeTitles(s.titles)) {
+    // Títulos e nomes das peças por cima da imagem pronta (sem desfoque de câmera, foco ou
+    // tom do palco).
+    const hasTitles = placeTitles(s.titles);
+    const hasCallouts = placeCallouts(s.callouts);
+    if (hasTitles || hasCallouts) {
       const autoClear = renderer.autoClear;
       renderer.autoClear = false;
       renderer.render(overlayScene, overlayCamera);
