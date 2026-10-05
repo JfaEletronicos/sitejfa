@@ -16,6 +16,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { surfaceDetail } from './surface-detail';
 import { createGlassCard } from './glass-cards';
+import { createTypeLine } from './type3d';
 
 const DEG = Math.PI / 180;
 // 1 mm da placa = 0,01 unidade de cena (placa com 3,1 de comprimento).
@@ -850,6 +851,30 @@ export async function createStage({
     });
   }
 
+  /**
+   * Tipografia 3D presa ao mundo (`s.type`: `[{ id, spec, pos, face, reveal, out, opacity }]`),
+   * criada na primeira vez que aparece.
+   */
+  const typeLines = new Map();
+  function placeType(list) {
+    const seen = new Set();
+    (list || []).forEach((l) => {
+      let line = typeLines.get(l.id);
+      if (!line) {
+        line = createTypeLine(l.spec);
+        typeLines.set(l.id, line);
+        scene.add(line.mesh);
+      }
+      seen.add(l.id);
+      line.mesh.position.fromArray(l.pos);
+      line.mesh.lookAt(l.face[0], l.face[1], l.face[2]);
+      line.set(l);
+    });
+    typeLines.forEach((line, id) => {
+      if (!seen.has(id)) line.set({ reveal: 0, out: 0, opacity: 0 });
+    });
+  }
+
   /** Posiciona produto, camadas, câmera e luzes para um estado; devolve a distância da câmera. */
   function place(s) {
     const aspect = size.width / size.height;
@@ -865,6 +890,7 @@ export async function createStage({
     pivot.position.set(bp[0], bp[1] + s.floatY, bp[2]);
 
     placeGlass(s.glass);
+    placeType(s.type);
 
     // Câmera em órbita do alvo.
     const az = s.cam.az * DEG;

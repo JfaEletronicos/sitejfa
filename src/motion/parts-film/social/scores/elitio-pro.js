@@ -245,6 +245,22 @@ export const GLASS = [
   ),
 ];
 
+// 05 · hero: a frase em 3D logo atrás da bateria, centrada no quadro (no eixo da vista da
+// aproximação), em três linhas de fontes diferentes: 3X (Stretch Pro), MAIS ENERGIA (Poppins
+// Black) e "para o seu projeto" (serifada itálica), com a bateria cobrindo o pé da última
+// linha (efeito 3D). Assinatura da cena: cada linha sobe por máscara de dentro dela mesma, uma
+// depois da outra; saem descendo quando começa o afastamento final.
+const HERO_FACE = [8.3, 1.2, 8.6];
+const HERO = [-1.6, -1.7];
+const line = (id, t, y, parts) => ({ id, t, pos: [HERO[0], y, HERO[1]], face: HERO_FACE, parts });
+export const TYPE3D = [
+  line('hero-3x', [24.85, 26.95], 5.2, [{ text: '3X', font: 'wide', size: 1.0 }]),
+  line('hero-energia', [25.05, 27.0], 4.2, [{ text: 'MAIS ENERGIA', weight: 900, size: 0.42 }]),
+  line('hero-projeto', [25.3, 27.05], 3.35, [
+    { text: 'para o seu projeto', font: 'serif', italic: true, size: 0.5, alpha: 0.9 },
+  ]),
+];
+
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
 // vertical, alinhados. Abre de cima para baixo; fecha de baixo para cima depois que a
@@ -312,4 +328,5 @@ export default {
   cues: CUES,
   explode: EXPLODE,
   glass: GLASS,
+  type: TYPE3D,
 };

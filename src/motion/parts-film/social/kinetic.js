@@ -461,6 +461,7 @@ export function createKineticVariant(score) {
     cues: CUES,
     explode: EXPLODE = {},
     glass: GLASS = [],
+    type: TYPE3D = [],
   } = score;
   const rig = spline(cameraRig, ['yaw', 'pitch', 'dolly', 'truck']);
   // Duração em que o roteiro foi desenhado; `duration` do config estica ou comprime.
@@ -828,6 +829,18 @@ export function createKineticVariant(score) {
         }).filter((g) => g.opacity > 0.002);
       }
 
+      /**
+       * Tipografia 3D (roteiros com `type`): cada linha entra por máscara em `t[0]` (sobe de
+       * dentro dela mesma, em `inDur`) e sai por máscara em `t[1]` (desce, em `outDur`).
+       */
+      function typeAt(tb) {
+        return TYPE3D.map((l) => {
+          const reveal = EASE.enter(clamp01((tb - l.t[0]) / (l.inDur ?? 0.8)));
+          const out = EASE.soft(clamp01((tb - l.t[1]) / (l.outDur ?? 0.55)));
+          return { id: l.id, spec: l, pos: l.pos, face: l.face, reveal, out, opacity: l.opacity ?? 1 };
+        }).filter((l) => l.reveal > 0.001 && l.out < 0.999);
+      }
+
       /** Vista explodida: deslocamento vertical de cada camada do modelo no instante `tb`. */
       function explodeAt(tb) {
         const out = {};
@@ -964,6 +977,7 @@ export function createKineticVariant(score) {
           contact: light.contact,
           explode: explodeAt(tb),
           glass: glassAt(tb),
+          type: typeAt(tb),
           fill: light.fill,
           env: light.env,
           sweep,
