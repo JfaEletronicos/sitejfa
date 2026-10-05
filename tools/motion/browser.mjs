@@ -10,10 +10,12 @@ import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = new URL('../../', import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const CACHE = join(ROOT, 'node_modules/.cache/motion-fonts');
+const FONTS = join(ROOT, 'tools/motion/fonts');
 
 /** Playwright do projeto, global ou do ambiente de nuvem (/opt/node-tools). */
 async function loadPlaywright() {
@@ -63,14 +65,19 @@ export async function openFilm({
   );
   const page = await browser.newPage({ viewport: { width, height } });
   const ua = await page.evaluate(() => navigator.userAgent);
+  // Fontes do Google servidas da pasta tools/motion/fonts (mesmas fontes em qualquer máquina,
+  // sem depender de internet nem de curl); o que não estiver lá vem do cache ou da rede.
   await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => {
     const url = route.request().url();
+    const css = url.includes('googleapis');
+    const local = join(FONTS, css ? 'fonts.css' : basename(new URL(url).pathname));
+    if (existsSync(local)) {
+      route.fulfill({ body: readFileSync(local), contentType: css ? 'text/css' : 'font/woff2' });
+      return;
+    }
     try {
-      const body = cachedFetch(url, ua);
-      const css = url.includes('googleapis');
-      route.fulfill({ body, contentType: css ? 'text/css' : 'font/woff2' });
+      route.fulfill({ body: cachedFetch(url, ua), contentType: css ? 'text/css' : 'font/woff2' });
     } catch {
-      // Sem curl (ou ele falhou): o próprio Chromium baixa a fonte. Abortar trocava as fontes.
       route.continue();
     }
   });
