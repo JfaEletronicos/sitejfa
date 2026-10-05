@@ -12,6 +12,7 @@
  *     --format 16x9      proporção da página (padrão: a da variante)
  *     --out arquivo.mp4  saída (padrão .motion-render/<variante>-<tamanho>.mp4)
  *     --keep             mantém os PNG dos quadros
+ *     --gpu              usa a placa de vídeo da máquina (muito mais rápido)
  *     --resume           continua um render interrompido (pula os quadros já gravados)
  *
  * Numa máquina com placa de vídeo é rápido; no Chromium sem GPU (swiftshader) leva horas.
@@ -33,7 +34,14 @@ if (!args.resume) rmSync(dir, { recursive: true, force: true });
 mkdirSync(dir, { recursive: true });
 
 const query = ['quality=max', args.format ? `format=${args.format}` : ''].filter(Boolean).join('&');
-const { browser, page } = await openFilm({ variant, width, height, base: args.base, query });
+const { browser, page } = await openFilm({
+  variant,
+  width,
+  height,
+  base: args.base,
+  query,
+  gpu: Boolean(args.gpu),
+});
 const duration = await page.evaluate(() => window.partsFilm.duration);
 const [t0, t1] = args.range ? String(args.range).split('-').map(Number) : [0, duration];
 const frames = Math.round((t1 - t0) * fps);

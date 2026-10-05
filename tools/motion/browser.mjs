@@ -51,11 +51,16 @@ export async function openFilm({
   height = 768,
   base = 'http://localhost:5173',
   query: extra = '',
+  gpu = false,
 }) {
   const { chromium } = await loadPlaywright();
-  const browser = await chromium.launch({
-    args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
-  });
+  // Sem placa de vídeo (nuvem): SwiftShader na CPU. Com `gpu`: o Chromium completo em modo sem
+  // janela usando a placa da máquina (ANGLE padrão do sistema: D3D11, Metal ou OpenGL).
+  const browser = await chromium.launch(
+    gpu
+      ? { channel: 'chromium', args: ['--enable-gpu', '--ignore-gpu-blocklist', '--use-angle=default'] }
+      : { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] },
+  );
   const page = await browser.newPage({ viewport: { width, height } });
   const ua = await page.evaluate(() => navigator.userAgent);
   await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => {
@@ -83,6 +88,17 @@ export async function openFilm({
     await page.evaluate((x) => window.partsFilm.seek(x), t);
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   };
+  if (gpu) {
+    const renderer = await page.evaluate(() => {
+      const gl = document.createElement('canvas').getContext('webgl2');
+      const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+      return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'desconhecida';
+    });
+    console.log(`placa: ${renderer}`);
+    if (/swiftshader|llvmpipe|software/i.test(renderer)) {
+      console.warn('Aviso: o Chromium não pegou a placa de vídeo; o render vai rodar na CPU.');
+    }
+  }
   return { browser, page, seek };
 }
 
