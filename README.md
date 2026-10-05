@@ -89,7 +89,7 @@ Como o roteamento é por hash (`#/...`), não é preciso configurar rewrites no 
 
 Modo claro/escuro: botão de sol/lua no header. O escuro é o padrão e a escolha fica salva no navegador do visitante. As cores do modo claro são geradas no build por `tools/postcss-light-theme.js` a partir do CSS escuro; ajustes manuais ficam em `src/styles/theme-light.css`, e áreas com `data-theme-keep` mantêm as cores originais.
 Acessibilidade: todas as animações respeitam `prefers-reduced-motion`, inclusive se a preferência mudar com a página aberta.
-Analytics: a tag do Google (GA4, `G-MHE0NRXPLR`) fica no `<head>` do `index.html`, uma vez só, e vale para todas as páginas. Os eventos de conversão passam por `src/lib/analytics.js`, que envia para o `gtag`.
+Analytics: a tag do Google (GA4, `G-MHE0NRXPLR`) fica no `<head>` do `index.html`, uma vez só, e vale para todas as páginas. Os eventos de conversão passam por `src/lib/analytics.js`, que envia para o `gtag`. As visualizações de página são enviadas pelo roteador, uma por tela, com endereço limpo (`#/setores/automotivo` vira `/setores/automotivo`) e o título da aba; por isso a tag usa `send_page_view: false`. Nos eventos, onde o clique aconteceu vai em `placement` (nunca `source`/`campaign_*`, que o GA4 trata como origem da visita).
 
 ## Tarefas comuns
 

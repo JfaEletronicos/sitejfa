@@ -8,7 +8,7 @@ function initQuickAccess(ctx) {
   const { root, on } = ctx;
   const quickAccessWhatsapp = root.getElementById('quickAccessWhatsapp');
   if (quickAccessWhatsapp) {
-    on(quickAccessWhatsapp, 'click', () => trackEvent('whatsapp_click', { source: 'quick_access' }));
+    on(quickAccessWhatsapp, 'click', () => trackEvent('whatsapp_click', { placement: 'quick_access' }));
   }
 }
 export { initQuickAccess };

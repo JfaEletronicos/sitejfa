@@ -37,7 +37,7 @@ function initPartsPage(ctx) {
   const seller = root.getElementById('partsSellerCta');
   if (seller) {
     seller.href = whatsappUrl('Olá! Quero falar com um vendedor da JFA Parts.');
-    on(seller, 'click', () => trackEvent('whatsapp_click', { source: 'parts_final' }));
+    on(seller, 'click', () => trackEvent('whatsapp_click', { placement: 'parts_final' }));
   }
 
   // Buscador
@@ -150,7 +150,7 @@ function initPartsPage(ctx) {
       const show = e.target.closest('[data-parts-show]');
       if (show) highlightCard(show.dataset.partsShow);
       const buy = e.target.closest('[data-parts-buy]');
-      if (buy) trackEvent('whatsapp_click', { source: 'parts_finder', model: buy.dataset.partsBuy });
+      if (buy) trackEvent('whatsapp_click', { placement: 'parts_finder', model: buy.dataset.partsBuy });
     });
   }
 

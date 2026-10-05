@@ -4,6 +4,11 @@
  *
  * Envia para o GA4 (`gtag`) ou para o `dataLayer` do GTM quando existirem;
  * caso contrário é um no-op seguro. Telemetria nunca pode quebrar a UI.
+ *
+ * Não use `source`, `medium`, `campaign`, `campaign_id`, `campaign_name`, `term`
+ * ou `content` como parâmetro: o GA4 lê esses nomes como origem da visita e
+ * mistura os cliques no relatório de aquisição. Onde o clique aconteceu vai em
+ * `placement`.
  */
 export const trackEvent = (name, params) => {
   try {
@@ -14,6 +19,24 @@ export const trackEvent = (name, params) => {
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({ event: name, ...(params || {}) });
     }
+  } catch {
+    /* telemetria nunca pode quebrar a UI */
+  }
+};
+
+/**
+ * Visualização de página do site (o GA4 não vê a troca de tela por # sozinho).
+ * `path` é o endereço limpo da tela (ex.: "/setores/automotivo"), que vira a
+ * "página" nos relatórios; o título é o da aba.
+ */
+export const trackPageView = (path, title) => {
+  try {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', 'page_view', {
+      page_location: window.location.origin + path,
+      page_path: path,
+      page_title: title,
+    });
   } catch {
     /* telemetria nunca pode quebrar a UI */
   }

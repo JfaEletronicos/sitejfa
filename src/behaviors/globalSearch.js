@@ -128,7 +128,7 @@ function initGlobalSearch(ctx) {
                 product_name: p.name,
                 category: p.category,
                 segment: lineLabelFor(p),
-                source: 'global_search',
+                placement: 'global_search',
               });
               closePanel();
             },

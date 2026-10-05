@@ -174,7 +174,7 @@ function initSectorPages(ctx) {
     on(a, 'click', () =>
       trackEvent(detail ? 'sector_product_click' : 'manual_download', {
         product_id: p.id,
-        source: 'setor_' + slug,
+        placement: 'setor_' + slug,
       }),
     );
     return a;
@@ -465,7 +465,7 @@ function initSectorPages(ctx) {
       row.querySelector('.bateria-doc-row-text').textContent = r.text;
       row.querySelector('.bateria-doc-row-arrow').textContent = r.cta + ' →';
       if (r.external)
-        on(row, 'click', () => trackEvent('manual_download', { product_id: id, source: 'produto_docs' }));
+        on(row, 'click', () => trackEvent('manual_download', { product_id: id, placement: 'produto_docs' }));
       prod.docs.appendChild(row);
     });
     renderPhotoDownloads(prod.photos, detail.images, pname, { product_id: id });
@@ -476,7 +476,7 @@ function initSectorPages(ctx) {
       WHATSAPP_PHONE +
       '&text=' +
       encodeURIComponent(tf('product.whatsappText', { name: pname }));
-    prod.support.onclick = () => trackEvent('whatsapp_click', { source: 'produto_page', product_id: id });
+    prod.support.onclick = () => trackEvent('whatsapp_click', { placement: 'produto_page', product_id: id });
     // 07 · Outros produtos da mesma linha (ou do setor, se a linha tiver só este).
     const pool = (group && group.ids.length > 1 ? group.ids : cfg.groups.flatMap((g) => g.ids)).filter(
       (x) => x !== id && productsById[x] && productsById[x].status === 'current',
@@ -490,6 +490,7 @@ function initSectorPages(ctx) {
       card.classList.add('is-revealed');
       prod.others.appendChild(card);
     });
+    document.title = pname + ' | JFA Eletrônicos';
     trackEvent('sector_product_view', { sector: slug, product_id: id });
     return 'produto';
   };
@@ -506,16 +507,19 @@ function initSectorPages(ctx) {
   ctx.renderSectorPage = (slug) => {
     // Moov: landing page fixa (components/pages/MoovPage.jsx).
     if (slug === 'moov' && root.getElementById('moovView')) {
+      document.title = 'Moov | JFA Eletrônicos';
       trackEvent('sector_page_view', { sector: slug });
       return 'moov';
     }
     if (SECTOR_CATALOGS[slug]) {
       renderCatalog(slug);
+      document.title = (SECTOR_TITLES[slug] || slug) + ' | JFA Eletrônicos';
       trackEvent('sector_page_view', { sector: slug });
       return 'setorCatalog';
     }
     // Parts: landing page fixa (components/pages/PartsPage.jsx).
     if (slug === 'parts' && root.getElementById('partsView')) {
+      document.title = 'JFA Parts | JFA Eletrônicos';
       trackEvent('sector_page_view', { sector: slug });
       return 'parts';
     }

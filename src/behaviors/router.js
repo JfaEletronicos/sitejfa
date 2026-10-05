@@ -1,4 +1,4 @@
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, trackPageView } from '../lib/analytics';
 import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO, SHOPEE_LOGO } from '../data/links';
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid } from './catalogGrid';
@@ -876,7 +876,7 @@ function initRouter(ctx) {
           ' <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
         on(ml, 'click', () =>
           trackEvent('mercado_livre_click', {
-            source: 'bateria_page',
+            placement: 'bateria_page',
             battery_id: b.id,
             variant: b.variantKey,
           }),
@@ -1394,7 +1394,7 @@ function initRouter(ctx) {
         '&text=' +
         encodeURIComponent('Ol\xE1, quero saber mais sobre a ' + b.name + '!');
       bateriaSupportCta.onclick = () =>
-        trackEvent('whatsapp_click', { source: 'bateria_page', battery_id: b.id });
+        trackEvent('whatsapp_click', { placement: 'bateria_page', battery_id: b.id });
       // 10 · Outras baterias: até 3, nunca a atual.
       bateriaOthersGrid.innerHTML = '';
       BATTERY_CATALOG.filter((x) => x.id !== b.id)
@@ -1444,6 +1444,26 @@ function initRouter(ctx) {
       // Entrada "montando a página" nas páginas de baterias (ver behaviors/assemble.js).
       if (ctx.replayAssemble && name !== 'home') ctx.replayAssemble(name);
       if (name === 'manuais' && ctx.refreshManualsField) ctx.refreshManualsField();
+      reportPage(name);
+    };
+    // Visualização de página no GA4: uma por tela, com endereço limpo (#/setores/x vira
+    // /setores/x) e o título da aba. A Home e as páginas de seção definem o título aqui;
+    // baterias, categorias e produtos já o definem ao montar a página.
+    const BASE_TITLE = 'JFA Eletr\xF4nicos';
+    let lastReported = '';
+    const reportPage = (name) => {
+      if (name === 'home') document.title = BASE_TITLE;
+      else if (SECTION_PAGES[name]) {
+        const link = root.querySelector('#jfaHeader [data-nav-page="' + name + '"]');
+        const label = (link && link.textContent.trim()) || name;
+        document.title = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase() + ' | ' + BASE_TITLE;
+      }
+      const hash = location.hash || '';
+      const path = name === 'home' || !hash.startsWith('#/') ? '/' : '/' + hash.slice(2).replace(/\/+$/, '');
+      const key = path + '|' + document.title;
+      if (key === lastReported) return;
+      lastReported = key;
+      trackPageView(path, document.title);
     };
     const applyRoute = () => {
       const hash = location.hash || '';

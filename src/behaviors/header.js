@@ -71,12 +71,12 @@ function initHeader(ctx) {
         );
       }
       if (which === 'suporte') {
-        trackEvent('whatsapp_click', { source: 'header_support' });
+        trackEvent('whatsapp_click', { placement: 'header_support' });
         return;
       }
       trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'shopee_click', {
         destination: which,
-        source: 'header',
+        placement: 'header',
       });
     });
   });
@@ -84,12 +84,12 @@ function initHeader(ctx) {
     on(a, 'click', () => {
       const which = a.getAttribute('data-header-external');
       if (which === 'suporte') {
-        trackEvent('whatsapp_click', { source: 'header_support' });
+        trackEvent('whatsapp_click', { placement: 'header_support' });
         return;
       }
       trackEvent(which === 'mercado-livre' ? 'mercado_livre_click' : 'shopee_click', {
         destination: which,
-        source: 'header',
+        placement: 'header',
       });
     });
   });
@@ -207,7 +207,7 @@ function initHeader(ctx) {
   }
   const whatsappFloat = root.getElementById('whatsappFloat');
   if (whatsappFloat)
-    on(whatsappFloat, 'click', () => trackEvent('whatsapp_click', { source: 'floating_button' }));
+    on(whatsappFloat, 'click', () => trackEvent('whatsapp_click', { placement: 'floating_button' }));
   // Modo claro/escuro: o escuro é o padrão; a escolha fica salva neste navegador.
   const themeToggle = root.getElementById('themeToggle');
   if (themeToggle) {

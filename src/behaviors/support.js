@@ -136,7 +136,7 @@ function initSupport(ctx) {
     },
     onContact: (entry, kind) =>
       trackEvent(kind === 'whatsapp' ? 'whatsapp_click' : 'support_contact', {
-        source: 'support_page',
+        placement: 'support_page',
         contact: entry ? entry.id : '',
         kind,
       }),

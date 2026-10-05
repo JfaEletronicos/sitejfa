@@ -8,7 +8,8 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-MHE0NRXPLR');
+      // As visualizações de página são enviadas pelo roteador (behaviors/router.js), uma por tela.
+      gtag('config', 'G-MHE0NRXPLR', { send_page_view: false });
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -94,9 +94,9 @@ function initCampaignCarousel(ctx) {
       lastViewedRealIndex = realIdx;
       const banner = CAMPAIGN_BANNERS[realIdx];
       trackEvent('campaign_banner_view', {
-        campaign_id: banner.id,
-        campaign_name: banner.name || banner.id,
-        campaign_position: realIdx + 1,
+        banner_id: banner.id,
+        banner_name: banner.name || banner.id,
+        banner_position: realIdx + 1,
       });
     };
     const updateActiveState = () => {
@@ -134,9 +134,9 @@ function initCampaignCarousel(ctx) {
       }
       const banner = CAMPAIGN_BANNERS[Number(slideEl.dataset.realIndex)];
       trackEvent('campaign_banner_click', {
-        campaign_id: banner.id,
-        campaign_name: banner.name || banner.id,
-        campaign_position: Number(slideEl.dataset.realIndex) + 1,
+        banner_id: banner.id,
+        banner_name: banner.name || banner.id,
+        banner_position: Number(slideEl.dataset.realIndex) + 1,
         destination: banner.href,
       });
     });
