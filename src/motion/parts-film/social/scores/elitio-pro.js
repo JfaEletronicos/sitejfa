@@ -1,5 +1,5 @@
 /**
- * E-LÍTIO PRO 12V 280Ah (?variant=elitio-pro · 9:16 · 29,45 s): base 3D cinematográfica do
+ * E-LÍTIO PRO 12V 280Ah (?variant=elitio-pro · 9:16 · 30,95 s): base 3D cinematográfica do
  * lançamento, com linguagem de comercial de carro, em UM plano contínuo (sem cortes e sem
  * paradas: a câmera só para no último quadro), em voo livre como um pássaro (6DoF: posição
  * e olhar independentes, curvas suaves e inclinadas), alternando trechos lentos e rápidos e
@@ -21,18 +21,18 @@
  *      fly-by no logotipo, borne positivo (macro, devagar), mergulho na ponta, traseira
  *      (ficha), outra ponta e o painel com o display aceso, de cima (no fim da volta);
  *      fecha a volta recuando rápido.
- *   03 cards (15,35–17,95): 3/4 alto e controlado, deriva lenta.
- *   04 vista explodida (17,95–22,75): a tampa sobe inteira e BMS, barramentos, suporte e
+ *   03 cards (15,35–19,45): 3/4 alto e controlado, deriva lenta (cards Liquid Glass).
+ *   04 vista explodida (19,45–24,25): a tampa sobe inteira e BMS, barramentos, suporte e
  *      células se separam na vertical; a câmera fica em 3/4 lento, de fora, e a bateria se
- *      recompõe (clique em ~22,65).
- *   05 hero (22,75–25,45): aproximação lenta e baixa em 3/4, espaço acima para a mensagem.
- *   06 final (25,45–29,45): afastamento lento, muito espaço negativo.
+ *      recompõe (clique em ~24,15).
+ *   05 hero (24,25–26,95): aproximação lenta e baixa em 3/4, espaço acima para a mensagem.
+ *   06 final (26,95–30,95): afastamento lento, muito espaço negativo.
  */
 export const META = {
   id: 'elitio-pro',
   title: 'E-LÍTIO PRO 12V 280Ah',
-  duration: 29.45,
-  stillTime: 29.35,
+  duration: 30.95,
+  stillTime: 30.85,
   format: '9x16',
   // Obturador de 1/30 s: motion blur forte só quando a imagem anda rápido.
   shutter: 1 / 30,
@@ -41,10 +41,10 @@ export const META = {
 export const SCENES = [
   { id: 'cena-01', label: '01 Abertura', start: 0, end: 4.2 },
   { id: 'cena-02', label: '02 Revelação', start: 4.2, end: 15.35 },
-  { id: 'cena-03', label: '03 Cards', start: 15.35, end: 17.95 },
-  { id: 'cena-04', label: '04 Explodida', start: 17.95, end: 22.75 },
-  { id: 'cena-05', label: '05 Hero', start: 22.75, end: 25.45 },
-  { id: 'cena-06', label: '06 Final', start: 25.45, end: 29.45 },
+  { id: 'cena-03', label: '03 Cards', start: 15.35, end: 19.45 },
+  { id: 'cena-04', label: '04 Explodida', start: 19.45, end: 24.25 },
+  { id: 'cena-05', label: '05 Hero', start: 24.25, end: 26.95 },
+  { id: 'cena-06', label: '06 Final', start: 26.95, end: 30.95 },
 ];
 
 // Pontos do modelo (unidades de 10 cm; base no chão, frente para +z, positivo em +x).
@@ -98,7 +98,7 @@ const RUSH = { shutter: 1 / 10 };
 // de 10 cm.
 export const SHOTS = [
   {
-    t: [0, 29.45],
+    t: [0, 30.95],
     flight: true,
     keys: [
       // 01 · abertura: deriva lenta, baixa, bateria levemente fora do centro.
@@ -135,19 +135,19 @@ export const SHOTS = [
       { t: 15.0, pos: [-0.75, 4.75, 5.3], look: [0, 1.7, 0] },
       { t: 15.6, pos: [1.2, 4.8, 10.4], look: [0, 1.35, 0] },
       // 03 · cards: a espiral perde velocidade no 3/4 alto, deriva lenta.
-      { t: 16.75, pos: [6.33, 5.5, 17.38], look: [0, 1.35, 0] },
+      { t: 18.25, pos: [6.33, 5.5, 17.38], look: [0, 1.35, 0] },
       // 04 · explodida: 3/4 lento, de fora, fechando devagar em volta; o olhar sobe com a
       // estrutura aberta, fica na leitura e desce quando ela se fecha.
-      { t: 17.95, pos: [9.2, 5.9, 17.3], look: [0, 2.4, 0] },
-      { t: 19.75, pos: [9.79, 5.65, 14.5], look: [0, 3.2, 0] },
-      { t: 21.45, pos: [9.94, 5.4, 12.28], look: [0, 3.1, 0] },
-      { t: 22.75, pos: [9.9, 4.3, 11.0], look: [0, 1.6, 0] },
+      { t: 19.45, pos: [9.2, 5.9, 17.3], look: [0, 2.4, 0] },
+      { t: 21.25, pos: [9.79, 5.65, 14.5], look: [0, 3.2, 0] },
+      { t: 22.95, pos: [9.94, 5.4, 12.28], look: [0, 3.1, 0] },
+      { t: 24.25, pos: [9.9, 4.3, 11.0], look: [0, 1.6, 0] },
       // 05 · hero: aproximação lenta e baixa em 3/4 (espaço acima para a mensagem), que
       // assenta antes de recuar.
-      { t: 24.15, pos: [8.67, 1.25, 9.14], look: [0.2, 1.3, 0], shift: [0, -0.12] },
-      { t: 25.45, pos: [7.0, 0.95, 7.27], look: [0.1, 1.25, 0], shift: [0, -0.08], stop: true },
+      { t: 25.65, pos: [8.67, 1.25, 9.14], look: [0.2, 1.3, 0], shift: [0, -0.12] },
+      { t: 26.95, pos: [7.0, 0.95, 7.27], look: [0.1, 1.25, 0], shift: [0, -0.08], stop: true },
       // 06 · final: afastamento lento, subindo, muito espaço negativo.
-      { t: 29.45, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
+      { t: 30.95, pos: [20, 7, 18], look: [0, 1.2, 0], rest: true },
     ],
     // Luz fixa do set (STUDIO), profundidade de campo nos closes e obturador por trecho.
     light: {
@@ -223,12 +223,12 @@ const card = (id, t, y, lines, extra = {}) => ({
   ...extra,
 });
 export const GLASS = [
-  card('tensao', [16.2, 17.45], 2.7, [label('TENSÃO NOMINAL'), value('12', 'V')]),
-  card('capacidade', [16.38, 17.4], 3.98, [label('CAPACIDADE'), value('280', 'Ah')]),
-  card('energia', [16.56, 17.35], 5.26, [label('ENERGIA'), value('3,58', ' kWh', 0.42)]),
+  card('tensao', [16.6, 18.95], 2.7, [label('TENSÃO NOMINAL'), value('12', 'V')]),
+  card('capacidade', [16.85, 18.9], 3.98, [label('CAPACIDADE'), value('280', 'Ah')]),
+  card('energia', [17.1, 18.85], 5.26, [label('ENERGIA'), value('3,58', ' kWh', 0.42)]),
   card(
     'quimica',
-    [16.74, 17.3],
+    [17.35, 18.8],
     6.21,
     [
       {
@@ -248,9 +248,9 @@ export const GLASS = [
 // Vista explodida (unidades de 10 cm): a tampa sobe inteira (com display, botão, anéis,
 // arruelas e parafusos); por dentro, BMS, barramentos, suporte e células se separam na
 // vertical, alinhados. Abre de cima para baixo; fecha de baixo para cima depois que a
-// câmera fica em 3/4 de fora, e a tampa assenta por último (clique em ~22,65).
-const OPEN = 17.95;
-const CLOSE = 21.45;
+// câmera fica em 3/4 de fora, e a tampa assenta por último (clique em ~24,15).
+const OPEN = 19.45;
+const CLOSE = 22.95;
 const layer = (lift, k) => [
   [OPEN + (4 - k) * 0.12, 0],
   [OPEN + 1.3 + (4 - k) * 0.12, lift, 'soft'],
@@ -275,7 +275,7 @@ export const EXPLODE = {
 // Câmera virtual (move os planos de texto, que ainda não existem): parada.
 export const CAMERA_RIG = [
   { t: 0, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0] },
-  { t: 29.45, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0], rest: true },
+  { t: 30.95, yaw: 0, pitch: 0, dolly: 0, truck: [0, 0], rest: true },
 ];
 
 export const WORDS = [];
@@ -292,9 +292,9 @@ export const CUES = [
   { t: 7.9, id: 'borne', label: 'Borne positivo (macro)', until: 8.9 },
   { t: 13.1, id: 'display', label: 'Painel (display aceso)', until: 14.2 },
   { t: 14.5, id: 'recuo', label: 'Recuo (proporções)' },
-  { t: 17.95, id: 'explodida', label: 'Peças se separam', until: 19.75 },
-  { t: 22.65, id: 'clique', label: 'Clique (bateria fecha)' },
-  { t: 25.45, id: 'final', label: 'Afastamento final', until: 29.45 },
+  { t: 19.45, id: 'explodida', label: 'Peças se separam', until: 21.25 },
+  { t: 24.15, id: 'clique', label: 'Clique (bateria fecha)' },
+  { t: 26.95, id: 'final', label: 'Afastamento final', until: 30.95 },
 ];
 
 export default {

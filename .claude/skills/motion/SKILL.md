@@ -138,5 +138,8 @@ está em [referencia.md](referencia.md).
   pairando devagar sobre o painel. Takes de detalhe (display, borne) sem pressa.
 - Vista explodida: a tampa sobe inteira (display, parafusos e botão juntos); separam-se só as
   peças internas; antes de remontar, a câmera passa entre elas.
+- Cards Liquid Glass (filme da bateria): em 3D no palco (`glass`), numa coluna centrada no
+  quadro, um em cima do outro, textos centrados; o primeiro atrás da bateria, com ela cobrindo
+  o pé dele (efeito 3D); entrada leve de baixo para cima; tempo de leitura folgado (~2 s).
 - Quando o briefing de um filme contradiz este checklist (ex.: cena sem texto, fundo preto
   vazio, "se pode ser visual, não entra texto"), vale o briefing; anote no roteiro.
