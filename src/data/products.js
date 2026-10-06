@@ -64,6 +64,15 @@ export const PRODUCTS = [
     manualUrl: 'https://jfaeletronicos.com/qr-code/P48V100AM.pdf',
   },
   {
+    id: 'bateria-litio-nautica-12v-100a',
+    name: 'Bateria de Lítio Náutica 12.8V 100A',
+    lines: [E],
+    category: 'Baterias',
+    aliases: ['E-Lítio Náutica 12,8V', 'Náutica 12V', 'Náutica 12.8V 100A', 'N12V100A'],
+    status: 'current',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/N12V100AP.pdf',
+  },
+  {
     id: 'bateria-litio-nautica-25v-100a',
     page: '#/baterias/e-litio-nautica-25-6v-100ah',
     name: 'Bateria de Lítio Náutica 25.6V 100A',
