@@ -259,6 +259,15 @@ export const PRODUCTS = [
     manualUrl: 'https://jfaeletronicos.com/qr-code/TRUCK24V.pdf',
   },
   {
+    id: 'fonte-storm-48v-50a',
+    name: 'Fonte Storm 48V 50A',
+    lines: [A],
+    category: 'Fontes e carregadores',
+    aliases: ['Storm 48V', 'Storm 48V50A', 'Fonte 48V', 'Carregador 48V', 'Fonte e Carregador Storm 48V'],
+    status: 'current',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/STORMEVO.pdf',
+  },
+  {
     id: 'fonte-m120a',
     name: 'Fonte M120A',
     lines: [A],
