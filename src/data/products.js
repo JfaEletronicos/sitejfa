@@ -31,7 +31,7 @@ export const PRODUCTS = [
     category: 'Baterias',
     aliases: ['E-Lítio Pro 12V 100A', 'E-Lítio Pro 12.8V 100A', 'Bateria 100A', 'LiFePO4 100A'],
     status: 'current',
-    manualUrl: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/L12V100A.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/L12V100A.pdf',
   },
   {
     id: 'bateria-litio-25v-100a',
@@ -41,8 +41,7 @@ export const PRODUCTS = [
     category: 'Baterias',
     aliases: ['E-Lítio Pro 25V 100A', 'E-Lítio Pro 25.6V 100A', '25V100A'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-25V100A-MANUAL-RV02-24-11-25.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/L25V100A.pdf',
   },
   {
     id: 'bateria-litio-48v-50a',
@@ -52,8 +51,7 @@ export const PRODUCTS = [
     category: 'Baterias',
     aliases: ['E-Lítio Pro 48V 50A', '48V50A'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-48V50A-PACK-INM-Guia-Rapido-sem-SNMP.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/L48V50A.pdf',
   },
   {
     id: 'bateria-litio-48v-100a',
@@ -63,7 +61,7 @@ export const PRODUCTS = [
     category: 'Baterias',
     aliases: ['E-Lítio Pro 48V 100A', '48V100A'],
     status: 'current',
-    manualUrl: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/L48V100A.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/P48V100AM.pdf',
   },
   {
     id: 'bateria-litio-nautica-25v-100a',
@@ -79,8 +77,7 @@ export const PRODUCTS = [
       'Náutica 25.6V 100A',
     ],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-NAUTICA-25V100A-MANUAL-RV02-25-11-25.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/N25V100AP.pdf',
   },
   {
     id: 'bateria-litio-51v-280a',
@@ -89,8 +86,7 @@ export const PRODUCTS = [
     category: 'Baterias',
     aliases: ['E-Lítio Pro 51V 280A', '51.6V280A', 'Rack 280A'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/07/E-LITIO-PRO-51V-280A-RACK-INM-MANUAL-RV03-080626.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/P51V%20280AM.pdf',
   },
   {
     id: 'ap400x4',
@@ -260,8 +256,7 @@ export const PRODUCTS = [
     category: 'Fontes e carregadores',
     aliases: ['Storm Truck', 'Fonte Truck'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2025/04/MANUAL-FONTE-STORM-TRUCK.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/TRUCK24V.pdf',
   },
   {
     id: 'fonte-m120a',
@@ -287,8 +282,7 @@ export const PRODUCTS = [
       'Storm 120A Lithium',
     ],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/FONTES-STORM-LITHIUM-MANUAL-RV07.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/STORMLITIO.pdf',
   },
   {
     id: 'pbs-protetor-baterias-serie',
@@ -297,7 +291,7 @@ export const PRODUCTS = [
     category: 'Proteção',
     aliases: ['PBS', 'Protetor de bateria', 'Protetor de baterias em série'],
     status: 'current',
-    manualUrl: 'https://www.jfaeletronicos.com/qr-code/PBS.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/PBS.pdf',
   },
   {
     id: 'conversor-rca-slim',
@@ -346,8 +340,7 @@ export const PRODUCTS = [
     category: 'Eletrônica automotiva',
     aliases: ['SR5', 'SR5 Evolution', 'Computador de bordo SR5'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2024/12/Manual-SR5-Evolution-03_compressed.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/SR5EVO.pdf',
   },
   {
     id: 'equalizador-balanceador-banco-baterias',
@@ -376,8 +369,7 @@ export const PRODUCTS = [
     category: 'Fontes Nobreak',
     aliases: ['Nobreak', 'Fonte retificadora', 'Fonte Nobreak retificadora'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/3/2022/08/manual-jfa-fonte-nobreak-246A128A.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/NB482412.pdf',
   },
   {
     id: 'gerenciador-fonte-redundante',
@@ -415,8 +407,7 @@ export const PRODUCTS = [
     category: 'Inversores',
     aliases: ['Inversor 1000W', 'Rack 1000', 'Inversor Rack'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/3/2023/11/INVERSOR-OFF-GRID-SENOIDAL-PURA-1000w-Manual-RV01-final-16-11.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-ALL-1000.pdf',
   },
   {
     id: 'inversor-senoidal-rack-3000w-5000w',
@@ -425,8 +416,7 @@ export const PRODUCTS = [
     category: 'Inversores',
     aliases: ['Inversor 3000W', 'Inversor 5000W', 'Rack 3000', 'Rack 5000'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/3/2024/10/Inversor-Senoidal-3000W-e-5000W-Manual-RV02-compactado.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-ALL-COMUNIC.pdf',
   },
   {
     id: 'inversor-offgrid-senoidal-black',
@@ -444,8 +434,7 @@ export const PRODUCTS = [
       'Inversor 5000W',
     ],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/4/2024/07/INVERSOR-OFF-GRID-SENOIDAL-PURA-BLACK-1500W-2000W-3000W-5000W.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-BLACK.pdf',
   },
   {
     id: 'air-control',

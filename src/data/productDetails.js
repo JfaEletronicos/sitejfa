@@ -54,7 +54,7 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/FONTES-STORM-LITHIUM-MANUAL-RV07-1.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/STORMLITIO.pdf',
       },
     ],
   },
@@ -148,7 +148,7 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2025/10/MANUAL-FONTE-STORM-TRUCK.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/TRUCK24V.pdf',
       },
     ],
   },
@@ -551,15 +551,15 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://www.jfaeletronicos.com/qr-code/PBS.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/PBS.pdf',
       },
       {
         label: 'Sistema 240V: 5 baterias 48V/100A em série',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/07/SISTEMA-DE-CONEXAO-EM-SERIE-DE-5-BATERIAS-48V100A.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/PBS/SCS5B48V100A.pdf',
       },
       {
         label: 'Sistema 280V: 22 baterias 12,8V/100A em série',
-        url: 'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/07/SISTEMA-DE-CONEXAO-EM-SERIE-DE-22-BATERIAS-128V100A-1.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/PBS/SCS22B12V100A.pdf',
       },
     ],
   },
@@ -657,7 +657,7 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2025/06/manual-jfa-fonte-nobreak-246A128A_reduzido.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/NOBREAK-48ALL-COMUNIC.pdf',
       },
     ],
     name: 'Fonte Nobreak 24V e 48V (SNMP)',
@@ -711,7 +711,7 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://energia.jfaeletronicos.com/wp-content/uploads/sites/3/2021/07/manual-jfa-fonte-nobreak-246A128A.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/NB482412.pdf',
       },
     ],
     name: 'Fonte Nobreak 12V e 24V',

@@ -181,8 +181,7 @@ function initRouter(ctx) {
               '/images/bateria_elitio_pro_12v8_100a_a3.webp',
             ],
             // Mesmo produto de PRODUCTS['bateria-litio-12v-100a'] (alias "E-Lítio Pro 12V 100A").
-            manualUrl:
-              'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/L12V100A.pdf',
+            manualUrl: 'https://jfaeletronicos.com/qr-code/L12V100A.pdf',
             certifications: ['inmetro', 'anatel'],
           },
         ],
@@ -210,7 +209,7 @@ function initRouter(ctx) {
           '/images/bateria_elitio_pro_48v100a_a3.webp',
           '/images/bateria_elitio_pro_48v100a.webp',
         ],
-        manualUrl: '',
+        manualUrl: 'https://jfaeletronicos.com/qr-code/P48V100AM.pdf',
         commerce: {},
         relatedProducts: [],
       },
@@ -237,8 +236,7 @@ function initRouter(ctx) {
           '/images/bateria_elitio_pro_48v50a_a3.webp',
         ],
         // Mesmo produto de PRODUCTS['bateria-litio-48v-50a'] (alias "E-Lítio Pro 48V 50A").
-        manualUrl:
-          'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-48V50A-PACK-INM-Guia-Rapido-sem-SNMP.pdf',
+        manualUrl: 'https://jfaeletronicos.com/qr-code/L48V50A.pdf',
         commerce: {},
         relatedProducts: [],
       },
@@ -261,7 +259,7 @@ function initRouter(ctx) {
           '/images/bateria_elitio_nautica_12v8_100a_a2.webp',
           '/images/bateria_elitio_nautica_12v8_100a_a3.webp',
         ],
-        manualUrl: '',
+        manualUrl: 'https://jfaeletronicos.com/qr-code/N12V100AP.pdf',
         commerce: {},
         relatedProducts: [],
       },
@@ -293,7 +291,7 @@ function initRouter(ctx) {
               '/images/bateria_elitio_pro_25v6_50a_a2.webp',
               '/images/bateria_elitio_pro_25v6_50a_a3.webp',
             ],
-            manualUrl: '',
+            manualUrl: 'https://jfaeletronicos.com/qr-code/L25V50A.pdf',
           },
           {
             key: '100ah',
@@ -303,7 +301,7 @@ function initRouter(ctx) {
             longDescription:
               'Gerenciamento BMS para sistemas de armazenamento de energia que precisam de maior autonomia.',
             images: ['/images/bateria_elitio_pro_25v6_100a.webp'],
-            manualUrl: '',
+            manualUrl: 'https://jfaeletronicos.com/qr-code/L25V100A.pdf',
           },
         ],
         commerce: {},
@@ -323,7 +321,7 @@ function initRouter(ctx) {
         longDescription:
           'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem estabilidade e confiabilidade em trajetos mais longos.',
         image: '/images/bateria_elitio_nautica_25v6_100a.webp',
-        manualUrl: '',
+        manualUrl: 'https://jfaeletronicos.com/qr-code/N25V100AP.pdf',
         commerce: {},
         relatedProducts: [],
       },
