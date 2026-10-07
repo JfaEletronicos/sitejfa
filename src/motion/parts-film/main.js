@@ -22,6 +22,7 @@ import { ELITIO_PRO_DETAIL, ELITIO_PRO_LOOK, ELITIO_PRO_MIRRORS } from './surfac
 
 const PLACA = '/models/placa_lb1004.glb';
 const ELITIO_PRO = '/models/elitio-pro.glb';
+const ELITIO_6AH = '/models/elitio-6ah.glb';
 const FORMATS = { '16x9': 16 / 9, '9x16': 9 / 16, '1x1': 1, '4x5': 4 / 5 };
 // Limite de pixels renderizados (mantém o filme leve em telas de alta densidade).
 const MAX_PIXELS = 3.2e6;
@@ -40,6 +41,16 @@ const VARIANTS = {
   'elitio-pro': {
     load: kinetic(() => import('./social/scores/elitio-pro')),
     model: ELITIO_PRO,
+    upAxis: 'y',
+    studio: 'cinema',
+    detail: ELITIO_PRO_DETAIL,
+    look: ELITIO_PRO_LOOK,
+    mirrors: ELITIO_PRO_MIRRORS,
+  },
+  // E-LÍTIO PRO 6Ah: só o modelo 3D (provisório, feito das fotos), em volta lenta.
+  'elitio-6ah': {
+    load: kinetic(() => import('./social/scores/elitio-6ah')),
+    model: ELITIO_6AH,
     upAxis: 'y',
     studio: 'cinema',
     detail: ELITIO_PRO_DETAIL,
