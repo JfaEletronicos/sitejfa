@@ -41,8 +41,8 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 | Tempo | Take |
 |---|---|
-| 0–1,8 | 01 Bateria / revelação |
-| 1,8–3,0 | 02 Bateria / ângulo |
+| 0–2,0 | 01 Bateria / revelação |
+| 2,0–3,0 | 02 Bateria / ângulo |
 | 3,0–4,2 | 03 Bateria / close |
 | 4,2–6,6 | 04 Bateria → Fonte (wide + insert das células) |
 | 6,6–7,8 | 05 Fonte |
@@ -54,7 +54,7 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 | 15,0–16,0 | 11 LEDs |
 | 16,0–17,2 | 12 Sistema completo |
 | 17,2–19,0 | 13 Grave (1 s de quietude, pancadas, ondas no piso, poeira, tremor, onda de choque) |
-| 19,0–27,0 | 14–16 Filmagem real (corte seco no quadro de casamento → evento → drone) |
+| 19,0–27,0 | 14–16 Filmagem real (corte no branco da onda de choque → evento → drone) |
 | 27,0–30,0 | Encerramento: **JFA** / *Energia que vira som.* |
 
 A música entra depois e não comanda os tempos.

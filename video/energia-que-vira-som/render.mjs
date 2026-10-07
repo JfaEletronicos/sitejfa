@@ -59,7 +59,8 @@ const to = Number(arg('to', END_3D));
 if (ONLY !== 'end') {
   const dir = await frames('3d', from, to);
   // Quadro de casamento para a equipe de filmagem (posição exata do som no último quadro 3D).
-  if (to === END_3D) execFileSync('cp', [join(dir, `${String(Math.round((to - from) * FPS) - 1).padStart(5, '0')}.png`), join(out, 'match-frame.png')]);
+  // (pego antes da onda de choque, que estoura em branco nos últimos quadros)
+  if (to === END_3D) execFileSync('cp', [join(dir, `${String(Math.round((to - 0.3 - from) * FPS)).padStart(5, '0')}.png`), join(out, 'match-frame.png')]);
 }
 if (ONLY !== '3d') await frames('end', END_CARD_START, TOTAL);
 await browser.close();
