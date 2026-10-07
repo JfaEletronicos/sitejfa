@@ -8,7 +8,7 @@
  * piano"...), então o filme aplica o mesmo acabamento (look, detail, mirrors). Adesivos do
  * arquivo de impressão (assets/elitio-6ah/adesivos, recortes do PDF em tamanho real). Grupos EXPLODE_body e EXPLODE_lid para os espelhos.
  *
- *   node tools/motion/build-elitio-6ah.mjs
+ *   node tools/motion/build-elitio-6ah.mjs [6ah|10ah]
  */
 import { createServer } from 'node:http';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -18,7 +18,15 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const SRC = join(ROOT, 'assets/elitio-6ah');
-const OUT = join(ROOT, 'public/models/elitio-6ah.glb');
+// Modelos: 6Ah (151 × 65 × 94 mm) e 10Ah (151 × 98 × 95 mm), mesmos adesivos em tamanho.
+const MODELS = {
+  '6ah': { name: '6Ah', L: 151, D: 65, H: 94 },
+  '10ah': { name: '10Ah', L: 151, D: 98, H: 95 },
+};
+const ID = process.argv[2] || '6ah';
+const CFG = { ...MODELS[ID], id: ID };
+if (!MODELS[ID]) throw new Error(`Modelo desconhecido: ${ID} (6ah ou 10ah)`);
+const OUT = join(ROOT, `public/models/elitio-${ID}.glb`);
 
 async function loadPlaywright() {
   try {
@@ -44,7 +52,8 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 const root = new THREE.Group();
-root.name = 'E-LITIO PRO 12,8V 6Ah';
+const CFG = ${JSON.stringify(CFG)};
+root.name = 'E-LITIO PRO 12,8V ' + CFG.name;
 const mm = new THREE.Group();
 mm.scale.setScalar(0.001);
 root.add(mm);
@@ -65,9 +74,10 @@ const block = new THREE.MeshPhysicalMaterial({ name: 'Bloco negativo', color: 0x
   clearcoat: 0.7, clearcoatRoughness: 0.1 });
 const tin = new THREE.MeshStandardMaterial({ name: 'Terminal estanhado', color: 0xc8cbd0, roughness: 0.3, metalness: 1 });
 
-const L = 151, D = 65, H = 94; // comprimento (x), profundidade (z), altura até o topo da tampa
+const { L, D, H } = CFG; // comprimento (x), profundidade (z), altura até o topo da tampa
+const BODY = H - 20; // altura do corpo (a tampa tem 20 mm)
 const STEP = 20; // largura do degrau dos terminais (ponta -x)
-const STEP_Y = 86; // fundo do degrau
+const STEP_Y = H - 8; // fundo do degrau
 const box = (w, h, d, r, mat, x, y, z, parent, name) => {
   const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 4, r), mat);
   m.position.set(x, y, z);
@@ -76,16 +86,17 @@ const box = (w, h, d, r, mat, x, y, z, parent, name) => {
   return m;
 };
 // Corpo um pouco mais estreito que a tampa: a aba da tampa desenha a linha de molde.
-box(L - 1.6, 74, D - 1.6, 2.5, piano, 0, 37, 0, body, 'Corpo');
-// Tampa: saia (74–80) e topo (80–94); a ponta -x fica mais baixa (degrau dos terminais).
-box(L - 0.8, 6.2, D - 0.8, 1.2, piano, 0, 77, 0, lid, 'Tampa saia');
-box(L - STEP, H - 80, D, 2.2, piano, STEP / 2, 87, 0, lid, 'Tampa topo');
-box(STEP + 2, STEP_Y - 80, D, 2.2, piano, -L / 2 + STEP / 2 + 1, (80 + STEP_Y) / 2, 0, lid, 'Tampa degrau');
+box(L - 1.6, BODY, D - 1.6, 2.5, piano, 0, BODY / 2, 0, body, 'Corpo');
+// Tampa: saia (6 mm) e topo; a ponta -x fica mais baixa (degrau dos terminais).
+const TOP0 = BODY + 6; // base do topo da tampa
+box(L - 0.8, 6.2, D - 0.8, 1.2, piano, 0, BODY + 3, 0, lid, 'Tampa saia');
+box(L - STEP, H - TOP0, D, 2.2, piano, STEP / 2, (H + TOP0) / 2, 0, lid, 'Tampa topo');
+box(STEP + 2, STEP_Y - TOP0, D, 2.2, piano, -L / 2 + STEP / 2 + 1, (TOP0 + STEP_Y) / 2, 0, lid, 'Tampa degrau');
 // Blocos dos terminais no degrau: positivo (vermelho) atrás, negativo (preto) na frente.
 const TX = -L / 2 + 9;
 const blocks = [
-  [-19, red, 'positivo'],
-  [19, block, 'negativo'],
+  [-D * 0.29, red, 'positivo'],
+  [D * 0.29, block, 'negativo'],
 ];
 for (const [z, mat, tag] of blocks) {
   box(15, 5, 15, 1.2, mat, TX, STEP_Y + 2.5, z, lid, 'Bloco ' + tag);
@@ -135,10 +146,10 @@ const sticker = async (file, name, w, h, parent, pos, rot) => {
   parent.add(m);
 };
 const FRONT_Z = (D - 1.6) / 2 + 0.15;
-await sticker('frontal-6ah.webp', 'Adesivo frontal', 139.0, 70.0, body, [0, 37, FRONT_Z], [0, 0, 0]);
-await sticker('ficha-tecnica-6ah.webp', 'Adesivo ficha técnica', 100.2, 70.3, body, [0, 37, -FRONT_Z], [0, Math.PI, 0]);
+await sticker('frontal-' + CFG.id + '.webp', 'Adesivo frontal', 139.0, 70.0, body, [0, BODY / 2, FRONT_Z], [0, 0, 0]);
+await sticker('ficha-tecnica-' + CFG.id + '.webp', 'Adesivo ficha técnica', 100.2, 70.3, body, [0, BODY / 2, -FRONT_Z], [0, Math.PI, 0]);
 // Em cima, ao lado do degrau: os sinais + e − do adesivo ficam junto dos terminais.
-await sticker('superior-6ah.webp', 'Adesivo superior', 112.3, 52.3, lid, [STEP / 2 + 0.5, H + 0.15, 0], [-Math.PI / 2, 0, 0]);
+await sticker('superior-' + CFG.id + '.webp', 'Adesivo superior', 112.3, 52.3, lid, [STEP / 2 + 0.5, H + 0.15, 0], [-Math.PI / 2, 0, 0]);
 
 const glb = await new GLTFExporter().parseAsync(root, { binary: true });
 const bytes = new Uint8Array(glb);
