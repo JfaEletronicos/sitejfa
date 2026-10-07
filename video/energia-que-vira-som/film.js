@@ -5,6 +5,13 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { TAKES, END_3D, END_CARD_START, TOTAL } from './timeline.js';
 
 const W = 1920;
@@ -39,6 +46,44 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.35;
 
 const camera = new THREE.PerspectiveCamera(32, W / H, 0.05, 60);
+
+// ---------- pós-produção ----------
+const composer = new EffectComposer(renderer);
+composer.setSize(W, H);
+composer.addPass(new RenderPass(scene, camera));
+// Profundidade de campo: só pesa nos closes (abertura definida por take).
+const bokeh = new BokehPass(scene, camera, { focus: 3, aperture: 0.0001, maxblur: 0.008 });
+composer.addPass(bokeh);
+// Bloom: LEDs, voltímetro, energia e faíscas "vazam" luz.
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.4, 0.45, 0.92);
+composer.addPass(bloom);
+// Onda de choque do último grave + vinheta + grão de filme.
+const finish = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, shock: { value: -1 }, time: { value: 0 }, aspect: { value: W / H } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform float shock; uniform float time; uniform float aspect; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)) + time*37.0) * 43758.5453); }
+    void main(){
+      vec2 uv = vUv; vec2 c = vec2(0.5, 0.48);
+      vec2 d = (uv - c) * vec2(aspect, 1.0);
+      float r = length(d);
+      float ring = 0.0;
+      if (shock >= 0.0) {
+        float R = shock * 1.4;
+        float w = 0.06 + shock * 0.1;
+        ring = exp(-pow((r - R) / w, 2.0));
+        uv -= normalize(d + 1e-5) / vec2(aspect, 1.0) * ring * 0.035;
+      }
+      vec3 col = texture2D(tDiffuse, uv).rgb;
+      col += vec3(0.55, 0.75, 1.0) * ring * 0.6 * (1.0 - shock) + vec3(1.0) * pow(max(shock - 0.65, 0.0) / 0.35, 2.0);
+      col *= mix(1.0, smoothstep(1.15, 0.35, r), 0.55);
+      col += (h(vUv) - 0.5) * 0.025;
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+});
+composer.addPass(finish);
+composer.addPass(new OutputPass());
 
 // Iluminação de estúdio FIXA durante todo o 3D.
 scene.add(new THREE.AmbientLight(0x8899bb, 0.08));
@@ -79,11 +124,45 @@ const floorTex = (() => {
 })();
 const floor = new THREE.Mesh(
   new THREE.CircleGeometry(14, 96),
-  new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.32, metalness: 0.55 }),
+  new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.3, metalness: 0.5, transparent: true, opacity: 0.84 }),
 );
 floor.rotation.x = -Math.PI / 2;
+floor.position.y = 0.001;
 floor.receiveShadow = true;
 scene.add(floor);
+// Espelho sob o piso: reflexo nítido de estúdio de carro, atenuado pelo piso translúcido.
+const mirror = new Reflector(new THREE.CircleGeometry(14, 96), {
+  textureWidth: W / 2,
+  textureHeight: H / 2,
+  color: 0x6a7280,
+});
+mirror.rotation.x = -Math.PI / 2;
+scene.add(mirror);
+
+// Feixes de luz na névoa (a luz continua fixa; só fica visível no ar).
+function beam(from, to, radius, opacity) {
+  const len = from.distanceTo(to);
+  const geo = new THREE.ConeGeometry(radius, len, 64, 1, true);
+  geo.translate(0, -len / 2, 0);
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+    uniforms: { op: { value: opacity }, len: { value: len } },
+    vertexShader: 'varying float vY; varying vec3 vN; varying vec3 vV; void main(){ vY = position.y; vec4 mv = modelViewMatrix*vec4(position,1.); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }',
+    fragmentShader: 'uniform float op; uniform float len; varying float vY; varying vec3 vN; varying vec3 vV; void main(){ float along = clamp(-vY/len,0.,1.); float edge = pow(abs(dot(vN,vV)),1.5); gl_FragColor = vec4(vec3(0.75,0.85,1.0)*op*edge*(1.-along)*smoothstep(0.,.08,along),1.); }',
+  });
+  const m = new THREE.Mesh(geo, mat);
+  m.position.copy(from);
+  m.lookAt(to);
+  m.rotateX(-Math.PI / 2);
+  scene.add(m);
+  return m;
+}
+beam(key.position, key.target.position, 2.1, 0.03);
+beam(top.position, top.target.position, 2.6, 0.022);
+beam(rimL.position, rimL.target.position, 1.6, 0.025);
 
 // ---------- materiais ----------
 const M = {
@@ -181,40 +260,90 @@ const psuPanel = canvasTex(1840, 320, (g, w, h, volts = 0, flow = 0) => {
 // Cada peça tem poses nomeadas e uma sequência de transições.
 // pose = { p:[x,y,z], r:[x,y,z], s:[x,y,z] }
 const parts = [];
-function morphPart(obj, poses, steps) {
+function morphPart(obj, poses, steps, opts = {}) {
   obj.castShadow = obj.receiveShadow = true;
   obj.traverse((o) => {
     if (o.isMesh) o.castShadow = o.receiveShadow = true;
   });
   scene.add(obj);
-  parts.push({ obj, poses, steps });
+  const part = { obj, poses, steps, spark: opts.spark ? makeSpark() : null, sparkAt: opts.sparkAt };
+  parts.push(part);
   return obj;
 }
 const P = (p, r = [0, 0, 0], s = [1, 1, 1]) => ({ p, r, s });
 
+// Curva "mecânica": destrava (recuo mínimo), pausa, dispara e assenta com leve overshoot.
+function mech(x) {
+  if (x < 0.14) return -0.035 * Math.sin((Math.PI * x) / 0.14);
+  if (x < 0.24) return 0;
+  const u = (x - 0.24) / 0.76 - 1;
+  return 1 + 2.1 * u * u * u + 1.1 * u * u;
+}
+
+// Faísca de encaixe: um ponto de luz que acende na junta quando a peça assenta.
+const sparkTex = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, 'rgba(255,255,255,1)');
+  r.addColorStop(0.25, 'rgba(120,180,255,0.8)');
+  r.addColorStop(1, 'rgba(0,80,255,0)');
+  g.fillStyle = r;
+  g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})();
+function makeSpark() {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+  s.visible = false;
+  scene.add(s);
+  return s;
+}
+
 function applyParts(t) {
-  for (const { obj, poses, steps } of parts) {
+  for (const part of parts) {
+    const { obj, poses, steps } = part;
     let cur = poses[steps.length ? steps[0].from : 'A'];
+    let landed = null;
     for (const st of steps) {
       if (t >= st.t1) {
         cur = poses[st.to];
+        landed = st;
         continue;
       }
       if (t > st.t0) {
-        const k = ease(clamp((t - st.t0) / (st.t1 - st.t0)));
+        const x = clamp((t - st.t0) / (st.t1 - st.t0));
+        const k = st.soft ? ease(x) : mech(x);
         const a = poses[st.from];
         const b = poses[st.to];
-        const arc = Math.sin(Math.PI * k);
+        const arc = Math.sin(Math.PI * clamp(k));
         const p = lerp3(a.p, b.p, k);
         p[1] += arc * (st.lift || 0);
         if (st.push) p[2] += arc * st.push;
-        cur = { p, r: lerp3(a.r, b.r, k), s: lerp3(a.s, b.s, k) };
+        const r = lerp3(a.r, b.r, k);
+        if (st.spin) for (let i = 0; i < 3; i++) r[i] += arc * st.spin[i];
+        cur = { p, r, s: lerp3(a.s, b.s, k).map((v) => Math.max(v, 0.001)) };
+        landed = null;
       }
       break;
     }
-    obj.position.set(...cur.p);
+    // Tranco de encaixe: 2–3 quadros de impacto logo depois de assentar.
+    const p = [...cur.p];
+    const age = landed ? t - landed.t1 : 9;
+    if (age < 0.3 && !landed.soft) p[1] -= 0.012 * Math.exp(-age * 30) * Math.cos(age * 90);
+    obj.position.set(...p);
     obj.rotation.set(...cur.r);
     obj.scale.set(...cur.s);
+    if (part.spark) {
+      const on = age < 0.35 && !landed.soft;
+      part.spark.visible = on;
+      if (on) {
+        const k = Math.exp(-age * 9);
+        part.spark.position.set(p[0] + (part.sparkAt?.[0] || 0), p[1] + cur.s[1] / 2, p[2] + cur.s[2] / 2);
+        part.spark.scale.setScalar(0.35 * k + 0.05);
+        part.spark.material.opacity = k;
+      }
+    }
   }
 }
 
@@ -238,9 +367,10 @@ for (const side of [-1, 1]) {
     },
     [
       { from: 'A', to: 'A1', t0: a0 + 0.1, t1: a0 + 0.8 },
-      { from: 'A1', to: 'B', t0: a0 + 1.1, t1: a0 + 2.2 },
-      { from: 'B', to: 'C', t0: b0 + 0.35, t1: b0 + 1.6, lift: 0.25 },
+      { from: 'A1', to: 'B', t0: a0 + 1.1, t1: a0 + 2.2, spin: [side * 0.5, 0, 0] },
+      { from: 'B', to: 'C', t0: b0 + 0.35, t1: b0 + 1.6, lift: 0.25, spin: [0, side * 0.7, side * 0.25] },
     ],
+    { spark: true, sparkAt: [-side * 0.5] },
   );
 }
 
@@ -260,6 +390,7 @@ morphPart(
     { from: 'B', to: 'B1', t0: b0, t1: b0 + 0.6 },
     { from: 'B1', to: 'C', t0: b0 + 0.9, t1: b0 + 1.8 },
   ],
+  { spark: true },
 );
 
 // Base: fundo da bateria → base da fonte → plinto da caixa.
@@ -298,9 +429,10 @@ for (let i = 0; i < 8; i++) {
     },
     [
       { from: 'A', to: 'A1', t0: a0 + 0.55 + i * 0.04, t1: a0 + 1.25 + i * 0.04 },
-      { from: 'A1', to: 'B', t0: a0 + 1.25 + i * 0.05, t1: a0 + 2.15 + i * 0.05 },
-      { from: 'B', to: 'C', t0: b0 + 0.1 + i * 0.07, t1: b0 + 1.3 + i * 0.07, lift: 0.5, push: 0.6 },
+      { from: 'A1', to: 'B', t0: a0 + 1.25 + i * 0.05, t1: a0 + 2.15 + i * 0.05, spin: [0, (i % 2 ? 1 : -1) * 0.8, Math.PI] },
+      { from: 'B', to: 'C', t0: b0 + 0.1 + i * 0.07, t1: b0 + 1.3 + i * 0.07, lift: 0.5, push: 0.6, spin: [Math.PI, 0, 0] },
     ],
+    { spark: i % 2 === 0 },
   );
 }
 
@@ -317,9 +449,9 @@ morphPart(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), plateMats), {
   C: P([0, 0.86, -0.607], [0, 0, 0], [1.4, 0.24, 0.012]),
 }, [
   { from: 'A', to: 'A1', t0: a0 + 0.2, t1: a0 + 0.9 },
-  { from: 'A1', to: 'B', t0: a0 + 1.2, t1: a0 + 2.3 },
+  { from: 'A1', to: 'B', t0: a0 + 1.2, t1: a0 + 2.3, spin: [0.35, 0, 0] },
   { from: 'B', to: 'C', t0: b0 + 0.2, t1: b0 + 1.2, lift: 0.4, push: -0.9 },
-]);
+], { spark: true });
 
 // Polos: polos da bateria → bornes de saída da fonte → bornes traseiros da caixa.
 for (const side of [-1, 1]) {
@@ -338,6 +470,96 @@ for (const side of [-1, 1]) {
     { from: 'A1', to: 'B', t0: a0 + 1.3, t1: a0 + 2.3 },
     { from: 'B', to: 'C', t0: b0 + 0.2, t1: b0 + 1.2 },
   ]);
+}
+
+// Peças internas: parafusos que desrosqueiam antes da tampa subir e barramentos de
+// cobre que ficam à mostra quando a bateria abre (e depois somem para dentro do corpo).
+const copper = new THREE.MeshStandardMaterial({ color: 0xc8753d, roughness: 0.3, metalness: 1 });
+for (const [cx, cz] of [[-0.74, -0.38], [0.74, -0.38], [-0.74, 0.38], [0.74, 0.38]]) {
+  const bolt = new THREE.Group();
+  const head = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.025, 6), M.alu);
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.12, 12), M.alu);
+  shaft.position.y = -0.07;
+  bolt.add(head, shaft);
+  morphPart(bolt, {
+    A: P([cx, 1.01, cz]),
+    A0: P([cx, 1.12, cz], [0, 7, 0]),
+    A1: P([cx * 1.5, 2.4, cz * 1.5], [0.6, 7, 0.4]),
+    B: P([cx * 1.4, 0.55, cz * 1.6], [0, 0, 0], [0.8, 0.8, 0.8]),
+    C: P([cx * 1.95, 1.68, cz * 1.55], [0, 0, 0], [0.8, 0.8, 0.8]),
+  }, [
+    { from: 'A', to: 'A0', t0: a0 - 0.15, t1: a0 + 0.25, soft: true },
+    { from: 'A0', to: 'A1', t0: a0 + 0.25, t1: a0 + 0.8, soft: true },
+    { from: 'A1', to: 'B', t0: a0 + 1.5, t1: a0 + 2.3 },
+    { from: 'B', to: 'C', t0: b0 + 1.0, t1: b0 + 1.85 },
+  ]);
+}
+for (const z of [-0.2, 0.2]) {
+  morphPart(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), copper), {
+    A: P([0, 0.9, z], [0, 0, 0], [1.3, 0.02, 0.07]),
+    A1: P([0, 1.86, z], [0, 0, 0], [1.3, 0.02, 0.07]),
+    B: P([0, 0.3, z * 0.5], [0, Math.PI / 2, 0], [0.9, 0.02, 0.07]),
+    C: P([0, 0.86, z * 0.5], [0, Math.PI / 2, 0], [0.9, 0.02, 0.07]),
+  }, [
+    { from: 'A', to: 'A1', t0: a0 + 0.5, t1: a0 + 1.2 },
+    { from: 'A1', to: 'B', t0: a0 + 1.35, t1: a0 + 2.2, spin: [0, 0, z * 6] },
+    { from: 'B', to: 'C', t0: b0 + 0.4, t1: b0 + 1.2, soft: true },
+  ]);
+}
+
+// ---------- energia: o fio condutor do filme ----------
+// Um traço de luz que nasce nos polos, guia as peças, sai do borne da fonte e
+// desenha o projeto da caixa antes de as peças chegarem. No grave, volta pulsando.
+function glowPath(curve, radius = 0.006, segs = 300) {
+  const geo = new THREE.TubeGeometry(curve, segs, radius, 8, false);
+  const mat = new THREE.MeshBasicMaterial({ color: 0x5aa0ff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
+  const m = new THREE.Mesh(geo, mat);
+  const perSeg = 8 * 6;
+  m.reveal = (a, b, opacity = 1) => {
+    const i0 = Math.floor(clamp(a) * segs) * perSeg;
+    const i1 = Math.floor(clamp(b) * segs) * perSeg;
+    m.visible = i1 > i0 && opacity > 0.001;
+    geo.setDrawRange(i0, i1 - i0);
+    mat.opacity = opacity;
+  };
+  m.reveal(0, 0);
+  scene.add(m);
+  return m;
+}
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const poly = (pts) => {
+  const c = new THREE.CurvePath();
+  for (let i = 1; i < pts.length; i++) c.add(new THREE.LineCurve3(V(...pts[i - 1]), V(...pts[i])));
+  return c;
+};
+const circle = (cx, cy, cz, r) =>
+  new THREE.CatmullRomCurve3(Array.from({ length: 48 }, (_, i) => V(cx + r * Math.sin((i / 48) * Math.PI * 2), cy + r * Math.cos((i / 48) * Math.PI * 2), cz)), true);
+
+// 1) Do polo positivo, contorna a bateria e termina onde nascerá a fonte.
+const energyA = glowPath(
+  new THREE.CatmullRomCurve3([V(0.55, 1.1, 0), V(0.95, 1.0, 0.55), V(0, 0.72, 0.72), V(-0.95, 0.5, 0.55), V(-0.95, 0.4, -0.6), V(0.95, 0.3, -0.65), V(1.35, 0.27, 0.1), V(0, 0.27, 0.85)]),
+  0.007,
+  400,
+);
+// 2) Sai do borne da fonte, corre pelo piso e desenha o contorno da caixa.
+const energyB = glowPath(
+  poly([[1.05, 0.27, 0.67], [1.05, 0.27, 0.9], [1.25, 0.012, 1.1], [1.7, 0.012, 0.9], [1.56, 0.1, 0.645], [1.56, 1.63, 0.645], [-1.56, 1.63, 0.645], [-1.56, 0.1, 0.645], [1.56, 0.1, 0.645]]),
+  0.006,
+  500,
+);
+const energyRings = [-1, 1].map((side) => glowPath(circle(side * 0.76, 0.86, 0.66, 0.62), 0.005, 160));
+const energyHorns = [-1.14, -0.38, 0.38, 1.14].map((x) => glowPath(circle(x, 1.93, 0.6, 0.24), 0.004, 80));
+
+function updateEnergy(t, e) {
+  // Fase 1: da bateria para a fonte (cabeça corre, cauda segue).
+  energyA.reveal(seg(t, 3.5, 5.1), seg(t, 4.7, 6.5), 1);
+  // Fase 2: do borne até o projeto da caixa; depois esmaece quando as peças ocupam o lugar.
+  const T6 = TAKES.find((k) => k.id === '06');
+  const fade = 1 - seg(t, b0 + 1.2, b0 + 2.6);
+  const pulse = 0.9 * Math.min(1, e);
+  energyB.reveal(0, seg(t, T6.end - 0.7, b0 + 0.5), Math.max(fade, pulse));
+  energyRings.forEach((r, i) => r.reveal(0, seg(t, b0 + 0.15 + i * 0.15, b0 + 0.75 + i * 0.15), Math.max(fade, pulse)));
+  energyHorns.forEach((r, i) => r.reveal(0, seg(t, b0 + 0.45 + i * 0.08, b0 + 0.85 + i * 0.08), Math.max(fade, pulse * 0.6)));
 }
 
 // ---------- componentes de som (sem marca) ----------
@@ -427,14 +649,18 @@ function cameraAt(t) {
   const take = TAKES.find((k) => t >= k.start && t < k.end) || TAKES[TAKES.length - 1];
   const c = take.cam;
   const k = ease(clamp((t - take.start) / (take.end - take.start)));
-  const pos = lerp3(c.from, c.to, k);
+  // "via": a câmera passa por um ponto intermediário (curva de Bézier quadrática).
+  const pos = c.via ? lerp3(lerp3(c.from, c.via, k), lerp3(c.via, c.to, k), k) : lerp3(c.from, c.to, k);
   const tgt = lerp3(c.tgtFrom, c.tgtTo || c.tgtFrom, k);
   return { take, pos, tgt, fov: lerp(c.fov[0], c.fov[1] ?? c.fov[0], k) };
 }
 
 // ---------- graves ----------
 const T13 = TAKES.find((k) => k.id === '13');
-const KICKS = [0.35, 0.8, 1.25, 1.42, 1.65].map((x) => T13.start + x);
+// Um segundo de quietude antes da primeira pancada; a última abre a onda de choque
+// que atravessa a tela e leva ao mundo real.
+const KICKS = [1.0, 1.25, 1.42, 1.55].map((x) => T13.start + x);
+const SHOCK = KICKS[KICKS.length - 1];
 function bass(t) {
   let e = 0;
   for (const k of KICKS) if (t >= k) e += Math.exp(-(t - k) * 9) * clamp((t - k) / 0.03);
@@ -455,6 +681,7 @@ export function renderAt(t) {
 
   applyParts(t);
   const e = bass(t);
+  updateEnergy(t, e);
 
   // Energia: as células acendem ao se abrirem, e o painel liga no take 06.
   const T6 = TAKES.find((k) => k.id === '06');
@@ -521,6 +748,8 @@ export function renderAt(t) {
 
   // Câmera + impacto físico do grave
   const cam = cameraAt(t);
+  // Respiro antes do grave: a câmera recua devagar na quietude e é empurrada na pancada.
+  if (cam.take.id === '13') cam.pos[2] += 0.25 * seg(t, T13.start, KICKS[0]) - 0.45 * seg(t, KICKS[0], KICKS[0] + 0.25);
   const shake = 0.035 * e;
   camera.position.set(cam.pos[0] + shake * noise(t * 7), cam.pos[1] + shake * noise(t * 9 + 3), cam.pos[2] + shake * 0.5 * noise(t * 5 + 7));
   camera.fov = cam.fov - 0.6 * e;
@@ -530,7 +759,13 @@ export function renderAt(t) {
 
   // Abertura do filme a partir do preto.
   renderer.toneMappingExposure = 0.05 + 0.95 * seg(t, 0, 1.1);
-  renderer.render(scene, camera);
+  const dist = Math.hypot(cam.pos[0] - cam.tgt[0], cam.pos[1] - cam.tgt[1], cam.pos[2] - cam.tgt[2]);
+  bokeh.uniforms.focus.value = dist;
+  bokeh.uniforms.aperture.value = cam.take.cam.dof || 0.00008;
+  bloom.strength = 0.38 + 0.3 * Math.min(e, 1);
+  finish.uniforms.time.value = t;
+  finish.uniforms.shock.value = t >= SHOCK && t < END_3D ? (t - SHOCK) / (END_3D - SHOCK) : -1;
+  composer.render();
 }
 
 async function init() {
