@@ -55,7 +55,8 @@ export const TAKES = [
     cam: { from: [-1.7, 0.2, 1.8], to: [-1.3, 0.25, 2.1], tgtFrom: [0, 0.95, 0.4], fov: [56], curve: 'float' } },
   // Momento longo de contemplação.
   { id: '12', name: 'Sistema completo', start: 15.6, end: 17.2,
-    cam: { from: [-2.6, 1.6, 4.2], via: [0, 1.3, 4.6], to: [0.4, 1.3, 5.4], tgtFrom: [0, 0.95, 0], fov: [34], curve: 'glide' } },
+    // Termina exatamente onde o 13 começa, já na mesma direção: a passagem 12→13 é contínua.
+    cam: { from: [-2.6, 1.6, 4.2], via: [-1.3, 1.36, 5.6], to: [-0.75, 1.38, 5.4], tgtFrom: [-0.2, 0.84, 0], fov: [34, 36], curve: 'glide' } },
   // Frontal e um pouco de cima, como o drone começa. Carga → pancadas → a última
   // empurra a câmera para a frente e para cima, dentro da onda de choque.
   // (leve deriva lateral constante: a câmera nunca para, nem quando o respiro inverte o recuo)

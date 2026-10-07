@@ -337,7 +337,10 @@ function applyParts(t) {
       const k = st.soft ? ease(x) : mech(x);
       const a = poses[st.from];
       const b = poses[st.to];
-      const arc = Math.sin(Math.PI * clamp(k));
+      // Arco que sai como um seno e chega com derivada zero em k=1: o overshoot não faz
+      // a peça ricochetear e o início não dá tranco.
+      const kc = clamp(k);
+      const arc = Math.sin(Math.PI * kc) * (1 - kc ** 4);
       for (let i = 0; i < 3; i++) {
         p[i] += (b.p[i] - a.p[i]) * k;
         r[i] += (b.r[i] - a.r[i]) * k + arc * (st.spin ? st.spin[i] : 0);
@@ -578,12 +581,23 @@ const LEG = 0.1316;
 const energyHead = (t) => LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + (1 - LEG) * seg(t, b0 + 0.3, b0 + 1.4);
 // A câmera persegue a energia até a quina e sobe pela aresta; quando a energia dispara
 // pelo contorno, a câmera não a acompanha (seria um chicote) e abre para o plano geral.
-const energyHeadPoint = (t) =>
-  energyB.geometry.parameters.path.getPointAt(clamp(LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + 0.12 * seg(t, b0 + 0.4, b0 + 1.4), 0.001, 1)).toArray();
+// (média de pontos vizinhos no traço: a câmera arredonda as quinas em vez de mudar de direção num quadro)
+const energyHeadPoint = (t) => {
+  const path = energyB.geometry.parameters.path;
+  const h = LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + 0.12 * seg(t, b0 + 0.4, b0 + 1.4);
+  const acc = [0, 0, 0];
+  for (let j = -3; j <= 3; j++) {
+    const q = path.getPointAt(clamp(h + j * 0.012, 0.001, 1));
+    acc[0] += q.x / 7;
+    acc[1] += q.y / 7;
+    acc[2] += q.z / 7;
+  }
+  return acc;
+};
 
 function updateEnergy(t, e) {
   // Fase 1: da bateria para a fonte (cabeça corre, cauda segue).
-  energyA.reveal(seg(t, 3.5, 5.1), seg(t, 4.7, 6.5), 1);
+  energyA.reveal(seg(t, 4.7, 6.5), seg(t, 3.5, 5.1), 1); // (cauda, cabeça)
   // Fase 2: do borne até o projeto da caixa; depois esmaece quando as peças ocupam o lugar.
   const fade = 1 - seg(t, b0 + 2.4, b0 + 3.6);
   const pulse = 0.9 * Math.min(1, e);
@@ -727,10 +741,10 @@ const KICK_AMP = [0.6, 0.8, 0.9, 1.4];
 
 // Encadeamento entre grupos de animação: cada grupo começa antes de o anterior acabar.
 const POWER = a0 + 2.1; // a fonte liga enquanto as últimas peças ainda assentam
-const WOOFER_START = b0 + 1.6; // graves começam a emergir enquanto a caixa assenta
-const HORN_START = WOOFER_START + 2.1; // cornetas sobem enquanto o 2º grave assenta
+const WOOFER_START = b0 + 1.95; // graves começam (ainda escondidos) quando a caixa assenta e atravessam a face no insert 08
+const HORN_START = WOOFER_START + 1.75; // cornetas sobem enquanto o 2º grave assenta
 const LED_START = HORN_START + 1.65; // LEDs acendem enquanto as últimas cornetas sobem
-const LED_END = LED_START + 1.4;
+const LED_END = LED_START + 1.15; // fim real das rampas (réguas e anéis)
 function bass(t) {
   let e = 0;
   for (const k of KICKS) if (t >= k) e += Math.exp(-(t - k) * 9) * clamp((t - k) / 0.03);
@@ -758,10 +772,11 @@ export function renderAt(t, draw = true) {
   const T6 = TAKES.find((k) => k.id === '06');
   const cellGlow = 0.9 * seg(t, a0 + 0.5, a0 + 1.0) * (1 - seg(t, a0 + 1.8, a0 + 2.4));
   // Carga antes do grave: LEDs sobem e uma onda corre pelas réguas.
-  const charge = seg(t, LED_END - 0.2, KICKS[0]) * (1 - seg(t, KICKS[0], KICKS[0] + 0.2));
+  // Começa antes de os LEDs terminarem e já sobe rápido (ease-out), sem trecho morto.
+  const charge = (1 - (1 - clamp((t - (LED_END - 0.3)) / (KICKS[0] - LED_END + 0.3))) ** 2) * (1 - seg(t, KICKS[0], KICKS[0] + 0.2));
   cells.forEach((m, i) => {
     const led = seg(t, LED_START + 0.15 + i * 0.1, LED_START + 0.45 + i * 0.1);
-    const chase = 1 + 0.9 * charge * Math.max(0, Math.sin(t * 7 - i * 0.9));
+    const chase = 1 + 0.9 * Math.sqrt(charge) * Math.max(0, Math.sin(t * 7 - i * 0.9));
     const run = Math.max(0, Math.sin((t - POWER) * 5 - i * 0.6)) * seg(t, POWER, POWER + 0.5) * (1 - seg(t, T6.end, T6.end + 0.4));
     m.material.emissiveIntensity = cellGlow + 0.5 * run + led * (2.4 + 1.2 * charge + 2.2 * e) * chase;
   });
