@@ -28,8 +28,16 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
   bateria e guia as peças até a fonte. Depois sai do borne, corre pelo piso e
   desenha o projeto da caixa (contorno, graves e cornetas) antes de as peças chegarem.
   No grave, esse desenho volta pulsando.
-- **Câmera:** plano-sequência na transformação da fonte, inserts curtos de encaixe,
-  profundidade de campo nos closes e um respiro (recuo) antes da primeira pancada.
+- **Câmera:**
+  - Abertura com a lente rente ao piso: primeiro só o reflexo, depois a revelação.
+  - Movimentos com peso (grua, flutuação, parada seca), com a mira seguindo a posição com leve atraso.
+  - Teleobjetiva nos planos de produto e grande-angular na montagem do som.
+  - Órbita contínua de cerca de 120° durante a transformação da bateria.
+  - A câmera persegue a energia que sai do borne e abre para o plano geral sem cortar.
+  - Match cuts por forma: no polo (03 → 04) e no círculo do grave (08 → 09).
+  - Rack focus: do voltímetro para a marca e de um grave para o outro.
+  - Cada pancada do grave dá tranco, zoom de impacto e balanço, com intensidades diferentes.
+  - O último plano 3D fica frontal e um pouco de cima, e sobe como o drone que continua no real.
 - **Luz e atmosfera:** a iluminação continua fixa, com feixes visíveis na névoa,
   reflexo nítido no piso, bloom em LEDs, voltímetro e energia, e grão de filme.
 - **Ritmo:** contemplação longa intercalada com inserts de 0,5 s, e um segundo de
@@ -44,10 +52,10 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 | 0–2,0 | 01 Bateria / revelação |
 | 2,0–3,0 | 02 Bateria / ângulo |
 | 3,0–4,2 | 03 Bateria / close |
-| 4,2–6,6 | 04 Bateria → Fonte (wide + insert das células) |
+| 4,2–6,6 | 04 Bateria → Fonte (órbita contínua) |
 | 6,6–7,8 | 05 Fonte |
-| 7,8–9,6 | 06 Fonte / close + voltímetro (0 → 14,4 V, energia correndo até a saída) |
-| 9,6–11,8 | 07 Fonte → estrutura do som (plano-sequência) |
+| 7,8–9,0 | 06 Fonte / close + voltímetro (0 → 14,4 V, rack focus para a marca) |
+| 9,0–11,8 | 07 Câmera persegue a energia → Fonte vira estrutura do som (sem corte) |
 | 11,8–12,4 | 08 Início da montagem (insert de encaixe) |
 | 12,4–13,8 | 09 Graves |
 | 13,8–15,0 | 10 Cornetas |

@@ -550,14 +550,18 @@ const energyB = glowPath(
 const energyRings = [-1, 1].map((side) => glowPath(circle(side * 0.76, 0.86, 0.66, 0.62), 0.005, 160));
 const energyHorns = [-1.14, -0.38, 0.38, 1.14].map((x) => glowPath(circle(x, 1.93, 0.6, 0.24), 0.004, 80));
 
+// Cabeça do traço de energia que sai do borne (a câmera do take 07 a persegue).
+const T6e = TAKES.find((k) => k.id === '06');
+const energyHead = (t) => seg(t, T6e.end - 0.3, b0 + 1.0);
+const energyHeadPoint = (t) => energyB.geometry.parameters.path.getPointAt(clamp(energyHead(t), 0.001, 1)).toArray();
+
 function updateEnergy(t, e) {
   // Fase 1: da bateria para a fonte (cabeça corre, cauda segue).
   energyA.reveal(seg(t, 3.5, 5.1), seg(t, 4.7, 6.5), 1);
   // Fase 2: do borne até o projeto da caixa; depois esmaece quando as peças ocupam o lugar.
-  const T6 = TAKES.find((k) => k.id === '06');
-  const fade = 1 - seg(t, b0 + 1.2, b0 + 2.6);
+  const fade = 1 - seg(t, b0 + 2.4, b0 + 3.6);
   const pulse = 0.9 * Math.min(1, e);
-  energyB.reveal(0, seg(t, T6.end - 0.7, b0 + 0.5), Math.max(fade, pulse));
+  energyB.reveal(0, energyHead(t), Math.max(fade, pulse));
   energyRings.forEach((r, i) => r.reveal(0, seg(t, b0 + 0.15 + i * 0.15, b0 + 0.75 + i * 0.15), Math.max(fade, pulse)));
   energyHorns.forEach((r, i) => r.reveal(0, seg(t, b0 + 0.45 + i * 0.08, b0 + 0.85 + i * 0.08), Math.max(fade, pulse * 0.6)));
 }
@@ -645,14 +649,43 @@ const dust = new THREE.Points(
 scene.add(dust);
 
 // ---------- câmera por take ----------
+// Curvas de câmera com "peso": cada take escolhe como arranca e como chega.
+const CURVES = {
+  glide: ease, // grua: arranca devagar, desliza, assenta
+  float: (x) => 1 - Math.pow(1 - x, 3), // arranca e flutua até parar
+  in: (x) => x * x * x, // começa quase parada e acelera (revelação)
+  stop: (x) => 1 - Math.pow(1 - x, 1.6) + 0.04 * Math.sin(Math.PI * x) * x, // chega com leve atraso e para seco
+};
 function cameraAt(t) {
   const take = TAKES.find((k) => t >= k.start && t < k.end) || TAKES[TAKES.length - 1];
   const c = take.cam;
-  const k = ease(clamp((t - take.start) / (take.end - take.start)));
-  // "via": a câmera passa por um ponto intermediário (curva de Bézier quadrática).
-  const pos = c.via ? lerp3(lerp3(c.from, c.via, k), lerp3(c.via, c.to, k), k) : lerp3(c.from, c.to, k);
-  const tgt = lerp3(c.tgtFrom, c.tgtTo || c.tgtFrom, k);
-  return { take, pos, tgt, fov: lerp(c.fov[0], c.fov[1] ?? c.fov[0], k) };
+  const x = clamp((t - take.start) / (take.end - take.start));
+  const curve = CURVES[c.curve || 'glide'];
+  const k = curve(x);
+  // Inércia: a mira segue a posição com um pequeno atraso, como um operador real.
+  const kt = curve(clamp((x - 0.07) / 0.93));
+  let pos;
+  if (c.orbit) {
+    // Órbita contínua ao redor do objeto.
+    const o = c.orbit;
+    const a = lerp(o.angle[0], o.angle[1], k);
+    const r = lerp(o.radius[0], o.radius[1], k);
+    pos = [o.center[0] + r * Math.sin(a), lerp(o.height[0], o.height[1], k), o.center[2] + r * Math.cos(a)];
+  } else {
+    // "via": a câmera passa por um ponto intermediário (curva de Bézier quadrática).
+    pos = c.via ? lerp3(lerp3(c.from, c.via, k), lerp3(c.via, c.to, k), k) : lerp3(c.from, c.to, k);
+  }
+  let tgt = lerp3(c.tgtFrom, c.tgtTo || c.tgtFrom, kt);
+  if (c.follow) {
+    // Persegue a cabeça do traço de energia e, aos poucos, abre para o plano geral.
+    const head = energyHeadPoint(t);
+    const w = seg(t, c.follow.release[0], c.follow.release[1]);
+    tgt = lerp3(head, tgt, w);
+    pos = lerp3([head[0] + c.follow.offset[0], head[1] + c.follow.offset[1], head[2] + c.follow.offset[2]], pos, w);
+  }
+  // Rack focus: o foco passa de um ponto a outro dentro do take.
+  const focusPt = c.focusFrom ? lerp3(c.focusFrom, c.focusTo || c.focusFrom, seg(x, c.focusAt?.[0] ?? 0.3, c.focusAt?.[1] ?? 0.7)) : tgt;
+  return { take, pos, tgt, focusPt, fov: lerp(c.fov[0], c.fov[1] ?? c.fov[0], k) };
 }
 
 // ---------- graves ----------
@@ -661,6 +694,7 @@ const T13 = TAKES.find((k) => k.id === '13');
 // que atravessa a tela e leva ao mundo real.
 const KICKS = [1.0, 1.25, 1.42, 1.55].map((x) => T13.start + x);
 const SHOCK = KICKS[KICKS.length - 1];
+const KICK_AMP = [0.6, 0.8, 0.9, 1.4];
 function bass(t) {
   let e = 0;
   for (const k of KICKS) if (t >= k) e += Math.exp(-(t - k) * 9) * clamp((t - k) / 0.03);
@@ -691,7 +725,7 @@ export function renderAt(t) {
     const run = Math.max(0, Math.sin((t - T6.start) * 5 - i * 0.6)) * seg(t, T6.start + 0.3, T6.start + 0.8) * (1 - seg(t, T6.end, T6.end + 0.4));
     m.material.emissiveIntensity = cellGlow + 0.5 * run + led * (2.4 + 2.2 * e);
   });
-  const volts = 14.4 * seg(t, T6.start + 0.2, T6.start + 1.3);
+  const volts = 14.4 * seg(t, T6.start + 0.1, T6.start + 0.85);
   const flow = seg(t, T6.start + 0.8, T6.end - 0.1);
   if (t > T6.start - 0.5 && t < b0 + 1.5) psuPanel.redraw(volts, flow);
   else if (t < T6.start) psuPanel.redraw(0, 0);
@@ -700,7 +734,7 @@ export function renderAt(t) {
   // Graves: emergem de dentro das câmaras girando até assentar na frente.
   woofers.forEach((w, i) => {
     const side = i ? 1 : -1;
-    const t0 = 12.45 + i * 0.35;
+    const t0 = 11.9 + i * 0.6;
     const k = seg(t, t0, t0 + 0.95);
     w.position.set(side * 0.76, 0.86, lerp(0.2, 0.63, k));
     w.rotation.set(0, 0, lerp(side * -2.4, 0, k));
@@ -749,17 +783,35 @@ export function renderAt(t) {
   // Câmera + impacto físico do grave
   const cam = cameraAt(t);
   // Respiro antes do grave: a câmera recua devagar na quietude e é empurrada na pancada.
-  if (cam.take.id === '13') cam.pos[2] += 0.25 * seg(t, T13.start, KICKS[0]) - 0.45 * seg(t, KICKS[0], KICKS[0] + 0.25);
-  const shake = 0.035 * e;
-  camera.position.set(cam.pos[0] + shake * noise(t * 7), cam.pos[1] + shake * noise(t * 9 + 3), cam.pos[2] + shake * 0.5 * noise(t * 5 + 7));
-  camera.fov = cam.fov - 0.6 * e;
+  if (cam.take.id === '13') {
+    cam.pos[2] += 0.25 * seg(t, T13.start, KICKS[0]) - 0.45 * seg(t, KICKS[0], KICKS[0] + 0.25);
+    // A última pancada empurra a câmera para a frente e para cima, na direção do drone.
+    cam.pos[2] -= 0.7 * seg(t, SHOCK, END_3D);
+    cam.pos[1] += 0.35 * seg(t, SHOCK, END_3D);
+    cam.tgt[1] += 0.15 * seg(t, SHOCK, END_3D);
+  }
+  // Impacto físico: cada pancada dá um tranco vertical, um "zoom" de impacto e um
+  // balanço amortecido, com intensidades diferentes (a última é a mais forte).
+  let jolt = 0;
+  let punch = 0;
+  let roll = 0;
+  KICKS.forEach((kt, i) => {
+    const age = t - kt;
+    if (age < 0 || age > 1.2) return;
+    const amp = KICK_AMP[i];
+    jolt += amp * 0.03 * Math.exp(-age * 16) * Math.cos(age * 34);
+    punch += amp * 1.6 * Math.exp(-age * 11);
+    roll += amp * 0.006 * Math.exp(-age * 7) * Math.sin(age * 22 + i);
+  });
+  camera.position.set(cam.pos[0] + 0.006 * e * noise(t * 7), cam.pos[1] - jolt, cam.pos[2]);
+  camera.fov = cam.fov - punch;
   camera.updateProjectionMatrix();
   camera.lookAt(...cam.tgt);
-  camera.rotateZ(0.004 * e * noise(t * 11));
+  camera.rotateZ(roll);
 
   // Abertura do filme a partir do preto.
   renderer.toneMappingExposure = 0.05 + 0.95 * seg(t, 0, 1.1);
-  const dist = Math.hypot(cam.pos[0] - cam.tgt[0], cam.pos[1] - cam.tgt[1], cam.pos[2] - cam.tgt[2]);
+  const dist = Math.hypot(cam.pos[0] - cam.focusPt[0], cam.pos[1] - cam.focusPt[1], cam.pos[2] - cam.focusPt[2]);
   bokeh.uniforms.focus.value = dist;
   bokeh.uniforms.aperture.value = cam.take.cam.dof || 0.00008;
   bloom.strength = 0.38 + 0.3 * Math.min(e, 1);
