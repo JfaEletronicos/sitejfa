@@ -10,7 +10,8 @@ export const TOTAL = 30;
 
 // cam: from/to = posição (via = ponto de passagem opcional); tgtFrom/tgtTo = mira;
 // fov = [início, fim]; dof = abertura da profundidade de campo.
-// curve: glide | float | in | stop (peso do movimento; a mira segue com leve atraso).
+// curve: glide | float | in | stop — nenhuma para nas pontas: todo take entra e sai
+// em movimento (o peso vem só da variação de velocidade; a mira segue com leve atraso).
 // orbit: órbita contínua; follow: persegue o traço de energia;
 // focusFrom/focusTo: rack focus entre dois pontos.
 // Lentes: tele (FOV 12–15) nos planos de produto, grande-angular (50–58) na montagem.
@@ -40,23 +41,24 @@ export const TAKES = [
   // desenha a caixa, e então sobe num plano geral enquanto a fonte se transforma.
   { id: '07', name: 'Fonte / transformação', start: 9.0, end: 11.8,
     cam: { from: [2.6, 1.2, 4.2], via: [3.0, 1.6, 5.0], to: [2.2, 1.9, 5.4], tgtFrom: [0, 0.6, 0], tgtTo: [0, 0.9, 0], fov: [38, 36],
-      follow: { offset: [0.75, 0.45, 1.35], release: [9.6, 11.0] }, curve: 'glide' } },
+      follow: { offset: [0.75, 0.45, 1.35], release: [9.5, 10.9] }, curve: 'glide' } },
   // Insert: o anel de energia do grave esquerdo centrado no quadro (match cut com o 09).
   { id: '08', name: 'Início da montagem do som', start: 11.8, end: 12.4,
     cam: { from: [-0.95, 1.05, 2.4], to: [-0.85, 0.95, 2.15], tgtFrom: [-0.76, 0.86, 0.66], fov: [34], dof: 0.0012, curve: 'stop' } },
   // Grande-angular perto: começa no mesmo círculo (agora o grave) e o foco passa de um grave ao outro.
-  { id: '09', name: 'Graves', start: 12.4, end: 13.8,
+  { id: '09', name: 'Graves', start: 12.4, end: 13.6,
     cam: { from: [-0.8, 0.95, 1.95], to: [0.5, 0.95, 2.2], tgtFrom: [-0.76, 0.86, 0.66], tgtTo: [0.2, 0.86, 0.6], fov: [55, 52],
       dof: 0.0018, focusFrom: [-0.76, 0.86, 0.66], focusTo: [0.76, 0.86, 0.66], focusAt: [0.45, 0.8], curve: 'glide' } },
-  { id: '10', name: 'Cornetas', start: 13.8, end: 15.0,
+  { id: '10', name: 'Cornetas', start: 13.6, end: 14.6,
     cam: { from: [1.2, 2.55, 1.45], to: [0.6, 2.35, 1.75], tgtFrom: [0, 1.75, 0.3], fov: [52], curve: 'float' } },
-  { id: '11', name: 'LEDs', start: 15.0, end: 16.0,
+  { id: '11', name: 'LEDs', start: 14.6, end: 15.6,
     cam: { from: [-1.7, 0.2, 1.8], to: [-1.3, 0.25, 2.1], tgtFrom: [0, 0.95, 0.4], fov: [56], curve: 'float' } },
   // Momento longo de contemplação.
-  { id: '12', name: 'Sistema completo', start: 16.0, end: 17.2,
+  { id: '12', name: 'Sistema completo', start: 15.6, end: 17.2,
     cam: { from: [-2.6, 1.6, 4.2], via: [0, 1.3, 4.6], to: [0.4, 1.3, 5.4], tgtFrom: [0, 0.95, 0], fov: [34], curve: 'glide' } },
-  // Frontal e um pouco de cima, como o drone começa. Quietude → pancadas → a última
+  // Frontal e um pouco de cima, como o drone começa. Carga → pancadas → a última
   // empurra a câmera para a frente e para cima, dentro da onda de choque.
+  // (leve deriva lateral constante: a câmera nunca para, nem quando o respiro inverte o recuo)
   { id: '13', name: 'Grave', start: 17.2, end: 19.0,
-    cam: { from: [0, 1.55, 5.1], to: [0, 1.5, 4.9], tgtFrom: [0, 0.85, 0], fov: [36], curve: 'glide' } },
+    cam: { from: [-0.75, 1.38, 5.4], to: [0, 1.56, 4.95], tgtFrom: [-0.2, 0.84, 0], tgtTo: [0, 0.86, 0], fov: [36], curve: 'float' } },
 ];

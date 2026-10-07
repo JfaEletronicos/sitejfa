@@ -189,9 +189,15 @@ function canvasTex(w, h, draw) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
+  let last = '';
   tex.redraw = (...a) => {
     draw(c.getContext('2d'), w, h, ...a);
     tex.needsUpdate = true;
+    last = JSON.stringify(a);
+  };
+  // Redesenha só quando o conteúdo muda (ex.: o voltímetro entre dois quadros iguais).
+  tex.redrawIfChanged = (...a) => {
+    if (JSON.stringify(a) !== last) tex.redraw(...a);
   };
   tex.redraw();
   return tex;
@@ -266,18 +272,34 @@ function morphPart(obj, poses, steps, opts = {}) {
     if (o.isMesh) o.castShadow = o.receiveShadow = true;
   });
   scene.add(obj);
-  const part = { obj, poses, steps, spark: opts.spark ? makeSpark() : null, sparkAt: opts.sparkAt };
+  const part = { obj, poses, steps: chainSteps(steps), spark: opts.spark ? makeSpark() : null, sparkAt: opts.sparkAt };
   parts.push(part);
   return obj;
 }
 const P = (p, r = [0, 0, 0], s = [1, 1, 1]) => ({ p, r, s });
 
-// Curva "mecânica": destrava (recuo mínimo), pausa, dispara e assenta com leve overshoot.
+// Curva "mecânica" sem pausa: arranca progressivamente, dispara e assenta com leve
+// overshoot (~4%). Não há recuo nem espera: o movimento começa no primeiro quadro.
 function mech(x) {
-  if (x < 0.14) return -0.035 * Math.sin((Math.PI * x) / 0.14);
-  if (x < 0.24) return 0;
-  const u = (x - 0.24) / 0.76 - 1;
+  const u = x * x - 1;
   return 1 + 2.1 * u * u * u + 1.1 * u * u;
+}
+
+// Encadeamento: dentro de uma mesma transformação, o passo seguinte começa enquanto o
+// anterior ainda termina, e os deslocamentos se somam. A peça nunca para numa pose
+// intermediária; só assenta (com tranco e faísca) no fim da corrente.
+const CHAIN_GAP = 1.0; // passos separados por menos que isso formam uma corrente
+const OVERLAP = 0.4; // fração do passo seguinte que corre junto com o fim do anterior
+function chainSteps(steps) {
+  for (let i = 0; i < steps.length - 1; i++) {
+    const a = steps[i];
+    const b = steps[i + 1];
+    if (b.t0 - a.t1 < CHAIN_GAP) {
+      a.t1 = Math.max(a.t1, b.t0 + OVERLAP * (b.t1 - b.t0));
+      a.chained = true;
+    }
+  }
+  return steps;
 }
 
 // Faísca de encaixe: um ponto de luz que acende na junta quando a peça assenta.
@@ -303,43 +325,41 @@ function makeSpark() {
 function applyParts(t) {
   for (const part of parts) {
     const { obj, poses, steps } = part;
-    let cur = poses[steps.length ? steps[0].from : 'A'];
+    // Soma dos deslocamentos de cada passo (telescópica: no fim de tudo, chega à última pose).
+    const base = poses[steps[0].from];
+    const p = [...base.p];
+    const r = [...base.r];
+    const s = [...base.s];
     let landed = null;
     for (const st of steps) {
-      if (t >= st.t1) {
-        cur = poses[st.to];
-        landed = st;
-        continue;
+      if (t <= st.t0) break;
+      const x = clamp((t - st.t0) / (st.t1 - st.t0));
+      const k = st.soft ? ease(x) : mech(x);
+      const a = poses[st.from];
+      const b = poses[st.to];
+      const arc = Math.sin(Math.PI * clamp(k));
+      for (let i = 0; i < 3; i++) {
+        p[i] += (b.p[i] - a.p[i]) * k;
+        r[i] += (b.r[i] - a.r[i]) * k + arc * (st.spin ? st.spin[i] : 0);
+        s[i] += (b.s[i] - a.s[i]) * k;
       }
-      if (t > st.t0) {
-        const x = clamp((t - st.t0) / (st.t1 - st.t0));
-        const k = st.soft ? ease(x) : mech(x);
-        const a = poses[st.from];
-        const b = poses[st.to];
-        const arc = Math.sin(Math.PI * clamp(k));
-        const p = lerp3(a.p, b.p, k);
-        p[1] += arc * (st.lift || 0);
-        if (st.push) p[2] += arc * st.push;
-        const r = lerp3(a.r, b.r, k);
-        if (st.spin) for (let i = 0; i < 3; i++) r[i] += arc * st.spin[i];
-        cur = { p, r, s: lerp3(a.s, b.s, k).map((v) => Math.max(v, 0.001)) };
-        landed = null;
-      }
-      break;
+      p[1] += arc * (st.lift || 0);
+      p[2] += arc * (st.push || 0);
+      if (x >= 1 && !st.chained && !st.soft) landed = st;
+      else if (x < 1) landed = null;
     }
-    // Tranco de encaixe: 2–3 quadros de impacto logo depois de assentar.
-    const p = [...cur.p];
+    // Tranco de encaixe: 2–3 quadros de impacto quando a corrente assenta.
     const age = landed ? t - landed.t1 : 9;
-    if (age < 0.3 && !landed.soft) p[1] -= 0.012 * Math.exp(-age * 30) * Math.cos(age * 90);
+    if (age < 0.3) p[1] -= 0.012 * Math.exp(-age * 30) * Math.cos(age * 90);
     obj.position.set(...p);
-    obj.rotation.set(...cur.r);
-    obj.scale.set(...cur.s);
+    obj.rotation.set(...r);
+    obj.scale.set(...s.map((v) => Math.max(v, 0.001)));
     if (part.spark) {
-      const on = age < 0.35 && !landed.soft;
+      const on = age < 0.35;
       part.spark.visible = on;
       if (on) {
         const k = Math.exp(-age * 9);
-        part.spark.position.set(p[0] + (part.sparkAt?.[0] || 0), p[1] + cur.s[1] / 2, p[2] + cur.s[2] / 2);
+        part.spark.position.set(p[0] + (part.sparkAt?.[0] || 0), p[1] + s[1] / 2, p[2] + s[2] / 2);
         part.spark.scale.setScalar(0.35 * k + 0.05);
         part.spark.material.opacity = k;
       }
@@ -488,7 +508,7 @@ for (const [cx, cz] of [[-0.74, -0.38], [0.74, -0.38], [-0.74, 0.38], [0.74, 0.3
     B: P([cx * 1.4, 0.55, cz * 1.6], [0, 0, 0], [0.8, 0.8, 0.8]),
     C: P([cx * 1.95, 1.68, cz * 1.55], [0, 0, 0], [0.8, 0.8, 0.8]),
   }, [
-    { from: 'A', to: 'A0', t0: a0 - 0.15, t1: a0 + 0.25, soft: true },
+    { from: 'A', to: 'A0', t0: a0 - 0.5, t1: a0 + 0.2, soft: true },
     { from: 'A0', to: 'A1', t0: a0 + 0.25, t1: a0 + 0.8, soft: true },
     { from: 'A1', to: 'B', t0: a0 + 1.5, t1: a0 + 2.3 },
     { from: 'B', to: 'C', t0: b0 + 1.0, t1: b0 + 1.85 },
@@ -552,8 +572,14 @@ const energyHorns = [-1.14, -0.38, 0.38, 1.14].map((x) => glowPath(circle(x, 1.9
 
 // Cabeça do traço de energia que sai do borne (a câmera do take 07 a persegue).
 const T6e = TAKES.find((k) => k.id === '06');
-const energyHead = (t) => seg(t, T6e.end - 0.3, b0 + 1.0);
-const energyHeadPoint = (t) => energyB.geometry.parameters.path.getPointAt(clamp(energyHead(t), 0.001, 1)).toArray();
+// O primeiro trecho (borne → piso → quina da caixa) é ~13% do comprimento; o resto é o
+// contorno. Os dois trechos se sobrepõem, então a energia acelera sem nunca parar.
+const LEG = 0.1316;
+const energyHead = (t) => LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + (1 - LEG) * seg(t, b0 + 0.3, b0 + 1.4);
+// A câmera persegue a energia até a quina e sobe pela aresta; quando a energia dispara
+// pelo contorno, a câmera não a acompanha (seria um chicote) e abre para o plano geral.
+const energyHeadPoint = (t) =>
+  energyB.geometry.parameters.path.getPointAt(clamp(LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + 0.12 * seg(t, b0 + 0.4, b0 + 1.4), 0.001, 1)).toArray();
 
 function updateEnergy(t, e) {
   // Fase 1: da bateria para a fonte (cabeça corre, cauda segue).
@@ -649,12 +675,14 @@ const dust = new THREE.Points(
 scene.add(dust);
 
 // ---------- câmera por take ----------
-// Curvas de câmera com "peso": cada take escolhe como arranca e como chega.
+// Curvas de câmera sem pausa: a câmera entra no take já em movimento e sai ainda em
+// movimento (a velocidade nunca chega a zero nas pontas). O "peso" vem só da variação
+// de velocidade dentro do take.
 const CURVES = {
-  glide: ease, // grua: arranca devagar, desliza, assenta
-  float: (x) => 1 - Math.pow(1 - x, 3), // arranca e flutua até parar
-  in: (x) => x * x * x, // começa quase parada e acelera (revelação)
-  stop: (x) => 1 - Math.pow(1 - x, 1.6) + 0.04 * Math.sin(Math.PI * x) * x, // chega com leve atraso e para seco
+  glide: (x) => x, // grua em velocidade constante
+  float: (x) => 1.5 * x - 0.5 * x * x, // entra rápida e desacelera, sem parar (1,5 → 0,5)
+  in: (x) => 0.5 * x + 0.5 * x * x, // entra mais lenta e acelera (0,5 → 1,5)
+  stop: (x) => 1.3 * x - 0.3 * x * x, // chega freando, ainda em movimento (1,3 → 0,7)
 };
 function cameraAt(t) {
   const take = TAKES.find((k) => t >= k.start && t < k.end) || TAKES[TAKES.length - 1];
@@ -662,8 +690,9 @@ function cameraAt(t) {
   const x = clamp((t - take.start) / (take.end - take.start));
   const curve = CURVES[c.curve || 'glide'];
   const k = curve(x);
-  // Inércia: a mira segue a posição com um pequeno atraso, como um operador real.
-  const kt = curve(clamp((x - 0.07) / 0.93));
+  // Inércia: a mira segue a posição com um pequeno atraso no meio do take, mas já se
+  // move no primeiro quadro e ainda se move no último.
+  const kt = clamp(k - 0.05 * Math.sin(Math.PI * x));
   let pos;
   if (c.orbit) {
     // Órbita contínua ao redor do objeto.
@@ -690,11 +719,18 @@ function cameraAt(t) {
 
 // ---------- graves ----------
 const T13 = TAKES.find((k) => k.id === '13');
-// Um segundo de quietude antes da primeira pancada; a última abre a onda de choque
-// que atravessa a tela e leva ao mundo real.
+// Antes da primeira pancada, o sistema "carrega" (LEDs sobem e correm, cones vibram);
+// a última pancada abre a onda de choque que atravessa a tela e leva ao mundo real.
 const KICKS = [1.0, 1.25, 1.42, 1.55].map((x) => T13.start + x);
 const SHOCK = KICKS[KICKS.length - 1];
 const KICK_AMP = [0.6, 0.8, 0.9, 1.4];
+
+// Encadeamento entre grupos de animação: cada grupo começa antes de o anterior acabar.
+const POWER = a0 + 2.1; // a fonte liga enquanto as últimas peças ainda assentam
+const WOOFER_START = b0 + 1.6; // graves começam a emergir enquanto a caixa assenta
+const HORN_START = WOOFER_START + 2.1; // cornetas sobem enquanto o 2º grave assenta
+const LED_START = HORN_START + 1.65; // LEDs acendem enquanto as últimas cornetas sobem
+const LED_END = LED_START + 1.4;
 function bass(t) {
   let e = 0;
   for (const k of KICKS) if (t >= k) e += Math.exp(-(t - k) * 9) * clamp((t - k) / 0.03);
@@ -703,12 +739,12 @@ function bass(t) {
 
 // ---------- quadro ----------
 let fontsReady = false;
-export function renderAt(t) {
+export function renderAt(t, draw = true) {
   const end = document.getElementById('end');
   if (t >= END_CARD_START) {
     // Encerramento: apenas "JFA — Energia que vira som."
-    end.style.opacity = String(seg(t, END_CARD_START + 0.2, END_CARD_START + 1.2));
-    end.querySelector('.tag').style.opacity = String(seg(t, END_CARD_START + 0.9, END_CARD_START + 1.8));
+    end.style.opacity = String(seg(t, END_CARD_START, END_CARD_START + 0.9));
+    end.querySelector('.tag').style.opacity = String(seg(t, END_CARD_START + 0.5, END_CARD_START + 1.4));
     return;
   }
   end.style.opacity = '0';
@@ -717,42 +753,45 @@ export function renderAt(t) {
   const e = bass(t);
   updateEnergy(t, e);
 
-  // Energia: as células acendem ao se abrirem, e o painel liga no take 06.
+  // Energia: as células acendem ao se abrirem; a fonte liga enquanto ainda termina de
+  // se montar, e o voltímetro sobe sem interrupção até o close do take 06.
   const T6 = TAKES.find((k) => k.id === '06');
   const cellGlow = 0.9 * seg(t, a0 + 0.5, a0 + 1.0) * (1 - seg(t, a0 + 1.8, a0 + 2.4));
+  // Carga antes do grave: LEDs sobem e uma onda corre pelas réguas.
+  const charge = seg(t, LED_END - 0.2, KICKS[0]) * (1 - seg(t, KICKS[0], KICKS[0] + 0.2));
   cells.forEach((m, i) => {
-    const led = seg(t, 15.0 + i * 0.09, 15.25 + i * 0.09);
-    const run = Math.max(0, Math.sin((t - T6.start) * 5 - i * 0.6)) * seg(t, T6.start + 0.3, T6.start + 0.8) * (1 - seg(t, T6.end, T6.end + 0.4));
-    m.material.emissiveIntensity = cellGlow + 0.5 * run + led * (2.4 + 2.2 * e);
+    const led = seg(t, LED_START + 0.15 + i * 0.1, LED_START + 0.45 + i * 0.1);
+    const chase = 1 + 0.9 * charge * Math.max(0, Math.sin(t * 7 - i * 0.9));
+    const run = Math.max(0, Math.sin((t - POWER) * 5 - i * 0.6)) * seg(t, POWER, POWER + 0.5) * (1 - seg(t, T6.end, T6.end + 0.4));
+    m.material.emissiveIntensity = cellGlow + 0.5 * run + led * (2.4 + 1.2 * charge + 2.2 * e) * chase;
   });
-  const volts = 14.4 * seg(t, T6.start + 0.1, T6.start + 0.85);
-  const flow = seg(t, T6.start + 0.8, T6.end - 0.1);
-  if (t > T6.start - 0.5 && t < b0 + 1.5) psuPanel.redraw(volts, flow);
-  else if (t < T6.start) psuPanel.redraw(0, 0);
-  plateMats[5].emissiveIntensity = 0.12 + 0.5 * seg(t, T6.start + 0.2, T6.start + 0.6);
+  const volts = 14.4 * seg(t, POWER + 0.2, T6.start + 0.85);
+  const flow = seg(t, T6.start + 0.5, T6.end - 0.1);
+  if (t < b0 + 1.5) psuPanel.redrawIfChanged(volts, flow);
+  plateMats[5].emissiveIntensity = 0.12 + 0.5 * seg(t, POWER, POWER + 0.5);
 
-  // Graves: emergem de dentro das câmaras girando até assentar na frente.
+  // Graves: começam a emergir enquanto a caixa ainda assenta, girando até a frente.
   woofers.forEach((w, i) => {
     const side = i ? 1 : -1;
-    const t0 = 11.9 + i * 0.6;
-    const k = seg(t, t0, t0 + 0.95);
+    const t0 = WOOFER_START + i * 0.55;
+    const k = seg(t, t0, t0 + 1.7);
     w.position.set(side * 0.76, 0.86, lerp(0.2, 0.63, k));
     w.rotation.set(0, 0, lerp(side * -2.4, 0, k));
     w.visible = t > t0;
-    w.userData.cone.position.z = 0.09 * e * Math.cos((t - T13.start) * 26);
+    w.userData.cone.position.z = 0.09 * e * Math.cos((t - T13.start) * 26) + 0.012 * charge * Math.sin(t * 31 + i);
     w.userData.surround.scale.setScalar(1 + 0.02 * e);
-    w.userData.ring.material.emissiveIntensity = seg(t, 15.55 + i * 0.12, 15.85 + i * 0.12) * (2.2 + 2.5 * e);
+    w.userData.ring.material.emissiveIntensity = seg(t, LED_START + 0.65 + i * 0.15, LED_START + 1.0 + i * 0.15) * (2.2 + 1.5 * charge + 2.5 * e);
   });
 
-  // Cornetas: sobem da plataforma uma a uma.
+  // Cornetas: sobem uma a uma, a primeira já enquanto o segundo grave assenta.
   horns.forEach((h, i) => {
-    const t0 = 13.95 + i * 0.18;
-    const k = seg(t, t0, t0 + 0.75);
+    const t0 = HORN_START + i * 0.25;
+    const k = seg(t, t0, t0 + 1.1);
     const x = [-1.14, -0.38, 0.38, 1.14][i];
     h.position.set(x, lerp(1.3, 1.93, k) + 0.006 * e * Math.sin(t * 90 + i), lerp(-0.05, 0.22, k));
     h.rotation.set(0, 0, lerp((i % 2 ? 1 : -1) * 1.2, 0, k));
     h.visible = t > t0;
-    h.userData.throat.material.emissiveIntensity = seg(t, 15.4 + i * 0.06, 15.6 + i * 0.06) * (1.5 + 3 * e);
+    h.userData.throat.material.emissiveIntensity = seg(t, LED_START + i * 0.08, LED_START + 0.2 + i * 0.08) * (1.5 + 1.5 * charge + 3 * e);
   });
 
   // Ondas no piso a cada pancada.
@@ -809,15 +848,29 @@ export function renderAt(t) {
   camera.lookAt(...cam.tgt);
   camera.rotateZ(roll);
 
-  // Abertura do filme a partir do preto.
-  renderer.toneMappingExposure = 0.05 + 0.95 * seg(t, 0, 1.1);
+  // Abertura do filme a partir do preto (sobe já no primeiro quadro).
+  renderer.toneMappingExposure = 0.05 + 0.95 * (1 - Math.pow(1 - clamp(t / 0.9), 2));
   const dist = Math.hypot(cam.pos[0] - cam.focusPt[0], cam.pos[1] - cam.focusPt[1], cam.pos[2] - cam.focusPt[2]);
   bokeh.uniforms.focus.value = dist;
   bokeh.uniforms.aperture.value = cam.take.cam.dof || 0.00008;
   bloom.strength = 0.38 + 0.3 * Math.min(e, 1);
   finish.uniforms.time.value = t;
   finish.uniforms.shock.value = t >= SHOCK && t < END_3D ? (t - SHOCK) / (END_3D - SHOCK) : -1;
-  composer.render();
+  if (draw) composer.render();
+}
+
+// Estado de movimento de um quadro (para checar continuidade sem renderizar).
+export function probe(t) {
+  renderAt(t, false);
+  const v = (o) => [o.position.x, o.position.y, o.position.z];
+  return {
+    take: cameraAt(t).take.id,
+    cam: v(camera),
+    dir: camera.getWorldDirection(new THREE.Vector3()).toArray(),
+    parts: parts.map((p) => [...v(p.obj), p.obj.rotation.x, p.obj.rotation.y, p.obj.rotation.z, p.obj.scale.x, p.obj.scale.y, p.obj.scale.z]),
+    woofers: woofers.map((w) => [...v(w), w.rotation.z]),
+    horns: horns.map((h) => [...v(h), h.rotation.z]),
+  };
 }
 
 async function init() {
@@ -832,7 +885,7 @@ async function init() {
   };
   fit();
   addEventListener('resize', fit);
-  window.__film = { renderAt, END_3D, END_CARD_START, TOTAL, ready: fontsReady };
+  window.__film = { renderAt, probe, END_3D, END_CARD_START, TOTAL, ready: fontsReady };
 
   if (!new URLSearchParams(location.search).has('render')) {
     const ui = document.getElementById('ui');

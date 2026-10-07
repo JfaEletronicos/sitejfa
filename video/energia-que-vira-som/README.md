@@ -20,8 +20,15 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 ## Linguagem criativa
 
-- **Mecânica das transformações:** cada peça destrava com um recuo mínimo, pausa,
-  dispara e assenta com leve overshoot, um tranco de encaixe e uma faísca na junta.
+- **Fluxo contínuo:** nenhum take começa ou termina parado: a câmera entra e sai de
+  cada take em movimento. Dentro de uma transformação, o passo seguinte de cada peça
+  começa enquanto o anterior termina (os deslocamentos se somam), e cada grupo de
+  animação começa antes de o anterior acabar: a fonte liga enquanto termina de se
+  montar, os graves emergem enquanto a caixa assenta, as cornetas sobem enquanto o
+  segundo grave assenta e os LEDs acendem enquanto as últimas cornetas sobem.
+- **Mecânica das transformações:** cada peça arranca de forma progressiva, dispara e
+  assenta com leve overshoot. No fim de cada transformação há um tranco de encaixe e
+  uma faísca na junta.
   Cada peça gira no seu próprio eixo. Ao abrir a bateria aparecem parafusos que
   desrosqueiam e barramentos de cobre.
 - **Energia como personagem:** um fio de luz azul nasce no polo positivo, contorna a
@@ -40,8 +47,8 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
   - O último plano 3D fica frontal e um pouco de cima, e sobe como o drone que continua no real.
 - **Luz e atmosfera:** a iluminação continua fixa, com feixes visíveis na névoa,
   reflexo nítido no piso, bloom em LEDs, voltímetro e energia, e grão de filme.
-- **Ritmo:** contemplação longa intercalada com inserts de 0,5 s, e um segundo de
-  quietude antes do grave.
+- **Ritmo:** contemplação longa intercalada com inserts de 0,5 s. Antes do grave, o
+  sistema "carrega": os LEDs sobem e correm pelas réguas, e os cones vibram.
 - **Ponte com o real:** a última pancada solta uma onda de choque que atravessa a
   tela e estoura em branco. O corte para a filmagem real acontece nesse branco.
 
@@ -57,11 +64,11 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 | 7,8–9,0 | 06 Fonte / close + voltímetro (0 → 14,4 V, rack focus para a marca) |
 | 9,0–11,8 | 07 Câmera persegue a energia → Fonte vira estrutura do som (sem corte) |
 | 11,8–12,4 | 08 Início da montagem (insert de encaixe) |
-| 12,4–13,8 | 09 Graves |
-| 13,8–15,0 | 10 Cornetas |
-| 15,0–16,0 | 11 LEDs |
-| 16,0–17,2 | 12 Sistema completo |
-| 17,2–19,0 | 13 Grave (1 s de quietude, pancadas, ondas no piso, poeira, tremor, onda de choque) |
+| 12,4–13,6 | 09 Graves |
+| 13,6–14,6 | 10 Cornetas |
+| 14,6–15,6 | 11 LEDs |
+| 15,6–17,2 | 12 Sistema completo |
+| 17,2–19,0 | 13 Grave (carga, pancadas, ondas no piso, poeira, tremor, onda de choque) |
 | 19,0–27,0 | 14–16 Filmagem real (corte no branco da onda de choque → evento → drone) |
 | 27,0–30,0 | Encerramento: **JFA** / *Energia que vira som.* |
 
