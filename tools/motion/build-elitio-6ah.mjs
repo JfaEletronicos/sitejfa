@@ -5,8 +5,8 @@
  * padrão 12V 6/7Ah (151 × 65 × 94 mm): corpo e tampa com aba (linha de molde), degrau dos
  * terminais numa ponta com bloco vermelho no positivo e preto no negativo, e terminais faston
  * F2 (6,35 mm) dobrados em L com furo. Mesmos nomes de material da 280Ah ("Caixa black
- * piano"...), então o filme aplica o mesmo acabamento (look, detail, mirrors). Os adesivos
- * entram depois, do arquivo de impressão. Grupos EXPLODE_body e EXPLODE_lid para os espelhos.
+ * piano"...), então o filme aplica o mesmo acabamento (look, detail, mirrors). Adesivos do
+ * arquivo de impressão (assets/elitio-6ah/adesivos, recortes do PDF em tamanho real). Grupos EXPLODE_body e EXPLODE_lid para os espelhos.
  *
  *   node tools/motion/build-elitio-6ah.mjs
  */
@@ -119,6 +119,26 @@ for (const [z, mat, tag] of blocks) {
   t.name = 'Terminal ' + tag + ' lâmina';
   lid.add(t);
 }
+
+// Adesivos do arquivo de impressão (recortes do PDF, tamanho real em mm), rente às faces.
+const loader = new THREE.TextureLoader();
+const sticker = async (file, name, w, h, parent, pos, rot) => {
+  const tex = await loader.loadAsync('/src/adesivos/' + file);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const mat = new THREE.MeshPhysicalMaterial({ name, map: tex, roughness: 0.6, specularIntensity: 0.35,
+    alphaTest: 0.5 });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+  m.position.set(...pos);
+  m.rotation.set(...rot);
+  m.name = name;
+  parent.add(m);
+};
+const FRONT_Z = (D - 1.6) / 2 + 0.15;
+await sticker('frontal-6ah.webp', 'Adesivo frontal', 139.0, 70.0, body, [0, 37, FRONT_Z], [0, 0, 0]);
+await sticker('ficha-tecnica-6ah.webp', 'Adesivo ficha técnica', 100.2, 70.3, body, [0, 37, -FRONT_Z], [0, Math.PI, 0]);
+// Em cima, ao lado do degrau: os sinais + e − do adesivo ficam junto dos terminais.
+await sticker('superior-6ah.webp', 'Adesivo superior', 112.3, 52.3, lid, [STEP / 2 + 0.5, H + 0.15, 0], [-Math.PI / 2, 0, 0]);
 
 const glb = await new GLTFExporter().parseAsync(root, { binary: true });
 const bytes = new Uint8Array(glb);
