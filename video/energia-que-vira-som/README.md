@@ -35,6 +35,17 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
   bateria e guia as peças até a fonte. Depois sai do borne, corre pelo piso e
   desenha o projeto da caixa (contorno, graves e cornetas) antes de as peças chegarem.
   No grave, esse desenho volta pulsando.
+- **Espírito de energia (`spirit.js`):** uma linha de luz azul-clara com vida própria
+  que ronda os objetos em espiral durante todo o 3D e dispara cada passagem: acorda no
+  piso, sobe pela bateria, brinca com o polo e mergulha nele (vira o fio de energia),
+  renasce na ponta do fio e gira pela transformação, se enrola na frente da fonte e entra
+  no borne (vira o traço que desenha a caixa), renasce na quina e sobe em espiral pela
+  caixa, laça o anel enquanto o grave emerge, faz um "8" pelos graves, pula de corneta em
+  corneta acendendo cada uma, corre enrolado pelas réguas de LED acendendo-as, ronda o
+  sistema, se enrola cada vez mais rápido na carga, mergulha no centro na 1ª pancada e
+  explode contra a câmera no choque. Tem um filamento em espiral em volta, faíscas que se
+  soltam da cauda e estrelas de brilho a cada toque. Só brilha (bloom); não ilumina a
+  cena, então a luz de estúdio continua fixa.
 - **Câmera:**
   - Abertura com a lente rente ao piso: primeiro só o reflexo, depois a revelação.
   - Movimentos com peso (grua, flutuação, parada seca), com a mira seguindo a posição com leve atraso.

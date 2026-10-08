@@ -13,6 +13,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { TAKES, END_3D, END_CARD_START, TOTAL } from './timeline.js';
+import { createSpirit } from './spirit.js';
 
 const W = 1920;
 const H = 1080;
@@ -441,6 +442,8 @@ for (let i = 0; i < 8; i++) {
   const lx = -1.14 + col * 0.76;
   const m = rbox(M.cell, 0.02);
   m.material = M.cell.clone();
+  m.userData.ledX = lx;
+  m.userData.ledTop = ledTop;
   cells.push(m);
   morphPart(
     m,
@@ -743,8 +746,60 @@ const KICK_AMP = [0.6, 0.8, 0.9, 1.4];
 const POWER = a0 + 2.1; // a fonte liga enquanto as últimas peças ainda assentam
 const WOOFER_START = b0 + 1.95; // graves começam (ainda escondidos) quando a caixa assenta e atravessam a face no insert 08
 const HORN_START = WOOFER_START + 1.75; // cornetas sobem enquanto o 2º grave assenta
-const LED_START = HORN_START + 1.65; // LEDs acendem enquanto as últimas cornetas sobem
-const LED_END = LED_START + 1.15; // fim real das rampas (réguas e anéis)
+// O espírito de energia acende as luzes ao passar: pula pelas cornetas (cada garganta
+// acende no toque), corre pela régua de cima (esq. → dir.), desce e volta pela de baixo.
+const SPAN = 1.62; // meia-largura do percurso do espírito na frente da caixa
+const HOP = [HORN_START + 0.85, HORN_START + 1.75];
+const LED_TOP = [HOP[1], HOP[1] + 0.4];
+const LED_BOT = [LED_TOP[1] + 0.15, LED_TOP[1] + 0.5];
+const LED_END = LED_BOT[1] + 0.3; // fim das rampas (réguas e anéis)
+const passX = (x, [t0, t1], dir = 1) => t0 + ((dir > 0 ? x + SPAN : SPAN - x) / (2 * SPAN)) * (t1 - t0);
+const HORN_X = [-1.14, -0.38, 0.38, 1.14];
+
+// ---------- espírito de energia ----------
+const T8 = TAKES.find((k) => k.id === '08');
+const spirit = createSpirit(
+  scene,
+  {
+    pole: [0.55, 1.08, 0],
+    borne: [1.05, 0.27, 0.67],
+    wooferL: [-0.76, 0.86, 0.63],
+    hornX: HORN_X,
+    hornY: 1.93,
+    span: SPAN,
+    ledY: [1.6, 0.1],
+    ledZ: 0.72,
+    poleApproach: TAKES.find((k) => k.id === '03').start - 0.05,
+    poleDive: 3.5, // = início do fio de energia da bateria
+    emergeA: 5.1, // = fim do fio (frente da futura fonte)
+    fonteOrbit: TAKES.find((k) => k.id === '05').start - 0.05,
+    panel: T6e.start - 0.05,
+    borneDive: T6e.end - 0.4, // = saída do traço que desenha a caixa
+    emergeB: b0 + 1.4, // = fim do traço (quina da caixa)
+    ring: [T8.start - 0.05, T8.end],
+    hop: HOP,
+    ledTop: LED_TOP,
+    ledBot: LED_BOT,
+    windup: [T13.start, KICKS[0]],
+    shock: SHOCK,
+    end: END_3D,
+    hidden: [[3.5, 5.1], [T6e.end - 0.4, b0 + 1.4], [KICKS[0], SHOCK]],
+    touches: [3.5, 5.1, T6e.end - 0.4, b0 + 1.4, KICKS[0], SHOCK],
+    stars: [
+      { t: 3.5, p: [0.55, 1.16, 0.02], s: 0.55 },
+      { t: 5.1, p: [0, 0.27, 0.88], s: 0.45 },
+      { t: TAKES.find((k) => k.id === '05').start + 0.05, p: [1.2, 0.55, 0.67], s: 0.4 },
+      { t: T6e.end - 0.4, p: [1.05, 0.27, 0.72], s: 0.5 },
+      { t: b0 + 1.4, p: [1.56, 0.12, 0.67], s: 0.45 },
+      { t: T8.end - 0.05, p: [-0.76, 0.86, 0.9], s: 0.4 },
+      ...HORN_X.map((x) => ({ t: passX(x, HOP), p: [x, 1.93, 0.62], s: 0.26 })),
+      { t: LED_BOT[1], p: [-SPAN, 0.1, 0.72], s: 0.3 },
+      { t: KICKS[0], p: [0, 0.86, 0.72], s: 1.0 },
+      { t: SHOCK, p: [0, 0.86, 0.8], s: 0.8 },
+    ],
+  },
+  sparkTex,
+);
 function bass(t) {
   let e = 0;
   for (const k of KICKS) if (t >= k) e += Math.exp(-(t - k) * 9) * clamp((t - k) / 0.03);
@@ -775,7 +830,8 @@ export function renderAt(t, draw = true) {
   // Começa antes de os LEDs terminarem e já sobe rápido (ease-out), sem trecho morto.
   const charge = (1 - (1 - clamp((t - (LED_END - 0.3)) / (KICKS[0] - LED_END + 0.3))) ** 2) * (1 - seg(t, KICKS[0], KICKS[0] + 0.2));
   cells.forEach((m, i) => {
-    const led = seg(t, LED_START + 0.15 + i * 0.1, LED_START + 0.45 + i * 0.1);
+    const pass = m.userData.ledTop ? passX(m.userData.ledX, LED_TOP) : passX(m.userData.ledX, LED_BOT, -1);
+    const led = seg(t, pass - 0.04, pass + 0.22);
     const chase = 1 + 0.9 * Math.sqrt(charge) * Math.max(0, Math.sin(t * 7 - i * 0.9));
     const run = Math.max(0, Math.sin((t - POWER) * 5 - i * 0.6)) * seg(t, POWER, POWER + 0.5) * (1 - seg(t, T6.end, T6.end + 0.4));
     m.material.emissiveIntensity = cellGlow + 0.5 * run + led * (2.4 + 1.2 * charge + 2.2 * e) * chase;
@@ -795,7 +851,8 @@ export function renderAt(t, draw = true) {
     w.visible = t > t0;
     w.userData.cone.position.z = 0.09 * e * Math.cos((t - T13.start) * 26) + 0.012 * charge * Math.sin(t * 31 + i);
     w.userData.surround.scale.setScalar(1 + 0.02 * e);
-    w.userData.ring.material.emissiveIntensity = seg(t, LED_START + 0.65 + i * 0.15, LED_START + 1.0 + i * 0.15) * (2.2 + 1.5 * charge + 2.5 * e);
+    const ringPass = passX(side * 0.76, LED_BOT, -1); // acende quando o espírito passa embaixo
+    w.userData.ring.material.emissiveIntensity = seg(t, ringPass - 0.04, ringPass + 0.3) * (2.2 + 1.5 * charge + 2.5 * e);
   });
 
   // Cornetas: sobem uma a uma, a primeira já enquanto o segundo grave assenta.
@@ -806,7 +863,8 @@ export function renderAt(t, draw = true) {
     h.position.set(x, lerp(1.3, 1.93, k) + 0.006 * e * Math.sin(t * 90 + i), lerp(-0.05, 0.22, k));
     h.rotation.set(0, 0, lerp((i % 2 ? 1 : -1) * 1.2, 0, k));
     h.visible = t > t0;
-    h.userData.throat.material.emissiveIntensity = seg(t, LED_START + i * 0.08, LED_START + 0.2 + i * 0.08) * (1.5 + 1.5 * charge + 3 * e);
+    const touch = passX(x, HOP); // acende quando o espírito encosta na boca
+    h.userData.throat.material.emissiveIntensity = seg(t, touch - 0.03, touch + 0.15) * (1.5 + 1.5 * charge + 3 * e);
   });
 
   // Ondas no piso a cada pancada.
@@ -862,6 +920,8 @@ export function renderAt(t, draw = true) {
   camera.updateProjectionMatrix();
   camera.lookAt(...cam.tgt);
   camera.rotateZ(roll);
+
+  spirit.update(t, e, camera);
 
   // Abertura do filme a partir do preto (sobe já no primeiro quadro).
   renderer.toneMappingExposure = 0.05 + 0.95 * (1 - Math.pow(1 - clamp(t / 0.9), 2));
