@@ -20,8 +20,8 @@ const arg = (k, d) => {
 const FPS = Number(arg('fps', 30));
 const SCALE = Number(arg('scale', 1));
 const ONLY = arg('only', 'all');
-const W = Math.round(1920 * SCALE);
-const H = Math.round(1080 * SCALE);
+const W = Math.round(1080 * SCALE); // vertical 9:16
+const H = Math.round(1920 * SCALE);
 
 mkdirSync(out, { recursive: true });
 const ff = (...a) => execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...a], { stdio: 'inherit' });
@@ -33,7 +33,7 @@ const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium',
   args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
 });
-const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: SCALE });
+const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: SCALE });
 page.on('pageerror', (e) => console.error('[page]', e.message));
 await page.goto('http://localhost:5199/video/energia-que-vira-som/index.html?render');
 await page.waitForFunction(() => window.__film, null, { timeout: 120000 });
@@ -47,7 +47,7 @@ async function frames(name, t0, t1) {
   for (let i = 0; i < n; i++) {
     const t = t0 + i / FPS;
     await page.evaluate((tt) => window.__film.renderAt(tt), t);
-    await page.screenshot({ path: join(dir, `${String(i).padStart(5, '0')}.png`), clip: { x: 0, y: 0, width: 1920, height: 1080 } });
+    await page.screenshot({ path: join(dir, `${String(i).padStart(5, '0')}.png`), clip: { x: 0, y: 0, width: 1080, height: 1920 } });
     if (i % 30 === 0) console.log(`${name} ${t.toFixed(2)}s  (${i}/${n}, ${((Date.now() - started) / 1000).toFixed(0)}s)`);
   }
   ff('-framerate', String(FPS), '-i', join(dir, '%05d.png'), '-s', `${W}x${H}`, ...enc, join(out, `${name}.mp4`));

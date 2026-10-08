@@ -15,8 +15,9 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { TAKES, END_3D, END_CARD_START, TOTAL } from './timeline.js';
 import { createSpirit } from './spirit.js';
 
-const W = 1920;
-const H = 1080;
+// Vertical 9:16 (iPhone).
+const W = 1080;
+const H = 1920;
 const BLUE = 0x0068ff;
 
 // ---------- utilidades de tempo ----------
@@ -385,17 +386,17 @@ const T4 = TAKES.find((k) => k.id === '04');
 const T7 = TAKES.find((k) => k.id === '07');
 // Abertura: a bateria cai do alto e chega ao chão como num desenho animado — estica na
 // queda, achata no impacto ("smack"), quica duas vezes cada vez menos e assenta.
-const FALL0 = 0.3; // começa a cair (antes disso está fora de quadro, no alto)
-const FALL_H = 2.6; // altura da queda
-const FALL_T = 0.5; // tempo até o 1º impacto
+const FALL0 = 0.12; // começa a cair já na abertura
+const FALL_H = 0.5; // queda curta e sutil: quem mostra o peso é a câmera
+const FALL_T = 0.32; // ~ gravidade real
 const G = (2 * FALL_H) / FALL_T ** 2;
-const BOUNCES = [0.28, 0.06]; // alturas dos quiques
+const BOUNCES = [0.02]; // um quique mínimo
 const IMPACTS = (() => {
   const out = [FALL0 + FALL_T];
   for (const h of BOUNCES) out.push(out[out.length - 1] + (2 * Math.sqrt(2 * G * h)) / G);
   return out;
 })();
-const IMPACT_AMP = [1, 0.45, 0.15];
+const IMPACT_AMP = [1, 0.25];
 // Altura da bateria acima do piso (física simples: queda + quiques).
 function drop(t) {
   if (t < FALL0) return FALL_H;
@@ -411,10 +412,10 @@ function drop(t) {
 // Squash & stretch da queda: estica enquanto cai rápido, achata em cada impacto.
 function fallSquash(t) {
   let s = 0;
-  if (t > FALL0 && t < IMPACTS[0]) s += 0.16 * ((t - FALL0) / FALL_T) ** 2;
+  if (t > FALL0 && t < IMPACTS[0]) s += 0.04 * ((t - FALL0) / FALL_T) ** 2;
   IMPACTS.forEach((ti, i) => {
     const u = t - ti;
-    if (u >= 0 && u < 1.2) s += -0.24 * IMPACT_AMP[i] * Math.exp(-11 * u) * Math.cos(19 * u);
+    if (u >= 0 && u < 1.2) s += -0.09 * IMPACT_AMP[i] * Math.exp(-11 * u) * Math.cos(19 * u);
   });
   return s;
 }
@@ -743,8 +744,9 @@ function cameraAt(t) {
     // Órbita contínua ao redor do objeto.
     const o = c.orbit;
     const a = lerp(o.angle[0], o.angle[1], k);
-    const r = lerp(o.radius[0], o.radius[1], k);
-    pos = [o.center[0] + r * Math.sin(a), lerp(o.height[0], o.height[1], k), o.center[2] + r * Math.cos(a)];
+    const bez = (v) => (v.length > 2 ? lerp(lerp(v[0], v[1], k), lerp(v[1], v[2], k), k) : lerp(v[0], v[1], k));
+    const r = bez(o.radius);
+    pos = [o.center[0] + r * Math.sin(a), bez(o.height), o.center[2] + r * Math.cos(a)];
   } else {
     // "via": a câmera passa por um ponto intermediário (curva de Bézier quadrática).
     pos = c.via ? lerp3(lerp3(c.from, c.via, k), lerp3(c.via, c.to, k), k) : lerp3(c.from, c.to, k);
@@ -759,7 +761,16 @@ function cameraAt(t) {
   }
   // Rack focus: o foco passa de um ponto a outro dentro do take.
   const focusPt = c.focusFrom ? lerp3(c.focusFrom, c.focusTo || c.focusFrom, seg(x, c.focusAt?.[0] ?? 0.3, c.focusAt?.[1] ?? 0.7)) : tgt;
-  return { take, pos, tgt, focusPt, fov: lerp(c.fov[0], c.fov[1] ?? c.fov[0], k) };
+  // Vertical 9:16: afasta a câmera do alvo (vk) e abre um pouco a lente (vf) para a
+  // largura do objeto caber no quadro estreito, sobrando altura para o texto.
+  const vk = c.vk ?? 1.75;
+  const vf = c.vf ?? 1.45;
+  pos = lerp3(tgt, pos, vk);
+  // Composição vertical: mira um pouco acima do objeto, que desce para o terço de baixo e
+  // deixa o alto do quadro para o texto.
+  tgt = [tgt[0], tgt[1] + (c.ty ?? 0.13) * Math.hypot(pos[0] - tgt[0], pos[1] - tgt[1], pos[2] - tgt[2]), tgt[2]];
+  const fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(lerp(c.fov[0], c.fov[1] ?? c.fov[0], k)) / 2) * vf));
+  return { take, pos, tgt, focusPt, fov };
 }
 
 // ---------- graves ----------
@@ -801,6 +812,7 @@ const spirit = createSpirit(
     span: SPAN,
     ledY: [1.6, 0.1],
     ledZ: 0.72,
+    halfH: H / 2,
     poleApproach: TAKES.find((k) => k.id === '03').start - 0.05,
     poleDive: POLE_DIVE, // = início do fio de energia da bateria
     emergeA: a0 + 0.6, // = fim do fio (frente da futura fonte)
@@ -839,26 +851,204 @@ function bass(t) {
   return Math.min(e, 1.4);
 }
 
-// ---------- texto: uma frase só, em reticências, que atravessa o filme ----------
-const T2 = TAKES.find((k) => k.id === '02');
-const T12 = TAKES.find((k) => k.id === '12');
-const CAPTIONS = [
-  { t0: IMPACTS[IMPACTS.length - 1] + 0.35, t1: T2.end - 0.1, html: 'A partir da energia <b>JFA</b>…' },
-  { t0: a0 + 1.35, t1: TAKES.find((k) => k.id === '05').end - 0.5, html: '…tudo se transforma…' },
-  { t0: T12.start + 0.1, t1: T12.end + 0.4, html: '…até virar som.' },
-];
-const capEl = document.getElementById('cap');
-let capHtml = '';
-function updateCaption(t) {
-  const c = CAPTIONS.find((k) => t >= k.t0 - 0.05 && t <= k.t1 + 0.4);
-  if (!c || t >= END_CARD_START) {
-    capEl.style.opacity = '0';
-    return;
+// ---------- equipamentos JFA atrás da caixa (o 360 revela) ----------
+// Como nos projetos de verdade: fonte JFA (o mesmo painel com voltímetro) no alto da
+// traseira, duas baterias JFA embaixo, cabos até a placa de bornes e um filete de LED.
+const rack = new THREE.Group();
+{
+  const psu = new THREE.Group();
+  const body = rbox(M.case, 0.03);
+  body.scale.set(1.7, 0.36, 0.34);
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(1.62, 0.29), new THREE.MeshStandardMaterial({ map: psuPanel, emissiveMap: psuPanel, emissive: 0xffffff, emissiveIntensity: 0.55, roughness: 0.4 }));
+  face.rotation.y = Math.PI;
+  face.position.z = -0.172;
+  psu.add(body, face);
+  for (let i = 0; i < 8; i++) {
+    const fin = rbox(M.cell, 0.01);
+    fin.scale.set(0.04, 0.14, 0.3);
+    fin.position.set(-0.7 + i * 0.2, 0.25, 0);
+    psu.add(fin);
   }
-  if (c.html !== capHtml) capEl.innerHTML = capHtml = c.html;
-  const a = seg(t, c.t0, c.t0 + 0.45) * (1 - seg(t, c.t1, c.t1 + 0.35));
-  capEl.style.opacity = String(a);
-  capEl.style.transform = `translateY(${(1 - seg(t, c.t0, c.t0 + 0.6)) * 10}px)`;
+  psu.position.set(0, 1.27, -0.78);
+  rack.add(psu);
+  for (const side of [-1, 1]) {
+    const bat = new THREE.Group();
+    const bb = rbox([M.caseSide, M.caseSide, M.case, M.case, M.case, M.case], 0.03);
+    bb.scale.set(0.95, 0.56, 0.34);
+    const lab = new THREE.Mesh(new THREE.PlaneGeometry(0.72, 0.3), new THREE.MeshStandardMaterial({ map: batteryLabel, roughness: 0.45 }));
+    lab.rotation.y = Math.PI;
+    lab.position.z = -0.172;
+    bat.add(bb, lab);
+    for (const s of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.06, 16), s < 0 ? M.black : M.red);
+      post.position.set(s * 0.32, 0.3, 0);
+      bat.add(post);
+    }
+    bat.position.set(side * 0.78, 0.4, -0.78);
+    rack.add(bat);
+    // cabos: bateria → placa de bornes, e fonte → placa
+    const cable = (pts, mat) => rack.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((p) => V(...p))), 32, 0.018, 8), mat));
+    cable([[side * 0.78 + 0.32, 0.72, -0.78], [side * 0.62, 0.8, -0.86], [side * 0.45, 0.86, -0.72]], M.red);
+    cable([[side * 0.78 - 0.32, 0.72, -0.78], [side * 0.3, 0.78, -0.9], [side * 0.2, 0.86, -0.66]], M.black);
+    cable([[side * 0.6, 1.09, -0.8], [side * 0.55, 0.98, -0.88], [side * 0.45, 0.88, -0.72]], side > 0 ? M.red : M.black);
+  }
+  const strip = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.015, 0.015), M.led.clone());
+  strip.material.emissiveIntensity = 2.2;
+  strip.position.set(0, 1.07, -0.96);
+  rack.add(strip);
+  rack.traverse((o) => {
+    if (o.isMesh) o.castShadow = o.receiveShadow = true;
+  });
+  scene.add(rack);
+}
+
+// ---------- texto em motion: palavras gigantes ATRÁS do objeto em cena ----------
+// Cada frase é um cartão no espaço 3D, atrás do objeto (que tapa parte das letras),
+// sempre de frente para a câmera, com tipografia e animação próprias. Uma frase só,
+// em reticências, que atravessa o filme até a assinatura.
+const TW = 1024;
+const TH = 1536;
+const hashT = (k) => {
+  const s = Math.sin(k * 12.9898 + 78.233) * 43758.5453;
+  return s - Math.floor(s);
+};
+function makeCard() {
+  const c = document.createElement('canvas');
+  c.width = TW;
+  c.height = TH;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false, toneMapped: false }));
+  m.visible = false;
+  m.renderOrder = 1;
+  scene.add(m);
+  return { m, g: c.getContext('2d'), tex, placed: false };
+}
+// Desenha letra por letra; each(i) devolve o estado de cada letra.
+function letters(g, text, font, x, y, track, each) {
+  g.font = font;
+  const chars = [...text];
+  const ws = chars.map((ch) => g.measureText(ch).width);
+  let cx = x - (ws.reduce((a, b) => a + b, 0) + track * (chars.length - 1)) / 2;
+  chars.forEach((ch, i) => {
+    const s = each(i, ch);
+    if (s.a > 0.002) {
+      g.save();
+      g.translate(cx + ws[i] / 2 + (s.dx || 0), y + (s.dy || 0));
+      g.rotate(s.r || 0);
+      g.scale(s.sx ?? 1, s.sy ?? 1);
+      g.globalAlpha = Math.min(1, s.a);
+      g.fillStyle = s.c || INK;
+      g.textAlign = 'center';
+      g.fillText(s.ch ?? ch, 0, 0);
+      g.restore();
+    }
+    cx += ws[i] + track;
+  });
+}
+const INK = '#e6ebf3'; // abaixo do limiar do bloom: o texto não estoura
+const TBLUE = '#4d95ff';
+const outQ = (u) => 1 - (1 - clamp(u)) ** 3;
+const T1 = TAKES.find((k) => k.id === '01');
+const T5 = TAKES.find((k) => k.id === '05');
+const T13t = TAKES.find((k) => k.id === '13');
+const TEXTS = [
+  // 1) Pousa junto com a bateria: "ENERGIA" despenca letra a letra e achata no impacto.
+  {
+    t0: IMPACTS[0] - 0.28, t1: T1.end - 0.4, anchor: [0, 0.5, 0], back: 1.4, lift: 0.55, fill: 0.78,
+    draw(g, u, out) {
+      const land = IMPACTS[0] - (this.t0);
+      letters(g, 'A PARTIR DA', '500 62px "Space Grotesk"', TW / 2, TH * 0.31, 20, (i) => {
+        const v = clamp((u - 0.55 - i * 0.03) / 0.3);
+        const o = clamp((out - i * 0.02) / 0.3);
+        return { a: v * (1 - o), dy: (1 - outQ(v)) * 30 - o * 60 };
+      });
+      letters(g, 'ENERGIA', '400 330px "Bebas Neue"', TW / 2, TH * 0.56, 6, (i) => {
+        const st = land - 0.22 + i * 0.018;
+        const v = u - st;
+        if (v < 0) return { a: 0 };
+        const fall = clamp(v / 0.22);
+        const after = Math.max(0, v - 0.22);
+        const sq = after > 0 ? 0.22 * Math.exp(-10 * after) * Math.cos(17 * after) : -0.12 * fall;
+        const o = clamp((out - i * 0.03) / 0.35);
+        return { a: 1 - o, dy: -(1 - fall * fall) * TH * 0.45 - o * 140, sy: 1 - sq, sx: 1 + 0.5 * sq };
+      });
+      letters(g, 'JFA...', '400 150px StretchPro', TW / 2, TH * 0.76, 10, (i) => {
+        const st = i < 3 ? 0.75 + i * 0.07 : 1.05 + (i - 3) * 0.14;
+        const v = clamp((u - st) / 0.28);
+        const o = clamp((out - i * 0.025) / 0.3);
+        const k = v > 0 ? 1 + 2.7 * (v - 1) ** 3 + 1.7 * (v - 1) ** 2 : 0;
+        return { a: (v > 0 ? 1 : 0) * (1 - o), sx: k, sy: k, c: TBLUE, dy: -o * 80 };
+      });
+    },
+  },
+  // 2) "transforma" literalmente: cada letra embaralha e vira (flip) até assentar.
+  {
+    t0: T5.start + 0.05, t1: T5.end - 0.45, anchor: [0, 0.27, 0], back: 1.6, lift: 1.0, fill: 0.62,
+    draw(g, u, out) {
+      letters(g, '...tudo se', '300 92px "Space Grotesk"', TW / 2, TH * 0.4, 6, (i) => {
+        const v = clamp((u - i * 0.035) / 0.35);
+        const o = clamp((out - i * 0.02) / 0.3);
+        return { a: v * (1 - o), dx: -(1 - outQ(v)) * 90 };
+      });
+      const AZ = 'abcdefghijklmnopqrstuvwxyz';
+      letters(g, 'transforma...', 'italic 400 168px "Playfair Display"', TW / 2, TH * 0.58, 0, (i) => {
+        const st = 0.2 + i * 0.05;
+        const v = (u - st) / 0.32;
+        if (v < 0) return { a: 0 };
+        const o = clamp((out - i * 0.025) / 0.3);
+        const settled = v >= 1;
+        const flip = settled ? 1 : Math.abs(Math.cos(Math.PI * v * 2.5));
+        const ch = settled || i > 9 ? undefined : AZ[Math.floor(hashT(i * 13 + Math.floor(u * 28)) * 26)];
+        const over = settled ? 1 + 0.18 * Math.exp(-9 * (v - 1)) * Math.cos(12 * (v - 1)) : flip;
+        return { a: 1 - o, ch, sy: over * (1 - o), c: settled ? INK : TBLUE };
+      });
+    },
+  },
+  // 3) "SOM." sobe como barras de equalizador e pulsa com o grave.
+  {
+    t0: T13t.start - 0.35, t1: END_3D - 0.2, placeAt: T13t.start, anchor: [0, 1.0, 0], back: 1.8, lift: 0.45, fill: 0.86,
+    draw(g, u, out, e) {
+      letters(g, '...até virar', '300 84px "Space Grotesk"', TW / 2, TH * 0.22, 8, (i) => {
+        const v = clamp((u - i * 0.03) / 0.3);
+        return { a: v * (1 - clamp(out / 0.25)), dy: -(1 - outQ(v)) * 50 };
+      });
+      letters(g, 'SOM.', '400 560px "Bebas Neue"', TW / 2, TH * 0.66, 10, (i, ch) => {
+        const v = clamp((u - 0.25 - i * 0.09) / 0.35);
+        const k = v > 0 ? 1 + 2.7 * (v - 1) ** 3 + 1.7 * (v - 1) ** 2 : 0;
+        const eq = ch === '.' ? 1 + 0.9 * e : 1 + 0.05 * Math.sin(u * 9 + i * 1.7) + 0.22 * e * (1 + 0.5 * Math.sin(i * 2.1));
+        return { a: v > 0 ? 1 - clamp(out / 0.25) : 0, sy: k * eq, sx: ch === '.' ? eq : 1, dy: (1 - Math.min(1, k)) * 220, c: ch === '.' ? TBLUE : INK };
+      });
+    },
+  },
+];
+const cards = TEXTS.map(() => makeCard());
+function placeCard(card, T) {
+  const cam = cameraAt(T.placeAt ?? T.t0 + 0.05);
+  const a = T.anchor;
+  const dx = a[0] - cam.pos[0];
+  const dz = a[2] - cam.pos[2];
+  const L = Math.hypot(dx, dz);
+  const p = [a[0] + (dx / L) * T.back, a[1] + T.lift, a[2] + (dz / L) * T.back];
+  const dist = Math.hypot(p[0] - cam.pos[0], p[1] - cam.pos[1], p[2] - cam.pos[2]);
+  const h = 2 * dist * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * T.fill;
+  card.m.scale.set((h * TW) / TH, h, 1);
+  card.m.position.set(...p);
+  card.placed = true;
+}
+function updateText(t, e) {
+  TEXTS.forEach((T, i) => {
+    const card = cards[i];
+    const on = t >= T.t0 - 0.3 && t <= T.t1 + 0.6;
+    card.m.visible = on;
+    if (!on) return;
+    if (!card.placed) placeCard(card, T);
+    card.m.quaternion.copy(camera.quaternion);
+    card.g.clearRect(0, 0, TW, TH);
+    T.draw(card.g, t - T.t0, Math.max(0, t - T.t1), e);
+    card.tex.needsUpdate = true;
+  });
 }
 
 // ---------- quadro ----------
@@ -866,13 +1056,13 @@ let fontsReady = false;
 export function renderAt(t, draw = true) {
   const end = document.getElementById('end');
   if (t >= END_CARD_START) {
+    cards.forEach((c) => (c.m.visible = false));
     // Encerramento: apenas "JFA — Energia que vira som."
     end.style.opacity = String(seg(t, END_CARD_START, END_CARD_START + 0.9));
     end.querySelector('.tag').style.opacity = String(seg(t, END_CARD_START + 0.5, END_CARD_START + 1.4));
     return;
   }
   end.style.opacity = '0';
-  updateCaption(t);
 
   applyParts(t);
   const e = bass(t);
@@ -895,8 +1085,10 @@ export function renderAt(t, draw = true) {
   });
   const volts = 14.4 * seg(t, POWER + 0.2, T6.start + 0.85);
   const flow = seg(t, T6.start + 0.5, T6.end - 0.1);
-  if (t < b0 + 1.5) psuPanel.redrawIfChanged(volts, flow);
+  psuPanel.redrawIfChanged(t < b0 + 1.5 ? volts : 14.4, t < b0 + 1.5 ? flow : 1); // o rack traseiro mostra 14,4 V
   plateMats[5].emissiveIntensity = 0.12 + 0.5 * seg(t, POWER, POWER + 0.5);
+
+  rack.visible = t > b0 + 1.0;
 
   // Graves: saltam de dentro das câmaras com um "pop" (leve overshoot), um depois do outro.
   woofers.forEach((w, i) => {
@@ -964,18 +1156,32 @@ export function renderAt(t, draw = true) {
   let jolt = 0;
   let punch = 0;
   let roll = 0;
-  [...KICKS.map((k, i) => [k, KICK_AMP[i]]), ...IMPACTS.map((k, i) => [k, 0.5 * IMPACT_AMP[i]])].forEach(([kt, amp], i) => {
+  KICKS.forEach((kt, i) => {
     const age = t - kt;
     if (age < 0 || age > 1.2) return;
+    const amp = KICK_AMP[i];
     jolt += amp * 0.03 * Math.exp(-age * 16) * Math.cos(age * 34);
     punch += amp * 1.6 * Math.exp(-age * 11);
     roll += amp * 0.006 * Math.exp(-age * 7) * Math.sin(age * 22 + i);
+  });
+  // A bateria é pesada: no pouso a câmera leva um tranco e balança, amortecendo devagar.
+  IMPACTS.forEach((kt, i) => {
+    const age = t - kt;
+    if (age < 0 || age > 1.6) return;
+    const amp = IMPACT_AMP[i];
+    jolt += amp * 0.09 * Math.exp(-age * 5.5) * Math.cos(age * 21);
+    punch += amp * 1.2 * Math.exp(-age * 9);
+    roll += amp * 0.022 * Math.exp(-age * 4.5) * Math.sin(age * 15 + 0.6);
   });
   camera.position.set(cam.pos[0] + 0.006 * e * noise(t * 7), cam.pos[1] - jolt, cam.pos[2]);
   camera.fov = cam.fov - punch;
   camera.updateProjectionMatrix();
   camera.lookAt(...cam.tgt);
   camera.rotateZ(roll);
+  const camDist = Math.hypot(cam.pos[0] - cam.tgt[0], cam.pos[1] - cam.tgt[1], cam.pos[2] - cam.tgt[2]);
+  scene.fog.near = camDist + 2.5;
+  scene.fog.far = camDist + 12;
+  updateText(t, e);
 
   spirit.update(t, e, camera);
 
@@ -1005,7 +1211,11 @@ export function probe(t) {
 }
 
 async function init() {
-  await document.fonts.load('120px StretchPro').catch(() => {});
+  await Promise.all(
+    ['120px StretchPro', '400 100px "Bebas Neue"', 'italic 400 100px "Playfair Display"', '300 100px "Space Grotesk"', '500 100px "Space Grotesk"'].map((ft) =>
+      document.fonts.load(ft).catch(() => {}),
+    ),
+  );
   batteryLabel.redraw();
   psuPanel.redraw();
   fontsReady = true;

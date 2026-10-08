@@ -314,7 +314,7 @@ export function createSpirit(scene, W, sparkTex) {
   const width = new Float32Array(N);
   function update(t, e, camera) {
     const dt = TRAIL / (N - 1);
-    const pxr = 540 / Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    const pxr = W.halfH / Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
     for (let i = 0; i < N; i++) {
       const ti = t - i * dt;
       const h = head(ti);
@@ -370,7 +370,7 @@ export function createSpirit(scene, W, sparkTex) {
     sGeo.attributes.position.needsUpdate = true;
     sGeo.attributes.aSize.needsUpdate = true;
     sGeo.attributes.aAlpha.needsUpdate = true;
-    sMat.uniforms.uScale.value = 1080 / 2 / Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    sMat.uniforms.uScale.value = W.halfH / Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
 
     // "Tchan": estrela que estoura, gira e some a cada toque.
     W.stars.forEach((ev, i) => {

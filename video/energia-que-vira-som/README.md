@@ -20,21 +20,34 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 ## Linguagem criativa
 
+- **Vertical 9:16 (1080×1920, iPhone):** cada take é reenquadrado para o vertical (a câmera
+  se afasta e abre a lente para a largura caber), com o objeto no terço de baixo e o alto
+  do quadro livre para o texto.
 - **O produto é a energia:** bateria (0–6,8 s) e fonte (6,8–12 s) têm o tempo de tela; o
-  som é o "tchan" do final (montagem em cascata de pops e o grave).
-- **Abertura com queda cartunesca:** a bateria cai do alto, estica na queda, achata no
-  impacto ("smack"), quica duas vezes cada vez menos e assenta; cada impacto levanta a
-  poeira do piso, solta uma onda no chão e dá um tranco na câmera.
-- **Texto:** uma frase só, em reticências, sem nomear produtos — *"A partir da energia
-  JFA…"* (depois do pouso) → *"…tudo se transforma…"* (bateria vira fonte) → *"…até virar
-  som."* (revelação do som) → assinatura **JFA** / *Energia que vira som.* Uma linha por
-  vez, fina, no terço inferior esquerdo; nada sobre as transformações nem sobre o grave.
+  som é o "tchan" do final.
+- **Abertura:** a bateria cai curto (meio metro, quase na gravidade real) com um quique
+  mínimo; quem mostra o peso é a câmera, que leva um tranco e balança amortecendo.
+- **Texto em motion, gigante e atrás dos objetos:** cartões no espaço 3D, atrás da
+  bateria, da fonte e da caixa (o objeto tapa parte das letras), cada um com fonte e
+  animação próprias, formando uma frase só em reticências:
+  - *"A PARTIR DA / ENERGIA / JFA…"* — "ENERGIA" (Bebas Neue) despenca letra a letra e
+    achata junto com o pouso da bateria; "JFA" (StretchPro) estoura e os três pontinhos
+    aparecem um a um.
+  - *"…tudo se / transforma…"* — "transforma" (Playfair itálico) embaralha e vira letra a
+    letra até assentar.
+  - *"…até virar / SOM."* — "SOM." (Bebas Neue) sobe como barras de equalizador e pulsa
+    com o grave.
+  - Assinatura: **JFA** / *Energia que vira som.*
 - **Transformações leves, de desenho animado:** as peças se remodelam no lugar, com
   movimento suave (sem voar nem girar), e o objeto inteiro faz squash & stretch
   (encolhe, estica, quica e assenta). O rótulo vira como uma carta e revela o painel da fonte.
 - **Projeto do som:** duas câmaras com graves de 15" (aro de alumínio e anel de LED), painel
   de cornetas integrado com 4 cornetas retangulares de boca larga (moldura de alumínio),
   réguas de LED na junção e na base. Sem marca.
+- **360 com os equipamentos JFA:** com o sistema pronto, a câmera dá uma volta completa e
+  mostra a traseira, como nos projetos de verdade: fonte JFA (voltímetro em 14,4 V) no
+  alto, duas baterias JFA embaixo, cabos até a placa de bornes e um filete de LED; depois
+  volta para a frente e segue para o grave.
 - **Espírito de energia (`spirit.js`):** linha de luz azul-clara com vida própria que ronda
   os objetos em espiral e dispara cada passagem (mergulha no polo e vira o fio de energia;
   entra no borne e vira o traço que desenha a caixa; laça o anel do grave; acende cornetas
@@ -53,20 +66,20 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 | Tempo | Take |
 |---|---|
-| 0–2,2 | 01 Bateria cai e pousa — *"A partir da energia JFA…"* |
-| 2,2–3,4 | 02 Bateria / ângulo |
-| 3,4–4,6 | 03 Bateria / close (o espírito mergulha no polo) |
+| 0–2,8 | 01 Bateria cai e pousa — *A PARTIR DA / ENERGIA / JFA…* |
+| 2,8–3,6 | 02 Bateria / ângulo |
+| 3,6–4,6 | 03 Bateria / close (o espírito mergulha no polo) |
 | 4,6–6,8 | 04 Bateria → Fonte (órbita) |
-| 6,8–8,6 | 05 Fonte — *"…tudo se transforma…"* |
+| 6,8–8,6 | 05 Fonte — *…tudo se / transforma…* |
 | 8,6–10,6 | 06 Fonte / close + voltímetro |
 | 10,6–13,0 | 07 Energia desenha o projeto → Fonte vira a caixa |
 | 13,0–13,4 | 08 Grave salta do anel de energia |
 | 13,4–13,9 | 09 Graves |
 | 13,9–14,4 | 10 Cornetas |
 | 14,4–15,0 | 11 LEDs |
-| 15,0–16,2 | 12 Sistema completo — *"…até virar som."* |
-| 16,2–19,0 | 13 Grave (carga, pancadas, onda de choque) |
-| 19,0–27,0 | 14–16 Filmagem real (corte no branco → evento → drone) |
+| 15,0–17,4 | 12 360 com os equipamentos JFA atrás |
+| 17,4–19,0 | 13 Grave — *…até virar / SOM.* — onda de choque |
+| 19,0–27,0 | 14–16 Filmagem real, vertical (corte no branco → evento → drone) |
 | 27,0–30,0 | Encerramento: **JFA** / *Energia que vira som.* |
 
 A música entra depois e não comanda os tempos.
@@ -82,8 +95,8 @@ npm run dev
 ## Renderizar
 
 ```bash
-node video/energia-que-vira-som/render.mjs            # 1920x1080, 30 fps
-node video/energia-que-vira-som/render.mjs --scale 2  # 3840x2160
+node video/energia-que-vira-som/render.mjs            # 1080x1920 (9:16), 30 fps
+node video/energia-que-vira-som/render.mjs --scale 2  # 2160x3840
 node video/energia-que-vira-som/render.mjs --only 3d --from 4 --to 7   # só um trecho
 ```
 
@@ -96,7 +109,7 @@ Saída em `video/energia-que-vira-som/out/`:
 Coloque o material editado (8 s, sem áudio necessário) em `footage/real.mp4` e
 renderize de novo. Até lá, uma claquete provisória ocupa o trecho.
 
-Briefing de captação:
+Briefing de captação (filmar na vertical, 9:16):
 1. **Take 14, casamento:** o primeiro quadro precisa reproduzir o `match-frame.png`.
    O sistema real é um trio genérico sem marca: 2 graves, painel com 4 cornetas
    retangulares em cima e réguas de LED azul. Câmera frontal, na altura do centro dos
@@ -107,3 +120,8 @@ Briefing de captação:
    na mão de alguém ou no painel do carro.
 3. **Take 16, drone:** começa colado no sistema e sobe/recua sem parar até revelar o
    evento inteiro, com o sistema ainda visível e integrado ao ambiente.
+
+## Fontes
+
+Bebas Neue, Playfair Display e Space Grotesk (SIL Open Font License), em `fonts/`.
+StretchPro é a fonte da marca, em `/public/fonts`.

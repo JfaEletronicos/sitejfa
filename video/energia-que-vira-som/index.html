@@ -9,6 +9,25 @@
         font-family: 'StretchPro';
         src: url('/fonts/StretchPro.woff') format('woff');
       }
+      @font-face {
+        font-family: 'Bebas Neue';
+        src: url('./fonts/bebas-neue-latin-400-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Playfair Display';
+        font-style: italic;
+        src: url('./fonts/playfair-display-latin-400-italic.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        font-weight: 300;
+        src: url('./fonts/space-grotesk-latin-300-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        font-weight: 500;
+        src: url('./fonts/space-grotesk-latin-500-normal.woff2') format('woff2');
+      }
       html,
       body {
         margin: 0;
@@ -18,32 +37,12 @@
       }
       #stage {
         position: relative;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         transform-origin: 0 0;
       }
       canvas {
         display: block;
-      }
-      #cap {
-        position: absolute;
-        left: 120px;
-        bottom: 118px;
-        color: rgba(255, 255, 255, 0.9);
-        font-family: system-ui, sans-serif;
-        font-weight: 300;
-        font-size: 40px;
-        letter-spacing: 0.06em;
-        opacity: 0;
-        pointer-events: none;
-        text-shadow: 0 0 24px rgba(0, 0, 0, 0.6);
-      }
-      #cap b {
-        font-family: 'StretchPro', sans-serif;
-        font-weight: 400;
-        font-size: 34px;
-        letter-spacing: 0.04em;
-        color: #fff;
       }
       #end {
         position: absolute;
@@ -84,7 +83,6 @@
   </head>
   <body>
     <div id="stage">
-      <div id="cap"></div>
       <div id="end">
         <div class="logo">JFA</div>
         <div class="tag">Energia que vira <b>som</b>.</div>
