@@ -65,6 +65,7 @@ export const PRODUCTS = [
   },
   {
     id: 'bateria-litio-nautica-12v-100a',
+    page: '#/baterias/e-litio-nautica-12-8v-100ah',
     name: 'Bateria de Lítio Náutica 12.8V 100A',
     lines: [E],
     category: 'Baterias',
