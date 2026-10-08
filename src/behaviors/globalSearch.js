@@ -68,21 +68,19 @@ function initGlobalSearch(ctx) {
       const tab = root.querySelector('.manuals-tab[data-line="' + line + '"]');
       if (tab) setTimeout(() => tab.click(), ctx.reduceMotion ? 0 : 260);
     };
+    // Abre a página de Manuais (de qualquer tela) e filtra pela busca.
     const gotoManualsWithQuery = (query) => {
-      const manualsSection = root.getElementById('manualsSection');
-      const manualsInput = root.getElementById('manualsSearchInput');
-      if (manualsSection)
-        manualsSection.scrollIntoView({ behavior: ctx.reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      if (manualsInput) {
-        setTimeout(
-          () => {
-            manualsInput.value = query;
-            manualsInput.dispatchEvent(new Event('input', { bubbles: true }));
-            manualsInput.focus();
-          },
-          ctx.reduceMotion ? 0 : 320,
-        );
-      }
+      if (location.hash !== '#/manuais') location.hash = '#/manuais';
+      setTimeout(
+        () => {
+          const manualsInput = root.getElementById('manualsSearchInput');
+          if (!manualsInput) return;
+          manualsInput.value = query;
+          manualsInput.dispatchEvent(new Event('input', { bubbles: true }));
+          manualsInput.focus({ preventScroll: true });
+        },
+        ctx.reduceMotion ? 0 : 320,
+      );
     };
     const gotoSection = (id) => {
       const target = root.getElementById(id);
@@ -104,9 +102,12 @@ function initGlobalSearch(ctx) {
               '</span><span class="jfa-search-row-meta">' +
               escapeHtml(lineLabelFor(p) + ' \u2022 ' + p.category) +
               '</span></span><span class="jfa-search-row-action">Ver produto</span></button>',
+            // Abre a página do produto; sem página (ex.: produtos só com manual), os Manuais filtrados.
             action: () => {
               closePanel();
-              gotoManualsWithQuery(p.name);
+              const href = p.page || (ctx.productPageHref && ctx.productPageHref(p.id));
+              if (href) location.hash = href;
+              else gotoManualsWithQuery(p.name);
             },
           })),
         });

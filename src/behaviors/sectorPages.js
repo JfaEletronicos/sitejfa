@@ -496,6 +496,12 @@ function initSectorPages(ctx) {
     return 'produto';
   };
   ctx.renderSectorProduct = renderSectorProduct;
+  // Página de um produto (para a busca do header): a primeira categoria que o lista.
+  ctx.productPageHref = (id) => {
+    if (!PRODUCT_DETAILS[id]) return null;
+    const slug = Object.keys(SECTOR_CATALOGS).find((s) => SECTOR_CATALOGS[s].groups.some((g) => g.ids.includes(id)));
+    return slug ? '#/setores/' + slug + '/' + id : null;
+  };
 
   // Moov: cliques nos botões que levam à loja oficial.
   const moovView = root.getElementById('moovView');

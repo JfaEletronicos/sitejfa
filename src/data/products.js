@@ -2,6 +2,8 @@
  * Catálogo de produtos/manuais usado pela busca global do header e pela
  * seção Manuais. `lines` indica as linhas (automotivo/energia) do produto,
  * `aliases` alimenta a busca e `status: 'discontinued'` marca itens fora de linha.
+ * `page` (baterias) é a página da bateria; os demais produtos com página são
+ * achados pelo catálogo de categorias (data/sectors.js).
  */
 import { SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
 
@@ -12,6 +14,7 @@ const BAT = SHOW_BATERIAS_AUTOMOTIVO ? [A, E] : [E];
 export const PRODUCTS = [
   {
     id: 'bateria-litio-12v-50a',
+    page: '#/baterias/e-litio-pro-12-8v/50ah',
     name: 'Bateria de Lítio 12.8V 50A',
     lines: BAT,
     category: 'Baterias',
@@ -22,6 +25,7 @@ export const PRODUCTS = [
   },
   {
     id: 'bateria-litio-12v-100a',
+    page: '#/baterias/e-litio-pro-12-8v/100ah',
     name: 'Bateria de Lítio 12.8V 100A',
     lines: BAT,
     category: 'Baterias',
@@ -31,6 +35,7 @@ export const PRODUCTS = [
   },
   {
     id: 'bateria-litio-25v-100a',
+    page: '#/baterias/e-litio-pro-25-6v/100ah',
     name: 'Bateria de Lítio 25.6V 100A',
     lines: [E],
     category: 'Baterias',
@@ -41,6 +46,7 @@ export const PRODUCTS = [
   },
   {
     id: 'bateria-litio-48v-50a',
+    page: '#/baterias/e-litio-pro-48v-50ah',
     name: 'Bateria de Lítio 48V 50A',
     lines: [E],
     category: 'Baterias',
@@ -51,6 +57,7 @@ export const PRODUCTS = [
   },
   {
     id: 'bateria-litio-48v-100a',
+    page: '#/baterias/e-litio-pro-solar-48v-100ah-rack',
     name: 'Bateria de Lítio 48V 100A',
     lines: [E],
     category: 'Baterias',
@@ -60,6 +67,7 @@ export const PRODUCTS = [
   },
   {
     id: 'bateria-litio-nautica-25v-100a',
+    page: '#/baterias/e-litio-nautica-25-6v-100ah',
     name: 'Bateria de Lítio Náutica 25.6V 100A',
     lines: [E],
     category: 'Baterias',
