@@ -20,67 +20,48 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 ## Linguagem criativa
 
-- **Fluxo contínuo:** nenhum take começa ou termina parado: a câmera entra e sai de
-  cada take em movimento. Dentro de uma transformação, o passo seguinte de cada peça
-  começa enquanto o anterior termina (os deslocamentos se somam), e cada grupo de
-  animação começa antes de o anterior acabar: a fonte liga enquanto termina de se
-  montar, os graves emergem enquanto a caixa assenta, as cornetas sobem enquanto o
-  segundo grave assenta e os LEDs acendem enquanto as últimas cornetas sobem.
-- **Mecânica das transformações:** cada peça arranca de forma progressiva, dispara e
-  assenta com leve overshoot. No fim de cada transformação há um tranco de encaixe e
-  uma faísca na junta.
-  Cada peça gira no seu próprio eixo. Ao abrir a bateria aparecem parafusos que
-  desrosqueiam e barramentos de cobre.
-- **Energia como personagem:** um fio de luz azul nasce no polo positivo, contorna a
-  bateria e guia as peças até a fonte. Depois sai do borne, corre pelo piso e
-  desenha o projeto da caixa (contorno, graves e cornetas) antes de as peças chegarem.
-  No grave, esse desenho volta pulsando.
-- **Espírito de energia (`spirit.js`):** uma linha de luz azul-clara com vida própria
-  que ronda os objetos em espiral durante todo o 3D e dispara cada passagem: acorda no
-  piso, sobe pela bateria, brinca com o polo e mergulha nele (vira o fio de energia),
-  renasce na ponta do fio e gira pela transformação, se enrola na frente da fonte e entra
-  no borne (vira o traço que desenha a caixa), renasce na quina e sobe em espiral pela
-  caixa, laça o anel enquanto o grave emerge, faz um "8" pelos graves, pula de corneta em
-  corneta acendendo cada uma, corre enrolado pelas réguas de LED acendendo-as, ronda o
-  sistema, se enrola cada vez mais rápido na carga, mergulha no centro na 1ª pancada e
-  explode contra a câmera no choque. Tem um filamento em espiral em volta, faíscas que se
-  soltam da cauda e estrelas de brilho a cada toque. Só brilha (bloom); não ilumina a
-  cena, então a luz de estúdio continua fixa.
-- **Câmera:**
-  - Abertura com a lente rente ao piso: primeiro só o reflexo, depois a revelação.
-  - Movimentos com peso (grua, flutuação, parada seca), com a mira seguindo a posição com leve atraso.
-  - Teleobjetiva nos planos de produto e grande-angular na montagem do som.
-  - Órbita contínua de cerca de 120° durante a transformação da bateria.
-  - A câmera persegue a energia que sai do borne e abre para o plano geral sem cortar.
-  - Match cuts por forma: no polo (03 → 04) e no círculo do grave (08 → 09).
-  - Rack focus: do voltímetro para a marca e de um grave para o outro.
-  - Cada pancada do grave dá tranco, zoom de impacto e balanço, com intensidades diferentes.
-  - O último plano 3D fica frontal e um pouco de cima, e sobe como o drone que continua no real.
-- **Luz e atmosfera:** a iluminação continua fixa, com feixes visíveis na névoa,
-  reflexo nítido no piso, bloom em LEDs, voltímetro e energia, e grão de filme.
-- **Ritmo:** contemplação longa intercalada com inserts de 0,5 s. Antes do grave, o
-  sistema "carrega": os LEDs sobem e correm pelas réguas, e os cones vibram.
-- **Ponte com o real:** a última pancada solta uma onda de choque que atravessa a
-  tela e estoura em branco. O corte para a filmagem real acontece nesse branco.
+- **O produto é a energia:** bateria (0–6,8 s) e fonte (6,8–12 s) têm o tempo de tela; o
+  som é o "tchan" do final (montagem em cascata de pops e o grave).
+- **Prévia logo no início:** no começo do take 01 a bateria "soluça": encolhe, as metades
+  se afastam mostrando a costura azul acesa, a tampa pula e tudo volta com um "boing".
+- **Transformações leves, de desenho animado:** as peças se remodelam no lugar, com
+  movimento suave (sem voar nem girar), e o objeto inteiro faz squash & stretch
+  (encolhe, estica, quica e assenta). O rótulo vira como uma carta e revela o painel da fonte.
+- **Projeto do som:** duas câmaras com graves de 15" (aro de alumínio e anel de LED), painel
+  de cornetas integrado com 4 cornetas retangulares de boca larga (moldura de alumínio),
+  réguas de LED na junção e na base. Sem marca.
+- **Espírito de energia (`spirit.js`):** linha de luz azul-clara com vida própria que ronda
+  os objetos em espiral e dispara cada passagem (mergulha no polo e vira o fio de energia;
+  entra no borne e vira o traço que desenha a caixa; laça o anel do grave; acende cornetas
+  e réguas ao passar; carrega e explode contra a câmera no choque). Faíscas e estrelas de
+  brilho a cada toque. Só brilha; a luz de estúdio continua fixa.
+- **Fluxo contínuo:** nenhum take começa ou termina parado, e cada animação começa antes
+  de a anterior acabar.
+- **Câmera:** abertura baixa, tele nos planos de produto, órbita na transformação da
+  bateria, perseguição da energia, match cuts no polo (03 → 04) e no anel → grave (08 → 09),
+  rack focus, impacto físico do grave e último plano frontal alinhado ao drone.
+- **Luz e atmosfera:** iluminação fixa, feixes na névoa, reflexo no piso, bloom e grão.
+- **Ponte com o real:** a última pancada solta uma onda de choque que estoura em branco; o
+  corte para a filmagem real acontece nesse branco.
 
 ## Linha do tempo (`timeline.js`)
 
 | Tempo | Take |
 |---|---|
-| 0–2,0 | 01 Bateria / revelação |
-| 2,0–3,0 | 02 Bateria / ângulo |
-| 3,0–4,2 | 03 Bateria / close |
-| 4,2–6,6 | 04 Bateria → Fonte (órbita contínua) |
-| 6,6–7,8 | 05 Fonte |
-| 7,8–9,0 | 06 Fonte / close + voltímetro (0 → 14,4 V, rack focus para a marca) |
-| 9,0–11,8 | 07 Câmera persegue a energia → Fonte vira estrutura do som (sem corte) |
-| 11,8–12,4 | 08 Início da montagem (insert de encaixe) |
-| 12,4–13,6 | 09 Graves |
-| 13,6–14,6 | 10 Cornetas |
-| 14,6–15,6 | 11 LEDs |
-| 15,6–17,2 | 12 Sistema completo |
-| 17,2–19,0 | 13 Grave (carga, pancadas, ondas no piso, poeira, tremor, onda de choque) |
-| 19,0–27,0 | 14–16 Filmagem real (corte no branco da onda de choque → evento → drone) |
+| 0–2,2 | 01 Bateria / revelação + prévia da transformação |
+| 2,2–3,4 | 02 Bateria / ângulo |
+| 3,4–4,6 | 03 Bateria / close (o espírito mergulha no polo) |
+| 4,6–6,8 | 04 Bateria → Fonte (órbita) |
+| 6,8–8,6 | 05 Fonte |
+| 8,6–10,6 | 06 Fonte / close + voltímetro |
+| 10,6–13,0 | 07 Energia desenha o projeto → Fonte vira a caixa |
+| 13,0–13,4 | 08 Grave salta do anel de energia |
+| 13,4–13,9 | 09 Graves |
+| 13,9–14,4 | 10 Cornetas |
+| 14,4–15,0 | 11 LEDs |
+| 15,0–16,2 | 12 Sistema completo |
+| 16,2–19,0 | 13 Grave (carga, pancadas, onda de choque) |
+| 19,0–27,0 | 14–16 Filmagem real (corte no branco → evento → drone) |
 | 27,0–30,0 | Encerramento: **JFA** / *Energia que vira som.* |
 
 A música entra depois e não comanda os tempos.
@@ -112,8 +93,8 @@ renderize de novo. Até lá, uma claquete provisória ocupa o trecho.
 
 Briefing de captação:
 1. **Take 14, casamento:** o primeiro quadro precisa reproduzir o `match-frame.png`.
-   O sistema real é um trio genérico sem marca: 2 graves, 4 cornetas em cima e
-   réguas de LED azul em cima e embaixo. Câmera frontal, na altura do centro dos
+   O sistema real é um trio genérico sem marca: 2 graves, painel com 4 cornetas
+   retangulares em cima e réguas de LED azul. Câmera frontal, na altura do centro dos
    graves, com o mesmo tamanho e a mesma posição na tela. O corte acontece no
    branco da onda de choque. Abra o real saindo do branco, numa pancada de grave.
 2. **Take 15, evento:** encontro de som automotivo brasileiro de verdade, com carros,

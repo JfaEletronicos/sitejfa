@@ -82,7 +82,7 @@ export function createSpirit(scene, W, sparkTex) {
       const u = clamp((t - W.hop[0]) / (W.hop[1] - W.hop[0]));
       const x = lerp(-W.span, W.span, u);
       const ph = (x - W.hornX[0]) / (W.hornX[1] - W.hornX[0]);
-      return [x, W.hornY + 0.4 * Math.abs(Math.sin(Math.PI * ph)), 0.62 + 0.1 * (1 - Math.cos(2 * Math.PI * ph))];
+      return [x, W.hornY + 0.35 * Math.abs(Math.sin(Math.PI * ph)), W.hornZ + 0.12 * (1 - Math.cos(2 * Math.PI * ph))];
     }],
     // 10. Corre enrolado pela régua de LED de cima, desce e volta pela de baixo.
     [W.ledTop[0], W.ledBot[1], (t) => {

@@ -1,7 +1,7 @@
 // JFA — "Energia que vira som"
 // Filme 3D determinístico: cada quadro é função pura do tempo t (segundos).
 // Bateria → Fonte → Caixa de som são as MESMAS peças mudando de pose:
-// nada aparece por fade; tudo desliza, gira e se encaixa.
+// nada aparece por fade; as peças se remodelam no lugar, com squash & stretch de desenho animado.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
@@ -267,12 +267,15 @@ const psuPanel = canvasTex(1840, 320, (g, w, h, volts = 0, flow = 0) => {
 // Cada peça tem poses nomeadas e uma sequência de transições.
 // pose = { p:[x,y,z], r:[x,y,z], s:[x,y,z] }
 const parts = [];
+// Todas as peças vivem num "rig" com pivô no piso: é ele que encolhe, estica e quica.
+const rig = new THREE.Group();
+scene.add(rig);
 function morphPart(obj, poses, steps, opts = {}) {
   obj.castShadow = obj.receiveShadow = true;
   obj.traverse((o) => {
     if (o.isMesh) o.castShadow = o.receiveShadow = true;
   });
-  scene.add(obj);
+  rig.add(obj);
   const part = { obj, poses, steps: chainSteps(steps), spark: opts.spark ? makeSpark() : null, sparkAt: opts.sparkAt };
   parts.push(part);
   return obj;
@@ -324,6 +327,8 @@ function makeSpark() {
 }
 
 function applyParts(t) {
+  const sq = squash(t);
+  rig.scale.set(1 - 0.5 * sq, 1 + sq, 1 - 0.5 * sq);
   for (const part of parts) {
     const { obj, poses, steps } = part;
     // Soma dos deslocamentos de cada passo (telescópica: no fim de tudo, chega à última pose).
@@ -374,48 +379,93 @@ function applyParts(t) {
 const rbox = (mat, r = 0.035) => new THREE.Mesh(new RoundedBoxGeometry(1, 1, 1, 4, r), mat);
 
 // Janelas das transformações (ver timeline.js)
+const T3 = TAKES.find((k) => k.id === '03');
 const T4 = TAKES.find((k) => k.id === '04');
 const T7 = TAKES.find((k) => k.id === '07');
-const a0 = T4.start;
-const b0 = T7.start;
+const TEASE = 0.35; // mini-transformação de prévia logo no início do take 01 (a bateria "soluça")
+const a0 = T4.start + 0.2; // bateria → fonte
+const b0 = T7.end - 1.0; // fonte → caixa de som (o "tchan" do final)
+const POLE_DIVE = T3.end - 0.4; // o espírito mergulha no polo e vira o fio de energia
 
-// Cascas: metades da bateria → corpo da fonte → as duas câmaras da caixa.
+// Transformações leves, de desenho animado: as peças se remodelam no lugar com
+// movimento suave (sem voar nem girar), e o objeto inteiro faz squash & stretch:
+// encolhe (antecipação), estica enquanto muda de forma, quica e assenta.
+const soft = (from, to, t0, t1, extra = {}) => ({ from, to, t0, t1, soft: true, ...extra });
+const SQUASH = [
+  [TEASE - 0.15, 0.55],
+  [a0 - 0.2, 1],
+  [b0 - 0.2, 1],
+];
+function squash(t) {
+  let s = 0;
+  for (const [te, amp] of SQUASH) {
+    const u = t - te;
+    if (u < 0) continue;
+    if (u < 0.2) s += -0.08 * amp * ease(u / 0.2);
+    else {
+      const v = u - 0.2;
+      s += amp * Math.exp(-5.5 * v) * (-0.08 * Math.cos(13 * v) + 0.16 * Math.sin(13 * v));
+    }
+  }
+  return s;
+}
+// A prévia: abre um pouco (as metades se afastam, a tampa pula) e volta com um "boing".
+const teaseSteps = (to) => [soft('A', to, TEASE + 0.05, TEASE + 0.25), soft(to, 'A', TEASE + 0.25, TEASE + 0.7)];
+
+// Cascas: metades da bateria → corpo da fonte → as duas câmaras dos graves.
 for (const side of [-1, 1]) {
+  const d = side > 0 ? 0.06 : 0;
   morphPart(
     rbox([M.caseSide, M.caseSide, M.case, M.case, M.case, M.case]),
     {
       A: P([side * 0.4, 0.48, 0], [0, 0, 0], [0.8, 0.92, 0.9]),
-      A1: P([side * 0.78, 0.48, 0], [0, side * 0.12, 0], [0.8, 0.92, 0.9]),
+      T: P([side * 0.445, 0.48, 0], [0, 0, side * -0.04], [0.8, 0.92, 0.9]),
       B: P([side * 0.6, 0.27, 0], [0, 0, 0], [1.2, 0.46, 1.3]),
       C: P([side * 0.76, 0.86, 0], [0, 0, 0], [1.5, 1.52, 1.2]),
     },
-    [
-      { from: 'A', to: 'A1', t0: a0 + 0.1, t1: a0 + 0.8 },
-      { from: 'A1', to: 'B', t0: a0 + 1.1, t1: a0 + 2.2, spin: [side * 0.5, 0, 0] },
-      { from: 'B', to: 'C', t0: b0 + 0.35, t1: b0 + 1.6, lift: 0.25, spin: [0, side * 0.7, side * 0.25] },
-    ],
-    { spark: true, sparkAt: [-side * 0.5] },
+    [...teaseSteps('T'), soft('A', 'B', a0 + d, a0 + 1.1 + d), soft('B', 'C', b0 + d, b0 + 0.9 + d)],
   );
 }
 
-// Tampa: tampa da bateria → tampa da fonte → plataforma das cornetas.
+// Núcleo de energia: a luz azul que aparece pela fresta quando a bateria "abre".
+const core = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), M.cell.clone());
 morphPart(
-  rbox(M.case, 0.02),
+  core,
   {
-    A: P([0, 0.96, 0], [0, 0, 0], [1.64, 0.08, 0.94]),
-    A1: P([0, 2.15, 0], [0, 0, 0], [1.64, 0.08, 0.94]),
-    B: P([0, 0.52, 0], [0, 0, 0], [2.44, 0.05, 1.34]),
-    B1: P([0, 1.15, 0], [0, 0, 0], [2.44, 0.05, 1.34]),
-    C: P([0, 1.65, 0], [0, 0, 0], [3.1, 0.06, 1.26]),
+    A: P([0, 0.48, 0], [0, 0, 0], [0.05, 0.8, 0.82]),
+    B: P([0, 0.27, 0], [0, 0, 0], [0.05, 0.38, 1.2]),
+    C: P([0, 0.86, 0], [0, 0, 0], [0.05, 1.4, 1.1]),
   },
-  [
-    { from: 'A', to: 'A1', t0: a0, t1: a0 + 0.7 },
-    { from: 'A1', to: 'B', t0: a0 + 1.4, t1: a0 + 2.3 },
-    { from: 'B', to: 'B1', t0: b0, t1: b0 + 0.6 },
-    { from: 'B1', to: 'C', t0: b0 + 0.9, t1: b0 + 1.8 },
-  ],
-  { spark: true },
+  [soft('A', 'B', a0, a0 + 1.0), soft('B', 'C', b0, b0 + 0.9)],
 );
+
+// Tampa: tampa da bateria → tampa da fonte → painel das cornetas.
+const LID = {
+  A: P([0, 0.96, 0], [0, 0, 0], [1.64, 0.08, 0.94]),
+  T: P([0, 1.07, 0], [0, 0, 0], [1.64, 0.08, 0.94]),
+  B: P([0, 0.52, 0], [0, 0, 0], [2.44, 0.05, 1.34]),
+  C: P([0, 1.845, 0], [0, 0, 0], [3.1, 0.45, 1.26]),
+};
+const lidSteps = () => [...teaseSteps('T'), soft('A', 'B', a0 + 0.05, a0 + 1.15), soft('B', 'C', b0 + 0.05, b0 + 0.95)];
+morphPart(rbox(M.case, 0.02), LID, lidSteps());
+// Parafusos dos cantos acompanham a tampa (viram os cantos de alumínio do painel).
+for (const [cx, cz] of [[-0.74, -0.38], [0.74, -0.38], [-0.74, 0.38], [0.74, 0.38]]) {
+  const bolt = new THREE.Group();
+  const head = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.025, 6), M.alu);
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.12, 12), M.alu);
+  shaft.position.y = -0.07;
+  bolt.add(head, shaft);
+  morphPart(
+    bolt,
+    {
+      A: P([cx, 1.01, cz]),
+      T: P([cx, 1.12, cz]),
+      B: P([cx * 1.4, 0.555, cz * 1.6], [0, 0, 0], [0.8, 0.8, 0.8]),
+      C: P([cx * 1.95, 2.075, cz * 1.55], [0, 0, 0], [1.3, 1.3, 1.3]),
+    },
+    lidSteps(),
+  );
+}
 
 // Base: fundo da bateria → base da fonte → plinto da caixa.
 morphPart(
@@ -425,19 +475,15 @@ morphPart(
     B: P([0, 0.02, 0], [0, 0, 0], [2.44, 0.04, 1.34]),
     C: P([0, 0.05, 0], [0, 0, 0], [3.1, 0.1, 1.26]),
   },
-  [
-    { from: 'A', to: 'B', t0: a0 + 1.0, t1: a0 + 2.1 },
-    { from: 'B', to: 'C', t0: b0 + 0.3, t1: b0 + 1.5 },
-  ],
+  [soft('A', 'B', a0, a0 + 1.0), soft('B', 'C', b0, b0 + 0.9)],
 );
 
-// Células: as células de lítio sobem, giram e viram aletas do dissipador da fonte;
-// depois se alinham e viram as réguas de LED da caixa.
+// Células: sobem de dentro da bateria e viram as aletas da fonte; depois deslizam
+// para a frente e viram as réguas de LED da caixa.
 const cells = [];
 for (let i = 0; i < 8; i++) {
   const col = i % 4;
   const row = Math.floor(i / 4);
-  const fx = -0.7 + i * 0.2;
   const ledTop = row === 0;
   const lx = -1.14 + col * 0.76;
   const m = rbox(M.cell, 0.02);
@@ -449,35 +495,24 @@ for (let i = 0; i < 8; i++) {
     m,
     {
       A: P([-0.6 + col * 0.4, 0.48, row ? 0.2 : -0.2], [0, 0, 0], [0.17, 0.8, 0.36]),
-      A1: P([-0.6 + col * 0.4, 1.4, row ? 0.2 : -0.2], [0, 0, 0], [0.17, 0.8, 0.36]),
-      B: P([fx, 0.66, 0], [0, 0, 0], [0.05, 0.22, 1.16]),
+      B: P([-0.7 + i * 0.2, 0.66, 0], [0, 0, 0], [0.05, 0.22, 1.16]),
       C: P([lx, ledTop ? 1.6 : 0.1, 0.645], [0, 0, 0], [0.7, 0.03, 0.03]),
     },
-    [
-      { from: 'A', to: 'A1', t0: a0 + 0.55 + i * 0.04, t1: a0 + 1.25 + i * 0.04 },
-      { from: 'A1', to: 'B', t0: a0 + 1.25 + i * 0.05, t1: a0 + 2.15 + i * 0.05, spin: [0, (i % 2 ? 1 : -1) * 0.8, Math.PI] },
-      { from: 'B', to: 'C', t0: b0 + 0.1 + i * 0.07, t1: b0 + 1.3 + i * 0.07, lift: 0.5, push: 0.6, spin: [Math.PI, 0, 0] },
-    ],
-    { spark: i % 2 === 0 },
+    [soft('A', 'B', a0 + 0.15 + i * 0.04, a0 + 1.05 + i * 0.04, { lift: 0.15 }), soft('B', 'C', b0 + 0.1 + i * 0.03, b0 + 0.9 + i * 0.03, { lift: 0.15 })],
   );
 }
 
-// Rótulo frontal: desliza para a frente, gira 180° e revela o painel da fonte
-// (o verso da mesma placa). Na caixa, recolhe para trás como placa de bornes.
+// Rótulo frontal: vira como uma carta (o verso é o painel da fonte). Na caixa, é
+// engolido pelo corpo que cresce e fica atrás como placa de bornes.
 const plateMats = [M.black, M.black, M.black, M.black,
   new THREE.MeshStandardMaterial({ map: batteryLabel, roughness: 0.45, metalness: 0.2 }),
   new THREE.MeshStandardMaterial({ map: psuPanel, roughness: 0.4, metalness: 0.2, emissiveMap: psuPanel, emissive: 0xffffff, emissiveIntensity: 0.0 }),
 ];
 morphPart(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), plateMats), {
   A: P([0, 0.5, 0.457], [0, 0, 0], [1.2, 0.5, 0.012]),
-  A1: P([0, 0.62, 1.0], [0, 0, 0], [1.2, 0.5, 0.012]),
   B: P([0, 0.27, 0.657], [0, Math.PI, 0], [2.3, 0.4, 0.012]),
   C: P([0, 0.86, -0.607], [0, 0, 0], [1.4, 0.24, 0.012]),
-}, [
-  { from: 'A', to: 'A1', t0: a0 + 0.2, t1: a0 + 0.9 },
-  { from: 'A1', to: 'B', t0: a0 + 1.2, t1: a0 + 2.3, spin: [0.35, 0, 0] },
-  { from: 'B', to: 'C', t0: b0 + 0.2, t1: b0 + 1.2, lift: 0.4, push: -0.9 },
-], { spark: true });
+}, [soft('A', 'B', a0 + 0.1, a0 + 1.0, { push: 0.3 }), soft('B', 'C', b0, b0 + 0.8)]);
 
 // Polos: polos da bateria → bornes de saída da fonte → bornes traseiros da caixa.
 for (const side of [-1, 1]) {
@@ -488,49 +523,10 @@ for (const side of [-1, 1]) {
   g.add(post, capM);
   morphPart(g, {
     A: P([side * 0.55, 1.05, 0], [0, 0, 0], [1, 1, 1]),
-    A1: P([side * 0.55, 2.24, 0], [0, 0, 0], [1, 1, 1]),
+    T: P([side * 0.55, 1.16, 0], [0, 0, 0], [1, 1, 1]),
     B: P([side * 0.9, 0.3, -0.7], [-Math.PI / 2, 0, 0], [1, 1, 1]),
     C: P([side * 0.45, 0.86, -0.64], [-Math.PI / 2, 0, 0], [1, 1, 1]),
-  }, [
-    { from: 'A', to: 'A1', t0: a0, t1: a0 + 0.7 },
-    { from: 'A1', to: 'B', t0: a0 + 1.3, t1: a0 + 2.3 },
-    { from: 'B', to: 'C', t0: b0 + 0.2, t1: b0 + 1.2 },
-  ]);
-}
-
-// Peças internas: parafusos que desrosqueiam antes da tampa subir e barramentos de
-// cobre que ficam à mostra quando a bateria abre (e depois somem para dentro do corpo).
-const copper = new THREE.MeshStandardMaterial({ color: 0xc8753d, roughness: 0.3, metalness: 1 });
-for (const [cx, cz] of [[-0.74, -0.38], [0.74, -0.38], [-0.74, 0.38], [0.74, 0.38]]) {
-  const bolt = new THREE.Group();
-  const head = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.025, 6), M.alu);
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.12, 12), M.alu);
-  shaft.position.y = -0.07;
-  bolt.add(head, shaft);
-  morphPart(bolt, {
-    A: P([cx, 1.01, cz]),
-    A0: P([cx, 1.12, cz], [0, 7, 0]),
-    A1: P([cx * 1.5, 2.4, cz * 1.5], [0.6, 7, 0.4]),
-    B: P([cx * 1.4, 0.55, cz * 1.6], [0, 0, 0], [0.8, 0.8, 0.8]),
-    C: P([cx * 1.95, 1.68, cz * 1.55], [0, 0, 0], [0.8, 0.8, 0.8]),
-  }, [
-    { from: 'A', to: 'A0', t0: a0 - 0.5, t1: a0 + 0.2, soft: true },
-    { from: 'A0', to: 'A1', t0: a0 + 0.25, t1: a0 + 0.8, soft: true },
-    { from: 'A1', to: 'B', t0: a0 + 1.5, t1: a0 + 2.3 },
-    { from: 'B', to: 'C', t0: b0 + 1.0, t1: b0 + 1.85 },
-  ]);
-}
-for (const z of [-0.2, 0.2]) {
-  morphPart(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), copper), {
-    A: P([0, 0.9, z], [0, 0, 0], [1.3, 0.02, 0.07]),
-    A1: P([0, 1.86, z], [0, 0, 0], [1.3, 0.02, 0.07]),
-    B: P([0, 0.3, z * 0.5], [0, Math.PI / 2, 0], [0.9, 0.02, 0.07]),
-    C: P([0, 0.86, z * 0.5], [0, Math.PI / 2, 0], [0.9, 0.02, 0.07]),
-  }, [
-    { from: 'A', to: 'A1', t0: a0 + 0.5, t1: a0 + 1.2 },
-    { from: 'A1', to: 'B', t0: a0 + 1.35, t1: a0 + 2.2, spin: [0, 0, z * 6] },
-    { from: 'B', to: 'C', t0: b0 + 0.4, t1: b0 + 1.2, soft: true },
-  ]);
+  }, [...teaseSteps('T'), soft('A', 'B', a0, a0 + 1.0), soft('B', 'C', b0, b0 + 0.8)]);
 }
 
 // ---------- energia: o fio condutor do filme ----------
@@ -569,25 +565,28 @@ const energyA = glowPath(
 );
 // 2) Sai do borne da fonte, corre pelo piso e desenha o contorno da caixa.
 const energyB = glowPath(
-  poly([[1.05, 0.27, 0.67], [1.05, 0.27, 0.9], [1.25, 0.012, 1.1], [1.7, 0.012, 0.9], [1.56, 0.1, 0.645], [1.56, 1.63, 0.645], [-1.56, 1.63, 0.645], [-1.56, 0.1, 0.645], [1.56, 0.1, 0.645]]),
+  poly([[1.05, 0.27, 0.67], [1.05, 0.27, 0.9], [1.25, 0.012, 1.1], [1.7, 0.012, 0.9], [1.56, 0.1, 0.645], [1.56, 2.08, 0.645], [-1.56, 2.08, 0.645], [-1.56, 0.1, 0.645], [1.56, 0.1, 0.645]]),
   0.006,
   500,
 );
 const energyRings = [-1, 1].map((side) => glowPath(circle(side * 0.76, 0.86, 0.66, 0.62), 0.005, 160));
-const energyHorns = [-1.14, -0.38, 0.38, 1.14].map((x) => glowPath(circle(x, 1.93, 0.6, 0.24), 0.004, 80));
 
 // Cabeça do traço de energia que sai do borne (a câmera do take 07 a persegue).
 const T6e = TAKES.find((k) => k.id === '06');
-// O primeiro trecho (borne → piso → quina da caixa) é ~13% do comprimento; o resto é o
-// contorno. Os dois trechos se sobrepõem, então a energia acelera sem nunca parar.
-const LEG = 0.1316;
-const energyHead = (t) => LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + (1 - LEG) * seg(t, b0 + 0.3, b0 + 1.4);
+// O primeiro trecho (borne → piso → quina da caixa) é uma fração do comprimento; o resto é
+// o contorno. Os dois trechos se sobrepõem, então a energia acelera sem nunca parar.
+const BORNE_DIVE = T6e.end - 0.4; // o espírito entra no borne e o traço sai dele
+const LEG = (() => {
+  const l = energyB.geometry.parameters.path.getCurveLengths();
+  return l[3] / l[l.length - 1];
+})();
+const energyHead = (t) => LEG * seg(t, BORNE_DIVE, BORNE_DIVE + 1.1) + (1 - LEG) * seg(t, BORNE_DIVE + 0.7, b0);
 // A câmera persegue a energia até a quina e sobe pela aresta; quando a energia dispara
 // pelo contorno, a câmera não a acompanha (seria um chicote) e abre para o plano geral.
 // (média de pontos vizinhos no traço: a câmera arredonda as quinas em vez de mudar de direção num quadro)
 const energyHeadPoint = (t) => {
   const path = energyB.geometry.parameters.path;
-  const h = LEG * seg(t, T6e.end - 0.4, b0 + 0.7) + 0.12 * seg(t, b0 + 0.4, b0 + 1.4);
+  const h = LEG * seg(t, BORNE_DIVE, BORNE_DIVE + 1.1) + 0.12 * seg(t, BORNE_DIVE + 0.8, BORNE_DIVE + 1.8);
   const acc = [0, 0, 0];
   for (let j = -3; j <= 3; j++) {
     const q = path.getPointAt(clamp(h + j * 0.012, 0.001, 1));
@@ -600,13 +599,12 @@ const energyHeadPoint = (t) => {
 
 function updateEnergy(t, e) {
   // Fase 1: da bateria para a fonte (cabeça corre, cauda segue).
-  energyA.reveal(seg(t, 4.7, 6.5), seg(t, 3.5, 5.1), 1); // (cauda, cabeça)
+  energyA.reveal(seg(t, a0 + 0.2, a0 + 1.6), seg(t, POLE_DIVE, a0 + 0.6), 1); // (cauda, cabeça)
   // Fase 2: do borne até o projeto da caixa; depois esmaece quando as peças ocupam o lugar.
-  const fade = 1 - seg(t, b0 + 2.4, b0 + 3.6);
+  const fade = 1 - seg(t, b0 + 1.2, b0 + 2.0);
   const pulse = 0.9 * Math.min(1, e);
   energyB.reveal(0, energyHead(t), Math.max(fade, pulse));
-  energyRings.forEach((r, i) => r.reveal(0, seg(t, b0 + 0.15 + i * 0.15, b0 + 0.75 + i * 0.15), Math.max(fade, pulse)));
-  energyHorns.forEach((r, i) => r.reveal(0, seg(t, b0 + 0.45 + i * 0.08, b0 + 0.85 + i * 0.08), Math.max(fade, pulse * 0.6)));
+  energyRings.forEach((r, i) => r.reveal(0, seg(t, BORNE_DIVE + 1.0 + i * 0.15, BORNE_DIVE + 1.6 + i * 0.15), Math.max(fade, pulse)));
 }
 
 // ---------- componentes de som (sem marca) ----------
@@ -635,27 +633,27 @@ function makeWoofer() {
   scene.add(g);
   return g;
 }
+// Corneta retangular de boca larga (tipo trio), montada na frente do painel: campana em
+// tronco de pirâmide, moldura de alumínio e o driver escondido dentro do painel.
 function makeHorn() {
   const g = new THREE.Group();
-  const bell = new THREE.Mesh(
-    new THREE.LatheGeometry(
-      Array.from({ length: 12 }, (_, i) => {
-        const u = i / 11;
-        return new THREE.Vector2(0.05 + 0.19 * u * u, u * 0.36);
-      }),
-      64,
-    ),
-    M.horn,
-  );
-  bell.rotation.x = Math.PI / 2; // abre para +z
-  const lip = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.012, 12, 64), M.horn);
-  lip.position.z = 0.36;
-  const driver = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 0.22, 48), M.aluDark);
-  driver.rotation.x = Math.PI / 2;
-  driver.position.z = -0.1;
-  const throat = new THREE.Mesh(new THREE.CircleGeometry(0.05, 32), M.led.clone());
-  throat.position.z = 0.005;
-  g.add(bell, lip, driver, throat);
+  const flareGeo = new THREE.CylinderGeometry(0.27, 0.06, 0.2, 4, 1, true);
+  flareGeo.rotateY(Math.PI / 4);
+  flareGeo.scale(1.45, 1, 1);
+  flareGeo.translate(0, -0.1, 0);
+  flareGeo.rotateX(Math.PI / 2); // boca em z=0, fundo em z=-0.2
+  const flare = new THREE.Mesh(flareGeo, M.horn);
+  const outer = new THREE.Shape();
+  outer.moveTo(-0.3, -0.21).lineTo(0.3, -0.21).lineTo(0.3, 0.21).lineTo(-0.3, 0.21).lineTo(-0.3, -0.21);
+  const hole = new THREE.Path();
+  hole.moveTo(-0.272, -0.186).lineTo(-0.272, 0.186).lineTo(0.272, 0.186).lineTo(0.272, -0.186).lineTo(-0.272, -0.186);
+  outer.holes.push(hole);
+  const frame = new THREE.Mesh(new THREE.ExtrudeGeometry(outer, { depth: 0.025, bevelEnabled: false }), M.alu);
+  const driver = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.14), M.aluDark);
+  driver.position.z = -0.27;
+  const throat = new THREE.Mesh(new THREE.CircleGeometry(0.055, 32), M.led.clone());
+  throat.position.z = -0.195;
+  g.add(flare, frame, driver, throat);
   g.userData = { throat };
   g.traverse((o) => {
     if (o.isMesh) o.castShadow = o.receiveShadow = true;
@@ -738,26 +736,29 @@ function cameraAt(t) {
 const T13 = TAKES.find((k) => k.id === '13');
 // Antes da primeira pancada, o sistema "carrega" (LEDs sobem e correm, cones vibram);
 // a última pancada abre a onda de choque que atravessa a tela e leva ao mundo real.
-const KICKS = [1.0, 1.25, 1.42, 1.55].map((x) => T13.start + x);
+const KICKS = [0.8, 0.55, 0.38, 0.25].map((x) => END_3D - x);
 const SHOCK = KICKS[KICKS.length - 1];
 const KICK_AMP = [0.6, 0.8, 0.9, 1.4];
 
 // Encadeamento entre grupos de animação: cada grupo começa antes de o anterior acabar.
-const POWER = a0 + 2.1; // a fonte liga enquanto as últimas peças ainda assentam
-const WOOFER_START = b0 + 1.95; // graves começam (ainda escondidos) quando a caixa assenta e atravessam a face no insert 08
-const HORN_START = WOOFER_START + 1.75; // cornetas sobem enquanto o 2º grave assenta
+const POWER = a0 + 1.3; // a fonte liga enquanto as últimas peças ainda assentam
+// O som é o "tchan" do final: graves, cornetas e LEDs entram em cascata rápida de "pops".
+const T8 = TAKES.find((k) => k.id === '08');
+const T10 = TAKES.find((k) => k.id === '10');
+const WOOFER_POP = T8.start; // o grave esquerdo salta de dentro do anel de energia
+const HORN_POP = T10.start - 0.05;
+const backOut = (x) => 1 + 2.70158 * (x - 1) ** 3 + 1.70158 * (x - 1) ** 2; // pop com overshoot
 // O espírito de energia acende as luzes ao passar: pula pelas cornetas (cada garganta
 // acende no toque), corre pela régua de cima (esq. → dir.), desce e volta pela de baixo.
 const SPAN = 1.62; // meia-largura do percurso do espírito na frente da caixa
-const HOP = [HORN_START + 0.85, HORN_START + 1.75];
-const LED_TOP = [HOP[1], HOP[1] + 0.4];
-const LED_BOT = [LED_TOP[1] + 0.15, LED_TOP[1] + 0.5];
+const HOP = [T10.start - 0.05, T10.end];
+const LED_TOP = [HOP[1], HOP[1] + 0.3];
+const LED_BOT = [LED_TOP[1] + 0.1, LED_TOP[1] + 0.4];
 const LED_END = LED_BOT[1] + 0.3; // fim das rampas (réguas e anéis)
 const passX = (x, [t0, t1], dir = 1) => t0 + ((dir > 0 ? x + SPAN : SPAN - x) / (2 * SPAN)) * (t1 - t0);
 const HORN_X = [-1.14, -0.38, 0.38, 1.14];
 
 // ---------- espírito de energia ----------
-const T8 = TAKES.find((k) => k.id === '08');
 const spirit = createSpirit(
   scene,
   {
@@ -765,17 +766,18 @@ const spirit = createSpirit(
     borne: [1.05, 0.27, 0.67],
     wooferL: [-0.76, 0.86, 0.63],
     hornX: HORN_X,
-    hornY: 1.93,
+    hornY: 1.845,
+    hornZ: 0.9,
     span: SPAN,
     ledY: [1.6, 0.1],
     ledZ: 0.72,
     poleApproach: TAKES.find((k) => k.id === '03').start - 0.05,
-    poleDive: 3.5, // = início do fio de energia da bateria
-    emergeA: 5.1, // = fim do fio (frente da futura fonte)
+    poleDive: POLE_DIVE, // = início do fio de energia da bateria
+    emergeA: a0 + 0.6, // = fim do fio (frente da futura fonte)
     fonteOrbit: TAKES.find((k) => k.id === '05').start - 0.05,
     panel: T6e.start - 0.05,
-    borneDive: T6e.end - 0.4, // = saída do traço que desenha a caixa
-    emergeB: b0 + 1.4, // = fim do traço (quina da caixa)
+    borneDive: BORNE_DIVE, // = saída do traço que desenha a caixa
+    emergeB: b0, // = fim do traço (quina da caixa)
     ring: [T8.start - 0.05, T8.end],
     hop: HOP,
     ledTop: LED_TOP,
@@ -783,16 +785,17 @@ const spirit = createSpirit(
     windup: [T13.start, KICKS[0]],
     shock: SHOCK,
     end: END_3D,
-    hidden: [[3.5, 5.1], [T6e.end - 0.4, b0 + 1.4], [KICKS[0], SHOCK]],
-    touches: [3.5, 5.1, T6e.end - 0.4, b0 + 1.4, KICKS[0], SHOCK],
+    hidden: [[POLE_DIVE, a0 + 0.6], [BORNE_DIVE, b0], [KICKS[0], SHOCK]],
+    touches: [POLE_DIVE, a0 + 0.6, BORNE_DIVE, b0, KICKS[0], SHOCK],
     stars: [
-      { t: 3.5, p: [0.55, 1.16, 0.02], s: 0.55 },
-      { t: 5.1, p: [0, 0.27, 0.88], s: 0.45 },
+      { t: TEASE + 0.7, p: [0.85, 0.95, 0.48], s: 0.35 },
+      { t: POLE_DIVE, p: [0.55, 1.16, 0.02], s: 0.55 },
+      { t: a0 + 0.6, p: [0, 0.27, 0.88], s: 0.45 },
       { t: TAKES.find((k) => k.id === '05').start + 0.05, p: [1.2, 0.55, 0.67], s: 0.4 },
-      { t: T6e.end - 0.4, p: [1.05, 0.27, 0.72], s: 0.5 },
-      { t: b0 + 1.4, p: [1.56, 0.12, 0.67], s: 0.45 },
+      { t: BORNE_DIVE, p: [1.05, 0.27, 0.72], s: 0.5 },
+      { t: b0, p: [1.56, 0.12, 0.67], s: 0.45 },
       { t: T8.end - 0.05, p: [-0.76, 0.86, 0.9], s: 0.4 },
-      ...HORN_X.map((x) => ({ t: passX(x, HOP), p: [x, 1.93, 0.62], s: 0.26 })),
+      ...HORN_X.map((x) => ({ t: passX(x, HOP), p: [x, 1.845, 0.9], s: 0.26 })),
       { t: LED_BOT[1], p: [-SPAN, 0.1, 0.72], s: 0.3 },
       { t: KICKS[0], p: [0, 0.86, 0.72], s: 1.0 },
       { t: SHOCK, p: [0, 0.86, 0.8], s: 0.8 },
@@ -825,7 +828,8 @@ export function renderAt(t, draw = true) {
   // Energia: as células acendem ao se abrirem; a fonte liga enquanto ainda termina de
   // se montar, e o voltímetro sobe sem interrupção até o close do take 06.
   const T6 = TAKES.find((k) => k.id === '06');
-  const cellGlow = 0.9 * seg(t, a0 + 0.5, a0 + 1.0) * (1 - seg(t, a0 + 1.8, a0 + 2.4));
+  const cellGlow = 0.9 * (seg(t, a0 + 0.05, a0 + 0.35) * (1 - seg(t, a0 + 0.9, a0 + 1.3)) + seg(t, TEASE + 0.05, TEASE + 0.2) * (1 - seg(t, TEASE + 0.45, TEASE + 0.75)));
+  core.material.emissiveIntensity = 2.6 * cellGlow;
   // Carga antes do grave: LEDs sobem e uma onda corre pelas réguas.
   // Começa antes de os LEDs terminarem e já sobe rápido (ease-out), sem trecho morto.
   const charge = (1 - (1 - clamp((t - (LED_END - 0.3)) / (KICKS[0] - LED_END + 0.3))) ** 2) * (1 - seg(t, KICKS[0], KICKS[0] + 0.2));
@@ -841,13 +845,13 @@ export function renderAt(t, draw = true) {
   if (t < b0 + 1.5) psuPanel.redrawIfChanged(volts, flow);
   plateMats[5].emissiveIntensity = 0.12 + 0.5 * seg(t, POWER, POWER + 0.5);
 
-  // Graves: começam a emergir enquanto a caixa ainda assenta, girando até a frente.
+  // Graves: saltam de dentro das câmaras com um "pop" (leve overshoot), um depois do outro.
   woofers.forEach((w, i) => {
     const side = i ? 1 : -1;
-    const t0 = WOOFER_START + i * 0.55;
-    const k = seg(t, t0, t0 + 1.7);
+    const t0 = WOOFER_POP + i * 0.3;
+    const k = backOut(clamp((t - t0) / 0.5));
     w.position.set(side * 0.76, 0.86, lerp(0.2, 0.63, k));
-    w.rotation.set(0, 0, lerp(side * -2.4, 0, k));
+    w.rotation.set(0, 0, lerp(side * -0.6, 0, k));
     w.visible = t > t0;
     w.userData.cone.position.z = 0.09 * e * Math.cos((t - T13.start) * 26) + 0.012 * charge * Math.sin(t * 31 + i);
     w.userData.surround.scale.setScalar(1 + 0.02 * e);
@@ -855,13 +859,13 @@ export function renderAt(t, draw = true) {
     w.userData.ring.material.emissiveIntensity = seg(t, ringPass - 0.04, ringPass + 0.3) * (2.2 + 1.5 * charge + 2.5 * e);
   });
 
-  // Cornetas: sobem uma a uma, a primeira já enquanto o segundo grave assenta.
+  // Cornetas: saltam do painel uma a uma, com "pop".
   horns.forEach((h, i) => {
-    const t0 = HORN_START + i * 0.25;
-    const k = seg(t, t0, t0 + 1.1);
-    const x = [-1.14, -0.38, 0.38, 1.14][i];
-    h.position.set(x, lerp(1.3, 1.93, k) + 0.006 * e * Math.sin(t * 90 + i), lerp(-0.05, 0.22, k));
-    h.rotation.set(0, 0, lerp((i % 2 ? 1 : -1) * 1.2, 0, k));
+    const t0 = HORN_POP + i * 0.1;
+    const k = backOut(clamp((t - t0) / 0.4));
+    const x = HORN_X[i];
+    h.position.set(x, 1.845 + 0.006 * e * Math.sin(t * 90 + i), lerp(0.4, 0.83, k));
+    h.scale.setScalar(lerp(0.7, 1, Math.min(k, 1.05)));
     h.visible = t > t0;
     const touch = passX(x, HOP); // acende quando o espírito encosta na boca
     h.userData.throat.material.emissiveIntensity = seg(t, touch - 0.03, touch + 0.15) * (1.5 + 1.5 * charge + 3 * e);
@@ -924,7 +928,7 @@ export function renderAt(t, draw = true) {
   spirit.update(t, e, camera);
 
   // Abertura do filme a partir do preto (sobe já no primeiro quadro).
-  renderer.toneMappingExposure = 0.05 + 0.95 * (1 - Math.pow(1 - clamp(t / 0.9), 2));
+  renderer.toneMappingExposure = 0.05 + 0.95 * (1 - Math.pow(1 - clamp(t / 0.5), 2));
   const dist = Math.hypot(cam.pos[0] - cam.focusPt[0], cam.pos[1] - cam.focusPt[1], cam.pos[2] - cam.focusPt[2]);
   bokeh.uniforms.focus.value = dist;
   bokeh.uniforms.aperture.value = cam.take.cam.dof || 0.00008;
