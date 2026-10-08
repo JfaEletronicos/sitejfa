@@ -22,8 +22,13 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 - **O produto é a energia:** bateria (0–6,8 s) e fonte (6,8–12 s) têm o tempo de tela; o
   som é o "tchan" do final (montagem em cascata de pops e o grave).
-- **Prévia logo no início:** no começo do take 01 a bateria "soluça": encolhe, as metades
-  se afastam mostrando a costura azul acesa, a tampa pula e tudo volta com um "boing".
+- **Abertura com queda cartunesca:** a bateria cai do alto, estica na queda, achata no
+  impacto ("smack"), quica duas vezes cada vez menos e assenta; cada impacto levanta a
+  poeira do piso, solta uma onda no chão e dá um tranco na câmera.
+- **Texto:** uma frase só, em reticências, sem nomear produtos — *"A partir da energia
+  JFA…"* (depois do pouso) → *"…tudo se transforma…"* (bateria vira fonte) → *"…até virar
+  som."* (revelação do som) → assinatura **JFA** / *Energia que vira som.* Uma linha por
+  vez, fina, no terço inferior esquerdo; nada sobre as transformações nem sobre o grave.
 - **Transformações leves, de desenho animado:** as peças se remodelam no lugar, com
   movimento suave (sem voar nem girar), e o objeto inteiro faz squash & stretch
   (encolhe, estica, quica e assenta). O rótulo vira como uma carta e revela o painel da fonte.
@@ -48,18 +53,18 @@ som não tem marca. Os controles JFA **não** aparecem no 3D.
 
 | Tempo | Take |
 |---|---|
-| 0–2,2 | 01 Bateria / revelação + prévia da transformação |
+| 0–2,2 | 01 Bateria cai e pousa — *"A partir da energia JFA…"* |
 | 2,2–3,4 | 02 Bateria / ângulo |
 | 3,4–4,6 | 03 Bateria / close (o espírito mergulha no polo) |
 | 4,6–6,8 | 04 Bateria → Fonte (órbita) |
-| 6,8–8,6 | 05 Fonte |
+| 6,8–8,6 | 05 Fonte — *"…tudo se transforma…"* |
 | 8,6–10,6 | 06 Fonte / close + voltímetro |
 | 10,6–13,0 | 07 Energia desenha o projeto → Fonte vira a caixa |
 | 13,0–13,4 | 08 Grave salta do anel de energia |
 | 13,4–13,9 | 09 Graves |
 | 13,9–14,4 | 10 Cornetas |
 | 14,4–15,0 | 11 LEDs |
-| 15,0–16,2 | 12 Sistema completo |
+| 15,0–16,2 | 12 Sistema completo — *"…até virar som."* |
 | 16,2–19,0 | 13 Grave (carga, pancadas, onda de choque) |
 | 19,0–27,0 | 14–16 Filmagem real (corte no branco → evento → drone) |
 | 27,0–30,0 | Encerramento: **JFA** / *Energia que vira som.* |

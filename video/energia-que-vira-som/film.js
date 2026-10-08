@@ -329,6 +329,7 @@ function makeSpark() {
 function applyParts(t) {
   const sq = squash(t);
   rig.scale.set(1 - 0.5 * sq, 1 + sq, 1 - 0.5 * sq);
+  rig.position.y = drop(t);
   for (const part of parts) {
     const { obj, poses, steps } = part;
     // Soma dos deslocamentos de cada passo (telescópica: no fim de tudo, chega à última pose).
@@ -382,7 +383,43 @@ const rbox = (mat, r = 0.035) => new THREE.Mesh(new RoundedBoxGeometry(1, 1, 1, 
 const T3 = TAKES.find((k) => k.id === '03');
 const T4 = TAKES.find((k) => k.id === '04');
 const T7 = TAKES.find((k) => k.id === '07');
-const TEASE = 0.35; // mini-transformação de prévia logo no início do take 01 (a bateria "soluça")
+// Abertura: a bateria cai do alto e chega ao chão como num desenho animado — estica na
+// queda, achata no impacto ("smack"), quica duas vezes cada vez menos e assenta.
+const FALL0 = 0.3; // começa a cair (antes disso está fora de quadro, no alto)
+const FALL_H = 2.6; // altura da queda
+const FALL_T = 0.5; // tempo até o 1º impacto
+const G = (2 * FALL_H) / FALL_T ** 2;
+const BOUNCES = [0.28, 0.06]; // alturas dos quiques
+const IMPACTS = (() => {
+  const out = [FALL0 + FALL_T];
+  for (const h of BOUNCES) out.push(out[out.length - 1] + (2 * Math.sqrt(2 * G * h)) / G);
+  return out;
+})();
+const IMPACT_AMP = [1, 0.45, 0.15];
+// Altura da bateria acima do piso (física simples: queda + quiques).
+function drop(t) {
+  if (t < FALL0) return FALL_H;
+  if (t < IMPACTS[0]) return FALL_H - 0.5 * G * (t - FALL0) ** 2;
+  for (let i = 0; i < BOUNCES.length; i++) {
+    if (t < IMPACTS[i + 1]) {
+      const u = t - IMPACTS[i];
+      return Math.max(0, Math.sqrt(2 * G * BOUNCES[i]) * u - 0.5 * G * u * u);
+    }
+  }
+  return 0;
+}
+// Squash & stretch da queda: estica enquanto cai rápido, achata em cada impacto.
+function fallSquash(t) {
+  let s = 0;
+  if (t > FALL0 && t < IMPACTS[0]) s += 0.16 * ((t - FALL0) / FALL_T) ** 2;
+  IMPACTS.forEach((ti, i) => {
+    const u = t - ti;
+    if (u >= 0 && u < 1.2) s += -0.24 * IMPACT_AMP[i] * Math.exp(-11 * u) * Math.cos(19 * u);
+  });
+  return s;
+}
+// Força dos impactos no chão (poeira, onda e tranco de câmera).
+const land = (t) => IMPACTS.reduce((a, ti, i) => (t >= ti ? a + IMPACT_AMP[i] * Math.exp(-(t - ti) * 9) : a), 0);
 const a0 = T4.start + 0.2; // bateria → fonte
 const b0 = T7.end - 1.0; // fonte → caixa de som (o "tchan" do final)
 const POLE_DIVE = T3.end - 0.4; // o espírito mergulha no polo e vira o fio de energia
@@ -392,7 +429,6 @@ const POLE_DIVE = T3.end - 0.4; // o espírito mergulha no polo e vira o fio de 
 // encolhe (antecipação), estica enquanto muda de forma, quica e assenta.
 const soft = (from, to, t0, t1, extra = {}) => ({ from, to, t0, t1, soft: true, ...extra });
 const SQUASH = [
-  [TEASE - 0.15, 0.55],
   [a0 - 0.2, 1],
   [b0 - 0.2, 1],
 ];
@@ -407,10 +443,8 @@ function squash(t) {
       s += amp * Math.exp(-5.5 * v) * (-0.08 * Math.cos(13 * v) + 0.16 * Math.sin(13 * v));
     }
   }
-  return s;
+  return s + fallSquash(t);
 }
-// A prévia: abre um pouco (as metades se afastam, a tampa pula) e volta com um "boing".
-const teaseSteps = (to) => [soft('A', to, TEASE + 0.05, TEASE + 0.25), soft(to, 'A', TEASE + 0.25, TEASE + 0.7)];
 
 // Cascas: metades da bateria → corpo da fonte → as duas câmaras dos graves.
 for (const side of [-1, 1]) {
@@ -419,11 +453,10 @@ for (const side of [-1, 1]) {
     rbox([M.caseSide, M.caseSide, M.case, M.case, M.case, M.case]),
     {
       A: P([side * 0.4, 0.48, 0], [0, 0, 0], [0.8, 0.92, 0.9]),
-      T: P([side * 0.445, 0.48, 0], [0, 0, side * -0.04], [0.8, 0.92, 0.9]),
       B: P([side * 0.6, 0.27, 0], [0, 0, 0], [1.2, 0.46, 1.3]),
       C: P([side * 0.76, 0.86, 0], [0, 0, 0], [1.5, 1.52, 1.2]),
     },
-    [...teaseSteps('T'), soft('A', 'B', a0 + d, a0 + 1.1 + d), soft('B', 'C', b0 + d, b0 + 0.9 + d)],
+    [soft('A', 'B', a0 + d, a0 + 1.1 + d), soft('B', 'C', b0 + d, b0 + 0.9 + d)],
   );
 }
 
@@ -442,11 +475,10 @@ morphPart(
 // Tampa: tampa da bateria → tampa da fonte → painel das cornetas.
 const LID = {
   A: P([0, 0.96, 0], [0, 0, 0], [1.64, 0.08, 0.94]),
-  T: P([0, 1.07, 0], [0, 0, 0], [1.64, 0.08, 0.94]),
   B: P([0, 0.52, 0], [0, 0, 0], [2.44, 0.05, 1.34]),
   C: P([0, 1.845, 0], [0, 0, 0], [3.1, 0.45, 1.26]),
 };
-const lidSteps = () => [...teaseSteps('T'), soft('A', 'B', a0 + 0.05, a0 + 1.15), soft('B', 'C', b0 + 0.05, b0 + 0.95)];
+const lidSteps = () => [soft('A', 'B', a0 + 0.05, a0 + 1.15), soft('B', 'C', b0 + 0.05, b0 + 0.95)];
 morphPart(rbox(M.case, 0.02), LID, lidSteps());
 // Parafusos dos cantos acompanham a tampa (viram os cantos de alumínio do painel).
 for (const [cx, cz] of [[-0.74, -0.38], [0.74, -0.38], [-0.74, 0.38], [0.74, 0.38]]) {
@@ -459,7 +491,6 @@ for (const [cx, cz] of [[-0.74, -0.38], [0.74, -0.38], [-0.74, 0.38], [0.74, 0.3
     bolt,
     {
       A: P([cx, 1.01, cz]),
-      T: P([cx, 1.12, cz]),
       B: P([cx * 1.4, 0.555, cz * 1.6], [0, 0, 0], [0.8, 0.8, 0.8]),
       C: P([cx * 1.95, 2.075, cz * 1.55], [0, 0, 0], [1.3, 1.3, 1.3]),
     },
@@ -523,10 +554,9 @@ for (const side of [-1, 1]) {
   g.add(post, capM);
   morphPart(g, {
     A: P([side * 0.55, 1.05, 0], [0, 0, 0], [1, 1, 1]),
-    T: P([side * 0.55, 1.16, 0], [0, 0, 0], [1, 1, 1]),
     B: P([side * 0.9, 0.3, -0.7], [-Math.PI / 2, 0, 0], [1, 1, 1]),
     C: P([side * 0.45, 0.86, -0.64], [-Math.PI / 2, 0, 0], [1, 1, 1]),
-  }, [...teaseSteps('T'), soft('A', 'B', a0, a0 + 1.0), soft('B', 'C', b0, b0 + 0.8)]);
+  }, [soft('A', 'B', a0, a0 + 1.0), soft('B', 'C', b0, b0 + 0.8)]);
 }
 
 // ---------- energia: o fio condutor do filme ----------
@@ -665,7 +695,7 @@ const woofers = [-1, 1].map(() => makeWoofer());
 const horns = [-1.14, -0.38, 0.38, 1.14].map(() => makeHorn());
 
 // Ondas de choque no piso (graves)
-const waves = Array.from({ length: 4 }, () => {
+const waves = Array.from({ length: 5 }, () => {
   const m = new THREE.Mesh(new THREE.RingGeometry(0.98, 1, 128), M.wave.clone());
   m.rotation.x = -Math.PI / 2;
   m.position.y = 0.004;
@@ -788,7 +818,7 @@ const spirit = createSpirit(
     hidden: [[POLE_DIVE, a0 + 0.6], [BORNE_DIVE, b0], [KICKS[0], SHOCK]],
     touches: [POLE_DIVE, a0 + 0.6, BORNE_DIVE, b0, KICKS[0], SHOCK],
     stars: [
-      { t: TEASE + 0.7, p: [0.85, 0.95, 0.48], s: 0.35 },
+      { t: IMPACTS[IMPACTS.length - 1] + 0.25, p: [0.85, 0.98, 0.48], s: 0.35 },
       { t: POLE_DIVE, p: [0.55, 1.16, 0.02], s: 0.55 },
       { t: a0 + 0.6, p: [0, 0.27, 0.88], s: 0.45 },
       { t: TAKES.find((k) => k.id === '05').start + 0.05, p: [1.2, 0.55, 0.67], s: 0.4 },
@@ -809,6 +839,28 @@ function bass(t) {
   return Math.min(e, 1.4);
 }
 
+// ---------- texto: uma frase só, em reticências, que atravessa o filme ----------
+const T2 = TAKES.find((k) => k.id === '02');
+const T12 = TAKES.find((k) => k.id === '12');
+const CAPTIONS = [
+  { t0: IMPACTS[IMPACTS.length - 1] + 0.35, t1: T2.end - 0.1, html: 'A partir da energia <b>JFA</b>…' },
+  { t0: a0 + 1.35, t1: TAKES.find((k) => k.id === '05').end - 0.5, html: '…tudo se transforma…' },
+  { t0: T12.start + 0.1, t1: T12.end + 0.4, html: '…até virar som.' },
+];
+const capEl = document.getElementById('cap');
+let capHtml = '';
+function updateCaption(t) {
+  const c = CAPTIONS.find((k) => t >= k.t0 - 0.05 && t <= k.t1 + 0.4);
+  if (!c || t >= END_CARD_START) {
+    capEl.style.opacity = '0';
+    return;
+  }
+  if (c.html !== capHtml) capEl.innerHTML = capHtml = c.html;
+  const a = seg(t, c.t0, c.t0 + 0.45) * (1 - seg(t, c.t1, c.t1 + 0.35));
+  capEl.style.opacity = String(a);
+  capEl.style.transform = `translateY(${(1 - seg(t, c.t0, c.t0 + 0.6)) * 10}px)`;
+}
+
 // ---------- quadro ----------
 let fontsReady = false;
 export function renderAt(t, draw = true) {
@@ -820,6 +872,7 @@ export function renderAt(t, draw = true) {
     return;
   }
   end.style.opacity = '0';
+  updateCaption(t);
 
   applyParts(t);
   const e = bass(t);
@@ -828,7 +881,7 @@ export function renderAt(t, draw = true) {
   // Energia: as células acendem ao se abrirem; a fonte liga enquanto ainda termina de
   // se montar, e o voltímetro sobe sem interrupção até o close do take 06.
   const T6 = TAKES.find((k) => k.id === '06');
-  const cellGlow = 0.9 * (seg(t, a0 + 0.05, a0 + 0.35) * (1 - seg(t, a0 + 0.9, a0 + 1.3)) + seg(t, TEASE + 0.05, TEASE + 0.2) * (1 - seg(t, TEASE + 0.45, TEASE + 0.75)));
+  const cellGlow = 0.9 * seg(t, a0 + 0.05, a0 + 0.35) * (1 - seg(t, a0 + 0.9, a0 + 1.3));
   core.material.emissiveIntensity = 2.6 * cellGlow;
   // Carga antes do grave: LEDs sobem e uma onda corre pelas réguas.
   // Começa antes de os LEDs terminarem e já sobe rápido (ease-out), sem trecho morto.
@@ -873,7 +926,7 @@ export function renderAt(t, draw = true) {
 
   // Ondas no piso a cada pancada.
   waves.forEach((w, i) => {
-    const kt = KICKS[i];
+    const kt = [IMPACTS[0], ...KICKS][i];
     const age = t - kt;
     const on = age > 0 && age < 0.9;
     w.visible = on;
@@ -891,7 +944,7 @@ export function renderAt(t, draw = true) {
     const drift = t * 0.04 + rnd * 10;
     const onFloor = rnd < 0.45;
     let yy = onFloor ? 0.006 : (y + drift * 0.3) % 2.6;
-    if (onFloor) yy += e * 0.12 * rnd * (1.2 - Math.min(1, Math.hypot(x, z) / 5));
+    if (onFloor) yy += (e + 0.8 * land(t)) * 0.12 * rnd * (1.2 - Math.min(1, Math.hypot(x, z) / 5));
     pos.set([x + Math.sin(drift) * 0.05, yy, z + Math.cos(drift * 0.8) * 0.05], i * 3);
   }
   dustGeo.attributes.position.needsUpdate = true;
@@ -911,10 +964,9 @@ export function renderAt(t, draw = true) {
   let jolt = 0;
   let punch = 0;
   let roll = 0;
-  KICKS.forEach((kt, i) => {
+  [...KICKS.map((k, i) => [k, KICK_AMP[i]]), ...IMPACTS.map((k, i) => [k, 0.5 * IMPACT_AMP[i]])].forEach(([kt, amp], i) => {
     const age = t - kt;
     if (age < 0 || age > 1.2) return;
-    const amp = KICK_AMP[i];
     jolt += amp * 0.03 * Math.exp(-age * 16) * Math.cos(age * 34);
     punch += amp * 1.6 * Math.exp(-age * 11);
     roll += amp * 0.006 * Math.exp(-age * 7) * Math.sin(age * 22 + i);

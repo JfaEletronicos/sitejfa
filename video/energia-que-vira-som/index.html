@@ -25,6 +25,26 @@
       canvas {
         display: block;
       }
+      #cap {
+        position: absolute;
+        left: 120px;
+        bottom: 118px;
+        color: rgba(255, 255, 255, 0.9);
+        font-family: system-ui, sans-serif;
+        font-weight: 300;
+        font-size: 40px;
+        letter-spacing: 0.06em;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 24px rgba(0, 0, 0, 0.6);
+      }
+      #cap b {
+        font-family: 'StretchPro', sans-serif;
+        font-weight: 400;
+        font-size: 34px;
+        letter-spacing: 0.04em;
+        color: #fff;
+      }
       #end {
         position: absolute;
         inset: 0;
@@ -64,6 +84,7 @@
   </head>
   <body>
     <div id="stage">
+      <div id="cap"></div>
       <div id="end">
         <div class="logo">JFA</div>
         <div class="tag">Energia que vira <b>som</b>.</div>
