@@ -72,7 +72,7 @@ export const REPRESENTATIVES = [
     name: 'JLA Representa\xE7\xF5es',
     states: ['ES', 'MG'],
     stateNames: ['Esp\xEDrito Santo', 'Minas Gerais'],
-    phones: ['(31) 36540-300', '(31) 99167-5767'],
+    phones: ['(31) 9305-2526'],
     address: 'Avenida Bar\xE3o Homem de Melo, 4386, sala 1304, Estoril, Belo Horizonte/MG, CEP 30.494-270',
     email: 'joseluiz.leandro@gmail.com',
   },
