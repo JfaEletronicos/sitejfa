@@ -34,7 +34,8 @@ export const CONFIG = {
       period: '/mês',
       highlight: true,
       // Confirme a condição comercial real antes de publicar.
-      billing: 'Valor equivalente a R$ 87/mês. Cobrança anual em pagamento único de R$ 1.044 por 12 meses de uso.',
+      billing:
+        'Valor equivalente a R$ 87/mês. Cobrança anual em pagamento único de R$ 1.044 por 12 meses de uso.',
     },
     {
       id: 'mensal',
@@ -54,6 +55,7 @@ export const CONFIG = {
 export function ctaHref(key) {
   const cta = CONFIG.ctas[key];
   if (cta && cta.href) return cta.href;
-  if (import.meta.env.DEV) console.warn(`[AutoPainel] Destino do CTA "${key}" não configurado em src/autopainel/config.js`);
+  if (import.meta.env.DEV)
+    console.warn(`[AutoPainel] Destino do CTA "${key}" não configurado em src/autopainel/config.js`);
   return '#planos';
 }

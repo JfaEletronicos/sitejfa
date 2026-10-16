@@ -84,7 +84,7 @@ export function initScrollEngine(root) {
           io.unobserve(e.target);
         }
       }),
-    { rootMargin: '0px 0px -12% 0px' }
+    { rootMargin: '0px 0px -12% 0px' },
   );
 
   const start = () => {

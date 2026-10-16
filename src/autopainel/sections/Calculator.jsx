@@ -41,7 +41,14 @@ function Control({ label, hint, value, onChange, min, max, step, kind }) {
   const [draft, setDraft] = useState(null);
   const text = kind === 'pct' ? String(value) : formatBRL(value);
   const commit = (raw) => {
-    const n = kind === 'pct' ? Number(String(raw).replace(',', '.').replace(/[^\d.]/g, '')) : parseBRL(raw);
+    const n =
+      kind === 'pct'
+        ? Number(
+            String(raw)
+              .replace(',', '.')
+              .replace(/[^\d.]/g, ''),
+          )
+        : parseBRL(raw);
     if (!Number.isNaN(n)) onChange(Math.min(kind === 'pct' ? 95 : 5000000, Math.max(0, n)));
     setDraft(null);
   };
@@ -108,8 +115,8 @@ export default function Calculator() {
           saiba até quanto pagar.
         </h2>
         <p className="lead">
-          Informe o preço de revenda, a margem que a loja quer e os custos previstos. O teto de compra é recalculado na
-          hora — e a negociação começa com um número, não com um palpite.
+          Informe o preço de revenda, a margem que a loja quer e os custos previstos. O teto de compra é
+          recalculado na hora — e a negociação começa com um número, não com um palpite.
         </p>
       </div>
 
@@ -154,7 +161,9 @@ export default function Calculator() {
 
           <div className="calc-out" aria-live="polite">
             <p className="calc-out-label">Preço máximo de compra recomendado</p>
-            <p className={`calc-out-value ${viable ? '' : 'bad'}`}>{viable ? formatBRL(shown) : 'Inviável'}</p>
+            <p className={`calc-out-value ${viable ? '' : 'bad'}`}>
+              {viable ? formatBRL(shown) : 'Inviável'}
+            </p>
             <p className="calc-formula">
               {formatBRL(resale)} × (1 − {formatNum(margin)}%) − {formatBRL(costs)}
             </p>
@@ -212,9 +221,9 @@ export default function Calculator() {
         </div>
 
         <p className="disclaimer">
-          Margem bruta é calculada sobre o preço de revenda; markup é calculado sobre o custo. Referências FIPE, dados do
-          veículo e comparação de mercado dependem das integrações e fontes de dados disponíveis — nesta demonstração os
-          valores são informados manualmente.
+          Margem bruta é calculada sobre o preço de revenda; markup é calculado sobre o custo. Referências
+          FIPE, dados do veículo e comparação de mercado dependem das integrações e fontes de dados
+          disponíveis — nesta demonstração os valores são informados manualmente.
         </p>
       </div>
     </section>

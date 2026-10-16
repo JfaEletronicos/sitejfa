@@ -14,7 +14,11 @@ export default function Offer() {
 
       <div className="plans" data-reveal>
         {CONFIG.plans.map((p) => (
-          <article key={p.id} className={`plan ${p.highlight ? 'plan-hl' : ''}`} aria-labelledby={`plan-${p.id}`}>
+          <article
+            key={p.id}
+            className={`plan ${p.highlight ? 'plan-hl' : ''}`}
+            aria-labelledby={`plan-${p.id}`}
+          >
             <h3 id={`plan-${p.id}`}>
               {p.name}
               {p.highlight && <span className="pill accent">Melhor custo</span>}
@@ -38,7 +42,8 @@ export default function Offer() {
         </a>
       </div>
       <p className="offer-fine">
-        O teste gratuito vale para os 3 primeiros clientes. Condições de cobrança são apresentadas antes da confirmação.
+        O teste gratuito vale para os 3 primeiros clientes. Condições de cobrança são apresentadas antes da
+        confirmação.
       </p>
     </section>
   );

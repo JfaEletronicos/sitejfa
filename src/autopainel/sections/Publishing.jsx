@@ -28,15 +28,17 @@ export default function Publishing() {
             </span>
           </h2>
           <p className="lead fx-up" data-r="0.1 0.18">
-            Cadastre o veículo uma vez. O AutoPainel distribui o anúncio para os canais de venda da loja e mantém tudo
-            sincronizado em um só lugar.
+            Cadastre o veículo uma vez. O AutoPainel distribui o anúncio para os canais de venda da loja e
+            mantém tudo sincronizado em um só lugar.
           </p>
           <ol className="steps">
             <li data-at="0.12">Cadastro com dados e fotos</li>
             <li data-at="0.44">Publicação com um clique</li>
             <li data-at="0.66">Status por canal, centralizado</li>
           </ol>
-          <p className="disclaimer">Demonstração ilustrativa. Canais disponíveis dependem das integrações ativas.</p>
+          <p className="disclaimer">
+            Demonstração ilustrativa. Canais disponíveis dependem das integrações ativas.
+          </p>
         </div>
 
         <div className="pub-demo" aria-hidden="true">
@@ -92,7 +94,11 @@ export default function Publishing() {
 
           <ul className="pub-channels">
             {CHANNELS.map((c, i) => (
-              <li key={c.id} className={`ui-card channel ch-${c.id}`} data-r={`${0.52 + i * 0.05} ${0.66 + i * 0.05}`}>
+              <li
+                key={c.id}
+                className={`ui-card channel ch-${c.id}`}
+                data-r={`${0.52 + i * 0.05} ${0.66 + i * 0.05}`}
+              >
                 <span className="ch-logo">{c.name}</span>
                 <span className="ch-meta">{c.meta}</span>
                 <span className="ch-status" data-at={0.7 + i * 0.05}>
