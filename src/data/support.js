@@ -922,15 +922,6 @@ export const SUPPORT_CENTERS = [
     email: 'eletronicajuniorodontotech@gmail.com',
   },
   {
-    id: 'a3755',
-    name: 'CADELTEC',
-    city: 'Parnaíba',
-    uf: 'PI',
-    phones: ['(86) 99522-9672'],
-    address: 'Quadra F (Conjunto Betânia II), 06 - Piauí - Parnaíba - PI - CEP 64.208-442',
-    email: 'carloswagner427@gmail.com',
-  },
-  {
     id: 'a310',
     name: 'CASA DA ELETRÔNICA',
     city: 'São Raimundo Nonato',
