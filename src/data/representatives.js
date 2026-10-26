@@ -36,7 +36,7 @@ export const REPRESENTATIVES = [
       'Roraima',
       'Santa Catarina',
     ],
-    phones: ['(47) 99668-3447', '(51) 99167-7754'],
+    phones: ['(47) 99668-3447', '(47) 98804-8865'],
     address: 'Rua Governador Jorge Lacerda, 1131, 2\xBA andar, Velha, Blumenau/SC, CEP 89.045-000',
     email: 'bacrepresentacao@hotmail.com',
   },
