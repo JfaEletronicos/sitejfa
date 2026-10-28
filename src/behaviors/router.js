@@ -800,11 +800,13 @@ function initRouter(ctx) {
       });
     }
     // Compra na Hero: sem venda online confirmada, cai em "Consulte disponibilidade".
+    // Todas as baterias têm o botão do Mercado Livre (loja oficial JFA); um `commerce.mercadoLivreUrl`
+    // próprio, se um dia existir, pode substituir esse link padrão por um anúncio específico.
     const buildCommerceBlock = (container, b, opts) => {
       const compact = !!(opts && opts.compact);
       const fallbackLabel = (opts && opts.fallbackLabel) || 'Encontrar representante';
       container.innerHTML = '';
-      const commerce = b.commerce || {};
+      const commerce = { mercadoLivreUrl: MERCADO_LIVRE_URL, ...(b.commerce || {}) };
       if (commerce.availableOnline) {
         const priceRow = document.createElement('div');
         priceRow.className = 'bateria-price-row';

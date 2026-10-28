@@ -35,7 +35,7 @@ export const SECTOR_MENU = [
     line: SHOW_BATERIAS_AUTOMOTIVO ? 'Áudio, controles, fontes e baterias.' : 'Áudio, controles e fontes.',
   },
   { slug: 'telecom', title: 'Telecom', line: 'Energia, distribuição e inversores.' },
-  { slug: 'motorhome', title: 'Motorhome', line: 'Baterias e inversor para a estrada.' },
+  { slug: 'motorhome', title: 'Motorhome', line: 'Baterias para a estrada.' },
   { slug: 'solar', title: 'Solar', line: 'Baterias para armazenar energia.' },
   { slug: 'nautica', title: 'Náutica', line: 'Baterias para ir a bordo.' },
   // OCULTO: Moov/Parts — só entram no menu com as flags de data/visibility.js.
@@ -117,7 +117,7 @@ export const SECTOR_CATALOGS = {
         ],
       },
       { key: 'conversao', label: 'Conversão', ids: ['conversor-dc-dc-step-down-up'] },
-      // Os inversores ficam no Telecom (o Black fica no Motorhome).
+      // Todos os inversores ficam no Telecom (não há inversor em Motorhome).
       {
         key: 'inversores',
         label: 'Inversores',
@@ -127,13 +127,11 @@ export const SECTOR_CATALOGS = {
   },
   motorhome: {
     title: 'Energia para quem vive na estrada.',
-    // Baterias Pro 12,8V e 25,6V + Inversor Black.
+    // Baterias Pro 12,8V e 25,6V. Sem inversor: o Inversor Black (Off-Grid Senoidal
+    // Pura) fica só no catálogo de Manuais, dentro de Energia (ver data/products.js).
     batterySector: 'motorhome',
     batteryGroup: 'baterias',
-    groups: [
-      { key: 'baterias', label: 'Baterias', ids: [] },
-      { key: 'inversores', label: 'Inversores', ids: ['inversor-offgrid-senoidal-black'] },
-    ],
+    groups: [{ key: 'baterias', label: 'Baterias', ids: [] }],
   },
   // Solar: só baterias (nenhum inversor): E-Lítio Pro 12,8V e a Pro 48V 100Ah Rack.
   solar: {

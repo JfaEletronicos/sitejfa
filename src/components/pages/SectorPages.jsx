@@ -1,6 +1,7 @@
 import { t, IS_EXPORT } from '../../i18n';
 import HowToSection from '../shared/HowToSection';
 import { exportWhatsappUrl } from '../../data/exportContact';
+import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
 
 /**
  * Páginas de setor, preenchidas por behaviors/sectorPages.js:
@@ -117,9 +118,31 @@ export function SectorProductPage() {
                       {t('product.whereToBuy')}
                     </a>
                   ) : (
-                    <a className="hero-cta" href="#/representantes">
-                      {t('product.whereToBuy')}
-                    </a>
+                    <>
+                      <a
+                        className="hero-cta bateria-cta-buy"
+                        href={MERCADO_LIVRE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Comprar no{' '}
+                        <span className="brand-chip" data-theme-keep>
+                          <img src={MERCADO_LIVRE_LOGO} alt="Mercado Livre" />
+                        </span>
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M9 7h8v8M17 7 7 17"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </a>
+                      <a className="bateria-cta-link" href="#/representantes">
+                        {t('product.whereToBuy')}
+                      </a>
+                    </>
                   )}
                 </div>
                 <p className="bateria-commerce-microcopy">{t('product.microcopy')}</p>
