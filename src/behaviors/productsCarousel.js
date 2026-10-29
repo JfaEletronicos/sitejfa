@@ -155,7 +155,7 @@ function initProductsCarousel(ctx) {
       if (!dragging || e.pointerId !== activePointerId) return;
       const now = performance.now();
       const dx = e.clientX - startPointerX;
-      if (Math.abs(dx) > 4) movedPastThreshold = true;
+      if (Math.abs(dx) > 40) movedPastThreshold = true;
       posX = wrap(startPosX + dx);
       applyTransform();
       const dt = now - lastMoveT;
