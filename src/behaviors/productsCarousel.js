@@ -134,6 +134,10 @@ function initProductsCarousel(ctx) {
     let pointerDownTarget = null;
     const onPointerDown = (e) => {
       if (e.button !== void 0 && e.button !== 0) return;
+      // Clique direto no CTA: não captura o pointer, senão o clique sintetizado pelo
+      // navegador é atribuído ao viewport (quem tem a captura) em vez do link <a>,
+      // e o "Conhecer produto" não navega mesmo sem arrasto nenhum.
+      if (e.target.closest('.p-card-cta')) return;
       dragging = true;
       movedPastThreshold = false;
       pointerDownTarget = e.target;
@@ -243,8 +247,14 @@ function initProductsCarousel(ctx) {
         !productsInView
           ? 0
           : autoplayPxPerSec;
-      const ease = 1 - Math.exp(-dt / 0.35);
-      currentSpeed += (targetSpeed - currentSpeed) * ease;
+      if (targetSpeed === 0) {
+        // Para na hora: se não parar instantaneamente, o card ainda desliza sob o
+        // cursor enquanto desacelera, e o clique no CTA erra o alvo (some.card-info).
+        currentSpeed = 0;
+      } else {
+        const ease = 1 - Math.exp(-dt / 0.35);
+        currentSpeed += (targetSpeed - currentSpeed) * ease;
+      }
       if (!dragging && Math.abs(currentSpeed) > 0.01) {
         posX = wrap(posX - currentSpeed * dt);
         applyTransform();
