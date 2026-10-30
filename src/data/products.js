@@ -448,7 +448,7 @@ export const PRODUCTS = [
     category: 'Inversores',
     aliases: ['Inversor 1000W', 'Rack 1000', 'Inversor Rack'],
     status: 'current',
-    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-ALL-1000.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-ALL-1000.pdf?v=20261030',
   },
   {
     id: 'inversor-senoidal-rack-3000w-5000w',
@@ -475,7 +475,7 @@ export const PRODUCTS = [
       'Inversor 5000W',
     ],
     status: 'current',
-    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-BLACK.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-BLACK.pdf?v=20261030',
   },
   {
     id: 'air-control',
