@@ -120,12 +120,13 @@ export function SectorProductPage() {
                   ) : (
                     <>
                       <a
+                        id="produtoBuy"
                         className="hero-cta bateria-cta-buy"
                         href={MERCADO_LIVRE_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Comprar no{' '}
+                        <span data-buy-label>Comprar no</span>{' '}
                         <span className="brand-chip" data-theme-keep>
                           <img src={MERCADO_LIVRE_LOGO} alt="Mercado Livre" />
                         </span>

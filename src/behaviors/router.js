@@ -1,5 +1,10 @@
 import { trackEvent, trackPageView } from '../lib/analytics';
-import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO, SHOPEE_LOGO } from '../data/links';
+import {
+  MERCADO_LIVRE_URL,
+  MERCADO_LIVRE_NAUTICA_12V_URL,
+  MERCADO_LIVRE_LOGO,
+  SHOPEE_LOGO,
+} from '../data/links';
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
@@ -260,7 +265,7 @@ function initRouter(ctx) {
           '/images/bateria_elitio_nautica_12v8_100a_a3.webp',
         ],
         manualUrl: 'https://jfaeletronicos.com/qr-code/N12V100AP.pdf',
-        commerce: {},
+        commerce: { mercadoLivreUrl: MERCADO_LIVRE_NAUTICA_12V_URL },
         relatedProducts: [],
       },
       // E-Lítio Pro 25,6V: uma página só, com as capacidades 50Ah e 100Ah como

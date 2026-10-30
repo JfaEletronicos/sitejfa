@@ -3,6 +3,7 @@ import { PRODUCTS as PT_PRODUCTS } from '../data/products';
 import { SECTOR_CATALOGS as PT_CATALOGS, SECTOR_ICONS, SECTOR_MENU } from '../data/sectors';
 import { PRODUCT_DETAILS as PT_DETAILS } from '../data/productDetails';
 import { PRODUCT_QUICK_SPECS as PT_QUICK_SPECS } from '../data/productSpecs';
+import { MERCADO_LIVRE_URL, MERCADO_LIVRE_PRODUCT_LINKS } from '../data/links';
 import { EXPORT_CATALOG_GROUPS, EXPORT_CATALOG_PRODUCTS } from '../data/exportProducts';
 import { EXPORT_PHONE } from '../data/exportContact';
 import { t, tf, pick, IS_EXPORT } from '../i18n';
@@ -224,6 +225,7 @@ function initSectorPages(ctx) {
     title: byId('produtoTitle'),
     headline: byId('produtoHeadline'),
     desc: byId('produtoDesc'),
+    buy: byId('produtoBuy'),
     quickSection: byId('produtoQuickSpecsSection'),
     quick: byId('produtoQuickSpecs'),
     techSection: byId('produtoTechSection'),
@@ -328,6 +330,25 @@ function initSectorPages(ctx) {
     const descText = IS_EXPORT ? '' : firstRest || (paras[1] ? plain(paras[1].h) : '');
     prod.desc.textContent = descText;
     prod.desc.hidden = !descText;
+    // Compra: um botão por anúncio do produto; a exportação não tem esse botão.
+    if (prod.buy) {
+      prod.view.querySelectorAll('[data-buy-extra]').forEach((a) => a.remove());
+      const links = MERCADO_LIVRE_PRODUCT_LINKS[id] || [{ url: MERCADO_LIVRE_URL }];
+      let last = prod.buy;
+      links.forEach((link, i) => {
+        const a = i ? prod.buy.cloneNode(true) : prod.buy;
+        if (i) {
+          a.removeAttribute('id');
+          a.setAttribute('data-buy-extra', '');
+        }
+        a.href = link.url;
+        a.querySelector('[data-buy-label]').textContent = link.label
+          ? 'Comprar ' + link.label + ' no'
+          : 'Comprar no';
+        if (i) last.after(a);
+        last = a;
+      });
+    }
     prod.media.innerHTML = '';
     showPhoto(detail.images[0], pname);
     prod.thumbs.innerHTML = '';

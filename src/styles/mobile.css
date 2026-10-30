@@ -266,3 +266,16 @@
     justify-content: center;
   }
 }
+
+/* Compra por versão: textos longos ("Comprar 200A 220V no") cabem no botão do celular. */
+@media (max-width: 640px) {
+  #produtoView .bateria-cta-buy {
+    padding-inline: 14px;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  #produtoView .bateria-cta-buy .brand-chip img {
+    height: 22px;
+  }
+}
