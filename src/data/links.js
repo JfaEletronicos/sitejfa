@@ -8,7 +8,7 @@ export const SHOPEE_LOGO_LIGHT = '/images/brands/shopee.svg';
 export const MERCADO_LIVRE_LOGO = '/images/brands/mercado-livre-white.webp';
 export const MERCADO_LIVRE_LOGO_LIGHT = '/images/brands/mercado-livre.webp';
 export const MERCADO_LIVRE_URL =
-  'https://www.mercadolivre.com.br/loja/jfa-eletronicos?item_id=MLB3492722035&category_id=MLB5672&official_store_id=223044&client=recoview-selleritems&recos_listing=true';
+  'https://www.mercadolivre.com.br/social/mp20241020101949?matt_word=mp20241020101949&matt_tool=20296064&forceInApp=true&ref=BOhp9LwkF8noYTt%2BXIz7Uq8EI%2BSQIsGbxhZL7yrEYt8BZC2zXjdxtlsvC4T%2F1mipTt3z8GDYe804Uky7ggz%2FlmmDUygWZdPC619ZZi23BWS7ff2ZfihErWgVZwCE8J9tGg3l9RMryM9ldKqRAwbLYk6iUPHycWL64KHv%2FBBOaXXm79Z7KSXOMADjSMbbPo1%2BXfvYjWDMyshvDgIy035ZzQbjBhrP0y9RezcSYj5uc%2BEFDF2c4R22rkOuDDCtv%2B82iMyBXI9%2F';
 
 // Botão flutuante do WhatsApp: telefone principal da JFA, +55 31 2533-6100.
 export const WHATSAPP_FLOAT_PHONE = '553125336100';
