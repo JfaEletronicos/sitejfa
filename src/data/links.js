@@ -8,7 +8,9 @@ export const SHOPEE_LOGO_LIGHT = '/images/brands/shopee.svg';
 export const MERCADO_LIVRE_LOGO = '/images/brands/mercado-livre-white.webp';
 export const MERCADO_LIVRE_LOGO_LIGHT = '/images/brands/mercado-livre.webp';
 export const MERCADO_LIVRE_URL =
-  'https://meli.la/2RmSk1t';
+  'https://meli.la/1f9cbef';
+// Anúncio da bateria E-Lítio Pro 12,8V 100Ah.
+export const MERCADO_LIVRE_PRO_12V_100AH_URL = 'https://meli.la/1f9cbef';
 // Anúncio próprio da bateria E-Lítio Náutica 12,8V 100Ah.
 export const MERCADO_LIVRE_NAUTICA_12V_URL = 'https://meli.la/21Pti6U';
 // Anúncios por produto (ids de products.js): um botão por item; `label` é a versão

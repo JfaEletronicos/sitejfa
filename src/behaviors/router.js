@@ -2,6 +2,7 @@ import { trackEvent, trackPageView } from '../lib/analytics';
 import {
   MERCADO_LIVRE_URL,
   MERCADO_LIVRE_NAUTICA_12V_URL,
+  MERCADO_LIVRE_PRO_12V_100AH_URL,
   MERCADO_LIVRE_LOGO,
   SHOPEE_LOGO,
 } from '../data/links';
@@ -188,6 +189,7 @@ function initRouter(ctx) {
             // Mesmo produto de PRODUCTS['bateria-litio-12v-100a'] (alias "E-Lítio Pro 12V 100A").
             manualUrl: 'https://jfaeletronicos.com/qr-code/L12V100A.pdf',
             certifications: ['inmetro', 'anatel'],
+            commerce: { mercadoLivreUrl: MERCADO_LIVRE_PRO_12V_100AH_URL },
           },
         ],
         commerce: { mercadoLivreUrl: MERCADO_LIVRE_URL },
