@@ -323,15 +323,6 @@ export const SUPPORT_CENTERS = [
     email: 'jpeletroinfo100@gmail.com',
   },
   {
-    id: 'a2566',
-    name: 'GLOBAL ELETRÔNICA',
-    city: 'Planaltina',
-    uf: 'DF',
-    phones: ['(61) 3028-2562', '(61) 99199-6484'],
-    address:
-      'Quadra 1, Conjunto H, Lote 21, Loja 04 - Setor Residencial Leste - Planaltina- DF - CEP 73.350-108',
-  },
-  {
     id: 'a47236',
     name: 'JLC Áudio Eletrônica',
     city: 'Serra',
