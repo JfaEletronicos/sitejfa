@@ -1,6 +1,6 @@
 /** Links externos de compra usados no header e nas páginas de produto. */
 // Shopee: substitui a antiga Loja Oficial (loja.jfaeletronicos.com) em todo o site.
-export const SHOPEE_URL = 'https://shopee.com.br/m/jfa';
+export const SHOPEE_URL = 'https://s.shopee.com.br/1BNho2CYH1';
 // Logos: símbolo na cor original e texto em branco (fundos escuros); a versão
 // com o texto na cor original entra no modo claro.
 export const SHOPEE_LOGO = '/images/brands/shopee-white.svg';
