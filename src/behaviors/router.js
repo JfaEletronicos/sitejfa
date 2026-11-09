@@ -1,11 +1,5 @@
 import { trackEvent, trackPageView } from '../lib/analytics';
-import {
-  MERCADO_LIVRE_URL,
-  MERCADO_LIVRE_NAUTICA_12V_URL,
-  MERCADO_LIVRE_PRO_12V_100AH_URL,
-  MERCADO_LIVRE_LOGO,
-  SHOPEE_LOGO,
-} from '../data/links';
+import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO, SHOPEE_LOGO } from '../data/links';
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
@@ -189,7 +183,6 @@ function initRouter(ctx) {
             // Mesmo produto de PRODUCTS['bateria-litio-12v-100a'] (alias "E-Lítio Pro 12V 100A").
             manualUrl: 'https://jfaeletronicos.com/qr-code/L12V100A.pdf',
             certifications: ['inmetro', 'anatel'],
-            commerce: { mercadoLivreUrl: MERCADO_LIVRE_PRO_12V_100AH_URL },
           },
         ],
         commerce: { mercadoLivreUrl: MERCADO_LIVRE_URL },
@@ -267,7 +260,7 @@ function initRouter(ctx) {
           '/images/bateria_elitio_nautica_12v8_100a_a3.webp',
         ],
         manualUrl: 'https://jfaeletronicos.com/qr-code/N12V100AP.pdf',
-        commerce: { mercadoLivreUrl: MERCADO_LIVRE_NAUTICA_12V_URL },
+        commerce: {},
         relatedProducts: [],
       },
       // E-Lítio Pro 25,6V: uma página só, com as capacidades 50Ah e 100Ah como
