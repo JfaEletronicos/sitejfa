@@ -129,52 +129,52 @@
   </url>
 
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/patch-panel-poe-gerenciavel</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/patch-panel-poe-gerenciavel</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/patch-panel-poe-giga</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/patch-panel-poe-giga</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/patch-panel-poe-fast</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/patch-panel-poe-fast</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/pdu-dc</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/pdu-dc</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/fonte-nobreak</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/fonte-nobreak</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/fonte-nobreak-snmp</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/fonte-nobreak-snmp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/gerenciador-fonte-redundante</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/gerenciador-fonte-redundante</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/equalizador-balanceador-banco-baterias</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/equalizador-balanceador-banco-baterias</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jfaeletronicos.com/#/setores/telecom/conversor-dc-dc-step-down-up</loc>
+    <loc>https://jfaeletronicos.com/#/setores/energia/conversor-dc-dc-step-down-up</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

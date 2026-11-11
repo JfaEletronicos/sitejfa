@@ -591,7 +591,7 @@ export const PRODUCT_DETAILS = {
       {
         t: 'ul',
         items: [
-          'Equipamentos de telecomunicações',
+          'Equipamentos de rede',
           'Pontos de acesso sem fio',
           'Equipamentos de CFTV',
           'Telefonia sobre IP (VOIP)',
@@ -609,7 +609,7 @@ export const PRODUCT_DETAILS = {
     ],
     docs: [],
     name: 'Patch Panel Régua PoE GIGA',
-    category: 'Telecom',
+    category: 'Energia',
   },
   'fonte-nobreak-snmp': {
     images: [
@@ -618,11 +618,11 @@ export const PRODUCT_DETAILS = {
       '/images/produtos/fonte-nobreak-snmp-3.webp',
     ],
     summary:
-      'A Fonte Nobreak JFA é ideal para alimentar equipamentos que necessitam de fluxos de energia contínuos e sem variações, demanda muito comum no mercado de provedores.',
+      'A Fonte Nobreak JFA é ideal para alimentar equipamentos que necessitam de fluxos de energia contínuos e sem variações, demanda muito comum em redes de dados e sistemas que não podem parar.',
     blocks: [
       {
         t: 'p',
-        h: 'A <strong>Fonte Nobreak JFA</strong> é ideal para alimentar equipamentos que necessitam de <strong>fluxos de energia contínuos e sem variações</strong>, demanda muito comum no mercado de provedores.',
+        h: 'A <strong>Fonte Nobreak JFA</strong> é ideal para alimentar equipamentos que necessitam de <strong>fluxos de energia contínuos e sem variações</strong>, demanda muito comum em redes de dados e sistemas que não podem parar.',
       },
       {
         t: 'p',
@@ -774,7 +774,7 @@ export const PRODUCT_DETAILS = {
       {
         t: 'ul',
         items: [
-          'Equipamentos de telecomunicações',
+          'Equipamentos de rede',
           'Pontos de acesso sem fio',
           'Equipamentos de CFTV',
           'Telefonia sobre IP (VOIP)',
@@ -796,7 +796,7 @@ export const PRODUCT_DETAILS = {
     ],
     docs: [],
     name: 'Patch Panel Régua PoE FAST',
-    category: 'Telecom',
+    category: 'Energia',
   },
   'patch-panel-poe-gerenciavel': {
     images: ['/images/produtos/patch-panel-poe-gerenciavel-1.webp'],
@@ -818,7 +818,7 @@ export const PRODUCT_DETAILS = {
       {
         t: 'ul',
         items: [
-          'Equipamentos de telecomunicações',
+          'Equipamentos de rede',
           'Pontos de acesso sem fio',
           'Equipamentos de CFTV',
           'Telefonia sobre IP (VOIP)',
@@ -833,7 +833,7 @@ export const PRODUCT_DETAILS = {
       },
     ],
     name: 'Patch Panel Régua PoE Gerenciável',
-    category: 'Telecom',
+    category: 'Energia',
   },
   'pdu-dc': {
     images: ['/images/produtos/pdu-dc-1.webp'],
@@ -875,7 +875,7 @@ export const PRODUCT_DETAILS = {
     blocks: [
       {
         t: 'p',
-        h: 'O Gerenciador de Fontes Redundante da JFA é uma solução moderna para a operação de fontes nobreak com a utilização de apenas um banco de baterias e a possibilidade de utilização em dois modos: 2 fontes ligadas em paralelo ou 1 fonte ligada e a outra em redundância. Tudo com máxima segurança e eficiência para o seu provedor.',
+        h: 'O Gerenciador de Fontes Redundante da JFA é uma solução moderna para a operação de fontes nobreak com a utilização de apenas um banco de baterias e a possibilidade de utilização em dois modos: 2 fontes ligadas em paralelo ou 1 fonte ligada e a outra em redundância. Tudo com máxima segurança e eficiência para a sua operação.',
       },
       {
         t: 'p',

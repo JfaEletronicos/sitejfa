@@ -7,7 +7,7 @@
  * impresso no rótulo do produto.
  *
  * WHY_COPY: chave = id (ou "id:variante") e, dentro, a aplicação
- * (solar/automotivo/nautico/telecom/motorhome). Cada texto tem um título, um parágrafo e
+ * (solar/automotivo/nautico/energia/motorhome). Cada texto tem um título, um parágrafo e
  * três motivos com um valor em destaque.
  */
 
@@ -98,8 +98,8 @@ export const WHY_COPY = {
         { value: '54V', text: 'de carga máxima, indicada no painel' },
       ],
     },
-    telecom: {
-      title: 'Energia de reserva no formato dos racks de telecom.',
+    energia: {
+      title: 'Energia de reserva no formato dos racks de equipamentos.',
       text: 'São 4,8 kWh em um módulo de rack 48V, com painel de controle frontal e portas de comunicação RS485 e CAN para integrar a bateria ao sistema de energia.',
       reasons: [
         { value: '4,8 kWh', text: 'de energia em um único módulo de rack' },

@@ -67,7 +67,7 @@ function initRouter(ctx) {
       automotivo: 'Automotivo',
       solar: 'Solar',
       nautico: 'N\xE1utico',
-      telecom: 'Telecom',
+      energia: 'Energia',
       motorhome: 'Motorhome',
     };
     const APP_CONTEXT = {
@@ -83,9 +83,9 @@ function initRouter(ctx) {
         title: 'Energia para quem vive na estrada.',
         text: 'Armazenamento de energia de l\xEDtio para os sistemas de bordo do motorhome, com estabilidade e autonomia para as paradas.',
       },
-      telecom: {
+      energia: {
         title: 'Energia para sistemas que precisam permanecer conectados.',
-        text: 'Armazenamento de energia em formato rack para sistemas de telecomunica\xE7\xE3o que n\xE3o podem parar.',
+        text: 'Armazenamento de energia em formato rack para sistemas que n\xE3o podem parar.',
       },
       nautico: {
         title: 'Energia preparada para ir a bordo.',
@@ -195,8 +195,8 @@ function initRouter(ctx) {
         voltage: '48V',
         capacity: '100Ah',
         technology: 'LiFePO4',
-        // Rack: Telecom e Solar (e, como toda bateria que não é náutica, também Automotivo).
-        sectors: ['telecom', 'solar', 'automotivo'],
+        // Rack: Energia e Solar (e, como toda bateria que não é náutica, também Automotivo).
+        sectors: ['energia', 'solar', 'automotivo'],
         features: ['Rack'],
         shortDescription: 'Integra\xE7\xE3o em rack para sistemas de energia de maior porte.',
         marketingHeadline: 'Mais capacidade em formato rack.',
@@ -221,8 +221,8 @@ function initRouter(ctx) {
         capacity: '50Ah',
         technology: 'LiFePO4',
         sectors: ['automotivo'],
-        // OCULTO: baterias Automotivo — enquanto a flag estiver desligada, fica em Telecom.
-        sectorsSemAutomotivo: ['telecom'],
+        // OCULTO: baterias Automotivo — enquanto a flag estiver desligada, fica em Energia.
+        sectorsSemAutomotivo: ['energia'],
         features: ['BMS'],
         shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
         marketingHeadline: 'Alta tens\xE3o, energia sob controle.',
@@ -530,7 +530,7 @@ function initRouter(ctx) {
       automotivo: { slug: 'automotivo', title: 'Automotivo' },
       solar: { slug: 'solar', title: 'Solar' },
       nautico: { slug: 'nautica', title: 'N\xE1utica' },
-      telecom: { slug: 'telecom', title: 'Telecom' },
+      energia: { slug: 'energia', title: 'Energia' },
       motorhome: { slug: 'motorhome', title: 'Motorhome' },
     };
     // Miniaturas só aparecem com mais de 1 foto; onSelect move o carrossel principal.
@@ -1499,6 +1499,11 @@ function initRouter(ctx) {
         showView('home');
         if (ctx.openSectorMenu) ctx.openSectorMenu();
       } else if (parts[0] === 'setores') {
+        // Telecom virou Energia: endereços antigos (#/setores/telecom...) abrem a página nova.
+        if (parts[1] === 'telecom') {
+          parts[1] = 'energia';
+          history.replaceState(null, '', '#/' + parts.join('/'));
+        }
         // Setor sem página (ou só #/setores): volta para a Home com o menu de setores aberto.
         let view = null;
         if (parts[2] && ctx.renderSectorProduct) view = ctx.renderSectorProduct(parts[1], parts[2]);

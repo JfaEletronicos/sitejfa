@@ -3,7 +3,7 @@ import { SHOW_MOOV, SHOW_PARTS, SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
 /**
  * Categorias do menu "Categorias" do header (as baterias não têm mais um lugar à
  * parte: cada categoria mostra as suas).
- * - Automotivo, Telecom, Motorhome, Solar e Náutica: catálogos no layout da página
+ * - Automotivo, Energia, Motorhome, Solar e Náutica: catálogos no layout da página
  *   de baterias (#/setores/:slug), com os produtos de `products.js` separados em
  *   grupos (as abas do filtro) e as baterias do setor (`batterySector`).
  * - JFA Parts e Moov: landing pages próprias (PartsPage.jsx e MoovPage.jsx).
@@ -13,7 +13,7 @@ import { SHOW_MOOV, SHOW_PARTS, SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
 export const SECTOR_ICONS = {
   automotivo:
     '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 16v-3.2l1.8-4.3A2 2 0 0 1 7.6 7.3h8.8a2 2 0 0 1 1.8 1.2l1.8 4.3V16a1 1 0 0 1-1 1h-1.2M4 16a1 1 0 0 0 1 1h1.2m11.6 0H6.2M4.4 12.6h15.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.6" cy="17" r="1.7" stroke="currentColor" stroke-width="1.6"/><circle cx="16.4" cy="17" r="1.7" stroke="currentColor" stroke-width="1.6"/></svg>',
-  telecom:
+  energia:
     '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 11v10M9 21h6M8.5 7.5a5 5 0 0 0 0 7M15.5 7.5a5 5 0 0 1 0 7M5.6 4.6a9 9 0 0 0 0 12.8M18.4 4.6a9 9 0 0 1 0 12.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="11" r="1.6" fill="currentColor"/></svg>',
   motorhome:
     '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 17V7.5A1.5 1.5 0 0 1 4.5 6H15l3.2 4.2 2.1.9a1 1 0 0 1 .7.9V17h-1.6M3 17h1.4m4.2 0h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="5.6" y="8.6" width="3.6" height="2.8" rx=".5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="8.6" width="3.6" height="2.8" rx=".5" stroke="currentColor" stroke-width="1.4"/><circle cx="6.5" cy="17" r="1.9" stroke="currentColor" stroke-width="1.6"/><circle cx="17.8" cy="17" r="1.9" stroke="currentColor" stroke-width="1.6"/></svg>',
@@ -34,7 +34,7 @@ export const SECTOR_MENU = [
     title: 'Automotivo',
     line: SHOW_BATERIAS_AUTOMOTIVO ? 'Áudio, controles, fontes e baterias.' : 'Áudio, controles e fontes.',
   },
-  { slug: 'telecom', title: 'Telecom', line: 'Energia, distribuição e inversores.' },
+  { slug: 'energia', title: 'Energia', line: 'Fontes, distribuição e inversores.' },
   { slug: 'motorhome', title: 'Motorhome', line: 'Baterias para a estrada.' },
   { slug: 'solar', title: 'Solar', line: 'Baterias para armazenar energia.' },
   { slug: 'nautica', title: 'Náutica', line: 'Baterias para ir a bordo.' },
@@ -94,10 +94,10 @@ export const SECTOR_CATALOGS = {
       },
     ],
   },
-  telecom: {
+  energia: {
     title: 'Energia para sistemas que precisam permanecer conectados.',
     // Baterias em rack.
-    batterySector: 'telecom',
+    batterySector: 'energia',
     batteryGroup: 'baterias',
     groups: [
       { key: 'baterias', label: 'Baterias', ids: [] },
@@ -117,7 +117,7 @@ export const SECTOR_CATALOGS = {
         ],
       },
       { key: 'conversao', label: 'Conversão', ids: ['conversor-dc-dc-step-down-up'] },
-      // Todos os inversores ficam no Telecom (não há inversor em Motorhome).
+      // Todos os inversores ficam no Energia (não há inversor em Motorhome).
       {
         key: 'inversores',
         label: 'Inversores',
@@ -127,7 +127,7 @@ export const SECTOR_CATALOGS = {
   },
   motorhome: {
     title: 'Energia para quem vive na estrada.',
-    // Baterias Pro 12,8V e 25,6V. Sem inversor: o Inversor Black (Off-Grid Senoidal
+    // Baterias Pro 12,8V e 25,6V. Sem inversor: o Inversor Black (Senoidal
     // Pura) fica só no catálogo de Manuais, dentro de Energia (ver data/products.js).
     batterySector: 'motorhome',
     batteryGroup: 'baterias',

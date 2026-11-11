@@ -28,7 +28,7 @@ export const trackEvent = (name, params) => {
  * Visualização de página do site (o GA4 não vê a troca de tela por # sozinho).
  * `path` é o endereço limpo da tela (ex.: "/setores/automotivo"), que vira a
  * "página" nos relatórios; o título é o da aba. `group` é o setor da tela
- * (Automotivo, Telecom, Suporte...), enviado como Grupo de conteúdo do GA4.
+ * (Automotivo, Energia, Suporte...), enviado como Grupo de conteúdo do GA4.
  */
 export const trackPageView = (path, title, group) => {
   try {

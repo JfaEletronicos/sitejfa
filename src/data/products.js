@@ -426,7 +426,7 @@ export const PRODUCTS = [
     id: 'patch-panel-regua-poe',
     name: 'Patch Panel Régua PoE',
     lines: [E],
-    category: 'Telecom',
+    category: 'Energia',
     aliases: ['Patch Panel', 'Régua PoE', 'PoE', 'Patch Panel Giga', 'Patch Panel Fast'],
     status: 'current',
     manualUrl:
@@ -461,7 +461,7 @@ export const PRODUCTS = [
   },
   {
     id: 'inversor-offgrid-senoidal-black',
-    name: 'Inversor Off-Grid Senoidal Pura Black 1500W a 5000W',
+    name: 'Inversor Senoidal Pura Black 1500W a 5000W',
     lines: [E],
     category: 'Inversores',
     aliases: [

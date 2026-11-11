@@ -55,7 +55,7 @@ const ARROW_OUT_SVG =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 
 /**
- * Páginas de categoria: Automotivo, Telecom, Motorhome, Solar e Náutica como catálogo (mesmo layout de #/baterias),
+ * Páginas de categoria: Automotivo, Energia, Motorhome, Solar e Náutica como catálogo (mesmo layout de #/baterias),
  * com página própria para cada produto que tem detalhes em `productDetails.js`,
  * e Moov e Parts como landing pages próprias. O roteador chama
  * `ctx.renderSectorPage(slug)` e `ctx.renderSectorProduct(slug, id)`, que montam a

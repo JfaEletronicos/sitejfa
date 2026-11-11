@@ -5,7 +5,7 @@ import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
 
 /**
  * Páginas de setor, preenchidas por behaviors/sectorPages.js:
- * - #/setores/automotivo e #/setores/telecom: catálogo no layout da página de baterias;
+ * - #/setores/automotivo e #/setores/energia: catálogo no layout da página de baterias;
  * (Moov e Parts têm landing pages próprias: MoovPage.jsx e PartsPage.jsx.)
  */
 export function SectorCatalogPage() {

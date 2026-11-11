@@ -86,7 +86,7 @@ export const PRODUCT_QUICK_SPECS = {
     ['Comando remoto', 'Interno'],
     ['Proteção', 'BMS'],
   ],
-  // Telecom
+  // Energia
   'patch-panel-poe-giga': [
     ['Portas', '5 | 10 | 12'],
     ['Tensão', '10,8 a 52,8 Vdc'],
