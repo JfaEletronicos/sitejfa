@@ -93,7 +93,7 @@ const RAW_BATTERY_CATALOG = [
     technology: 'LiFePO4',
     sectors: ['automotivo'],
     // OCULTO: baterias Automotivo — enquanto a flag estiver desligada, fica em Energia.
-    sectorsSemAutomotivo: ['energia'],
+    sectorsSemAutomotivo: ['energia', 'solar'],
     features: ['BMS'],
     shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
     marketingHeadline: 'Alta tens\xE3o, energia sob controle.',

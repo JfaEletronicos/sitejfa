@@ -13,8 +13,11 @@ export function initHero(ctx) {
   const titleWords = Array.from(root.querySelectorAll('.hero-title .word'));
   const heroSub = root.getElementById('heroSub');
   const heroCtaRow = root.getElementById('heroCtaRow');
+  // O vídeo de fundo toca mesmo com "reduzir animações" (comum no Windows com os efeitos
+  // de animação desligados): sem ele a Home fica sem a abertura. Mudo, sempre.
   const playHeroBgVideo = () => {
     if (!heroBgVideo) return;
+    heroBgVideo.muted = true;
     const p = heroBgVideo.play();
     if (p && p.catch) p.catch(() => {});
   };
@@ -105,7 +108,7 @@ export function initHero(ctx) {
           heroInView = e.isIntersecting;
           if (heroInView) {
             if (rafId == null && !ctx.reduceMotion) rafId = requestAnimationFrame(tick);
-            if (!ctx.reduceMotion) playHeroBgVideo();
+            playHeroBgVideo();
           } else {
             pauseHeroBgVideo();
           }
@@ -121,6 +124,7 @@ export function initHero(ctx) {
     if (heroPinSpace) heroPinSpace.style.height = 'auto';
     applyFrame(1);
     positionScene();
+    playHeroBgVideo();
   } else {
     applyFrame(0);
     positionScene();
@@ -160,11 +164,7 @@ export function initHero(ctx) {
     on(window, 'scroll', onHeroScroll, { passive: true });
     onHeroScroll();
   }
-  ctx.reduceMotionListeners.push((reduce) => {
-    if (reduce) {
-      pauseHeroBgVideo();
-    } else if (heroInView) {
-      playHeroBgVideo();
-    }
+  ctx.reduceMotionListeners.push(() => {
+    if (heroInView) playHeroBgVideo();
   });
 }

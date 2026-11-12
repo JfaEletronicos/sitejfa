@@ -670,6 +670,19 @@ function initRouter(ctx) {
           }),
         );
         actions.appendChild(ml);
+        // Manual ao lado da compra.
+        if (b.manualUrl) {
+          const man = document.createElement('a');
+          man.className = 'hero-cta bateria-cta-manual';
+          man.href = b.manualUrl;
+          man.target = '_blank';
+          man.rel = 'noopener noreferrer';
+          man.innerHTML = 'Baixar manual ' + '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+          on(man, 'click', () =>
+            trackEvent('manual_download', { product_id: b.id, variant: b.variantKey, placement: 'bateria_hero' }),
+          );
+          actions.appendChild(man);
+        }
         const rep = document.createElement('a');
         rep.className = 'bateria-cta-link';
         rep.href = '#representantes';

@@ -1,5 +1,11 @@
+import { t } from '../i18n';
+import { trackEvent } from '../lib/analytics';
+import { SECTOR_MENU } from '../data/sectors';
+import { createCatalogGrid, buildFilterTabs, bindFilterTrack } from './catalogGrid';
+
 /**
- * Soluções JFA: filtro por linha, entrada dos cards e carrossel infinito com arraste, inércia e autoplay.
+ * Soluções JFA: carrossel de destaques (infinito, com arraste, inércia e autoplay) e,
+ * por mercado, os produtos daquele mercado com as subcategorias da página dele.
  * @param {import('./context').BehaviorContext} ctx
  */
 function initProductsCarousel(ctx) {
@@ -29,10 +35,50 @@ function initProductsCarousel(ctx) {
   const categoryPills = categoryNav
     ? Array.from(categoryNav.querySelectorAll('.products-category-pill'))
     : [];
+  // Mercado (Home em português): esconde o carrossel e mostra os produtos do mercado em
+  // grade, com as mesmas abas e cards da página do mercado (ctx.sectorCatalogCards).
+  const runway = root.getElementById('carouselRunway');
+  const market = root.getElementById('productsMarket');
+  const marketGrid = root.getElementById('productsMarketGrid');
+  const subTrack = root.getElementById('productsSubTrack');
+  const marketAll = root.getElementById('productsMarketAll');
+  const marketAllLabel = root.getElementById('productsMarketAllLabel');
+  let marketCatalog = null;
+  let remeasureCarousel = null;
+  const showMarket = (slug) => {
+    const data = slug && slug !== 'all' && ctx.sectorCatalogCards ? ctx.sectorCatalogCards(slug) : null;
+    if (runway) runway.hidden = !!data;
+    market.hidden = !data;
+    if (!data) {
+      if (remeasureCarousel) requestAnimationFrame(remeasureCarousel);
+      return;
+    }
+    if (!marketCatalog) {
+      marketCatalog = createCatalogGrid(ctx, {
+        grid: marketGrid,
+        indicator: root.getElementById('productsSubIndicator'),
+        attr: 'groups',
+      });
+      bindFilterTrack(ctx, subTrack, marketCatalog);
+    }
+    marketGrid.innerHTML = '';
+    buildFilterTabs(subTrack, [{ key: 'all', label: t('catalog.all') }, ...data.groups]);
+    data.cards.forEach((card) => {
+      marketGrid.appendChild(card);
+      marketCatalog.observe(card);
+    });
+    const m = SECTOR_MENU.find((x) => x.slug === slug);
+    marketAll.href = '/setores/' + slug;
+    marketAllLabel.textContent = 'Ver a página de ' + (m ? m.title : slug);
+    requestAnimationFrame(() =>
+      marketCatalog.positionIndicator(subTrack.querySelector('.catalog-filter-tab.is-active')),
+    );
+  };
   const setProductsCategory = (line) => {
     if (!track) return;
     if (!line || line === 'all') track.removeAttribute('data-active-line');
     else track.setAttribute('data-active-line', line);
+    if (market && marketGrid && subTrack) showMarket(line);
     categoryPills.forEach((p) => {
       const active = p.getAttribute('data-category') === line;
       p.classList.toggle('is-active', active);
@@ -42,7 +88,10 @@ function initProductsCarousel(ctx) {
   ctx.setProductsCategory = setProductsCategory;
 
   categoryPills.forEach((p) => {
-    on(p, 'click', () => setProductsCategory(p.getAttribute('data-category')));
+    on(p, 'click', () => {
+      setProductsCategory(p.getAttribute('data-category'));
+      trackEvent('products_market_filter', { market: p.getAttribute('data-category') });
+    });
   });
   // Quantidade de cards únicos (o resto são cópias para o loop infinito): vem de
   // data-unique no trilho; o padrão é o do site em português (5).
@@ -272,6 +321,13 @@ function initProductsCarousel(ctx) {
     measure();
     posX = wrap(0);
     applyTransform();
+    // Ao voltar para os Destaques (o carrossel ficou escondido): mede de novo.
+    remeasureCarousel = () => {
+      measure();
+      posX = wrap(posX);
+      applyTransform();
+      if (restartProductsAutoplay) restartProductsAutoplay();
+    };
     on(viewport, 'pointerdown', onPointerDown);
     on(window, 'pointermove', onPointerMove, { passive: true });
     on(window, 'pointerup', endDrag);

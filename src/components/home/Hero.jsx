@@ -10,16 +10,21 @@ export default function Hero() {
       <div className="scene-side scene-right" id="sceneRight" aria-hidden="true" />
       <div className="hero-pin-space" id="heroPinSpace">
         <div className="hero-shell" id="heroShell" data-theme-keep>
+          {/* MP4 (H.264) para quase todos; WebM (VP9) para navegadores sem H.264. */}
           <video
             className="hero-bg-video"
             id="heroBgVideo"
+            autoPlay
             muted
             loop
             playsInline
             preload="auto"
             aria-hidden="true"
-            src="/media/hero-bateria.mp4"
-          />
+            poster="/media/hero-bateria-poster.webp"
+          >
+            <source src="/media/hero-bateria.mp4" type='video/mp4; codecs="avc1.640028"' />
+            <source src="/media/hero-bateria.webm" type='video/webm; codecs="vp9"' />
+          </video>
           <div className="hero-vignette" id="heroVignette" aria-hidden="true" />
           <div className="jfa-header-spacer" id="headerSpacer" aria-hidden="true" />
           <section className="hero" id="heroSection">
@@ -43,7 +48,7 @@ export default function Hero() {
                 </h1>
                 <p className="hero-sub" id="heroSub" dangerouslySetInnerHTML={{ __html: t('hero.sub') }} />
                 <div className="hero-cta-row" id="heroCtaRow">
-                  <a href="#solucoes" className="hero-cta hero-cta-primary">
+                  <a href="#solucoes" className="hero-cta hero-cta-primary" data-open-categories>
                     {t('hero.ctaProducts')}
                   </a>{' '}
                   <a href="#manuais" className="hero-cta">

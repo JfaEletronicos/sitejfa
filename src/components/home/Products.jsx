@@ -2,6 +2,7 @@ import { t, pick, IS_EXPORT } from '../../i18n';
 import { EXPORT_CATALOG_GROUPS, EXPORT_CATALOG_PRODUCTS } from '../../data/exportProducts';
 import { exportWhatsappUrl } from '../../data/exportContact';
 import { SHOW_BATERIAS_AUTOMOTIVO } from '../../data/visibility';
+import { SECTOR_MENU, SECTOR_CATALOGS } from '../../data/sectors';
 
 // OCULTO: baterias Automotivo — sem a flag, as baterias saem do filtro "Automotivo".
 const BAT_LINE = SHOW_BATERIAS_AUTOMOTIVO ? 'automotivo energia' : 'energia';
@@ -187,7 +188,7 @@ export default function Products() {
             className="products-category-nav"
             id="productsCategoryNav"
             role="group"
-            aria-label="Filtrar produtos por linha"
+            aria-label="Produtos por mercado"
           >
             <button
               className="products-category-pill is-active"
@@ -195,24 +196,20 @@ export default function Products() {
               data-category="all"
               aria-pressed="true"
             >
-              Todos
-            </button>{' '}
-            <button
-              className="products-category-pill"
-              type="button"
-              data-category="automotivo"
-              aria-pressed="false"
-            >
-              Automotivo
-            </button>{' '}
-            <button
-              className="products-category-pill"
-              type="button"
-              data-category="energia"
-              aria-pressed="false"
-            >
-              Energia
+              Destaques
             </button>
+            {/* Os mesmos mercados do menu Categorias; cada um mostra os seus produtos. */}
+            {SECTOR_MENU.filter((m) => SECTOR_CATALOGS[m.slug]).map((m) => (
+              <button
+                key={m.slug}
+                className="products-category-pill"
+                type="button"
+                data-category={m.slug}
+                aria-pressed="false"
+              >
+                {m.title}
+              </button>
+            ))}
           </div>
           <div className="products-endcap">
             <span className="products-endcap-text">Encontrou o que procura?</span>{' '}
@@ -230,6 +227,18 @@ export default function Products() {
             </a>
           </div>
         </div>
+      </div>
+      {/* Mercado escolhido: subcategorias (as abas da página do mercado) e os produtos. */}
+      <div className="products-market" id="productsMarket" hidden>
+        <div className="catalog-filter-nav" role="group" aria-label="Filtrar por tipo de produto">
+          <div className="catalog-filter-track" id="productsSubTrack">
+            <span className="catalog-filter-indicator" id="productsSubIndicator" aria-hidden="true" />
+          </div>
+        </div>
+        <div className="catalog-grid" id="productsMarketGrid" />
+        <a className="products-market-all" id="productsMarketAll" href="/setores/automotivo">
+          <span id="productsMarketAllLabel">Ver a página do mercado</span> <ArrowRight />
+        </a>
       </div>
       <div className="carousel-runway" id="carouselRunway">
         <div className="carousel-viewport" id="carouselViewport">

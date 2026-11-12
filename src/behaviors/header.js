@@ -146,6 +146,18 @@ function initHeader(ctx) {
       }, 320);
     };
     ctx.openSectorMenu = openMenu;
+    // "Explorar produtos" (Hero): abre a lista de categorias do header. Sem o menu visível
+    // (celular), segue o link e rola até as soluções.
+    root.querySelectorAll('[data-open-categories]').forEach((a) => {
+      on(a, 'click', (e) => {
+        if (!sectorTrigger.offsetParent) return;
+        e.preventDefault();
+        openMenu();
+        trackEvent('hero_categories_open', {});
+        const first = sectorMenu.querySelector('.jfa-sector-item');
+        if (first) first.focus({ preventScroll: true });
+      });
+    });
     on(sectorTrigger, 'click', () => {
       // Aberto pelo mouse um instante antes: o clique confirma em vez de fechar.
       if (isOpen() && openedByHover) {

@@ -2364,3 +2364,10 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
     width: min(78%, 300px);
   }
 }
+
+/* "Baixar manual" ao lado do "Comprar no Mercado Livre" (produto e bateria). */
+.bateria-cta-manual svg {
+  width: 15px;
+  height: 15px;
+  margin-left: 0.35em;
+}

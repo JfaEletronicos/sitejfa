@@ -139,7 +139,7 @@ function initSectorPages(ctx) {
     a.dataset.groups = groupKey;
     const media = document.createElement('span');
     media.className = 'catalog-card-media';
-    const image = detail && detail.images[0];
+    const image = (detail && detail.images[0]) || p.image;
     if (image) {
       const img = document.createElement('img');
       img.src = image;
@@ -179,6 +179,31 @@ function initSectorPages(ctx) {
     );
     return a;
   };
+  // Cards de um setor e as abas (grupos) que têm produtos: na página do setor e na Home
+  // ("Descubra as soluções JFA", ver behaviors/productsCarousel.js).
+  const sectorCatalogCards = (slug) => {
+    const cfg = SECTOR_CATALOGS[slug];
+    if (!cfg) return null;
+    const batteries =
+      cfg.batterySector && ctx.batteriesForSector ? ctx.batteriesForSector(cfg.batterySector) : [];
+    const groups = cfg.groups.filter((g) => g.ids.length || (g.key === cfg.batteryGroup && batteries.length));
+    const cards = [];
+    groups.forEach((g) => {
+      if (g.key === cfg.batteryGroup) {
+        batteries.forEach((card) => {
+          card.dataset.groups = g.key;
+          cards.push(card);
+        });
+      }
+      g.ids.forEach((id) => {
+        const p = productsById[id];
+        if (!p || p.status !== 'current') return;
+        cards.push(buildProductCard(p, g.key, slug));
+      });
+    });
+    return { groups, cards };
+  };
+  ctx.sectorCatalogCards = sectorCatalogCards;
   let builtSlug = null;
   const renderCatalog = (slug) => {
     const cfg = SECTOR_CATALOGS[slug];
@@ -186,25 +211,11 @@ function initSectorPages(ctx) {
     if (builtSlug === slug) return;
     builtSlug = slug;
     grid.innerHTML = '';
-    const batteries =
-      cfg.batterySector && ctx.batteriesForSector ? ctx.batteriesForSector(cfg.batterySector) : [];
-    const groups = cfg.groups.filter((g) => g.ids.length || (g.key === cfg.batteryGroup && batteries.length));
+    const { groups, cards } = sectorCatalogCards(slug);
     buildFilterTabs(track, [{ key: 'all', label: t('catalog.all') }, ...groups]);
-    groups.forEach((g) => {
-      if (g.key === cfg.batteryGroup) {
-        batteries.forEach((card) => {
-          card.dataset.groups = g.key;
-          grid.appendChild(card);
-          catalog.observe(card);
-        });
-      }
-      g.ids.forEach((id) => {
-        const p = productsById[id];
-        if (!p || p.status !== 'current') return;
-        const card = buildProductCard(p, g.key, slug);
-        grid.appendChild(card);
-        catalog.observe(card);
-      });
+    cards.forEach((card) => {
+      grid.appendChild(card);
+      catalog.observe(card);
     });
     requestAnimationFrame(() =>
       catalog.positionIndicator(track.querySelector('.catalog-filter-tab.is-active')),
@@ -224,6 +235,7 @@ function initSectorPages(ctx) {
     title: byId('produtoTitle'),
     headline: byId('produtoHeadline'),
     desc: byId('produtoDesc'),
+    manual: byId('produtoManual'),
     quickSection: byId('produtoQuickSpecsSection'),
     quick: byId('produtoQuickSpecs'),
     techSection: byId('produtoTechSection'),
@@ -328,6 +340,14 @@ function initSectorPages(ctx) {
     const descText = IS_EXPORT ? '' : firstRest || (paras[1] ? plain(paras[1].h) : '');
     prod.desc.textContent = descText;
     prod.desc.hidden = !descText;
+    // Manual ao lado da compra: o do catálogo de manuais ou o documento "Manual" do produto.
+    if (prod.manual) {
+      const doc = (detail.docs || []).find((d) => /manual/i.test(d.label || '')) || (detail.docs || [])[0];
+      const manualUrl = p.manualUrl || (doc && doc.url);
+      prod.manual.hidden = !manualUrl;
+      if (manualUrl) prod.manual.href = manualUrl;
+      prod.manual.dataset.productId = id;
+    }
     prod.media.innerHTML = '';
     showPhoto(detail.images[0], pname);
     prod.thumbs.innerHTML = '';
@@ -495,6 +515,10 @@ function initSectorPages(ctx) {
     trackEvent('sector_product_view', { sector: slug, product_id: id });
     return 'produto';
   };
+  if (prod.manual)
+    on(prod.manual, 'click', () =>
+      trackEvent('manual_download', { product_id: prod.manual.dataset.productId, placement: 'produto_hero' }),
+    );
   ctx.renderSectorProduct = renderSectorProduct;
   // Página de um produto (para a busca do header): a primeira categoria que o lista.
   ctx.productPageHref = (id) => {

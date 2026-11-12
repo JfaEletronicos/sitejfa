@@ -548,3 +548,88 @@ html[data-theme='light'] .products-cert-seal {
     filter 0.35s ease,
     transform 0.35s ease;
 }
+
+/* Mercado escolhido em "Descubra as soluções JFA": abas e grade da página do mercado. */
+.products-market {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(16px, 4vw, 48px) clamp(28px, 4vw, 48px);
+}
+
+.products-market .catalog-filter-nav {
+  margin-top: 0;
+}
+
+.products-market-all {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.45em;
+  margin: clamp(22px, 3vw, 32px) auto 0;
+  color: #8fc1ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.products-market-all svg {
+  width: 16px;
+  height: 16px;
+}
+
+.products-market-all:hover,
+.products-market-all:focus-visible {
+  color: #fff;
+}
+
+/* Grade do mercado: como a da página do mercado (3 colunas; 2 no celular, compactas). */
+#productsMarketGrid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (min-width: 1700px) {
+  #productsMarketGrid {
+    max-width: 1320px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  #productsMarketGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .products-market {
+    padding-inline: 14px;
+  }
+
+  #productsMarketGrid {
+    gap: 10px;
+  }
+
+  #productsMarketGrid .catalog-card {
+    padding: 10px;
+    border-radius: 14px;
+    gap: 6px;
+  }
+
+  #productsMarketGrid .catalog-card-name {
+    font-size: 13.5px;
+    line-height: 1.25;
+  }
+
+  #productsMarketGrid .catalog-card-meta {
+    font-size: 11px;
+  }
+
+  #productsMarketGrid .catalog-card-cta {
+    zoom: 1;
+    font-size: 12px;
+  }
+
+  #productsMarketGrid .catalog-card-desc,
+  #productsMarketGrid .catalog-card-lines {
+    display: none;
+  }
+}
