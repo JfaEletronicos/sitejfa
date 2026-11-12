@@ -388,7 +388,7 @@ export const PRODUCTS = [
     category: 'Fontes Nobreak',
     aliases: ['Nobreak', 'Fonte retificadora', 'Fonte Nobreak retificadora'],
     status: 'current',
-    manualUrl: 'https://jfaeletronicos.com/qr-code/NB482412.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/NB482412.pdf?v=20261112',
   },
   {
     id: 'fonte-nobreak-snmp',
@@ -410,7 +410,7 @@ export const PRODUCTS = [
       'Fonte Nobreak 2400W',
     ],
     status: 'current',
-    manualUrl: 'https://jfaeletronicos.com/qr-code/NOBREAK-48ALL-COMUNIC.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/NOBREAK-48ALL-COMUNIC.pdf?v=20261112',
   },
   {
     id: 'gerenciador-fonte-redundante',
@@ -429,8 +429,7 @@ export const PRODUCTS = [
     category: 'Energia',
     aliases: ['Patch Panel', 'Régua PoE', 'PoE', 'Patch Panel Giga', 'Patch Panel Fast'],
     status: 'current',
-    manualUrl:
-      'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/3/2021/07/manual-jfa-patch-panel-POE-10P-gerenciavel-RV03-1.pdf',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/PATCH-PANEL-POE-GIGA-FAST.pdf',
   },
   {
     id: 'pdu-dc',
@@ -475,7 +474,7 @@ export const PRODUCTS = [
       'Inversor 5000W',
     ],
     status: 'current',
-    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-BLACK.pdf?v=20261030',
+    manualUrl: 'https://jfaeletronicos.com/qr-code/INVERSOR-BLACK.pdf?v=20261112',
   },
   {
     id: 'air-control',

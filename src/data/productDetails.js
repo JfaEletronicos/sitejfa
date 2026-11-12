@@ -607,7 +607,12 @@ export const PRODUCT_DETAILS = {
         html: '<table> <thead> <tr> <td></td><th>FAST 5 PORTAS</th><th>GIGA 5 PORTAS</th><th>FAST 10 PORTAS</th><th>GIGA 10 PORTAS</th><th>GIGA 12 PORTAS</th> </tr> </thead> <tbody> <tr> <td>Entrada Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Saída Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Portas LAN</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Portas POE</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Conexão RJ45</td><td colspan="5">Blindado</td> </tr> <tr> <td>Corrente por porta</td><td colspan="5">1A</td> </tr> <tr> <td>Proteção</td><td colspan="5">Curto circuito e sobrecarga</td> </tr> <tr> <td>Velocidade</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100/1000Mbps</td> </tr> <tr> <td>Peso em gramas</td><td>226</td><td>252</td><td>725</td><td>776</td><td>856</td> </tr> <tr> <td>Dimensões (LxAxP)</td><td>195x31x42mm</td><td>195x31x42mm</td><td>Rack 19U" 1U</td><td>Rack 19U" 1U</td><td>Rack 19" 1U</td> </tr> </tbody> </table>',
       },
     ],
-    docs: [],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://jfaeletronicos.com/qr-code/PATCH-PANEL-POE-GIGA-FAST.pdf',
+      },
+    ],
     name: 'Patch Panel Régua PoE GIGA',
     category: 'Energia',
   },
@@ -657,7 +662,7 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://jfaeletronicos.com/qr-code/NOBREAK-48ALL-COMUNIC.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/NOBREAK-48ALL-COMUNIC.pdf?v=20261112',
       },
     ],
     name: 'Fonte Nobreak 24V e 48V (SNMP)',
@@ -711,7 +716,7 @@ export const PRODUCT_DETAILS = {
     docs: [
       {
         label: 'Manual do produto',
-        url: 'https://jfaeletronicos.com/qr-code/NB482412.pdf',
+        url: 'https://jfaeletronicos.com/qr-code/NB482412.pdf?v=20261112',
       },
     ],
     name: 'Fonte Nobreak 12V e 24V',
@@ -794,7 +799,12 @@ export const PRODUCT_DETAILS = {
         html: '<table> <thead> <tr> <td></td><th>FAST 5 PORTAS</th><th>GIGA 5 PORTAS</th><th>FAST 10 PORTAS</th><th>GIGA 10 PORTAS</th><th>GIGA 12 PORTAS</th> </tr> </thead> <tbody> <tr> <td>Entrada Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Saída Vdc</td><td colspan="5">10,8V ~ 52,8V</td> </tr> <tr> <td>Portas LAN</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Portas POE</td><td colspan="2">5</td><td colspan="2">10</td><td>12</td> </tr> <tr> <td>Conexão RJ45</td><td colspan="5">Blindado</td> </tr> <tr> <td>Corrente por porta</td><td colspan="5">1A</td> </tr> <tr> <td>Proteção</td><td colspan="5">Curto circuito e sobrecarga</td> </tr> <tr> <td>Velocidade</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100Mbps</td><td>10/100/1000Mbps</td><td>10/100/1000Mbps</td> </tr> <tr> <td>Peso em gramas</td><td>226</td><td>252</td><td>725</td><td>776</td><td>856</td> </tr> <tr> <td>Dimensões (LxAxP)</td><td>195x31x42mm</td><td>195x31x42mm</td><td>Rack 19U" 1U</td><td>Rack 19U" 1U</td><td>Rack 19" 1U</td> </tr> </tbody> </table>',
       },
     ],
-    docs: [],
+    docs: [
+      {
+        label: 'Manual do produto',
+        url: 'https://jfaeletronicos.com/qr-code/PATCH-PANEL-POE-GIGA-FAST.pdf',
+      },
+    ],
     name: 'Patch Panel Régua PoE FAST',
     category: 'Energia',
   },
