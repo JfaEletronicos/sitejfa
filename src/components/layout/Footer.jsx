@@ -75,7 +75,7 @@ export default function Footer() {
             <nav className="jfa-footer-cols" aria-label={t('footer.links')}>
               <div className="jfa-footer-col" data-footer-col="0">
                 <span className="jfa-footer-col-title">{t('footer.products')}</span>{' '}
-                <a href="#/setores/automotivo">{t('footer.automotive')}</a>
+                <a href="/setores/automotivo">{t('footer.automotive')}</a>
               </div>
               <div className="jfa-footer-col" data-footer-col="1">
                 <span className="jfa-footer-col-title">{t('footer.jfa')}</span>{' '}
@@ -98,7 +98,7 @@ export default function Footer() {
               <div className="jfa-footer-col" data-footer-col="0">
                 <span className="jfa-footer-col-title">Produtos</span>{' '}
                 {FOOTER_CATEGORIES.map((c) => (
-                  <a key={c.slug} href={'#/setores/' + c.slug}>
+                  <a key={c.slug} href={'/setores/' + c.slug}>
                     {c.title}
                   </a>
                 ))}{' '}
@@ -119,7 +119,7 @@ export default function Footer() {
                 <a href="#home" data-footer-scroll="home">
                   Sobre nós
                 </a>{' '}
-                <a href="#/representantes" data-nav-page="representantes">
+                <a href="/representantes" data-nav-page="representantes">
                   Representantes
                 </a>{' '}
                 <a href="#certificacoes" data-footer-scroll="certificacoes">
@@ -128,10 +128,10 @@ export default function Footer() {
               </div>
               <div className="jfa-footer-col" data-footer-col="2">
                 <span className="jfa-footer-col-title">Suporte</span>{' '}
-                <a href="#/manuais" data-nav-page="manuais">
+                <a href="/manuais" data-nav-page="manuais">
                   Manuais
                 </a>{' '}
-                <a href="#/suporte" data-nav-page="suporte">
+                <a href="/suporte" data-nav-page="suporte">
                   Contato
                 </a>
               </div>

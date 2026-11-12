@@ -1,4 +1,4 @@
-/** Página #/baterias: abertura curta e catálogo de baterias (preenchido pelo router). */
+/** Página /baterias: abertura curta e catálogo de baterias (preenchido pelo router). */
 export default function BatteriesPage() {
   return (
     <div className="page-view" id="bateriasView" hidden>

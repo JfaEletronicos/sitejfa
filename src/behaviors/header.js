@@ -130,7 +130,7 @@ function initHeader(ctx) {
       sectorTrigger.setAttribute('aria-expanded', 'true');
       void sectorMenu.offsetWidth;
       sectorMenu.classList.add('is-open');
-      const current = location.hash.match(/^#\/setores\/([\w-]+)/);
+      const current = location.pathname.match(/^\/setores\/([\w-]+)/);
       sectorMenu
         .querySelectorAll('.jfa-sector-item')
         .forEach((a) => a.classList.toggle('is-active', !!current && a.dataset.sector === current[1]));
@@ -200,6 +200,7 @@ function initHeader(ctx) {
       }
     });
     on(window, 'hashchange', closeMenu);
+    on(window, 'jfa:route', closeMenu);
     cleanups.push(() => {
       clearTimeout(hideTimer);
       clearTimeout(hoverTimer);

@@ -8,11 +8,11 @@ const BAT_LINE = SHOW_BATERIAS_AUTOMOTIVO ? 'automotivo energia' : 'energia';
 
 // "Conhecer produto" de cada card do carrossel: página do produto no site.
 const CARD_HREF = {
-  storm: '#/setores/automotivo/fonte-storm-lithium',
-  nautica: '#/baterias/e-litio-nautica-12-8v-100ah',
-  elitio50: '#/baterias/e-litio-pro-12-8v/50ah',
-  panel: '#/baterias/e-litio-pro-12-8v',
-  redline: '#/setores/automotivo/controle-redline',
+  storm: '/setores/automotivo/fonte-storm-lithium',
+  nautica: '/baterias/e-litio-nautica-12-8v-100ah',
+  elitio50: '/baterias/e-litio-pro-12-8v/50ah',
+  panel: '/baterias/e-litio-pro-12-8v',
+  redline: '/setores/automotivo/controle-redline',
 };
 
 const ArrowRight = () => (
@@ -39,7 +39,7 @@ const ExportCard = ({ p, clone }) => (
     <div className="p-card-info">
       <h3 className="p-card-name">{pick(p.name)}</h3>
       <p className="p-card-sub" />
-      <a className="p-card-cta" href={'#/setores/automotivo/' + p.id} tabIndex={clone ? -1 : undefined}>
+      <a className="p-card-cta" href={'/setores/automotivo/' + p.id} tabIndex={clone ? -1 : undefined}>
         {t('catalog.more')}
       </a>
     </div>

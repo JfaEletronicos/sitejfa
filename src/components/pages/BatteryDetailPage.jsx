@@ -12,12 +12,12 @@ const ArrowIcon = () => (
   </svg>
 );
 
-/** Página #/baterias/:slug: detalhe de uma bateria (preenchido pelo router). */
+/** Página /baterias/:slug: detalhe de uma bateria (preenchido pelo router). */
 export default function BatteryDetailPage() {
   return (
     <div className="page-view" id="bateriaView" hidden>
       <nav className="bateria-breadcrumb" aria-label="Você está aqui">
-        <a href="#/baterias" id="bateriaBreadcrumbCategory">
+        <a href="/baterias" id="bateriaBreadcrumbCategory">
           Baterias
         </a>{' '}
         <span className="bateria-breadcrumb-sep" aria-hidden="true">
@@ -279,7 +279,7 @@ export default function BatteryDetailPage() {
         <div className="bateria-section-inner">
           <div className="bateria-others-head">
             <span className="bateria-label">Outras baterias JFA</span>
-            <a href="#/baterias" className="bateria-others-all" id="bateriaOthersAll">
+            <a href="/baterias" className="bateria-others-all" id="bateriaOthersAll">
               Ver todas <ArrowIcon />
             </a>
           </div>

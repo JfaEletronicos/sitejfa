@@ -4,7 +4,7 @@ import { createStateMap } from './stateMap';
 
 /**
  * Representantes: mapa interativo do Brasil, busca por estado, painel de contato
- * e vendas internacionais (mesma seção na Home e na página #/representantes).
+ * e vendas internacionais (mesma seção na Home e na página /representantes).
  * @param {import('./context').BehaviorContext} ctx
  */
 function initRepresentatives(ctx) {

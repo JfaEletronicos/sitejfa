@@ -3,7 +3,7 @@ import { SHOW_MOOV, SHOW_PARTS } from '../../data/visibility';
 import { t, pick, IS_EXPORT } from '../../i18n';
 import { EXPORT_GROUPS } from '../../data/exportProducts';
 
-/** Ambiente escuro compartilhado por Manuais e Representantes (as seções também abrem nas páginas #/manuais e #/representantes). */
+/** Ambiente escuro compartilhado por Manuais e Representantes (as seções também abrem nas páginas /manuais e /representantes). */
 export default function DarkExperience() {
   return (
     <div className="dark-experience" id="darkExperience">

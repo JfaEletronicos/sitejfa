@@ -1,5 +1,5 @@
 /**
- * JFA Parts (#/setores/parts): placas do catálogo/buscador e sócios da seção
+ * JFA Parts (/setores/parts): placas do catálogo/buscador e sócios da seção
  * "Nossa história".
  *
  * Placas: `model` é o código buscado; `application` agrupa (lavadoras etc.);

@@ -55,7 +55,7 @@ const ARROW_OUT_SVG =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M9 7h8v8M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 
 /**
- * Páginas de categoria: Automotivo, Energia, Motorhome, Solar e Náutica como catálogo (mesmo layout de #/baterias),
+ * Páginas de categoria: Automotivo, Energia, Motorhome, Solar e Náutica como catálogo (mesmo layout de /baterias),
  * com página própria para cada produto que tem detalhes em `productDetails.js`,
  * e Moov e Parts como landing pages próprias. O roteador chama
  * `ctx.renderSectorPage(slug)` e `ctx.renderSectorProduct(slug, id)`, que montam a
@@ -130,7 +130,7 @@ function initSectorPages(ctx) {
     a.className = 'catalog-card';
     // Com detalhes: página do produto. Sem detalhes ainda: abre o manual.
     if (detail) {
-      a.href = '#/setores/' + slug + '/' + p.id;
+      a.href = '/setores/' + slug + '/' + p.id;
     } else {
       a.href = p.manualUrl;
       a.target = '_blank';
@@ -310,7 +310,7 @@ function initSectorPages(ctx) {
     prod.view.classList.remove('is-entering');
     void prod.view.offsetWidth;
     prod.view.classList.add('is-entering');
-    prod.crumbSector.href = '#/setores/' + slug;
+    prod.crumbSector.href = '/setores/' + slug;
     prod.crumbSector.textContent = sectorTitle;
     prod.crumbCurrent.textContent = pname;
     prod.eyebrow.textContent = IS_EXPORT ? t('product.eyebrow') : sectorTitle + ' JFA';
@@ -444,7 +444,7 @@ function initSectorPages(ctx) {
     }));
     rows.push({
       // Exportação: a lista de manuais fica na Home (#manuais).
-      href: IS_EXPORT ? '#manuais' : '#/manuais',
+      href: IS_EXPORT ? '#manuais' : '/manuais',
       title: t('product.manualsHub'),
       text: t('product.manualsHubText'),
       cta: t('product.seeManuals'),
@@ -483,7 +483,7 @@ function initSectorPages(ctx) {
     );
     prod.othersLabel.textContent =
       group && group.ids.length > 1 ? tf('product.moreIn', { group: group.label }) : t('product.others');
-    prod.othersAll.href = '#/setores/' + slug;
+    prod.othersAll.href = '/setores/' + slug;
     prod.others.innerHTML = '';
     pool.slice(0, 3).forEach((x) => {
       const card = buildProductCard(productsById[x], group ? group.key : '', slug);
@@ -500,7 +500,7 @@ function initSectorPages(ctx) {
   ctx.productPageHref = (id) => {
     if (!PRODUCT_DETAILS[id]) return null;
     const slug = Object.keys(SECTOR_CATALOGS).find((s) => SECTOR_CATALOGS[s].groups.some((g) => g.ids.includes(id)));
-    return slug ? '#/setores/' + slug + '/' + id : null;
+    return slug ? '/setores/' + slug + '/' + id : null;
   };
 
   // Moov: cliques nos botões que levam à loja oficial.

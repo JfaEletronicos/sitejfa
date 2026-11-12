@@ -70,7 +70,7 @@ function initGlobalSearch(ctx) {
     };
     // Abre a página de Manuais (de qualquer tela) e filtra pela busca.
     const gotoManualsWithQuery = (query) => {
-      if (location.hash !== '#/manuais') location.hash = '#/manuais';
+      if (location.pathname !== '/manuais') ctx.navigate('/manuais');
       setTimeout(
         () => {
           const manualsInput = root.getElementById('manualsSearchInput');
@@ -106,7 +106,7 @@ function initGlobalSearch(ctx) {
             action: () => {
               closePanel();
               const href = p.page || (ctx.productPageHref && ctx.productPageHref(p.id));
-              if (href) location.hash = href;
+              if (href) ctx.navigate(href);
               else gotoManualsWithQuery(p.name);
             },
           })),

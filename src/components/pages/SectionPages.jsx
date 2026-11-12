@@ -2,7 +2,7 @@ import StateMapSection from '../shared/StateMapSection';
 import { SUPPORT_WHATSAPP_URL } from '../../data/links';
 
 /**
- * Páginas #/representantes e #/manuais: recebem as próprias seções da Home
+ * Páginas /representantes e /manuais: recebem as próprias seções da Home
  * (o roteador move a seção para cá ao abrir a página e devolve ao voltar),
  * então tudo funciona igual, com o mesmo fundo escuro.
  */
@@ -25,7 +25,7 @@ export function ManualsPage() {
   return <DarkSlotPage id="manuaisView" slot="manuals" />;
 }
 
-/** Página #/suporte: mesmo mapa de Representantes, com as assistências técnicas de cada estado. */
+/** Página /suporte: mesmo mapa de Representantes, com as assistências técnicas de cada estado. */
 export function SupportPage() {
   return (
     <div className="page-view dark-page dark-page-support" id="suporteView" hidden>

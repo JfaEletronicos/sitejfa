@@ -1,5 +1,5 @@
 /**
- * Detalhes dos produtos dos setores (página #/setores/:setor/:id).
+ * Detalhes dos produtos dos setores (página /setores/:setor/:id).
  * Conteúdo e fotos vindos dos sites automotivo.jfaeletronicos.com e energia.jfaeletronicos.com
  * (fotos convertidas para WebP em public/images/produtos). As chaves são os ids de `products.js`;
  * produtos que não existem lá (variações com página própria no site) trazem `name` e `category`.

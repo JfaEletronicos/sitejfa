@@ -1,13 +1,14 @@
 import { trackEvent, trackPageView } from '../lib/analytics';
+import { applySeo } from '../seo/apply';
 import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO, SHOPEE_LOGO } from '../data/links';
 import { LABEL_SPECS, WHY_COPY } from '../data/batteryInsights';
 import { createCatalogGrid } from './catalogGrid';
 import { renderPhotoDownloads } from './photoDownloads';
 import { renderHowTo } from './howTo';
-import { SHOW_BATERIAS_AUTOMOTIVO } from '../data/visibility';
+import { BATTERY_CATALOG, SLUG_ALIASES } from '../data/batteries';
 
 /**
- * Roteador por hash (#/baterias, #/baterias/:slug, #/setores/:slug, #/setores/:slug/:produto, #/suporte, #/representantes, #/manuais): alterna as views e preenche o conteúdo das páginas internas.
+ * Roteador por endereço (/baterias/:slug, /setores/:slug, /setores/:slug/:produto, /suporte, /representantes, /manuais): alterna as views e preenche o conteúdo das páginas internas.
  * @param {import('./context').BehaviorContext} ctx
  */
 function initRouter(ctx) {
@@ -16,7 +17,7 @@ function initRouter(ctx) {
     const homeView = root.getElementById('homeView');
     const bateriasView = root.getElementById('bateriasView');
     const bateriaView = root.getElementById('bateriaView');
-    // Páginas de setor (#/setores/:slug): montadas por behaviors/sectorPages.js.
+    // Páginas de setor (/setores/:slug): montadas por behaviors/sectorPages.js.
     const setorCatalogView = root.getElementById('setorCatalogView');
     const produtoView = root.getElementById('produtoView');
     const moovView = root.getElementById('moovView');
@@ -134,220 +135,7 @@ function initRouter(ctx) {
       if (b.features.includes('Bluetooth')) items.push(['Conectividade', 'Bluetooth']);
       return items.slice(0, 5);
     };
-    const RAW_BATTERY_CATALOG = [
-      // E-Lítio Pro 12,8V: uma página só, com as capacidades 50Ah e 100Ah como
-      // variantes (fotos, recursos, manual e selos próprios de cada uma).
-      {
-        id: 'elitio-pro-12-8v',
-        slug: 'e-litio-pro-12-8v',
-        name: 'E-L\xEDtio Pro 12,8V',
-        voltage: '12,8V',
-        capacity: '50Ah | 100Ah',
-        technology: 'LiFePO4',
-        sectors: ['solar', 'automotivo', 'motorhome'],
-        features: ['BMS'],
-        shortDescription: 'Armazenamento inteligente de energia em duas capacidades.',
-        image: '/images/bateria_elitio_pro_12v8_100a.webp',
-        defaultVariant: '100ah',
-        variants: [
-          {
-            key: '50ah',
-            capacity: '50Ah',
-            features: ['BMS'],
-            marketingHeadline: 'Energia compacta, controle sempre presente.',
-            longDescription:
-              'Gerenciamento BMS em um tamanho reduzido, para sistemas de armazenamento de energia que precisam de estabilidade.',
-            images: [
-              '/images/bateria_elitio_pro_12v8_50a.webp',
-              '/images/bateria_elitio_pro_12v8_50a_a1.webp',
-              '/images/bateria_elitio_pro_12v8_50a_a2.webp',
-              '/images/bateria_elitio_pro_12v8_50a_a4.webp',
-            ],
-            // Mesmo produto de PRODUCTS['bateria-litio-12v-50a'] (alias "E-Lítio Pro 12V 50A").
-            manualUrl:
-              'https://automotivo.jfaeletronicos.com/wp-content/uploads/sites/2/2026/01/E-LITIO-PRO-12V50A-MANUAL-RV02-25-11-25.pdf',
-            certifications: ['inmetro', 'anatel'],
-          },
-          {
-            key: '100ah',
-            capacity: '100Ah',
-            features: ['BMS', 'Bluetooth'],
-            marketingHeadline: 'Energia armazenada. Controle na sua m\xE3o.',
-            longDescription:
-              'Gerenciamento BMS e conectividade Bluetooth para acompanhar a bateria de perto, com a estabilidade e a autonomia que sistemas de armazenamento de energia exigem.',
-            images: [
-              '/images/bateria_elitio_pro_12v8_100a.webp',
-              '/images/bateria_elitio_pro_12v8_100a_a2.webp',
-              '/images/bateria_elitio_pro_12v8_100a_a3.webp',
-            ],
-            // Mesmo produto de PRODUCTS['bateria-litio-12v-100a'] (alias "E-Lítio Pro 12V 100A").
-            manualUrl: 'https://jfaeletronicos.com/qr-code/L12V100A.pdf',
-            certifications: ['inmetro', 'anatel'],
-          },
-        ],
-        commerce: { mercadoLivreUrl: MERCADO_LIVRE_URL },
-        relatedProducts: [],
-      },
-      {
-        id: 'elitio-pro-solar-48v-100ah-rack',
-        slug: 'e-litio-pro-solar-48v-100ah-rack',
-        name: 'E-L\xEDtio Pro Solar 48V 100Ah Rack',
-        voltage: '48V',
-        capacity: '100Ah',
-        technology: 'LiFePO4',
-        // Rack: Energia e Solar (e, como toda bateria que não é náutica, também Automotivo).
-        sectors: ['energia', 'solar', 'automotivo'],
-        features: ['Rack'],
-        shortDescription: 'Integra\xE7\xE3o em rack para sistemas de energia de maior porte.',
-        marketingHeadline: 'Mais capacidade em formato rack.',
-        longDescription:
-          'Formato rack para uma integra\xE7\xE3o organizada em sistemas de energia de maior porte.',
-        image: '/images/bateria_elitio_pro_48v100a.webp',
-        images: [
-          '/images/bateria_elitio_pro_48v100a_a1.webp',
-          '/images/bateria_elitio_pro_48v100a_a2.webp',
-          '/images/bateria_elitio_pro_48v100a_a3.webp',
-          '/images/bateria_elitio_pro_48v100a.webp',
-        ],
-        manualUrl: 'https://jfaeletronicos.com/qr-code/P48V100AM.pdf',
-        commerce: {},
-        relatedProducts: [],
-      },
-      {
-        id: 'elitio-pro-48v-50ah',
-        slug: 'e-litio-pro-48v-50ah',
-        name: 'E-L\xEDtio Pro 48V 50Ah',
-        voltage: '48V',
-        capacity: '50Ah',
-        technology: 'LiFePO4',
-        sectors: ['automotivo'],
-        // OCULTO: baterias Automotivo — enquanto a flag estiver desligada, fica em Energia.
-        sectorsSemAutomotivo: ['energia'],
-        features: ['BMS'],
-        shortDescription: 'Para sistemas de armazenamento que trabalham em alta tens\xE3o.',
-        marketingHeadline: 'Alta tens\xE3o, energia sob controle.',
-        longDescription:
-          'Gerenciamento BMS e painel de controle integrado para acompanhar a opera\xE7\xE3o de sistemas de armazenamento de energia que exigem estabilidade.',
-        image: '/images/bateria_elitio_pro_48v50a.webp',
-        images: [
-          '/images/bateria_elitio_pro_48v50a.webp',
-          '/images/bateria_elitio_pro_48v50a_a1.webp',
-          '/images/bateria_elitio_pro_48v50a_a2.webp',
-          '/images/bateria_elitio_pro_48v50a_a3.webp',
-        ],
-        // Mesmo produto de PRODUCTS['bateria-litio-48v-50a'] (alias "E-Lítio Pro 48V 50A").
-        manualUrl: 'https://jfaeletronicos.com/qr-code/L48V50A.pdf',
-        commerce: {},
-        relatedProducts: [],
-      },
-      {
-        id: 'elitio-nautica-12-8v-100ah',
-        slug: 'e-litio-nautica-12-8v-100ah',
-        name: 'E-L\xEDtio N\xE1utica 12,8V 100Ah',
-        voltage: '12,8V',
-        capacity: '100Ah',
-        technology: 'LiFePO4',
-        sectors: ['nautico'],
-        features: [],
-        shortDescription: 'Energia e autonomia para aplica\xE7\xF5es em embarca\xE7\xF5es.',
-        marketingHeadline: 'Energia preparada para ir a bordo.',
-        longDescription:
-          'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem autonomia, estabilidade e confiabilidade em qualquer trajeto.',
-        image: '/images/bateria_elitio_nautica_12v8_100a.webp',
-        images: [
-          '/images/bateria_elitio_nautica_12v8_100a.webp',
-          '/images/bateria_elitio_nautica_12v8_100a_a2.webp',
-          '/images/bateria_elitio_nautica_12v8_100a_a3.webp',
-        ],
-        manualUrl: 'https://jfaeletronicos.com/qr-code/N12V100AP.pdf',
-        commerce: {},
-        relatedProducts: [],
-      },
-      // E-Lítio Pro 25,6V: uma página só, com as capacidades 50Ah e 100Ah como
-      // variantes (mesmo formato da Pro 12,8V).
-      {
-        id: 'elitio-pro-25-6v',
-        slug: 'e-litio-pro-25-6v',
-        name: 'E-L\xEDtio Pro 25,6V',
-        voltage: '25,6V',
-        capacity: '50Ah | 100Ah',
-        technology: 'LiFePO4',
-        sectors: ['automotivo', 'motorhome'],
-        features: ['BMS'],
-        shortDescription: 'Energia est\xE1vel e monitorada em duas capacidades.',
-        image: '/images/bateria_elitio_pro_25v6_100a.webp',
-        defaultVariant: '100ah',
-        variants: [
-          {
-            key: '50ah',
-            capacity: '50Ah',
-            features: ['BMS'],
-            marketingHeadline: 'Mais tens\xE3o para o seu sistema de energia.',
-            longDescription:
-              'Gerenciamento BMS para sistemas de armazenamento de energia que exigem estabilidade e controle.',
-            images: [
-              '/images/bateria_elitio_pro_25v6_50a.webp',
-              '/images/bateria_elitio_pro_25v6_50a_a1.webp',
-              '/images/bateria_elitio_pro_25v6_50a_a2.webp',
-              '/images/bateria_elitio_pro_25v6_50a_a3.webp',
-            ],
-            manualUrl: 'https://jfaeletronicos.com/qr-code/L25V50A.pdf',
-          },
-          {
-            key: '100ah',
-            capacity: '100Ah',
-            features: ['BMS'],
-            marketingHeadline: 'Mais capacidade para projetos maiores.',
-            longDescription:
-              'Gerenciamento BMS para sistemas de armazenamento de energia que precisam de maior autonomia.',
-            images: ['/images/bateria_elitio_pro_25v6_100a.webp'],
-            manualUrl: 'https://jfaeletronicos.com/qr-code/L25V100A.pdf',
-          },
-        ],
-        commerce: {},
-        relatedProducts: [],
-      },
-      {
-        id: 'elitio-nautica-25-6v-100ah',
-        slug: 'e-litio-nautica-25-6v-100ah',
-        name: 'E-L\xEDtio N\xE1utica 25,6V 100Ah',
-        voltage: '25,6V',
-        capacity: '100Ah',
-        technology: 'LiFePO4',
-        sectors: ['nautico'],
-        features: [],
-        shortDescription: 'Mais energia e autonomia para embarca\xE7\xF5es que exigem maior capacidade.',
-        marketingHeadline: 'Mais autonomia para ir mais longe na \xE1gua.',
-        longDescription:
-          'Desenvolvida para aplica\xE7\xF5es n\xE1uticas que exigem estabilidade e confiabilidade em trajetos mais longos.',
-        image: '/images/bateria_elitio_nautica_25v6_100a.webp',
-        manualUrl: 'https://jfaeletronicos.com/qr-code/N25V100AP.pdf',
-        commerce: {},
-        relatedProducts: [],
-      },
-    ];
-    // Cada bateria existe uma única vez por id e por slug (a primeira ocorrência vence).
-    const BATTERY_CATALOG = RAW_BATTERY_CATALOG.filter((b, i, all) => {
-      const dupe = all.findIndex((x) => x.id === b.id || x.slug === b.slug) !== i;
-      if (dupe && import.meta.env.DEV) console.warn('[baterias] item duplicado ignorado:', b.id);
-      return !dupe;
-    });
-    // OCULTO: baterias Automotivo. Tira o setor "automotivo" das baterias (catálogo da
-    // categoria e botões de aplicação da página); os dados acima ficam intactos.
-    if (!SHOW_BATERIAS_AUTOMOTIVO) {
-      BATTERY_CATALOG.forEach((b) => {
-        b.sectors = b.sectors.filter((s) => s !== 'automotivo');
-        if (!b.sectors.length && b.sectorsSemAutomotivo) b.sectors = b.sectorsSemAutomotivo;
-      });
-    }
     const bySlug = (slug) => BATTERY_CATALOG.find((b) => b.slug === slug);
-    // Links antigos das baterias que viraram variantes de uma página só.
-    const SLUG_ALIASES = {
-      'e-litio-pro-12v-100ah': ['e-litio-pro-12-8v', '100ah'],
-      'e-litio-pro-12-8v-50ah': ['e-litio-pro-12-8v', '50ah'],
-      'e-litio-pro-25-6v-50ah': ['e-litio-pro-25-6v', '50ah'],
-      'e-litio-pro-25-6v-100ah': ['e-litio-pro-25-6v', '100ah'],
-    };
     const CERT_SEALS = {
       inmetro: { src: '/images/seal_inmetro.webp', label: 'Inmetro' },
       anatel: { src: '/images/seal_anatel.webp', label: 'Anatel' },
@@ -362,7 +150,7 @@ function initRouter(ctx) {
     const buildBateriaCard = (b) => {
       const a = document.createElement('a');
       a.className = 'catalog-card';
-      a.href = '#/baterias/' + b.slug;
+      a.href = '/baterias/' + b.slug;
       a.dataset.sectors = b.sectors.join(',');
       const media = document.createElement('span');
       media.className = 'catalog-card-media';
@@ -525,7 +313,7 @@ function initRouter(ctx) {
     const bateriaBreadcrumbCurrent = root.getElementById('bateriaBreadcrumbCurrent');
     const bateriaBreadcrumbCategory = root.getElementById('bateriaBreadcrumbCategory');
     const bateriaOthersAll = root.getElementById('bateriaOthersAll');
-    // Setor da bateria -> categoria do menu (#/setores/:slug).
+    // Setor da bateria -> categoria do menu (/setores/:slug).
     const BATTERY_CATEGORY = {
       automotivo: { slug: 'automotivo', title: 'Automotivo' },
       solar: { slug: 'solar', title: 'Solar' },
@@ -971,7 +759,7 @@ function initRouter(ctx) {
     const buildEditorialCard = (b) => {
       const a = document.createElement('a');
       a.className = 'catalog-card';
-      a.href = '#/baterias/' + b.slug;
+      a.href = '/baterias/' + b.slug;
       const media = document.createElement('span');
       media.className = 'catalog-card-media';
       if (b.image) {
@@ -1144,7 +932,8 @@ function initRouter(ctx) {
         btn.textContent = v.capacity;
         on(btn, 'click', () => {
           if (v === variant) return;
-          history.replaceState(null, '', '#/baterias/' + base.slug + '/' + v.key);
+          history.replaceState(null, '', '/baterias/' + base.slug + '/' + v.key + location.search);
+          applySeo(location.pathname);
           swapContent(
             () => [
               bateriaHeroMedia,
@@ -1244,7 +1033,8 @@ function initRouter(ctx) {
     const renderBateriaView = (slug, variantKey, opts) => {
       const base = bySlug(slug);
       if (!base) {
-        location.hash = '#/baterias';
+        // Bateria inexistente: depois de montar a tela atual, volta para a Home com o menu.
+        queueMicrotask(() => ctx.navigate('/baterias'));
         return;
       }
       const variant = base.variants
@@ -1308,10 +1098,10 @@ function initRouter(ctx) {
       // Baterias não têm mais página à parte: o caminho volta para a categoria da bateria.
       const category = BATTERY_CATEGORY[b.sectors[0]] || BATTERY_CATEGORY.automotivo;
       if (bateriaBreadcrumbCategory) {
-        bateriaBreadcrumbCategory.href = '#/setores/' + category.slug;
+        bateriaBreadcrumbCategory.href = '/setores/' + category.slug;
         bateriaBreadcrumbCategory.textContent = category.title;
       }
-      if (bateriaOthersAll) bateriaOthersAll.href = '#/setores/' + category.slug;
+      if (bateriaOthersAll) bateriaOthersAll.href = '/setores/' + category.slug;
       // Setor da página no GA4: a mesma categoria do caminho (breadcrumb).
       ctx.pageGroup = category.title;
       buildCommerceBlock(bateriaCommerceHero, b, { compact: true, fallbackLabel: 'Encontrar onde comprar' });
@@ -1402,7 +1192,7 @@ function initRouter(ctx) {
       BATTERY_CATALOG.filter((x) => x.id !== b.id)
         .slice(0, 3)
         .forEach((x) => bateriaOthersGrid.appendChild(buildBateriaCard(x)));
-      document.title = b.name + (variant ? ' ' + variant.capacity : '') + ' | Bateria LiFePO₄ JFA';
+      document.title = b.name + (variant ? ' ' + variant.capacity : '') + ' | Bateria de lítio JFA';
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc)
         metaDesc.setAttribute(
@@ -1448,11 +1238,12 @@ function initRouter(ctx) {
       if (name === 'manuais' && ctx.refreshManualsField) ctx.refreshManualsField();
       reportPage(name);
     };
-    // Visualização de página no GA4: uma por tela, com endereço limpo (#/setores/x vira
-    // /setores/x) e o título da aba. A Home e as páginas de seção definem o título aqui;
-    // baterias, categorias e produtos já o definem ao montar a página.
+    // Visualização de página no GA4: uma por tela, com o endereço e o título da aba.
+    // Título, descrição e endereço canônico vêm de src/seo/pages.js, os mesmos das
+    // páginas geradas no build: o Google vê o mesmo antes e depois de rodar o JS.
     const BASE_TITLE = 'JFA Eletr\xF4nicos';
     let lastReported = '';
+    const currentPath = () => location.pathname.replace(/\/+$/, '') || '/';
     // Setor (Grupo de conteúdo): Home e páginas de seção aqui; categorias, produtos e
     // baterias o definem em ctx.pageGroup ao montar a página.
     const reportPage = (name) => {
@@ -1466,52 +1257,59 @@ function initRouter(ctx) {
         group = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
         document.title = group + ' | ' + BASE_TITLE;
       }
-      const hash = location.hash || '';
-      const path = name === 'home' || !hash.startsWith('#/') ? '/' : '/' + hash.slice(2).replace(/\/+$/, '');
+      const path = name === 'home' ? '/' : currentPath();
+      applySeo(path);
       const key = path + '|' + document.title;
       if (key === lastReported) return;
       lastReported = key;
       trackPageView(path, document.title, group);
     };
-    const applyRoute = () => {
-      const hash = location.hash || '';
-      if (!hash.startsWith('#/')) {
+    let routedPath = null;
+    const route = () => {
+      // Links antigos com # (/setores/x) viram o endereço novo, sem recarregar.
+      if (location.hash.startsWith('#/')) {
+        history.replaceState(null, '', '/' + location.hash.slice(2) + location.search);
+      }
+      window.dispatchEvent(new Event('jfa:route'));
+      const parts = currentPath().split('/').filter(Boolean);
+      if (!parts.length) {
+        // Home: âncoras (#manuais, #solucoes...) rolam até a seção.
+        const hash = location.hash || '';
         const target = hash.length > 1 ? root.getElementById(hash.slice(1)) : null;
         const activeView = target && target.closest('.page-view:not([hidden])');
         if (activeView && activeView.id !== 'homeView') return;
         showView('home');
         return;
       }
-      const parts = hash.slice(2).split('/').filter(Boolean);
       if (parts[0] === 'baterias' && parts[1]) {
         const alias = SLUG_ALIASES[parts[1]];
         if (alias) {
-          history.replaceState(null, '', '#/baterias/' + alias[0] + '/' + alias[1]);
+          history.replaceState(null, '', '/baterias/' + alias[0] + '/' + alias[1] + location.search);
           renderBateriaView(alias[0], alias[1]);
         } else {
           renderBateriaView(parts[1], parts[2]);
         }
         showView('bateria');
       } else if (parts[0] === 'baterias') {
-        // Baterias não são mais um lugar à parte: #/baterias volta para a Home com o
+        // Baterias não são mais um lugar à parte: /baterias volta para a Home com o
         // menu de Categorias aberto (cada categoria mostra as suas baterias).
-        history.replaceState(null, '', '#/');
+        history.replaceState(null, '', '/' + location.search);
         showView('home');
         if (ctx.openSectorMenu) ctx.openSectorMenu();
       } else if (parts[0] === 'setores') {
-        // Telecom virou Energia: endereços antigos (#/setores/telecom...) abrem a página nova.
+        // Telecom virou Energia: endereços antigos (/setores/telecom...) abrem a página nova.
         if (parts[1] === 'telecom') {
           parts[1] = 'energia';
-          history.replaceState(null, '', '#/' + parts.join('/'));
+          history.replaceState(null, '', '/' + parts.join('/') + location.search);
         }
-        // Setor sem página (ou só #/setores): volta para a Home com o menu de setores aberto.
+        // Setor sem página (ou só /setores): volta para a Home com o menu de setores aberto.
         let view = null;
         if (parts[2] && ctx.renderSectorProduct) view = ctx.renderSectorProduct(parts[1], parts[2]);
         else if (parts[1] && ctx.renderSectorPage) view = ctx.renderSectorPage(parts[1]);
         if (view) {
           showView(view);
         } else {
-          history.replaceState(null, '', '#/');
+          history.replaceState(null, '', '/' + location.search);
           showView('home');
           if (ctx.openSectorMenu) ctx.openSectorMenu();
         }
@@ -1523,20 +1321,48 @@ function initRouter(ctx) {
         showView('home');
       }
     };
-    on(window, 'hashchange', applyRoute);
+    const applyRoute = () => {
+      route();
+      routedPath = currentPath();
+    };
+    // Voltar/avançar do navegador e âncoras: só remonta a tela quando a página muda
+    // (âncora dentro de uma página interna não a recarrega). Na Home, sempre.
+    const onLocationChange = () => {
+      const path = currentPath();
+      if (location.hash.startsWith('#/') || path === '/' || path !== routedPath) applyRoute();
+    };
+    on(window, 'popstate', onLocationChange);
+    on(window, 'hashchange', onLocationChange);
+    const navigate = (to) => {
+      history.pushState(null, '', to.includes('?') ? to : to + location.search);
+      applyRoute();
+    };
+    ctx.navigate = navigate;
     applyRoute();
+    // Links internos (/setores/..., /baterias/..., /suporte...) trocam de tela sem recarregar.
+    const ROUTE_LINK = /^\/(?:$|(?:setores|baterias|suporte|representantes|manuais)(?:[/?#]|$))/;
+    on(document, 'click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest('a[href]');
+      if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return;
+      const href = a.getAttribute('href');
+      if (!ROUTE_LINK.test(href)) return;
+      e.preventDefault();
+      navigate(href);
+    });
     document.addEventListener(
       'click',
       (e) => {
         if (!pageBody.classList.contains('is-page-view')) return;
         const trigger = e.target.closest(
-          'a[href^="#"]:not([href^="#/"]):not([data-page-anchor]), [data-header-scroll], [data-goto-products-category], [data-goto-manuals-tab], [data-header-goto], [data-header-goto-buy], [data-footer-goto], #navHome',
+          'a[href^="#"]:not([data-page-anchor]), [data-header-scroll], [data-goto-products-category], [data-goto-manuals-tab], [data-header-goto], [data-header-goto-buy], [data-footer-goto], #navHome',
         );
         if (!trigger) return;
         // O endereço volta para a Home junto com a tela: sem isso, trocar de idioma ou
-        // recarregar reabria a página anterior (o #/... ficava na URL). O "voltar" do
-        // navegador continua levando para a página que estava aberta.
-        if (location.hash.startsWith('#/')) history.pushState(null, '', location.pathname + location.search);
+        // recarregar reabria a página anterior. O "voltar" do navegador continua levando
+        // para a página que estava aberta.
+        if (currentPath() !== '/') history.pushState(null, '', '/' + location.search);
+        routedPath = '/';
         showView('home');
       },
       true,

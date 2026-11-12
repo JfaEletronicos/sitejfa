@@ -95,7 +95,7 @@ export const BoardIllustration = ({ model }) => (
 );
 
 /**
- * Página #/setores/parts: landing page da JFA Parts (placas para linha branca).
+ * Página /setores/parts: landing page da JFA Parts (placas para linha branca).
  * Interações (buscador, carrossel, cards) em behaviors/partsPage.js.
  */
 export default function PartsPage() {

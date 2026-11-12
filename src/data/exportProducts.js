@@ -6,7 +6,7 @@
  * versão em espanhol traduzida deles. Fotos: as mesmas do site em português
  * (sem fundo). Manuais: os de exportação (inglês/espanhol) quando existem.
  *
- * Cada produto: `id` (usado na URL #/setores/automotivo/:id), `group` (aba do
+ * Cada produto: `id` (usado na URL /setores/automotivo/:id), `group` (aba do
  * filtro), `images`, `manualUrl` e, por idioma, `name`, `summary` e `blocks`
  * (mesmo formato de productDetails.js: p / h / ul). Itens com `manualOnly` aparecem
  * só nos Manuais (sem card no catálogo nem página de produto).

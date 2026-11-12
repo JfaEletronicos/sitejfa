@@ -37,7 +37,7 @@ export default function Header() {
           </a>
           {IS_EXPORT ? (
             // Exportação (EN/ES): um catálogo só, direto na página dele.
-            <a href="#/setores/automotivo" id="navExportProducts">
+            <a href="/setores/automotivo" id="navExportProducts">
               {t('nav.categories')}
             </a>
           ) : (
@@ -67,7 +67,7 @@ export default function Header() {
                     <a
                       key={s.slug}
                       className="jfa-sector-item"
-                      href={`#/setores/${s.slug}`}
+                      href={`/setores/${s.slug}`}
                       data-sector={s.slug}
                       style={{ '--i': i }}
                     >
@@ -99,13 +99,13 @@ export default function Header() {
             </>
           ) : (
             <>
-              <a href="#/suporte" data-nav-page="suporte">
+              <a href="/suporte" data-nav-page="suporte">
                 Suporte
               </a>{' '}
-              <a href="#/manuais" data-nav-page="manuais">
+              <a href="/manuais" data-nav-page="manuais">
                 Manuais
               </a>{' '}
-              <a href="#/representantes" data-nav-page="representantes">
+              <a href="/representantes" data-nav-page="representantes">
                 Representantes
               </a>{' '}
               {/* Lojas: no lugar do nome, o logo de cada marketplace. */}

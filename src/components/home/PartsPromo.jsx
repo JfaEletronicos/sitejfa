@@ -108,7 +108,7 @@ export default function PartsPromo() {
             <a
               key={line.key}
               className={'parts-line-card is-' + line.key}
-              href="#/setores/parts"
+              href="/setores/parts"
               data-parts-line={line.key}
             >
               <span className="parts-line-texture" aria-hidden="true" />
@@ -139,7 +139,7 @@ export default function PartsPromo() {
           ))}
         </div>
         <div className="parts-promo-cta-wrap">
-          <a className="parts-promo-cta-big" href="#/setores/parts">
+          <a className="parts-promo-cta-big" href="/setores/parts">
             Conheça a JFA Parts <Arrow />
           </a>
         </div>

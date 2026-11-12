@@ -25,7 +25,7 @@ const ICONS = {
 const ArrowIcon = () => <Icon d="M5 12h13M13 6l6 6-6 6" />;
 
 /**
- * Página #/setores/moov: landing page da JFA Moov (bicicletas elétricas).
+ * Página /setores/moov: landing page da JFA Moov (bicicletas elétricas).
  * Texto da página de vendas enviado pela JFA; as entradas animadas ficam em
  * behaviors/assemble.js (PAGE_VIEWS.moov).
  */

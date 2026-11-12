@@ -13,7 +13,7 @@ const escapeHtml = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 /**
- * JFA Parts (#/setores/parts): buscador de placas com sugestões e "identificação"
+ * JFA Parts (/setores/parts): buscador de placas com sugestões e "identificação"
  * animada, carrossel de placas, rolagem dos botões internos e WhatsApp do vendedor.
  * @param {import('./context').BehaviorContext} ctx
  */

@@ -5,7 +5,7 @@ import { MERCADO_LIVRE_URL, MERCADO_LIVRE_LOGO } from '../../data/links';
 
 /**
  * Páginas de setor, preenchidas por behaviors/sectorPages.js:
- * - #/setores/automotivo e #/setores/energia: catálogo no layout da página de baterias;
+ * - /setores/automotivo e /setores/energia: catálogo no layout da página de baterias;
  * (Moov e Parts têm landing pages próprias: MoovPage.jsx e PartsPage.jsx.)
  */
 export function SectorCatalogPage() {
@@ -62,7 +62,7 @@ const ArrowIcon = () => (
 );
 
 /**
- * Página #/setores/:setor/:produto: detalhe de um produto do setor, com a mesma
+ * Página /setores/:setor/:produto: detalhe de um produto do setor, com a mesma
  * estrutura da página de bateria (Hero, especificações rápidas, tecnologia, por que
  * escolher, ficha técnica, suporte técnico e outros produtos). Preenchida por
  * behaviors/sectorPages.js; seções sem conteúdo ficam escondidas.
@@ -71,7 +71,7 @@ export function SectorProductPage() {
   return (
     <div className="page-view" id="produtoView" hidden>
       <nav className="bateria-breadcrumb" aria-label={t('product.breadcrumb')}>
-        <a id="produtoBreadcrumbSector" href="#/setores/automotivo">
+        <a id="produtoBreadcrumbSector" href="/setores/automotivo">
           Automotivo
         </a>{' '}
         <span className="bateria-breadcrumb-sep" aria-hidden="true">
@@ -139,7 +139,7 @@ export function SectorProductPage() {
                           />
                         </svg>
                       </a>
-                      <a className="bateria-cta-link" href="#/representantes">
+                      <a className="bateria-cta-link" href="/representantes">
                         {t('product.whereToBuy')}
                       </a>
                     </>
@@ -246,7 +246,7 @@ export function SectorProductPage() {
             <span className="bateria-label" id="produtoOthersLabel">
               {t('product.others')}
             </span>
-            <a href="#/setores/automotivo" className="bateria-others-all" id="produtoOthersAll">
+            <a href="/setores/automotivo" className="bateria-others-all" id="produtoOthersAll">
               {t('product.seeAll')} <ArrowIcon />
             </a>
           </div>

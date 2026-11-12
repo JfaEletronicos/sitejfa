@@ -1,4 +1,4 @@
-/** Representantes comerciais por estado (mapa da Home e da página #/representantes), conforme a planilha "representante_JFA.csv". */
+/** Representantes comerciais por estado (mapa da Home e da página /representantes), conforme a planilha "representante_JFA.csv". */
 export const REPRESENTATIVES = [
   {
     id: 'agn-representacoes',

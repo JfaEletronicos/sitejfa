@@ -1996,7 +1996,7 @@ a.bateria-doc-row.is-primary:focus-visible .bateria-doc-row-arrow {
   }
 }
 
-/* Página de produto de setor (#/setores/:setor/:produto): usa o layout da página de
+/* Página de produto de setor (/setores/:setor/:produto): usa o layout da página de
    bateria; aqui só o que é próprio dela (troca de foto e ficha técnica). */
 .produto-hero-media img {
   transition: opacity 0.35s ease;

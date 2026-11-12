@@ -4,7 +4,7 @@ import { SHOW_MOOV, SHOW_PARTS, SHOW_BATERIAS_AUTOMOTIVO } from './visibility';
  * Categorias do menu "Categorias" do header (as baterias não têm mais um lugar à
  * parte: cada categoria mostra as suas).
  * - Automotivo, Energia, Motorhome, Solar e Náutica: catálogos no layout da página
- *   de baterias (#/setores/:slug), com os produtos de `products.js` separados em
+ *   de baterias (/setores/:slug), com os produtos de `products.js` separados em
  *   grupos (as abas do filtro) e as baterias do setor (`batterySector`).
  * - JFA Parts e Moov: landing pages próprias (PartsPage.jsx e MoovPage.jsx).
  */

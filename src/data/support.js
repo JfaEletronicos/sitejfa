@@ -1,7 +1,7 @@
 import { SUPPORT_WHATSAPP_URL } from './links';
 
 /**
- * Suporte técnico (página #/suporte). Assistências técnicas autorizadas JFA por
+ * Suporte técnico (página /suporte). Assistências técnicas autorizadas JFA por
  * estado, vindas da planilha "assistencias_JFA.csv" (telefones só reformatados;
  * a EQUIPADORA AUTOSOM, de Campina Grande, estava marcada como PE e foi para PB).
  * Estado sem assistência cadastrada cai no suporte central da JFA.
