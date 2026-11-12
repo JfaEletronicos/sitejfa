@@ -85,6 +85,33 @@ const RAW_BATTERY_CATALOG = [
     relatedProducts: [],
   },
   {
+    id: 'elitio-pro-solar-48v-50ah-rack',
+    slug: 'e-litio-pro-solar-48v-50ah-rack',
+    name: 'E-L\xEDtio Pro Solar 48V 50Ah Rack',
+    voltage: '48V',
+    capacity: '50Ah',
+    technology: 'LiFePO4',
+    // Mesmos setores da versão 100Ah Rack.
+    sectors: ['energia', 'solar', 'automotivo'],
+    features: ['Rack'],
+    shortDescription: 'Formato rack 48V para sistemas solares e de energia.',
+    marketingHeadline: 'Formato rack com 2,4 kWh em 48V.',
+    longDescription:
+      'M\xF3dulo de rack 48V em LiFePO4 com painel de controle frontal, para uma integra\xE7\xE3o organizada em sistemas solares e de energia.',
+    image: '/images/bateria_elitio_pro_48v50a_rack.webp',
+    images: [
+      '/images/bateria_elitio_pro_48v50a_rack_a1.webp',
+      '/images/bateria_elitio_pro_48v50a_rack_a2.webp',
+      '/images/bateria_elitio_pro_48v50a_rack.webp',
+    ],
+    // Anúncio próprio no Mercado Livre (enviado pela JFA).
+    commerce: {
+      mercadoLivreUrl:
+        'https://www.mercadolivre.com.br/bateria-e-litio-pro-solar-jfa-48v-50a-rack-lifepo4/p/MLB2085939654?pdp_filters=item_id:MLB6784407186',
+    },
+    relatedProducts: [],
+  },
+  {
     id: 'elitio-pro-48v-50ah',
     slug: 'e-litio-pro-48v-50ah',
     name: 'E-L\xEDtio Pro 48V 50Ah',

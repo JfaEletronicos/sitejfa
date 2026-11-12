@@ -19,6 +19,7 @@ export const LABEL_SPECS = {
   'elitio-pro-12-8v:50ah': { energy: '640 Wh', chargeVoltage: '14,4V', cycles: true, temp: true },
   'elitio-pro-12-8v:100ah': { energy: '1,28 kWh', chargeVoltage: '14,4V', cycles: true, temp: true },
   'elitio-pro-solar-48v-100ah-rack': { energy: '4,8 kWh', chargeVoltage: '54V', comms: 'RS485 e CAN' },
+  'elitio-pro-solar-48v-50ah-rack': { energy: '2,4 kWh', chargeVoltage: '54V' },
   'elitio-pro-48v-50ah': { energy: '2,4 kWh', chargeVoltage: '54V', cycles: true, temp: true },
   'elitio-nautica-12-8v-100ah': { energy: '1,28 kWh', chargeVoltage: '14,4V', cycles: true, temp: true },
   'elitio-pro-25-6v:50ah': { energy: '1,28 kWh', chargeVoltage: '28,8V', cycles: true, temp: true },
@@ -113,6 +114,26 @@ export const WHY_COPY = {
       reasons: [
         { value: '4,8 kWh', text: 'de energia em um único módulo de rack' },
         { value: 'RS485 e CAN', text: 'portas de comunicação no painel frontal' },
+        { value: '54V', text: 'de carga máxima, indicada no painel' },
+      ],
+    },
+  },
+  'elitio-pro-solar-48v-50ah-rack': {
+    solar: {
+      title: 'Armazenamento solar no formato rack.',
+      text: 'São 2,4 kWh em um módulo de rack 48V em LiFePO₄, com painel de controle frontal para acompanhar tensão, corrente e estado de carga.',
+      reasons: [
+        { value: '2,4 kWh', text: 'de energia em um único módulo de rack' },
+        { value: 'Painel frontal', text: 'com tensão, corrente e estado de carga' },
+        { value: '54V', text: 'de carga máxima, indicada no painel' },
+      ],
+    },
+    energia: {
+      title: 'Energia de reserva no formato dos racks de equipamentos.',
+      text: 'São 2,4 kWh em um módulo de rack 48V em LiFePO₄, com painel de controle frontal para acompanhar a operação do sistema de energia.',
+      reasons: [
+        { value: '2,4 kWh', text: 'de energia em um único módulo de rack' },
+        { value: 'Painel frontal', text: 'com tensão, corrente e estado de carga' },
         { value: '54V', text: 'de carga máxima, indicada no painel' },
       ],
     },
