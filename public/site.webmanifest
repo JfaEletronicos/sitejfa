@@ -1,0 +1,11 @@
+{
+  "name": "JFA Eletrônicos",
+  "short_name": "JFA",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo-jfa.png", "sizes": "256x256", "type": "image/png" }
+  ],
+  "theme_color": "#0d1b3e",
+  "background_color": "#0d1b3e",
+  "display": "browser"
+}

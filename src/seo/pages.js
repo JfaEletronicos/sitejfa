@@ -12,6 +12,8 @@ import { BATTERY_CATALOG } from '../data/batteries';
 export const SITE_URL = 'https://jfaeletronicos.com';
 export const SITE_NAME = 'JFA Eletrônicos';
 export const DEFAULT_IMAGE = '/images/jfa_logo_dark.webp';
+// Logo da organização para o Google: o símbolo quadrado em PNG.
+export const LOGO_IMAGE = '/logo-jfa.png';
 
 // Setor da bateria -> categoria do menu (o mesmo mapa do roteador).
 const BATTERY_CATEGORY = { automotivo: 'automotivo', solar: 'solar', nautico: 'nautica', energia: 'energia', motorhome: 'motorhome' };
@@ -166,7 +168,7 @@ export const structuredData = (page) => {
       '@type': 'Organization',
       name: SITE_NAME,
       url: SITE_URL,
-      logo: absoluteUrl(DEFAULT_IMAGE),
+      logo: absoluteUrl(LOGO_IMAGE),
       sameAs: ['https://www.instagram.com/jfaeletronicos/', 'https://www.youtube.com/user/JFACANAL'],
       contactPoint: {
         '@type': 'ContactPoint',
